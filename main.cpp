@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <math.h>
 #include <immintrin.h>
 
 void printX(const char* name, __m128 val) {
@@ -107,6 +107,24 @@ __m128 Xsummation(const float* input) {
     return Xsummation(X1, X2, X3);
 }
 
+void CalcBonds(const float* coords1,
+               const float* coords2,
+               const float* box,
+               unsigned int nvals,
+               float* output) {
+    for (unsigned int i=0; i<nvals; ++i) {
+        float r2 = 0.0;
+        for (unsigned char j=0; j<3; ++j) {
+            float rij = coords1[i * 3 + j] - coords2[i * 3 + j];
+            float adj = round(rij / box[j]);
+            rij -= adj * box[j];
+
+            r2 += rij * rij;
+        }
+        *output++ = sqrtf(r2);
+    }
+}
+
 float SingleBond(const float* coords1,
                  const float* coords2,
                  const float* box) {
@@ -129,9 +147,6 @@ void XCalcBonds(const float* coords1,
     float reg_box[4];
     float one[] = {1, 1, 1, 1};  // wow
 
-    if (nvals & 3) // TODO: Dealing with %4 nvals
-        abort();
-
     // load the box into X registers
     reg_box[0] = box[0];
     reg_box[1] = box[1];
@@ -146,15 +161,26 @@ void XCalcBonds(const float* coords1,
     ib2 = _mm_permute_ps(ib1, 0x49);  // could do the same, but faster to shuffle existing values
     ib3 = _mm_permute_ps(ib1, 0x92);
 
-    for (unsigned int i=0; i<nvals; i+=4) {
+    // deal with single iterations
+    unsigned int nsingle = nvals & 0x03;
+    std::cout << "Output at " << output << "\n";
+    CalcBonds(coords1, coords2, box, nsingle, output);
+    std::cout << "Output at " << output << "\n";
+
+    coords1 += nsingle*3;
+    coords2 += nsingle*3;
+    output += nsingle;
+
+    unsigned int niters = nvals >> 2;
+    for (unsigned int i=0; i<niters; ++i) {
         // load 4 coords from each
         __m128 p1, p2, p3, p4, p5, p6;
-        p1 = _mm_loadu_ps(coords1 + i*3);
-        p2 = _mm_loadu_ps(coords1 + i*3 + 4);
-        p3 = _mm_loadu_ps(coords1 + i*3 + 8);
-        p4 = _mm_loadu_ps(coords2 + i*3);
-        p5 = _mm_loadu_ps(coords2 + i*3 + 4);
-        p6 = _mm_loadu_ps(coords2 + i*3 + 8);
+        p1 = _mm_loadu_ps(coords1 + i*12);
+        p2 = _mm_loadu_ps(coords1 + i*12 + 4);
+        p3 = _mm_loadu_ps(coords1 + i*12 + 8);
+        p4 = _mm_loadu_ps(coords2 + i*12);
+        p5 = _mm_loadu_ps(coords2 + i*12 + 4);
+        p6 = _mm_loadu_ps(coords2 + i*12 + 8);
 
         // calculate deltas
         p1 = _mm_sub_ps(p1, p4);
@@ -180,7 +206,7 @@ void XCalcBonds(const float* coords1,
         __m128 rsq = Xsummation2(p1, p2, p3);
         __m128 r = _mm_sqrt_ps(rsq);
 
-        _mm_store_ps(output, r);
+        _mm_storeu_ps(output, r);
         output += 4;
     }
 }
@@ -211,13 +237,15 @@ float coordsA[] = {
         1.0, 1.0, 1.0,
         2.0, 2.0, 2.0,
         3.0, 3.0, 3.0,
-        4.0, 4.0, 4.0
+        4.0, 4.0, 4.0,
+        5.0, 5.0, 5.0
 };
 float coordsB[] = {
         2.0, 1.0, 1.0,
         2.0, 2.0, 12.0,
         3.0, 13.0, 3.0,
-        15.0, 4.0, 4.0
+        15.0, 4.0, 4.0,
+        5.0, 5.0, 5.0
 };
 
 int main() {
@@ -225,11 +253,12 @@ int main() {
                     5, 6, 7, 8,
                     9, 10, 11, 12};
 
-    float storage[4];
+    float storage[20];
 
-    XCalcBonds(coordsA, coordsB, gbox, 4, storage);
+    XCalcBonds(coordsA, coordsB, gbox, 5, storage);
 
     printX("Result: ", _mm_loadu_ps(storage));
+    printX("Result: ", _mm_loadu_ps(storage+1));
 
     return 0;
 }
