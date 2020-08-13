@@ -38,6 +38,14 @@ bool loadCoords(FILE* fp, int Ncoords, float* coords) {
   return true;
 }
 
+#define TOL 0.0001
+static bool verify(const float* ref, const float* other, unsigned int Ncoords) {
+  for (unsigned int i=0; i<Ncoords; ++i)
+    if (fabs(ref[i] - other[i]) > TOL)
+      return false;
+  return true;
+}
+
 int main(int argc, char* argv[]) {
   // usage: file.in
   char* fname = argv[1];
@@ -76,6 +84,9 @@ int main(int argc, char* argv[]) {
   dt = (t2 - t1);
   std::cout << "Regular calc_bonds: " << dt.count() << "\n";
 
+  float* ref_results = (float*) malloc(sizeof(float) * Nresults);
+  memcpy(ref_results, results, sizeof(float) * Nresults);
+
   t1 = std::chrono::steady_clock::now();
 
   XCalcBonds(coords1, coords2, box, Nresults, results);
@@ -85,6 +96,11 @@ int main(int argc, char* argv[]) {
   dt = (t2 - t1);
 
   std::cout << "XMM calc_bonds: " << dt.count() << "\n";
+
+  if (!verify(ref_results, results, Nresults))
+    std::cout << "XMM result wrong!\n";
+  else
+    std::cout << "XMM Results verified\n";
 
   return 0;
 }
