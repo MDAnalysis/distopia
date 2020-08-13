@@ -1,10 +1,11 @@
 #include <iostream>
 #include <math.h>
-#include <immintrin.h>
 #include <chrono>
 
-#include "XMMdist.h"
-#include "vanilla.h"
+#include "XMMdist.h"  // a fancy approach
+#include "vanilla.h"  // a naive approach
+#include "calc_distances.h"  // from mdanalysis
+#include "distancekernels.h"  // from mdtraj
 
 bool loadHeader(FILE* fp, int* Ncoords, float* box) {
   // header format:
@@ -101,6 +102,38 @@ int main(int argc, char* argv[]) {
     std::cout << "XMM result wrong!\n";
   else
     std::cout << "XMM Results verified\n";
+
+  t1 = std::chrono::steady_clock::now();
+
+  _calc_bond_distance_ortho((coordinate*)coords1,
+                            (coordinate*)coords2, Nresults, box, results);
+
+  t2 = std::chrono::steady_clock::now();
+
+  dt = (t2 - t1);
+
+  std::cout << "MDA calc_bonds: " << dt.count() << "\n";
+
+  if (!verify(ref_results, results, Nresults))
+    std::cout << "MDA result wrong!\n";
+  else
+    std::cout << "MDA Results verified\n";
+
+  t1 = std::chrono::steady_clock::now();
+
+  dist_mic(coords1,
+           coords2, box, results, Nresults);
+
+  t2 = std::chrono::steady_clock::now();
+
+  dt = (t2 - t1);
+
+  std::cout << "MDtraj calc_bonds: " << dt.count() << "\n";
+
+  if (!verify(ref_results, results, Nresults))
+    std::cout << "MDtraj result wrong!\n";
+  else
+    std::cout << "MDtraj Results verified\n";
 
   return 0;
 }
