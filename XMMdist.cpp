@@ -165,3 +165,68 @@ void XCalcBonds(const float* coords1,
         output += 4;
     }
 }
+
+// identical to _MM_TRANSPOSE4_ps except we don't care about the last column in input, i.e. final row in output
+#define _MM_TRANSPOSE(row0, row1, row2, row3) \
+do { \
+  __m128 tmp3, tmp2, tmp1, tmp0; \
+  tmp0 = _mm_unpacklo_ps((row0), (row1)); \
+  tmp2 = _mm_unpacklo_ps((row2), (row3)); \
+  tmp1 = _mm_unpackhi_ps((row0), (row1)); \
+  tmp3 = _mm_unpackhi_ps((row2), (row3)); \
+  (row0) = _mm_movelh_ps(tmp0, tmp2); \
+  (row1) = _mm_movehl_ps(tmp2, tmp0); \
+  (row2) = _mm_movelh_ps(tmp1, tmp3); \
+} while (0)
+  //  (row3) = _mm_movehl_ps(tmp3, tmp1);
+
+
+// Read *Ncoords* pairs of indices from idx and calculate pairwise distance betwixt
+void XCalcBondsIdx(const float* coords,
+                   const unsigned int* idx,  // holds [[1, 2], [7, 8], etc]
+                   const float* box,
+                   unsigned int Ncoords,
+                   float* output) {
+  __m128 b[3], ib[3];
+  for (unsigned char i=0; i<3; ++i) {
+    // b[0] = [lx, lx, lx, lx], ib == inverse box
+    b[i] = _mm_set_ps1(box[i]);
+    ib[i] = _mm_set_ps1(1 / box[i]);
+  }
+
+  // TODO: Single interations
+  unsigned int niters = Ncoords >> 2;
+  for (unsigned int i=0; i<niters; ++i) {
+    __m128 p1[4];
+    __m128 p2[4];
+    for (unsigned char j=0; j<4; ++j) {
+      unsigned int a = idx[i*8 + j*2];
+      unsigned int b = idx[i*8 + j*2 + 1];
+      p1[j] = _mm_loadu_ps(coords + a*3);
+      p2[j] = _mm_loadu_ps(coords + b*3);
+    }
+    _MM_TRANSPOSE(p1[0], p1[1], p1[2], p1[3]);
+    _MM_TRANSPOSE(p2[0], p2[1], p2[2], p2[3]);
+    // p1[0] x coordinate of each, 1=y, 2=z, p1[3] now meaningless
+    __m128 delta[3];
+    for (unsigned char j=0; j<3; ++j)
+      delta[j] = _mm_sub_ps(p1[j], p2[j]);
+
+    // apply minimum image convention
+    for (unsigned char j=0; j<3; ++j) {
+      __m128 adj = _mm_mul_ps(b[j], _mm_round_ps(_mm_mul_ps(delta[j], ib[j]), (_MM_ROUND_NEAREST | _MM_FROUND_NO_EXC)));
+      delta[j] = _mm_sub_ps(delta[j], adj);
+    }
+
+    // square each and sum
+    for (unsigned char j=0; j<3; ++j)
+      delta[j] = _mm_mul_ps(delta[j], delta[j]);
+    delta[0] = _mm_add_ps(delta[0], delta[1]);
+    delta[0] = _mm_add_ps(delta[0], delta[2]);
+
+    __m128 r = _mm_sqrt_ps(delta[0]);
+
+    _mm_storeu_ps(output, r);
+    output += 4;
+  }
+}
