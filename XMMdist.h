@@ -5,7 +5,6 @@
 #ifndef XDIST_XMMDIST_H
 #define XDIST_XMMDIST_H
 
-
 void XCalcBonds(const float* coords1,
                 const float* coords2,
                 const float* box,

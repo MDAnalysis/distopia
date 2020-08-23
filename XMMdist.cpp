@@ -40,7 +40,7 @@ void XCalcBonds(const float* coords1,
 
     // deal with single iterations
     unsigned int nsingle = nvals & 0x03;
-    CalcBonds(coords1, coords2, box, nsingle, output);
+  VanillaCalcBonds(coords1, coords2, box, nsingle, output);
 
     coords1 += nsingle*3;
     coords2 += nsingle*3;
@@ -131,7 +131,7 @@ void XCalcBondsIdx(const float* coords,
   }
 
   unsigned int nsingle = Ncoords & 0x03;
-  CalcBondsIdx(coords, idx, box, nsingle, output);
+  VanillaCalcBondsIdx(coords, idx, box, nsingle, output);
   idx += nsingle * 2;
   output += nsingle;
 
