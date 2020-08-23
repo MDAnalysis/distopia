@@ -57,6 +57,7 @@ void XCalcBonds(const float* coords1,
       p5 = _mm_loadu_ps(coords2 + i*12 + 4);
       p6 = _mm_loadu_ps(coords2 + i*12 + 8);
 
+      // TODO: Can push the conversion to only the deltas (i.e. only one conversion needed)
       AoS2SoA(p1, p2, p3);
       AoS2SoA(p4, p5, p6);
 
