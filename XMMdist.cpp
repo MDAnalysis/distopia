@@ -7,16 +7,7 @@
 
 #include "vanilla.h"
 
-static void printX(const char* name, __m128 val) {
-    float x[4];
 
-    _mm_storeu_ps(x, val);
-
-    std::cout << name << " ";
-    for (unsigned int i=0; i<4; ++i)
-        std::cout << x[i] << " ";
-    std::cout << std::endl;
-}
 
 // [X1, Y1, Z1, X2], [Y2, Z2, X3, Y3], [Z3, X4, Y4, Z4]
 // TO
@@ -113,21 +104,37 @@ do { \
 } while (0)
   //  (row3) = _mm_movehl_ps(tmp3, tmp1);
 
+// Safely load 3 coordinates into Xregister
+// If final coordinate, load starting at previous value (i.e. Z component of penultimate) and shunt backwards
+#define SAFEREAD(beg, end, idx, Xreg)    \
+do {                                     \
+  if (beg + idx + 4 < end)               \
+    Xreg = _mm_loadu_ps(beg + idx);      \
+  else {                                 \
+    Xreg = _mm_loadu_ps(beg + idx - 1);  \
+    _mm_permute_ps(Xreg, _MM_PERM_ADCB); \
+  }                                      \
+} while (0)
 
 // Read *Ncoords* pairs of indices from idx and calculate pairwise distance betwixt
 void XCalcBondsIdx(const float* coords,
+                   const float* coords_end,
                    const unsigned int* idx,  // holds [[1, 2], [7, 8], etc]
                    const float* box,
                    unsigned int Ncoords,
                    float* output) {
-  __m128 b[3], ib[3];
+  __m128 xbox[3], ib[3];
   for (unsigned char i=0; i<3; ++i) {
     // b[0] = [lx, lx, lx, lx], ib == inverse box
-    b[i] = _mm_set_ps1(box[i]);
+    xbox[i] = _mm_set_ps1(box[i]);
     ib[i] = _mm_set_ps1(1 / box[i]);
   }
 
-  // TODO: Single interations
+  unsigned int nsingle = Ncoords & 0x03;
+  CalcBondsIdx(coords, idx, box, nsingle, output);
+  idx += nsingle * 2;
+  output += nsingle;
+
   unsigned int niters = Ncoords >> 2;
   for (unsigned int i=0; i<niters; ++i) {
     __m128 p1[4];
@@ -135,8 +142,8 @@ void XCalcBondsIdx(const float* coords,
     for (unsigned char j=0; j<4; ++j) {
       unsigned int a = idx[i*8 + j*2];
       unsigned int b = idx[i*8 + j*2 + 1];
-      p1[j] = _mm_loadu_ps(coords + a*3);
-      p2[j] = _mm_loadu_ps(coords + b*3);
+      SAFEREAD(coords, coords_end, a*3, p1[j]);
+      SAFEREAD(coords, coords_end, b*3, p2[j]);
     }
     _MM_TRANSPOSE(p1[0], p1[1], p1[2], p1[3]);
     _MM_TRANSPOSE(p2[0], p2[1], p2[2], p2[3]);
@@ -147,7 +154,7 @@ void XCalcBondsIdx(const float* coords,
 
     // apply minimum image convention
     for (unsigned char j=0; j<3; ++j) {
-      __m128 adj = _mm_mul_ps(b[j], _mm_round_ps(_mm_mul_ps(delta[j], ib[j]), (_MM_ROUND_NEAREST | _MM_FROUND_NO_EXC)));
+      __m128 adj = _mm_mul_ps(xbox[j], _mm_round_ps(_mm_mul_ps(delta[j], ib[j]), (_MM_ROUND_NEAREST | _MM_FROUND_NO_EXC)));
       delta[j] = _mm_sub_ps(delta[j], adj);
     }
 

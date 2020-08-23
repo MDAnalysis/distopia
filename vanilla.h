@@ -11,4 +11,10 @@ void CalcBonds(const float* coords1,
                unsigned int nvals,
                float* output);
 
+void CalcBondsIdx(const float* coords,
+                  const unsigned int* idx,
+                  const float* box,
+                  unsigned int nvals,
+                  float* output);
+
 #endif //XDIST_VANILLA_H
