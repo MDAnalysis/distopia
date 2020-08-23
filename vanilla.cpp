@@ -4,11 +4,11 @@
 
 #include <math.h>
 
-void CalcBonds(const float* coords1,
-               const float* coords2,
-               const float* box,
-               unsigned int nvals,
-               float* output) {
+void VanillaCalcBonds(const float* coords1,
+                      const float* coords2,
+                      const float* box,
+                      unsigned int nvals,
+                      float* output) {
     for (unsigned int i=0; i<nvals; ++i) {
         float r2 = 0.0;
         for (unsigned char j=0; j<3; ++j) {
@@ -22,11 +22,11 @@ void CalcBonds(const float* coords1,
     }
 }
 
-void CalcBondsIdx(const float* coords,
-                  const unsigned int* idx,
-                  const float* box,
-                  unsigned int nvals,
-                  float* output) {
+void VanillaCalcBondsIdx(const float* coords,
+                         const unsigned int* idx,
+                         const float* box,
+                         unsigned int nvals,
+                         float* output) {
   for (unsigned int i=0; i<nvals; ++i) {
     unsigned int a = idx[i*2];
     unsigned int b = idx[i*2 + 1];
