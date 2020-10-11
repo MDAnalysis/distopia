@@ -5,17 +5,47 @@
 #ifndef XDIST_XMMDIST_H
 #define XDIST_XMMDIST_H
 
+/*
+ * calculates *nvals* pairwise distances between *coords1* and *coords2*
+ * *box* is an orthogonal box
+ * places results into *output*, which must be allocated large enough
+ * i.e. output[n] is the distance between coords1[n] and coords2[n]
+ */
 void XCalcBonds(const float* coords1,
                 const float* coords2,
                 const float* box,
                 unsigned int nvals,
                 float* output);
-
+/*
+ * similar to calcbonds but..
+ * *coords* points to the start of all coordinates
+ * *coords_end* points to the end of the buffer (used internally for an optimisation)
+ *
+ * *idx* is an array of indices which indicate which values in *coords* to use
+ *
+ */
 void XCalcBondsIdx(const float* coords,
                    const float* coords_end,
                    const unsigned int* idx,  // holds [[1, 2], [7, 8], etc]
                    const float* box,
                    unsigned int Ncoords,
                    float* output);
+
+// calculate matrix of distances between 1 and 2
+void DistanceArray(const float* coords1,
+                   const float* coords2,
+                   const float* box,
+                   unsigned int ncoords1,
+                   unsigned int ncoords2,
+                   float* output);
+
+void DistanceArrayIdx(const float* coords,
+                      const float* coords_end,
+                      const unsigned int* idx1,  // array of indices within coords
+                      const unsigned int* idx2,
+                      const float* box,
+                      unsigned int ncoords1,
+                      unsigned int ncoords2,
+                      float* output);
 
 #endif //XDIST_XMMDIST_H
