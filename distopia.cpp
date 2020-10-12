@@ -251,7 +251,7 @@ void DistanceArrayOrtho(const float* coords1,
 void DistanceArrayIdxOrtho(const float* coords,
                            const float* coords_end,
                            const unsigned int* idx1,  // array of indices within coords
-                      const unsigned int* idx2,
+                           const unsigned int* idx2,
                            const float* box,
                            unsigned int ncoords1,
                            unsigned int ncoords2,
@@ -264,7 +264,7 @@ void DistanceArrayIdxOrtho(const float* coords,
   }
 
   for (unsigned int ix=0; ix<ncoords1; ++ix) {
-    unsigned i = *(idx1 + ix);
+    unsigned int i = *(idx1 + ix);
     // single iterations of j
     unsigned int nsingle = ncoords2 & 0x03;
     for (unsigned int jx=0; jx<nsingle; ++jx) {
@@ -282,7 +282,7 @@ void DistanceArrayIdxOrtho(const float* coords,
     for (unsigned int jx=0; jx<niters; ++jx) {
       __m128 jcoord[4];
       for (unsigned char kx=0; kx<4; ++kx) {
-        unsigned int k = idx2[jx * 4 + k];
+        unsigned int k = *(idx2 + nsingle*3 + jx*4 + kx);
         SAFEREAD(coords, coords_end, k*3, jcoord[kx]);
       }
       _MM_TRANSPOSE(jcoord[0], jcoord[1], jcoord[2], jcoord[3]);
