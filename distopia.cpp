@@ -6,9 +6,6 @@
 #include <iostream>
 #include <math.h>
 
-#include "vanilla.h"
-
-
 
 // [X1, Y1, Z1, X2], [Y2, Z2, X3, Y3], [Z3, X4, Y4, Z4]
 // TO
@@ -22,6 +19,20 @@ do {\
   (v2) = _mm_shuffle_ps(tmp1, tmp2, _MM_SHUFFLE(3, 1, 2, 0)); \
   (v3) = _mm_shuffle_ps(tmp1, v3, _MM_SHUFFLE(3, 0, 3, 1)); \
 } while (0)
+
+inline float SinglePairwiseDistance(const float* coords1,
+                                    const float* coords2,
+                                    const float* box) {
+  float dx = 0.0;
+
+  for (unsigned char i=0; i<3; ++i) {
+    float rij = coords1[i] - coords2[i];
+    float adj = round(rij / box[i]);
+    rij -= adj * box[i];
+    dx += rij * rij;
+  }
+  return sqrtf(dx);
+}
 
 // zip over coords1 and coords2 and calculate pairwise distance w/ periodic boundary conditions
 // store results in output, must be large enough etc etc
@@ -41,11 +52,11 @@ void CalcBondsOrtho(const float* coords1,
 
     // deal with single iterations
     unsigned int nsingle = nvals & 0x03;
-  VanillaCalcBonds(coords1, coords2, box, nsingle, output);
+    for (unsigned char i=0; i<nsingle; ++i)
+      *output++ = SinglePairwiseDistance(coords1 + i, coords2 + i, box);
 
     coords1 += nsingle*3;
     coords2 += nsingle*3;
-    output += nsingle;
 
     unsigned int niters = nvals >> 2;
     for (unsigned int i=0; i<niters; ++i) {
@@ -122,7 +133,7 @@ do {                                     \
 void CalcBondsIdxOrtho(const float* coords,
                        const float* coords_end,
                        const unsigned int* idx,  // holds [[1, 2], [7, 8], etc]
-                   const float* box,
+                       const float* box,
                        unsigned int Ncoords,
                        float* output) {
   __m128 xbox[3], ib[3];
@@ -133,9 +144,12 @@ void CalcBondsIdxOrtho(const float* coords,
   }
 
   unsigned int nsingle = Ncoords & 0x03;
-  VanillaCalcBondsIdx(coords, idx, box, nsingle, output);
+  for (unsigned char ix=0; ix<nsingle; ++ix) {
+    unsigned int i = *(idx + ix*2);
+    unsigned int j = *(idx + ix*2 + 1);
+    *output++ = SinglePairwiseDistance(coords + i*3, coords + j*3, box);
+  }
   idx += nsingle * 2;
-  output += nsingle;
 
   unsigned int niters = Ncoords >> 2;
   for (unsigned int i=0; i<niters; ++i) {
@@ -173,19 +187,6 @@ void CalcBondsIdxOrtho(const float* coords,
   }
 }
 
-inline float SinglePairwiseDistance(const float* coords1,
-                                    const float* coords2,
-                                    const float* box) {
-  float dx = 0.0;
-
-  for (unsigned char i=0; i<3; ++i) {
-    float rij = coords1[i] - coords2[i];
-    float adj = round(rij / box[i]);
-    rij -= adj * box[i];
-    dx += rij * rij;
-  }
-  return sqrtf(dx);
-}
 
 void DistanceArrayOrtho(const float* coords1,
                         const float* coords2,
