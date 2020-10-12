@@ -2,7 +2,7 @@
 #include <math.h>
 #include <chrono>
 
-#include "XMMdist.h"  // a fancy approach
+#include "distopia.h"  // a fancy approach
 #include "vanilla.h"  // a naive approach
 #include "calc_distances.h"  // from mdanalysis
 #include "distancekernels.h"  // from mdtraj

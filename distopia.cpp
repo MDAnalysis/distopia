@@ -25,11 +25,11 @@ do {\
 
 // zip over coords1 and coords2 and calculate pairwise distance w/ periodic boundary conditions
 // store results in output, must be large enough etc etc
-void XCalcBonds(const float* coords1,
-                const float* coords2,
-                const float* box,
-                unsigned int nvals,
-                float* output) {
+void CalcBondsOrtho(const float* coords1,
+                    const float* coords2,
+                    const float* box,
+                    unsigned int nvals,
+                    float* output) {
   __m128 Xb1, Xb2, Xb3;
   __m128 ib1, ib2, ib3;  // inverse box lengths
   Xb1 = _mm_set_ps1(box[0]);
@@ -119,12 +119,12 @@ do {                                     \
 } while (0)
 
 // Read *Ncoords* pairs of indices from idx and calculate pairwise distance betwixt
-void XCalcBondsIdx(const float* coords,
-                   const float* coords_end,
-                   const unsigned int* idx,  // holds [[1, 2], [7, 8], etc]
+void CalcBondsIdxOrtho(const float* coords,
+                       const float* coords_end,
+                       const unsigned int* idx,  // holds [[1, 2], [7, 8], etc]
                    const float* box,
-                   unsigned int Ncoords,
-                   float* output) {
+                       unsigned int Ncoords,
+                       float* output) {
   __m128 xbox[3], ib[3];
   for (unsigned char i=0; i<3; ++i) {
     // b[0] = [lx, lx, lx, lx], ib == inverse box
@@ -187,12 +187,12 @@ inline float SinglePairwiseDistance(const float* coords1,
   return sqrtf(dx);
 }
 
-void DistanceArray(const float* coords1,
-                   const float* coords2,
-                   const float* box,
-                   unsigned int ncoords1,
-                   unsigned int ncoords2,
-                   float* output) {
+void DistanceArrayOrtho(const float* coords1,
+                        const float* coords2,
+                        const float* box,
+                        unsigned int ncoords1,
+                        unsigned int ncoords2,
+                        float* output) {
   __m128 xbox[3], ib[3];
   for (unsigned char i=0; i<3; ++i) {
     // b[0] = [lx, lx, lx, lx], ib == inverse box
@@ -213,9 +213,10 @@ void DistanceArray(const float* coords1,
     icoord[1] = _mm_set1_ps(*(coords1 + i*3 + 1));
     icoord[2] = _mm_set1_ps(*(coords1 + i*3 + 2));
 
-    __m128 jcoord[3];
     unsigned int niters = ncoords2 >> 2;
     for (unsigned int j=0; j<niters; ++j) {
+      __m128 jcoord[3];
+      // load 12 bytes (4 coordinates) in
       jcoord[0] = _mm_loadu_ps(coords2 + nsingle * 3 + j * 12);
       jcoord[1] = _mm_loadu_ps(coords2 + nsingle * 3 + j * 12 + 4);
       jcoord[2] = _mm_loadu_ps(coords2 + nsingle * 3 + j * 12 + 8);
@@ -224,7 +225,7 @@ void DistanceArray(const float* coords1,
 
       __m128 delta[3];
       for (unsigned char x=0; x<3; ++x)
-        delta[j] = _mm_sub_ps(icoord[x], jcoord[x]);
+        delta[x] = _mm_sub_ps(icoord[x], jcoord[x]);
 
       // apply minimum image convention
       for (unsigned char x=0; x<3; ++x) {
@@ -247,14 +248,14 @@ void DistanceArray(const float* coords1,
   }
 }
 
-void DistanceArrayIdx(const float* coords,
-                      const float* coords_end,
-                      const unsigned int* idx1,  // array of indices within coords
+void DistanceArrayIdxOrtho(const float* coords,
+                           const float* coords_end,
+                           const unsigned int* idx1,  // array of indices within coords
                       const unsigned int* idx2,
-                      const float* box,
-                      unsigned int ncoords1,
-                      unsigned int ncoords2,
-                      float* output) {
+                           const float* box,
+                           unsigned int ncoords1,
+                           unsigned int ncoords2,
+                           float* output) {
   __m128 xbox[3], ib[3];
   for (unsigned char i=0; i<3; ++i) {
     // b[0] = [lx, lx, lx, lx], ib == inverse box
