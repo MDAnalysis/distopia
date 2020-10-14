@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
 
   t1 = std::chrono::steady_clock::now();
 
-  CalcBonds(coords1, coords2, box, Nresults, results);
+  VanillaCalcBonds(coords1, coords2, box, Nresults, results);
 
   t2 = std::chrono::steady_clock::now();
 
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
 
   t1 = std::chrono::steady_clock::now();
 
-  XCalcBonds(coords1, coords2, box, Nresults, results);
+  CalcBondsOrtho(coords1, coords2, box, Nresults, results);
 
   t2 = std::chrono::steady_clock::now();
 
