@@ -49,6 +49,10 @@ static bool verify(const float* ref, const float* other, unsigned int Ncoords) {
 
 int main(int argc, char* argv[]) {
   // usage: file.in
+  if (argc <=1) {
+    printf("Too few arguments, please supply a coordinate file as a command line argument.\n");
+    return(0);
+  }
   char* fname = argv[1];
 
   float box[3];
@@ -78,7 +82,7 @@ int main(int argc, char* argv[]) {
 
   t1 = std::chrono::steady_clock::now();
 
-  CalcBonds(coords1, coords2, box, Nresults, results);
+  VanillaCalcBonds(coords1, coords2, box, Nresults, results);
 
   t2 = std::chrono::steady_clock::now();
 
@@ -90,13 +94,13 @@ int main(int argc, char* argv[]) {
 
   t1 = std::chrono::steady_clock::now();
 
-  XCalcBonds(coords1, coords2, box, Nresults, results);
+  CalcBondsOrtho(coords1, coords2, box, Nresults, results);
 
   t2 = std::chrono::steady_clock::now();
 
   dt = (t2 - t1);
 
-  std::cout << "XMM calc_bonds: " << dt.count() << "\n";
+  std::cout << "XMM calc_bonds:     " << dt.count() << "\n";
 
   if (!verify(ref_results, results, Nresults))
     std::cout << "XMM result wrong!\n";
@@ -112,7 +116,7 @@ int main(int argc, char* argv[]) {
 
   dt = (t2 - t1);
 
-  std::cout << "MDA calc_bonds: " << dt.count() << "\n";
+  std::cout << "MDA calc_bonds:     " << dt.count() << "\n";
 
   if (!verify(ref_results, results, Nresults))
     std::cout << "MDA result wrong!\n";
@@ -128,7 +132,7 @@ int main(int argc, char* argv[]) {
 
   dt = (t2 - t1);
 
-  std::cout << "MDtraj calc_bonds: " << dt.count() << "\n";
+  std::cout << "MDtraj calc_bonds:  " << dt.count() << "\n";
 
   if (!verify(ref_results, results, Nresults))
     std::cout << "MDtraj result wrong!\n";
