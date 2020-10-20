@@ -213,7 +213,10 @@ static void _calc_angle_ortho(coordinate* atom1, coordinate* atom2,
   inverse_box[0] = 1.0/box[0];
   inverse_box[1] = 1.0/box[1];
   inverse_box[2] = 1.0/box[2];
-
+  
+#ifdef PARALLEL
+#pragma omp parallel for private(i, rji, rjk, x, xp, y) shared(angles)
+#endif
 
   for (i=0; i<numatom; i++) {
     rji[0] = atom1[i][0] - atom2[i][0];
