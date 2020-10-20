@@ -197,5 +197,47 @@ static void _calc_bond_distance_ortho(coordinate* atom1, coordinate* atom2,
   }
 }
 
+static void _calc_angle_ortho(coordinate* atom1, coordinate* atom2,
+                              coordinate* atom3, int numatom,
+                              float* box, double* angles)
+{
+  // Angle is calculated between two vectors
+  // pbc option ensures that vectors are constructed between atoms in the same image as eachother
+  // ie that vectors don't go across a boxlength
+  // it doesn't matter if vectors are from different boxes however
+  int i;
+  float rji[3], rjk[3];
+  float x, y, xp[3];
+  float inverse_box[3];
+
+  inverse_box[0] = 1.0/box[0];
+  inverse_box[1] = 1.0/box[1];
+  inverse_box[2] = 1.0/box[2];
+
+
+  for (i=0; i<numatom; i++) {
+    rji[0] = atom1[i][0] - atom2[i][0];
+    rji[1] = atom1[i][1] - atom2[i][1];
+    rji[2] = atom1[i][2] - atom2[i][2];
+    minimum_image(rji, box, inverse_box);
+
+    rjk[0] = atom3[i][0] - atom2[i][0];
+    rjk[1] = atom3[i][1] - atom2[i][1];
+    rjk[2] = atom3[i][2] - atom2[i][2];
+    minimum_image(rjk, box, inverse_box);
+
+    x = rji[0]*rjk[0] + rji[1]*rjk[1] + rji[2]*rjk[2];
+
+    xp[0] = rji[1]*rjk[2] - rji[2]*rjk[1];
+    xp[1] =-rji[0]*rjk[2] + rji[2]*rjk[0];
+    xp[2] = rji[0]*rjk[1] - rji[1]*rjk[0];
+
+    y = sqrt(xp[0]*xp[0] + xp[1]*xp[1] + xp[2]*xp[2]);
+
+    *(angles+i) = atan2(y,x);
+  }
+}
+
+
 
 #endif

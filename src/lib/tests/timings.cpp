@@ -180,6 +180,16 @@ int main(int argc, char* argv[]) {
   std::cout << "per result calc_angles: " << dt.count()/Nresults << "\n";
 
 
+  t1 = std::chrono::steady_clock::now();
+
+  VanillaCalcAngles(coords1, coords2, coords3, box, Nresults, results);
+
+  t2 = std::chrono::steady_clock::now();
+
+  dt = (t2 - t1);
+  std::cout << "Regular calc_angles:    " << dt.count() << "\n";
+  std::cout << "per result calc_angles: " << dt.count()/Nresults << "\n";
+
 
   return 0;
 }
