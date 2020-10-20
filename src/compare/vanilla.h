@@ -17,4 +17,11 @@ void VanillaCalcBondsIdx(const float* coords,
                          unsigned int nvals,
                          float* output);
 
+void VanillaCalcAngles(const float* coords1,
+                      const float* coords2,
+                      const float* coords3,
+                      const float* box,
+                      unsigned int nvals,
+                      float* output);
+
 #endif //XDIST_VANILLA_H
