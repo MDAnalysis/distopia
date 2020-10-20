@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
   char* fname = argv[1];
 
   float box[3];
-  float *coords, *coords1, *coords2, *results;
+  float *coords, *coords1, *coords2, *coords3, *results;
   int Ncoords=0;
 
   FILE* fp = fopen(fname, "r");
@@ -72,7 +72,14 @@ int main(int argc, char* argv[]) {
 
   std::cout << "Read " << Ncoords << " coordinates \n";
 
+
+  // DISTANCES
   // split coordinates in half
+  if (Ncoords % 2 != 0) {
+    std::cout << "Ncoords "<< Ncoords << "are not able to be split into 2 \n";
+    return 1;
+  }
+
   coords1 = coords;
   coords2 = coords + (3*Ncoords/2);
   int Nresults = Ncoords/2;
@@ -88,6 +95,8 @@ int main(int argc, char* argv[]) {
 
   dt = (t2 - t1);
   std::cout << "Regular calc_bonds: " << dt.count() << "\n";
+  std::cout << "per result regular: " << dt.count()/Nresults << "\n";
+
 
   float* ref_results = (float*) malloc(sizeof(float) * Nresults);
   memcpy(ref_results, results, sizeof(float) * Nresults);
@@ -101,6 +110,8 @@ int main(int argc, char* argv[]) {
   dt = (t2 - t1);
 
   std::cout << "XMM calc_bonds:     " << dt.count() << "\n";
+  std::cout << "per result XMM:     " << dt.count()/Nresults << "\n";
+
 
   if (!verify(ref_results, results, Nresults))
     std::cout << "XMM result wrong!\n";
@@ -117,6 +128,8 @@ int main(int argc, char* argv[]) {
   dt = (t2 - t1);
 
   std::cout << "MDA calc_bonds:     " << dt.count() << "\n";
+  std::cout << "per result MDA:     " << dt.count()/Nresults << "\n";
+
 
   if (!verify(ref_results, results, Nresults))
     std::cout << "MDA result wrong!\n";
@@ -133,11 +146,40 @@ int main(int argc, char* argv[]) {
   dt = (t2 - t1);
 
   std::cout << "MDtraj calc_bonds:  " << dt.count() << "\n";
+  std::cout << "per result MDtraj:  " << dt.count()/Nresults << "\n";
+
 
   if (!verify(ref_results, results, Nresults))
     std::cout << "MDtraj result wrong!\n";
   else
     std::cout << "MDtraj Results verified\n";
+
+  // ANGLES
+  // split coordinates in three
+
+  if (Ncoords % 3 != 0) {
+    std::cout << "Ncoords "<< Ncoords << "are not able to be split into 3 \n";
+    return 1;
+  }
+
+  coords1 = coords;
+  coords2 = coords + (3*Ncoords/3);
+  coords3 = coords + (6*Ncoords/3);
+  Nresults = Ncoords/3;
+  
+  results = (float*) realloc(results, Ncoords * sizeof(float) /3); // dont have to do this
+
+  t1 = std::chrono::steady_clock::now();
+
+  VanillaCalcAngles(coords1, coords2, coords3, box, Nresults, results);
+
+  t2 = std::chrono::steady_clock::now();
+
+  dt = (t2 - t1);
+  std::cout << "Regular calc_angles:    " << dt.count() << "\n";
+  std::cout << "per result calc_angles: " << dt.count()/Nresults << "\n";
+
+
 
   return 0;
 }
