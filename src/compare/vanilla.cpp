@@ -43,6 +43,7 @@ void VanillaCalcBondsIdx(const float* coords,
   }
 }
 
+// seems sensitive to roundoff
 void VanillaCalcAngles(const float* coords1,
                       const float* coords2,
                       const float* coords3,

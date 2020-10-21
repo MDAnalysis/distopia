@@ -39,11 +39,13 @@ bool loadCoords(FILE* fp, int Ncoords, float* coords) {
   return true;
 }
 
-#define TOL 0.0001
+#define TOL 0.0005 // we should pay attention to this tol
 static bool verify(const float* ref, const float* other, unsigned int Ncoords) {
   for (unsigned int i=0; i<Ncoords; ++i)
-    if (fabs(ref[i] - other[i]) > TOL)
+    if (fabs(ref[i] - other[i]) > TOL) {
+      printf("wrong at pos %d\n", i);
       return false;
+    }
   return true;
 }
 
@@ -173,12 +175,13 @@ int main(int argc, char* argv[]) {
   coords3 = coords + (6*Ncoords/3);
   Nresults = Ncoords/3;
   
-  results = (float*) realloc(results, Nresults * sizeof(float)); // dont have to do this
+  // these are not strictly nessecary (should we keep an explicit handle)
+  results = (float*) realloc(results, Nresults * sizeof(float));
   ref_results = (float*) realloc(ref_results, Nresults * sizeof(float));
 
 
   t1 = std::chrono::steady_clock::now();
-
+  // seems sensitive to roundoff
   VanillaCalcAngles(coords1, coords2, coords3, box, Nresults, results);
 
   t2 = std::chrono::steady_clock::now();
@@ -198,11 +201,12 @@ int main(int argc, char* argv[]) {
   std::cout << "MDA calc_angles:        " << dt.count() << "\n";
   std::cout << "per result MDA:         " << dt.count()/Nresults << "\n";
   
-  if (!verify(ref_results, results, Nresults))
+  if (!verify(ref_results, results, Nresults)) {
     std::cout << "MDA result wrong!\n";
-  else
+  }
+  else {
     std::cout << "MDA Results verified\n";
-
+  }
 
   return 0;
 }
