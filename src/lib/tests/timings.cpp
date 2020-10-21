@@ -57,10 +57,8 @@ static bool verify(const float* ref, const float* other, unsigned int Ncoords) {
 int main(int argc, char* argv[]) {
   // usage: file.in
   if (argc <= 1) {
-    printf(
-        "Too few arguments, please supply a coordinate file as a command "
-        "line "
-        "argument.\n");
+    std::cout << "Too few arguments, please supply a coordinate file as a "
+                 "command line argument.\n";
     return (0);
   }
   char* fname = argv[1];
