@@ -3,6 +3,7 @@
 //
 
 #include <math.h>
+#include "calc_distances.h"
 
 void VanillaCalcBonds(const float* coords1,
                       const float* coords2,
@@ -51,12 +52,19 @@ void VanillaCalcAngles(const float* coords1,
 
   float rji[3], rjk[3];
   float rji_mag, rjk_mag, acc;
+  float inverse_box[3];
+
+  inverse_box[0] = 1.0/box[0];
+  inverse_box[1] = 1.0/box[1];
+  inverse_box[2] = 1.0/box[2];
 
   for (unsigned int i=0; i < nvals; ++i) {
     for (unsigned char j=0; j < 3; ++j) {
       rji[j] = coords1[i * 3 +j] - coords2[i * 3 +j];
       rjk[j] = coords3[i * 3 + j] - coords2[i * 3 + j];
     }
+    minimum_image(rji, box, inverse_box);
+    minimum_image(rjk, box, inverse_box);
     rji_mag = sqrtf(rji[0]*rji[0] + rji[1]*rji[1] + rji[2]*rji[2]);
     rjk_mag = sqrtf(rjk[0]*rjk[0] + rjk[1]*rjk[1] + rjk[2]*rjk[2]);
 

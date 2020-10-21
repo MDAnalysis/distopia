@@ -59,6 +59,8 @@ int main(int argc, char* argv[]) {
   float *coords, *coords1, *coords2, *coords3, *results;
   int Ncoords=0;
 
+  std::cout << "\nBEGIN TIMINGS\n";
+
   FILE* fp = fopen(fname, "r");
   if (!fp)
       return 1;
@@ -79,6 +81,8 @@ int main(int argc, char* argv[]) {
     std::cout << "Ncoords "<< Ncoords << "are not able to be split into 2 \n";
     return 1;
   }
+
+  std::cout << "\nDISTANCES\n";
 
   coords1 = coords;
   coords2 = coords + (3*Ncoords/2);
@@ -157,6 +161,8 @@ int main(int argc, char* argv[]) {
   // ANGLES
   // split coordinates in three
 
+  std::cout << "\nANGLES\n";
+
   if (Ncoords % 3 != 0) {
     std::cout << "Ncoords "<< Ncoords << "are not able to be split into 3 \n";
     return 1;
@@ -167,17 +173,8 @@ int main(int argc, char* argv[]) {
   coords3 = coords + (6*Ncoords/3);
   Nresults = Ncoords/3;
   
-  results = (float*) realloc(results, Ncoords * sizeof(float) /3); // dont have to do this
-
-  t1 = std::chrono::steady_clock::now();
-
-  VanillaCalcAngles(coords1, coords2, coords3, box, Nresults, results);
-
-  t2 = std::chrono::steady_clock::now();
-
-  dt = (t2 - t1);
-  std::cout << "Regular calc_angles:    " << dt.count() << "\n";
-  std::cout << "per result calc_angles: " << dt.count()/Nresults << "\n";
+  results = (float*) realloc(results, Nresults * sizeof(float)); // dont have to do this
+  ref_results = (float*) realloc(ref_results, Nresults * sizeof(float));
 
 
   t1 = std::chrono::steady_clock::now();
@@ -189,6 +186,22 @@ int main(int argc, char* argv[]) {
   dt = (t2 - t1);
   std::cout << "Regular calc_angles:    " << dt.count() << "\n";
   std::cout << "per result calc_angles: " << dt.count()/Nresults << "\n";
+  memcpy(ref_results, results, sizeof(float) * Nresults);
+
+  t1 = std::chrono::steady_clock::now();
+
+  _calc_angle_ortho((coordinate*)coords1,
+                            (coordinate*)coords2, (coordinate*)coords3, Nresults, box, results);
+  t2 = std::chrono::steady_clock::now();
+
+  dt = (t2 - t1);
+  std::cout << "MDA calc_angles:        " << dt.count() << "\n";
+  std::cout << "per result MDA:         " << dt.count()/Nresults << "\n";
+  
+  if (!verify(ref_results, results, Nresults))
+    std::cout << "MDA result wrong!\n";
+  else
+    std::cout << "MDA Results verified\n";
 
 
   return 0;
