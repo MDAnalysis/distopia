@@ -1,7 +1,7 @@
 #include <iostream>
 #include <math.h>
 #include <chrono>
-#inlcude <memory.h>
+#include <memory.h>
 
 #include "distopia.h"  // a fancy approach
 #include "vanilla.h"  // a naive approach
