@@ -15,13 +15,17 @@ bool loadHeader(FILE* fp, int* Ncoords, float* box) {
   // boxx, boxy, boxz
   char tmp[1024];
 
-  if (!fgets(tmp, 1024, fp)) abort();
+  if (!fgets(tmp, 1024, fp)) {
+    abort();
+  }
 
   *Ncoords = strtol(tmp, NULL, 10);
 
   fgets(tmp, 1024, fp);
   char* next = tmp;
-  for (unsigned i = 0; i < 3; ++i) *box++ = strtof(next, &next);
+  for (unsigned i = 0; i < 3; ++i) {
+    *box++ = strtof(next, &next);
+  }
 
   return true;
 }
@@ -32,7 +36,9 @@ bool loadCoords(FILE* fp, int Ncoords, float* coords) {
   for (unsigned int i = 0; i < Ncoords; ++i) {
     fgets(tmp, 4096, fp);
     char* next = tmp;
-    for (unsigned char j = 0; j < 3; ++j) *coords++ = strtof(next, &next);
+    for (unsigned char j = 0; j < 3; ++j) {
+      *coords++ = strtof(next, &next);
+    }
   }
 
   return true;
@@ -40,8 +46,11 @@ bool loadCoords(FILE* fp, int Ncoords, float* coords) {
 
 #define TOL 0.0001
 static bool verify(const float* ref, const float* other, unsigned int Ncoords) {
-  for (unsigned int i = 0; i < Ncoords; ++i)
-    if (fabs(ref[i] - other[i]) > TOL) return false;
+  for (unsigned int i = 0; i < Ncoords; ++i) {
+    if (fabs(ref[i] - other[i]) > TOL) {
+      return false;
+    }
+  }
   return true;
 }
 
@@ -61,8 +70,12 @@ int main(int argc, char* argv[]) {
   int Ncoords = 0;
 
   FILE* fp = fopen(fname, "r");
-  if (!fp) return 1;
-  if (!loadHeader(fp, &Ncoords, box)) return 2;
+  if (!fp) {
+    return 1;
+  }
+  if (!loadHeader(fp, &Ncoords, box)) {
+    return 2;
+  }
 
   coords = (float*)malloc(Ncoords * 3 * sizeof(float));
   results = (float*)malloc(Ncoords * sizeof(float) / 2);
@@ -101,11 +114,11 @@ int main(int argc, char* argv[]) {
 
   std::cout << "XMM calc_bonds:     " << dt.count() << "\n";
 
-  if (!verify(ref_results, results, Nresults))
+  if (!verify(ref_results, results, Nresults)) {
     std::cout << "XMM result wrong!\n";
-  else
+  } else {
     std::cout << "XMM Results verified\n";
-
+  }
   t1 = std::chrono::steady_clock::now();
 
   _calc_bond_distance_ortho((coordinate*)coords1, (coordinate*)coords2,
@@ -117,11 +130,11 @@ int main(int argc, char* argv[]) {
 
   std::cout << "MDA calc_bonds:     " << dt.count() << "\n";
 
-  if (!verify(ref_results, results, Nresults))
+  if (!verify(ref_results, results, Nresults)) {
     std::cout << "MDA result wrong!\n";
-  else
+  } else {
     std::cout << "MDA Results verified\n";
-
+  }
   t1 = std::chrono::steady_clock::now();
 
   dist_mic(coords1, coords2, box, results, Nresults);
@@ -132,10 +145,10 @@ int main(int argc, char* argv[]) {
 
   std::cout << "MDtraj calc_bonds:  " << dt.count() << "\n";
 
-  if (!verify(ref_results, results, Nresults))
+  if (!verify(ref_results, results, Nresults)) {
     std::cout << "MDtraj result wrong!\n";
-  else
+  } else {
     std::cout << "MDtraj Results verified\n";
-
+  }
   return 0;
 }
