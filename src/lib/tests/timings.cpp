@@ -6,6 +6,7 @@
 #include "vanilla.h"  // a naive approach
 #include "calc_distances.h"  // from mdanalysis
 #include "distancekernels.h"  // from mdtraj
+#include "anglekernels.h"  // from mdtraj
 
 bool loadHeader(FILE* fp, int* Ncoords, float* box) {
   // header format:
@@ -207,6 +208,18 @@ int main(int argc, char* argv[]) {
   else {
     std::cout << "MDA Results verified\n";
   }
+
+  t1 = std::chrono::steady_clock::now();
+
+  angle_mic(coords, triplets, box, results, 1, Nresults);
+
+  t2 = std::chrono::steady_clock::now();
+
+  dt = (t2 - t1);
+
+  std::cout << "MDtraj calc_bonds:     " << dt.count() << "\n";
+  std::cout << "per result MDtraj:     " << dt.count()/Nresults << "\n";
+  
 
   return 0;
 }
