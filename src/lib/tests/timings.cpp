@@ -18,7 +18,7 @@ bool loadHeader(FILE* fp, int* Ncoords, float* box) {
   if (!fgets(tmp, 1024, fp))
     abort();
 
-  *Ncoords = strtol(tmp, NULL, 10);
+  *Ncoords = strtol(tmp, nullptr, 10);
 
   fgets(tmp, 1024, fp);
   char* next = tmp;
@@ -41,14 +41,26 @@ bool loadCoords(FILE* fp, int Ncoords, float* coords) {
   return true;
 }
 
+// doesnt detect NAN, we should move to EXPECT_FLOAT_EQ() in gtest
 #define TOL 0.0005 // we should pay attention to this tol
 static bool verify(const float* ref, const float* other, unsigned int Ncoords) {
   for (unsigned int i=0; i<Ncoords; ++i)
     if (fabs(ref[i] - other[i]) > TOL) {
-      printf("wrong at pos %d\n", i);
+      printf("wrong at pos %i\n", i);
       return false;
     }
   return true;
+}
+
+// function to make indicies for MDTraj angle code
+static void make_triplets(const int Ncoords, int* triplets) {
+  int NAngles = Ncoords/3;
+  for (int i=0; i<NAngles; ++i) {
+    for (int j=0; j<3; ++j) {
+      triplets[3*i + j] = i+NAngles*j;
+      //printf("%d trip %d \n", 3*i+j, triplets[3*i+j]); 
+    }
+  }
 }
 
 int main(int argc, char* argv[]) {
@@ -176,6 +188,10 @@ int main(int argc, char* argv[]) {
   coords2 = coords + (3*Ncoords/3);
   coords3 = coords + (6*Ncoords/3);
   Nresults = Ncoords/3;
+
+  int* triplets;
+  triplets = (int*) malloc(Ncoords * sizeof(int));
+  make_triplets(Ncoords, triplets);
   
   // these are not strictly nessecary (should we keep an explicit handle)
   results = (float*) realloc(results, Nresults * sizeof(float));
@@ -212,15 +228,24 @@ int main(int argc, char* argv[]) {
 
   t1 = std::chrono::steady_clock::now();
 
-  angle_mic(coords, triplets, box, results, 1, Nresults);
+// this is probably a better comparison with CalcAnglesIdx
+  angle_mic(coords, triplets, box, results, 1, Ncoords, Nresults);
 
   t2 = std::chrono::steady_clock::now();
 
   dt = (t2 - t1);
 
-  std::cout << "MDtraj calc_bonds:     " << dt.count() << "\n";
+  std::cout << "MDtraj calc_angles:     " << dt.count() << "\n";
   std::cout << "per result MDtraj:     " << dt.count()/Nresults << "\n";
-  
+
+  if (!verify(ref_results, results, Nresults)) {
+    std::cout << "MDTraj result wrong!\n";
+  }
+  else {
+    std::cout << "MDTraj Results verified\n";
+  }
+
+  std::cout << results[0] << "  " << ref_results[0] << "\n";
 
   return 0;
 }
