@@ -1,3 +1,6 @@
+#ifndef MDTRAJ_DISTANCEKERNELS_H
+#define MDTRAJ_DISTANCEKERNELS_H
+
 /**
  * Compute the distance/displacement  between pairs of atoms in every frame
  * of xyz.
@@ -31,6 +34,7 @@
 #include "vectorize_sse.h"
 
 #define COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
+
 
 #ifdef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
 void dist_mic(const float *xyz1, const float *xyz2, const float *box_matrix,
@@ -80,7 +84,7 @@ void _dist_and_disp_mic(const float* xyz1, const float* xyz2, const float* box_m
 // void _dist_and_disp(const float* xyz1, const float* xyz2, const float* box_matrix, float* distance_out, float* displacement_out, const int n_atoms)
 #endif
 {
-  bool store_displacement = false;
+  bool store_displacement = true;
   bool store_distance = true;
   for (int i = 0; i < 1; i++) {
     // Load the periodic box vectors.
@@ -120,3 +124,5 @@ void _dist_and_disp_mic(const float* xyz1, const float* xyz2, const float* box_m
 #endif
   }
 }
+
+#endif //MDTRAJ_DISTANCEKERNELS_H

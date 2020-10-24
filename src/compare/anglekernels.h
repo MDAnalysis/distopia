@@ -1,3 +1,5 @@
+#ifndef MDTRAJ_ANGLEKERNELS_H
+#define MDTRAJ_ANGLEKERNELS_H
 /**
  *  Compute the angle between triples of atoms in every frame of
  *  xyz.
@@ -21,7 +23,14 @@
  *  segfault if they're not.
  */
 
+
 #include <vector>
+#include "distancekernels.h"
+#include "vectorize_sse.h"
+
+#ifndef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
+#define COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
+#endif
 
 #ifdef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
 #ifdef COMPILE_WITH_TRICLINIC
@@ -68,3 +77,5 @@ void angle_mic(const float *xyz1, const float *xyz2, const float *xyz3,
     out[i] = angle;
   }
 }
+
+#endif // MDTRAJ_ANGLEKERNELS_H
