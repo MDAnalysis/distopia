@@ -26,24 +26,26 @@
 #ifdef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
 #ifdef COMPILE_WITH_TRICLINIC
 // void angle_mic_triclinic(const float *xyz1, const float *xyz2,
-//                          const float *xyz3, const float *box_matrix, float *out,
-//                          const int n_angles)
+//                          const float *xyz3, const float *box_matrix, float
+//                          *out, const int n_angles)
 #else
 void angle_mic(const float *xyz1, const float *xyz2, const float *xyz3,
                const float *box_matrix, float *out, const int n_angles)
 #endif
 #else
-// void angle(const float *xyz1, const float *xyz2, const float *xyz3, float *out,
+// void angle(const float *xyz1, const float *xyz2, const float *xyz3, float
+// *out,
 //            const int n_angles)
 #endif
-// this is a slightly more optimal version of the MDTraj angle implementation
+// this is a a modified version of the MDTraj angle implementation
 // where the distance and displacement calculations are done outside the loop
+// as a tradeoff the fvec4 vectors are packed from 2 sep arrays.
 // They use std::vector so I kept it that way.
 {
   std::vector<float> rji(n_angles);
-  std::vector<float> rji_disp(3*n_angles);
+  std::vector<float> rji_disp(3 * n_angles);
   std::vector<float> rjk(n_angles);
-  std::vector<float> rjk_disp(3*n_angles);
+  std::vector<float> rjk_disp(3 * n_angles);
 
 #ifdef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
 #ifdef COMPILE_WITH_TRICLINIC
@@ -60,12 +62,9 @@ void angle_mic(const float *xyz1, const float *xyz2, const float *xyz3,
 #endif
 
   for (int i = 0; i < n_angles; i++) {
-    fvec4 v1(displacements[6 * j], displacements[6 * j + 1],
-             displacements[6 * j + 2], 0);
-    fvec4 v2(displacements[6 * j + 3], displacements[6 * j + 4],
-             displacements[6 * j + 5], 0);
-    float angle =
-        (float)acos(dot3(v1, v2) / (distances[2 * j] * distances[2 * j + 1]));
-    out[n_angles * j + i] = angle;
+    fvec4 v1(rji_disp[3 * i], rji_disp[3 * i + 1], rji_disp[3 * i + 2], 0);
+    fvec4 v2(rjk_disp[3 * i], rjk_disp[3 * i + 1], rjk_disp[3 * i + 2], 0);
+    float angle = (float)acos(dot3(v1, v2) / (rji[i] * rjk[i]));
+    out[i] = angle;
   }
 }

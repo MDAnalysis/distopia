@@ -52,16 +52,16 @@ static bool verify(const float* ref, const float* other, unsigned int Ncoords) {
   return true;
 }
 
-// function to make indicies for MDTraj angle code
-static void make_triplets(const int Ncoords, int* triplets) {
-  int NAngles = Ncoords/3;
-  for (int i=0; i<NAngles; ++i) {
-    for (int j=0; j<3; ++j) {
-      triplets[3*i + j] = i+NAngles*j;
-      printf("%d trip %d \n", 3*i+j, triplets[3*i+j]); 
-    }
-  }
-}
+// // function to make indicies for IDX tests
+// static void make_triplets(const int Ncoords, int* triplets) {
+//   int NAngles = Ncoords/3;
+//   for (int i=0; i<NAngles; ++i) {
+//     for (int j=0; j<3; ++j) {
+//       triplets[3*i + j] = i+NAngles*j;
+//       printf("%d trip %d \n", 3*i+j, triplets[3*i+j]); 
+//     }
+//   }
+// }
 
 int main(int argc, char* argv[]) {
   // usage: file.in
@@ -189,9 +189,9 @@ int main(int argc, char* argv[]) {
   coords3 = coords + (6*Ncoords/3);
   Nresults = Ncoords/3;
 
-  int* triplets;
-  triplets = (int*) malloc(Ncoords * sizeof(int));
-  make_triplets(Ncoords, triplets);
+  // int* triplets;
+  // triplets = (int*) malloc(Ncoords * sizeof(int));
+  // make_triplets(Ncoords, triplets);
   
   // these are not strictly nessecary (should we keep an explicit handle)
   results = (float*) realloc(results, Nresults * sizeof(float));
