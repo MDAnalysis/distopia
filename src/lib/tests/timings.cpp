@@ -58,7 +58,7 @@ static void make_triplets(const int Ncoords, int* triplets) {
   for (int i=0; i<NAngles; ++i) {
     for (int j=0; j<3; ++j) {
       triplets[3*i + j] = i+NAngles*j;
-      //printf("%d trip %d \n", 3*i+j, triplets[3*i+j]); 
+      printf("%d trip %d \n", 3*i+j, triplets[3*i+j]); 
     }
   }
 }
@@ -229,14 +229,14 @@ int main(int argc, char* argv[]) {
   t1 = std::chrono::steady_clock::now();
 
 // this is probably a better comparison with CalcAnglesIdx
-  angle_mic(coords, triplets, box, results, 1, Ncoords, Nresults);
+  angle_mic(coords1,coords2, coords3, box, results, Nresults);
 
   t2 = std::chrono::steady_clock::now();
 
   dt = (t2 - t1);
 
   std::cout << "MDtraj calc_angles:     " << dt.count() << "\n";
-  std::cout << "per result MDtraj:     " << dt.count()/Nresults << "\n";
+  std::cout << "per result MDtraj:      " << dt.count()/Nresults << "\n";
 
   if (!verify(ref_results, results, Nresults)) {
     std::cout << "MDTraj result wrong!\n";
@@ -245,7 +245,7 @@ int main(int argc, char* argv[]) {
     std::cout << "MDTraj Results verified\n";
   }
 
-  std::cout << results[0] << "  " << ref_results[0] << "\n";
+  std::cout << results[5] << "  " << ref_results[5] << "\n";
 
   return 0;
 }
