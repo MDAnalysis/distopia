@@ -103,8 +103,8 @@ int main(int argc, char *argv[]) {
   t2 = std::chrono::steady_clock::now();
 
   dt = (t2 - t1);
-  std::cout << "Regular calc_bonds:    " << dt.count() << "\n";
-  std::cout << "per result regular:    " << dt.count() / Nresults << "\n";
+  std::cout << "Regular calc_bonds:     " << dt.count() << "\n";
+  std::cout << "per result regular:     " << dt.count() / Nresults << "\n";
 
   float *ref_results = (float *)malloc(sizeof(float) * Nresults);
   memcpy(ref_results, results, sizeof(float) * Nresults);
@@ -117,8 +117,8 @@ int main(int argc, char *argv[]) {
 
   dt = (t2 - t1);
 
-  std::cout << "XMM calc_bonds:        " << dt.count() << "\n";
-  std::cout << "per result XMM:        " << dt.count() / Nresults << "\n";
+  std::cout << "XMM calc_bonds:         " << dt.count() << "\n";
+  std::cout << "per result XMM:         " << dt.count() / Nresults << "\n";
 
   if (!verify(ref_results, results, Nresults))
     std::cout << "XMM result wrong!\n";
@@ -134,8 +134,8 @@ int main(int argc, char *argv[]) {
 
   dt = (t2 - t1);
 
-  std::cout << "MDA calc_bonds:        " << dt.count() << "\n";
-  std::cout << "per result MDA:        " << dt.count() / Nresults << "\n";
+  std::cout << "MDA calc_bonds:         " << dt.count() << "\n";
+  std::cout << "per result MDA:         " << dt.count() / Nresults << "\n";
 
   if (!verify(ref_results, results, Nresults))
     std::cout << "MDA result wrong!\n";
@@ -150,8 +150,8 @@ int main(int argc, char *argv[]) {
 
   dt = (t2 - t1);
 
-  std::cout << "MDtraj calc_bonds:     " << dt.count() << "\n";
-  std::cout << "per result MDtraj:     " << dt.count() / Nresults << "\n";
+  std::cout << "MDtraj calc_bonds:      " << dt.count() << "\n";
+  std::cout << "per result MDtraj:      " << dt.count() / Nresults << "\n";
 
   if (!verify(ref_results, results, Nresults))
     std::cout << "MDtraj result wrong!\n";
