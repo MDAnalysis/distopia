@@ -312,3 +312,123 @@ void DistanceArrayIdxOrtho(const float* coords,
     }
   }
 }
+
+
+void SelfDistanceArrayOrtho(const float* coords,
+                            unsigned int ncoords,
+                            const float* box,
+                            float* output) {
+  __m128 xbox[3], ib[3];
+  for (unsigned char i=0; i<3; ++i) {
+    // b[0] = [lx, lx, lx, lx], ib == inverse box
+    xbox[i] = _mm_set_ps1(box[i]);
+    ib[i] = _mm_set_ps1(1 / box[i]);
+  }
+
+  for (unsigned int i=0; i<ncoords; ++i) {
+    unsigned int nsingle = (ncoords - i - 1) & 0x03;
+    const float* coords2 = coords + i * 3 + 3;
+    for (unsigned int j=0; j<nsingle; ++j)
+      *output++ = SinglePairwiseDistance(coords + i*3, coords2 + j * 3, box);
+
+    __m128 icoord[3];
+    icoord[0] = _mm_set1_ps(*(coords + i*3));
+    icoord[1] = _mm_set1_ps(*(coords + i*3 + 1));
+    icoord[2] = _mm_set1_ps(*(coords + i*3 + 2));
+
+    unsigned int niters = (ncoords - i - 1) >> 2;
+    for (unsigned int j=0; j<niters; ++j) {
+      __m128 jcoord[3];
+      jcoord[0] = _mm_loadu_ps(coords2 + nsingle * 3 + j * 12);
+      jcoord[1] = _mm_loadu_ps(coords2 + nsingle * 3 + j * 12 + 4);
+      jcoord[2] = _mm_loadu_ps(coords2 + nsingle * 3 + j * 12 + 8);
+
+      AoS2SoA(jcoord[0], jcoord[1], jcoord[2]);
+
+      __m128 delta[3];
+      for (unsigned char x=0; x<3; ++x)
+        delta[x] = _mm_sub_ps(icoord[x], jcoord[x]);
+
+      // apply minimum image convention
+      for (unsigned char x=0; x<3; ++x) {
+        __m128 adj = _mm_mul_ps(xbox[x],
+                                _mm_round_ps(_mm_mul_ps(delta[x], ib[x]), (_MM_ROUND_NEAREST | _MM_FROUND_NO_EXC)));
+        delta[x] = _mm_sub_ps(delta[x], adj);
+      }
+
+      // square each and sum
+      for (unsigned char x=0; x<3; ++x)
+        delta[x] = _mm_mul_ps(delta[x], delta[x]);
+      delta[0] = _mm_add_ps(delta[0], delta[1]);
+      delta[0] = _mm_add_ps(delta[0], delta[2]);
+
+      __m128 r = _mm_sqrt_ps(delta[0]);
+
+      _mm_storeu_ps(output, r);
+      output += 4;
+    }
+  }
+}
+
+
+void SelfDistanceArrayOrthoIdx(const float* coords,
+                               const float* coords_end,
+                               const unsigned int* idx,
+                               unsigned int ncoords,
+                               const float* box,
+                               float* output) {
+  __m128 xbox[3], ib[3];
+  for (unsigned char i=0; i<3; ++i) {
+    // b[0] = [lx, lx, lx, lx], ib == inverse box
+    xbox[i] = _mm_set_ps1(box[i]);
+    ib[i] = _mm_set_ps1(1 / box[i]);
+  }
+
+  for (unsigned int ix=0; ix<ncoords; ++ix) {
+    unsigned int i = *(idx + ix);
+
+    unsigned int nsingle = (ncoords - ix - 1) & 0x03;
+    const unsigned int* idx2 = idx + ix + 1;
+    for (unsigned int jx=0; jx<nsingle; ++jx) {
+      unsigned int j = *(idx2 + jx);
+      *output++ = SinglePairwiseDistance(coords + i * 3, coords + j * 3, box);
+    }
+
+    __m128 icoord[3];
+    icoord[0] = _mm_set1_ps(*(coords + i*3));
+    icoord[1] = _mm_set1_ps(*(coords + i*3 + 1));
+    icoord[2] = _mm_set1_ps(*(coords + i*3 + 2));
+
+    unsigned int niters = (ncoords - ix - 1) >> 2;
+    for (unsigned int jx=0; jx<niters; ++jx) {
+      __m128 jcoord[4];
+      for (unsigned char kx=0; kx<4; ++kx) {
+        unsigned int k = *(idx2 + nsingle*3 + jx*4 + kx);
+        SAFEREAD(coords, coords_end, k*3, jcoord[kx]);
+      }
+      _MM_TRANSPOSE(jcoord[0], jcoord[1], jcoord[2], jcoord[3]);
+
+      __m128 delta[3];
+      for (unsigned char x=0; x<3; ++x)
+        delta[x] = _mm_sub_ps(icoord[x], jcoord[x]);
+
+      // apply minimum image convention
+      for (unsigned char x=0; x<3; ++x) {
+        __m128 adj = _mm_mul_ps(xbox[x],
+                                _mm_round_ps(_mm_mul_ps(delta[x], ib[x]), (_MM_ROUND_NEAREST | _MM_FROUND_NO_EXC)));
+        delta[x] = _mm_sub_ps(delta[x], adj);
+      }
+
+      // square each and sum
+      for (unsigned char x=0; x<3; ++x)
+        delta[x] = _mm_mul_ps(delta[x], delta[x]);
+      delta[0] = _mm_add_ps(delta[0], delta[1]);
+      delta[0] = _mm_add_ps(delta[0], delta[2]);
+
+      __m128 r = _mm_sqrt_ps(delta[0]);
+
+      _mm_storeu_ps(output, r);
+      output += 4;
+    }
+  }
+}
