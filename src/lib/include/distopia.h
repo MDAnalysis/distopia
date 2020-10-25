@@ -48,4 +48,18 @@ void DistanceArrayIdxOrtho(const float* coords,
                            unsigned int ncoords2,
                            float* output);
 
+// distances of an array against itself
+// will return n*(n-1)/2 distances
+void SelfDistanceArrayOrtho(const float* coords,
+                            unsigned int ncoords,
+                            const float* box,
+                            float* output);
+
+void SelfDistanceArrayOrthoIdx(const float* coords,
+                               const float* coords_end,
+                               const unsigned int* idx,
+                               unsigned int ncoords,
+                               const float* box,
+                               float* output);
+
 #endif //XDIST_DISTOPIA_H
