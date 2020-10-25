@@ -1,3 +1,6 @@
+#ifndef MDTRAJ_DISTANCEKERNELS_H
+#define MDTRAJ_DISTANCEKERNELS_H
+
 /**
  * Compute the distance/displacement  between pairs of atoms in every frame
  * of xyz.
@@ -32,44 +35,94 @@
 
 #define COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
 
+
 #ifdef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
-void dist_mic(const float* xyz1, const float* xyz2,
-              const float* box_matrix,
-              float* distance_out,
-              const int n_atoms)
+void dist_mic(const float *xyz1, const float *xyz2, const float *box_matrix,
+              float *distance_out, const int n_atoms)
 #else
-void dist(const float* xyz, const int* pairs, float* distance_out,
-         float* displacement_out, const int n_frames, const int n_atoms,
-         const int n_pairs)
+// void dist(const float *xyz, const int *pairs, float *distance_out,
+//           float *displacement_out, const int n_frames, const int n_atoms,
+//           const int n_pairs)
 #endif
 {
-    bool store_displacement = false;
-    bool store_distance = (distance_out != NULL);
-    for (int i = 0; i < 1; i++) {
-        // Load the periodic box vectors.
+  bool store_displacement = false;
+  bool store_distance = (distance_out != NULL);
+  for (int i = 0; i < 1; i++) {
+    // Load the periodic box vectors.
 
 #ifdef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
-        fvec4 box_size(box_matrix[0], box_matrix[1], box_matrix[2], 0);
-        fvec4 inv_box_size(1.0f/box_matrix[0], 1.0f/box_matrix[1], 1.0f/box_matrix[2], 0);
+    fvec4 box_size(box_matrix[0], box_matrix[1], box_matrix[2], 0);
+    fvec4 inv_box_size(1.0f / box_matrix[0], 1.0f / box_matrix[1],
+                       1.0f / box_matrix[2], 0);
 #endif
-        for (int j = 0; j < n_atoms; j++) {
-            // Compute the displacement.
-            fvec4 pos1(xyz1[j*3], xyz1[j*3 + 1], xyz1[j*3 + 2], 0);
-            int offset2 = j*3;
-            fvec4 pos2(xyz2[offset2], xyz2[offset2+1], xyz2[offset2+2], 0);
-            fvec4 r12 = pos2-pos1;
+    for (int j = 0; j < n_atoms; j++) {
+      // Compute the displacement.
+      fvec4 pos1(xyz1[j * 3], xyz1[j * 3 + 1], xyz1[j * 3 + 2], 0);
+      int offset2 = j * 3;
+      fvec4 pos2(xyz2[offset2], xyz2[offset2 + 1], xyz2[offset2 + 2], 0);
+      fvec4 r12 = pos2 - pos1;
 #ifdef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
-            r12 -= round(r12*inv_box_size)*box_size;
+      r12 -= round(r12 * inv_box_size) * box_size;
 #endif
 
-            if (true) {
-                *distance_out = sqrtf(dot3(r12, r12));
-                distance_out++;
-            }
-        }
-#ifdef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
-        box_matrix += 9;
-#endif
+      if (true) {
+        *distance_out = sqrtf(dot3(r12, r12));
+        distance_out++;
+      }
     }
+#ifdef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
+    box_matrix += 9;
+#endif
+  }
 }
 
+// version of dist_mic, spits out the displacements needed for
+// angle code.
+#ifdef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
+void _dist_and_disp_mic(const float* xyz1, const float* xyz2, const float* box_matrix, float* distance_out, float* displacement_out, const int n_atoms)
+#else
+// void _dist_and_disp(const float* xyz1, const float* xyz2, const float* box_matrix, float* distance_out, float* displacement_out, const int n_atoms)
+#endif
+{
+  bool store_displacement = true;
+  bool store_distance = true;
+  for (int i = 0; i < 1; i++) {
+    // Load the periodic box vectors.
+
+#ifdef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
+    fvec4 box_size(box_matrix[0], box_matrix[1], box_matrix[2], 0);
+    fvec4 inv_box_size(1.0f / box_matrix[0], 1.0f / box_matrix[1],
+                       1.0f / box_matrix[2], 0);
+#endif
+    for (int j = 0; j < n_atoms; j++) {
+      // Compute the displacement.
+      fvec4 pos1(xyz1[j * 3], xyz1[j * 3 + 1], xyz1[j * 3 + 2], 0);
+      int offset2 = j * 3;
+      fvec4 pos2(xyz2[offset2], xyz2[offset2 + 1], xyz2[offset2 + 2], 0);
+      fvec4 r12 = pos2 - pos1;
+#ifdef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
+      r12 -= round(r12 * inv_box_size) * box_size;
+#endif
+      if (true) {
+        float temp[4];
+        r12.store(temp);
+        *displacement_out = temp[0];
+        displacement_out++;
+        *displacement_out = temp[1];
+        displacement_out++;
+        *displacement_out = temp[2];
+        displacement_out++;
+      }
+
+      if (true) {
+        *distance_out = sqrtf(dot3(r12, r12));
+        distance_out++;
+      }
+    }
+#ifdef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
+    box_matrix += 9;
+#endif
+  }
+}
+
+#endif //MDTRAJ_DISTANCEKERNELS_H
