@@ -20,6 +20,36 @@ do {\
   (v3) = _mm_shuffle_ps(tmp1, v3, _MM_SHUFFLE(3, 0, 3, 1)); \
 } while (0)
 
+// apply periodic boundary conditions
+// rij = rij - box * rint(rij / box)
+#define MIC_ORTHO(dx, reg_box, inv_box) \
+do {                                    \
+  __m128 shift[3], int_shift[3];        \
+  shift[0] = _mm_mul_ps(dx[0], inv_box[0]);                                       \
+  int_shift[0] = _mm_round_ps(shift[0], (_MM_ROUND_NEAREST | _MM_FROUND_NO_EXC)); \
+  dx[0] = _mm_sub_ps(dx[0], _mm_mul_ps(int_shift[0], reg_box[0]));                \
+                                                                                  \
+  shift[1] = _mm_mul_ps(dx[1], inv_box[1]);                                       \
+  int_shift[1] = _mm_round_ps(shift[1], (_MM_ROUND_NEAREST | _MM_FROUND_NO_EXC)); \
+  dx[1] = _mm_sub_ps(dx[1], _mm_mul_ps(int_shift[1], reg_box[1]));                \
+                                                                                  \
+  shift[2] = _mm_mul_ps(dx[2], inv_box[2]);                                       \
+  int_shift[2] = _mm_round_ps(shift[2], (_MM_ROUND_NEAREST | _MM_FROUND_NO_EXC)); \
+  dx[2] = _mm_sub_ps(dx[2], _mm_mul_ps(int_shift[2], reg_box[2]));                \
+} while (0)
+
+// r = sqrt(dx*dx + dy*dy + dz*dz)
+// TODO: reciprocal sqrt optimisations
+#define VECTOR_NORM(dx, out)        \
+do {                                \
+  dx[0] = _mm_mul_ps(dx[0], dx[0]); \
+  dx[1] = _mm_mul_ps(dx[1], dx[1]); \
+  dx[2] = _mm_mul_ps(dx[2], dx[2]); \
+  dx[0] = _mm_add_ps(dx[0], dx[1]); \
+  dx[0] = _mm_add_ps(dx[0], dx[2]); \
+  (r) = _mm_sqrt_ps(dx[0]);         \
+} while(0)
+
 inline float SinglePairwiseDistance(const float* coords1,
                                     const float* coords2,
                                     const float* box) {
@@ -41,66 +71,49 @@ void CalcBondsOrtho(const float* coords1,
                     const float* box,
                     unsigned int nvals,
                     float* output) {
-  __m128 Xb1, Xb2, Xb3;
-  __m128 ib1, ib2, ib3;  // inverse box lengths
-  Xb1 = _mm_set_ps1(box[0]);
-  Xb2 = _mm_set_ps1(box[1]);
-  Xb3 = _mm_set_ps1(box[2]);
-  ib1 = _mm_set_ps1(1/box[0]);
-  ib2 = _mm_set_ps1(1/box[1]);
-  ib3 = _mm_set_ps1(1/box[2]);
+  __m128 xbox[3], ib[3];
+  for (unsigned char i=0; i<3; ++i) {
+    // b[0] = [lx, lx, lx, lx], ib == inverse box
+    xbox[i] = _mm_set_ps1(box[i]);
+    ib[i] = _mm_set_ps1(1 / box[i]);
+  }
 
-    // deal with single iterations
-    unsigned int nsingle = nvals & 0x03;
-    for (unsigned char i=0; i<nsingle; ++i)
-      *output++ = SinglePairwiseDistance(coords1 + i, coords2 + i, box);
+  // deal with single iterations
+  unsigned int nsingle = nvals & 0x03;
+  for (unsigned char i=0; i<nsingle; ++i)
+    *output++ = SinglePairwiseDistance(coords1 + i, coords2 + i, box);
 
-    coords1 += nsingle*3;
-    coords2 += nsingle*3;
+  coords1 += nsingle*3;
+  coords2 += nsingle*3;
 
-    unsigned int niters = nvals >> 2;
-    for (unsigned int i=0; i<niters; ++i) {
-      // load 4 coords from each
-      __m128 p1, p2, p3, p4, p5, p6;
-      p1 = _mm_loadu_ps(coords1 + i*12);
-      p2 = _mm_loadu_ps(coords1 + i*12 + 4);
-      p3 = _mm_loadu_ps(coords1 + i*12 + 8);
-      p4 = _mm_loadu_ps(coords2 + i*12);
-      p5 = _mm_loadu_ps(coords2 + i*12 + 4);
-      p6 = _mm_loadu_ps(coords2 + i*12 + 8);
+  unsigned int niters = nvals >> 2;
+  for (unsigned int i=0; i<niters; ++i) {
+    // load 4 coords from each
+    __m128 icoord[3], jcoord[3];
+    icoord[0] = _mm_loadu_ps(coords1 + i*12);
+    icoord[1] = _mm_loadu_ps(coords1 + i*12 + 4);
+    icoord[2] = _mm_loadu_ps(coords1 + i*12 + 8);
+    jcoord[0] = _mm_loadu_ps(coords2 + i*12);
+    jcoord[1] = _mm_loadu_ps(coords2 + i*12 + 4);
+    jcoord[2] = _mm_loadu_ps(coords2 + i*12 + 8);
 
-      // TODO: Can push the conversion to only the deltas (i.e. only one conversion needed)
-      AoS2SoA(p1, p2, p3);
-      AoS2SoA(p4, p5, p6);
+    // TODO: Can push the conversion to only the deltas (i.e. only one conversion needed)
+    AoS2SoA(icoord[0], icoord[1], icoord[2]);
+    AoS2SoA(jcoord[0], jcoord[1], jcoord[2]);
 
-      // calculate deltas
-      p1 = _mm_sub_ps(p1, p4);  // dx
-      p2 = _mm_sub_ps(p2, p5);  // dy
-      p3 = _mm_sub_ps(p3, p6);  // dz
+    // calculate deltas
+    __m128 delta[3];
+    for (unsigned char x=0; x<3; ++x)
+      delta[x] = _mm_sub_ps(icoord[x], jcoord[x]);
 
-      // apply periodic boundary conditions
-      // rij = rij - box * rint(rij / box)
-      __m128 adj1, adj2, adj3;
-      adj1 = _mm_mul_ps(Xb1, _mm_round_ps(_mm_mul_ps(p1, ib1), (_MM_ROUND_NEAREST|_MM_FROUND_NO_EXC)));
-      adj2 = _mm_mul_ps(Xb2, _mm_round_ps(_mm_mul_ps(p2, ib2), (_MM_ROUND_NEAREST|_MM_FROUND_NO_EXC)));
-      adj3 = _mm_mul_ps(Xb3, _mm_round_ps(_mm_mul_ps(p3, ib3), (_MM_ROUND_NEAREST|_MM_FROUND_NO_EXC)));
+    MIC_ORTHO(delta, xbox, ib);
 
-      p1 = _mm_sub_ps(p1, adj1);
-      p2 = _mm_sub_ps(p2, adj2);
-      p3 = _mm_sub_ps(p3, adj3);
+    __m128 r;
+    VECTOR_NORM(delta, r);
 
-      // square each
-      p1 = _mm_mul_ps(p1, p1);
-      p2 = _mm_mul_ps(p2, p2);
-      p3 = _mm_mul_ps(p3, p3);
-
-      // summation time
-      __m128 rsq = _mm_add_ps(p1, _mm_add_ps(p2, p3));
-      __m128 r = _mm_sqrt_ps(rsq);
-
-      _mm_storeu_ps(output, r);
-      output += 4;
-    }
+    _mm_storeu_ps(output, r);
+    output += 4;
+  }
 }
 
 // identical to _MM_TRANSPOSE4_ps except we don't care about the last column in input, i.e. final row in output
@@ -164,23 +177,15 @@ void CalcBondsIdxOrtho(const float* coords,
     _MM_TRANSPOSE(p1[0], p1[1], p1[2], p1[3]);
     _MM_TRANSPOSE(p2[0], p2[1], p2[2], p2[3]);
     // p1[0] x coordinate of each, 1=y, 2=z, p1[3] now meaningless
+
     __m128 delta[3];
     for (unsigned char j=0; j<3; ++j)
       delta[j] = _mm_sub_ps(p1[j], p2[j]);
 
-    // apply minimum image convention
-    for (unsigned char j=0; j<3; ++j) {
-      __m128 adj = _mm_mul_ps(xbox[j], _mm_round_ps(_mm_mul_ps(delta[j], ib[j]), (_MM_ROUND_NEAREST | _MM_FROUND_NO_EXC)));
-      delta[j] = _mm_sub_ps(delta[j], adj);
-    }
+    MIC_ORTHO(delta, xbox, ib);
 
-    // square each and sum
-    for (unsigned char j=0; j<3; ++j)
-      delta[j] = _mm_mul_ps(delta[j], delta[j]);
-    delta[0] = _mm_add_ps(delta[0], delta[1]);
-    delta[0] = _mm_add_ps(delta[0], delta[2]);
-
-    __m128 r = _mm_sqrt_ps(delta[0]);
+    __m128 r;
+    VECTOR_NORM(delta, r);
 
     _mm_storeu_ps(output, r);
     output += 4;
@@ -228,20 +233,10 @@ void DistanceArrayOrtho(const float* coords1,
       for (unsigned char x=0; x<3; ++x)
         delta[x] = _mm_sub_ps(icoord[x], jcoord[x]);
 
-      // apply minimum image convention
-      for (unsigned char x=0; x<3; ++x) {
-        __m128 adj = _mm_mul_ps(xbox[x],
-                                _mm_round_ps(_mm_mul_ps(delta[x], ib[x]), (_MM_ROUND_NEAREST | _MM_FROUND_NO_EXC)));
-        delta[x] = _mm_sub_ps(delta[x], adj);
-      }
+      MIC_ORTHO(delta, xbox, ib);
 
-      // square each and sum
-      for (unsigned char x=0; x<3; ++x)
-        delta[x] = _mm_mul_ps(delta[x], delta[x]);
-      delta[0] = _mm_add_ps(delta[0], delta[1]);
-      delta[0] = _mm_add_ps(delta[0], delta[2]);
-
-      __m128 r = _mm_sqrt_ps(delta[0]);
+      __m128 r;
+      VECTOR_NORM(delta, r);
 
       _mm_storeu_ps(output, r);
       output += 4;
@@ -292,20 +287,10 @@ void DistanceArrayIdxOrtho(const float* coords,
       for (unsigned char x=0; x<3; ++x)
         delta[x] = _mm_sub_ps(icoord[x], jcoord[x]);
 
-      // apply minimum image convention
-      for (unsigned char x=0; x<3; ++x) {
-        __m128 adj = _mm_mul_ps(xbox[x],
-                                _mm_round_ps(_mm_mul_ps(delta[x], ib[x]), (_MM_ROUND_NEAREST | _MM_FROUND_NO_EXC)));
-        delta[x] = _mm_sub_ps(delta[x], adj);
-      }
+      MIC_ORTHO(delta, xbox, ib);
 
-      // square each and sum
-      for (unsigned char x=0; x<3; ++x)
-        delta[x] = _mm_mul_ps(delta[x], delta[x]);
-      delta[0] = _mm_add_ps(delta[0], delta[1]);
-      delta[0] = _mm_add_ps(delta[0], delta[2]);
-
-      __m128 r = _mm_sqrt_ps(delta[0]);
+      __m128 r;
+      VECTOR_NORM(delta, r);
 
       _mm_storeu_ps(output, r);
       output += 4;
@@ -349,20 +334,10 @@ void SelfDistanceArrayOrtho(const float* coords,
       for (unsigned char x=0; x<3; ++x)
         delta[x] = _mm_sub_ps(icoord[x], jcoord[x]);
 
-      // apply minimum image convention
-      for (unsigned char x=0; x<3; ++x) {
-        __m128 adj = _mm_mul_ps(xbox[x],
-                                _mm_round_ps(_mm_mul_ps(delta[x], ib[x]), (_MM_ROUND_NEAREST | _MM_FROUND_NO_EXC)));
-        delta[x] = _mm_sub_ps(delta[x], adj);
-      }
+      MIC_ORTHO(delta, xbox, ib);
 
-      // square each and sum
-      for (unsigned char x=0; x<3; ++x)
-        delta[x] = _mm_mul_ps(delta[x], delta[x]);
-      delta[0] = _mm_add_ps(delta[0], delta[1]);
-      delta[0] = _mm_add_ps(delta[0], delta[2]);
-
-      __m128 r = _mm_sqrt_ps(delta[0]);
+      __m128 r;
+      VECTOR_NORM(delta, r);
 
       _mm_storeu_ps(output, r);
       output += 4;
@@ -412,20 +387,10 @@ void SelfDistanceArrayIdxOrtho(const float* coords,
       for (unsigned char x=0; x<3; ++x)
         delta[x] = _mm_sub_ps(icoord[x], jcoord[x]);
 
-      // apply minimum image convention
-      for (unsigned char x=0; x<3; ++x) {
-        __m128 adj = _mm_mul_ps(xbox[x],
-                                _mm_round_ps(_mm_mul_ps(delta[x], ib[x]), (_MM_ROUND_NEAREST | _MM_FROUND_NO_EXC)));
-        delta[x] = _mm_sub_ps(delta[x], adj);
-      }
+      MIC_ORTHO(delta, xbox, ib);
 
-      // square each and sum
-      for (unsigned char x=0; x<3; ++x)
-        delta[x] = _mm_mul_ps(delta[x], delta[x]);
-      delta[0] = _mm_add_ps(delta[0], delta[1]);
-      delta[0] = _mm_add_ps(delta[0], delta[2]);
-
-      __m128 r = _mm_sqrt_ps(delta[0]);
+      __m128 r;
+      VECTOR_NORM(delta, r);
 
       _mm_storeu_ps(output, r);
       output += 4;

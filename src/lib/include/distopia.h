@@ -27,7 +27,7 @@ void CalcBondsOrtho(const float* coords1,
 void CalcBondsIdxOrtho(const float* coords,
                        const float* coords_end,
                        const unsigned int* idx,  // holds [[1, 2], [7, 8], etc]
-                       const float* box,
+                       float box,
                        unsigned int Ncoords,
                        float* output);
 
