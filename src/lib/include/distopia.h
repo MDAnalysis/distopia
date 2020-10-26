@@ -55,7 +55,7 @@ void SelfDistanceArrayOrtho(const float* coords,
                             const float* box,
                             float* output);
 
-void SelfDistanceArrayOrthoIdx(const float* coords,
+void SelfDistanceArrayIdxOrtho(const float* coords,
                                const float* coords_end,
                                const unsigned int* idx,
                                unsigned int ncoords,
