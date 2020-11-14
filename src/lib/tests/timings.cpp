@@ -221,5 +221,23 @@ int main(int argc, char *argv[]) {
     std::cout << "MDTraj Results verified\n";
   }
 
+    t1 = std::chrono::steady_clock::now();
+
+  CalcAnglesOrtho(coords1, coords2, coords3, box, Nresults, results);
+
+  t2 = std::chrono::steady_clock::now();
+
+  dt = (t2 - t1);
+
+  std::cout << "XMM calc_angles:     " << dt.count() << "\n";
+  std::cout << "per result XMM:      " << dt.count() / Nresults << "\n";
+
+  if (!verify(ref_results, results, Nresults)) {
+    std::cout << "XMM result wrong!\n";
+  } else {
+    std::cout << "XMM Results verified\n";
+  }
+
+
   return 0;
 }
