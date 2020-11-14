@@ -397,3 +397,73 @@ void SelfDistanceArrayIdxOrtho(const float* coords,
     }
   }
 }
+
+// zip over coords1 and coords2 and calculate pairwise distance w/ periodic boundary conditions
+// store results in output, must be large enough etc etc
+void CalcAngleOrtho(const float* coords1,
+                    const float* coords2,
+                    const float* coords3,
+                    const float* box,
+                    unsigned int nvals,
+                    float* output) {
+  __m128 xbox[3], ib[3];
+  for (unsigned char i=0; i<3; ++i) {
+    // b[0] = [lx, lx, lx, lx], ib == inverse box
+    xbox[i] = _mm_set_ps1(box[i]);
+    ib[i] = _mm_set_ps1(1 / box[i]);
+  }
+
+  // deal with single iterations find
+  unsigned int nsingle = nvals & 0x03;
+  for (unsigned char i=0; i<nsingle; ++i)
+    *output++ = SinglePairwiseAngle(coords1 + i, coords2 + i, coords3 + i, box);
+
+  coords1 += nsingle*3;
+  coords2 += nsingle*3;
+  coords3 += nsingle*3
+
+  unsigned int niters = nvals >> 2;
+  for (unsigned int i=0; i<niters; ++i) {
+    // load 4 coords from each
+    __m128 icoord[3], jcoord[3], kcoord[3];
+    icoord[0] = _mm_loadu_ps(coords1 + i*12);
+    icoord[1] = _mm_loadu_ps(coords1 + i*12 + 4);
+    icoord[2] = _mm_loadu_ps(coords1 + i*12 + 8);
+    jcoord[0] = _mm_loadu_ps(coords2 + i*12);
+    jcoord[1] = _mm_loadu_ps(coords2 + i*12 + 4);
+    jcoord[2] = _mm_loadu_ps(coords2 + i*12 + 8);
+    kcoord[0] = _mm_loadu_ps(coords3 + i*12);
+    kcoord[1] = _mm_loadu_ps(coords3 + i*12 + 4);
+    kcoord[1] = _mm_loadu_ps(coords3 + i*12 + 8);
+
+    // TODO: Can push the conversion to only the deltas (i.e. only one conversion needed)
+    AoS2SoA(icoord[0], icoord[1], icoord[2]);
+    AoS2SoA(jcoord[0], jcoord[1], jcoord[2]);
+    AoS2SoA(kcoord[0], kcoord[1], kcoord[2]);
+
+    // calculate deltas
+    __m128 delta_ji[3], delta_jk[3];
+    for (unsigned char x=0; x<3; ++x) {
+      delta_ji[x] = _mm_sub_ps(icoord[x], jcoord[x]);
+      delta_jk[x] = _mm_sub_ps(kcoord[x], jcoord[x]);
+    }
+
+    MIC_ORTHO(delta_ji, xbox, ib);
+    MIC_ORTHO(delta_jk, xbox, ib);
+
+    __m128 mag_ji, mag_jk;
+
+    VECTOR_NORM(delta_ji, mag_ji);
+    // delta now normalized 
+    delta_ji = _mm_div_ps(delta_ji, mag_ji);
+
+    VECTOR_NORM(delta_jk, mag_jk);
+    // delta now normalized 
+    delta_jk = _mm_div_ps(delta_jk, mag_jk);
+
+    __m128 
+
+    _mm_storeu_ps(output, r);
+    output += 4;
+  }
+}
