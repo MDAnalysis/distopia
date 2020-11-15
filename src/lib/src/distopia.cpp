@@ -133,8 +133,9 @@ void CalcBondsOrtho(const float *coords1, const float *coords2,
 
     // calculate deltas
     __m128 delta[3];
-    for (unsigned char x = 0; x < 3; ++x)
+    for (unsigned char x = 0; x < 3; ++x) {
       delta[x] = _mm_sub_ps(icoord[x], jcoord[x]);
+    }
 
     MIC_ORTHO(delta, xbox, ib);
 
@@ -465,7 +466,7 @@ void CalcAnglesOrtho(const float *coords1, const float *coords2,
     MIC_ORTHO(delta_ji, xbox, ib);
     MIC_ORTHO(delta_jk, xbox, ib);
 
-    __m128 mag_ji, mag_jk;
+    __m128 mag_ji, mag_jk, result;
 
     VECTOR_NORM(delta_ji, mag_ji);
     VECTOR_NORM(delta_jk, mag_jk);
@@ -474,10 +475,18 @@ void CalcAnglesOrtho(const float *coords1, const float *coords2,
       // delta now normalized
       delta_ji[i] = _mm_div_ps(delta_ji[i], mag_ji);
       delta_jk[i] = _mm_div_ps(delta_jk[i], mag_jk);
+      
+      // delta ji now contains results
+      delta_ji[i] = _mm_mul_ps(delta_ji[i], delta_jk[i]);
     }
+    // accumulate sum in result
+    result = _mm_add_ps(delta_ji[0], delta_ji[1]);
+    result = _mm_add_ps(result, delta_ji[2]);
 
-    // FINISH
-    _mm_storeu_ps(output, mag_ji);
+    // acos and store
+    // note only available SVML vector library (how else do we get acos?)
+    //result = _mm_acos_ps(result);
+    _mm_storeu_ps(output, result);
     output += 4;
   }
 }
