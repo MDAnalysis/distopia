@@ -3,6 +3,16 @@
 #include <math.h>
 #include <xmmintrin.h>
 
+#include "singles.h"
+
+#if BOXTYPE == 1
+#define SINGLEDISTANCE(c1, c2, b) SinglePairwiseDistanceOrtho(c1, c2, b)
+#define SINGLEANGLE(c1, c2, c3, b) SinglePairwiseAngleOrtho(c1, c2, c3, b)
+#elif BOXTYPE == 2
+#define SINGLEDISTANCE(c1, c2, b) SinglePairwiseDistance(c1, c2, b)
+#define SINGLEANGLE(c1, c2, c3, b) SinglePairwiseAngle(c1, c2, c3, b)
+#endif
+
 // [X1, Y1, Z1, X2], [Y2, Z2, X3, Y3], [Z3, X4, Y4, Z4]
 // TO
 // [X1, X2, X3, X4], [Y1, Y2, Y3, Y4], [Z1, Z2, Z3, Z4]
@@ -17,7 +27,7 @@
   } while (0)
 
 // apply periodic boundary conditions
-#if BOXTYPE == ORTHO
+#if BOXTYPE == 1
 // rij = rij - box * rint(rij / box)
 #define MIC(dx, reg_box, inv_box)                                              \
   do {                                                                         \
@@ -37,6 +47,8 @@
         _mm_round_ps(shift[2], (_MM_ROUND_NEAREST | _MM_FROUND_NO_EXC));       \
     dx[2] = _mm_sub_ps(dx[2], _mm_mul_ps(int_shift[2], reg_box[2]));           \
   } while (0)
+#elif BOXTYPE == 2
+#define MIC(dx, reg_box, inv_box) {}
 #endif
 
 // r = sqrt(dx*dx + dy*dy + dz*dz)
@@ -51,67 +63,29 @@
     (out) = _mm_sqrt_ps(dx[0]);                                                \
   } while (0)
 
-inline float SinglePairwiseDistance(const float *coords1, const float *coords2,
-                                    const float *box) {
-  float dx = 0.0;
-
-  for (unsigned char i = 0; i < 3; ++i) {
-    float rij = coords1[i] - coords2[i];
-    float adj = round(rij / box[i]);
-    rij -= adj * box[i];
-    dx += rij * rij;
-  }
-  return sqrtf(dx);
-}
-
-inline float SinglePairwiseAngle(const float *coords1, const float *coords2,
-                                 const float *coords3, const float *box) {
-  float rji[3], rjk[3];
-  float adj;
-  for (unsigned char i = 0; i < 3; ++i) {
-    rji[i] = coords1[i] - coords2[i];
-    adj = round(rji[i] / box[i]);
-    rji[i] -= adj * box[i];
-
-    rjk[i] = coords3[i] - coords2[i];
-    adj = round(rjk[i] / box[i]);
-    rjk[i] -= adj * box[i];
-  }
-
-  float rji_mag = sqrtf(rji[0] * rji[0] + rji[1] * rji[1] + rji[2] * rji[2]);
-  float rjk_mag = sqrtf(rjk[0] * rjk[0] + rjk[1] * rjk[1] + rjk[2] * rjk[2]);
-
-  // normalize
-  rji[0] = rji[0] / rji_mag;
-  rji[1] = rji[1] / rji_mag;
-  rji[2] = rji[2] / rji_mag;
-
-  rjk[0] = rjk[0] / rjk_mag;
-  rjk[1] = rjk[1] / rjk_mag;
-  rjk[2] = rjk[2] / rjk_mag;
-
-  float acc = rji[0] * rjk[0] + rji[1] * rjk[1] + rji[2] * rjk[2];
-  return acosf(acc);
-}
-
 // zip over coords1 and coords2 and calculate pairwise distance w/ periodic
 // boundary conditions store results in output, must be large enough etc etc
-#if BOXTYPE == ORTHO
+#if BOXTYPE == 1
 void CalcBondsOrtho(
         const float *coords1, const float *coords2,
         const float *box, unsigned int nvals, float *output) {
-#endif
   __m128 xbox[3], ib[3];
   for (unsigned char i = 0; i < 3; ++i) {
     // b[0] = [lx, lx, lx, lx], ib == inverse box
     xbox[i] = _mm_set_ps1(box[i]);
     ib[i] = _mm_set_ps1(1 / box[i]);
   }
+#elif BOXTYPE == 2
+  void CalcBonds(
+          const float *coords1, const float *coords2,
+          unsigned int nvals, float *output) {
+    float* box = NULL;
+#endif
 
   // deal with single iterations
   unsigned int nsingle = nvals & 0x03;
   for (unsigned char i = 0; i < nsingle; ++i)
-    *output++ = SinglePairwiseDistance(coords1 + i, coords2 + i, box);
+    *output++ = SINGLEDISTANCE(coords1 + i * 3, coords2 + i * 3, box);
 
   coords1 += nsingle * 3;
   coords2 += nsingle * 3;
@@ -178,23 +152,28 @@ void CalcBondsOrtho(
 
 // Read *Ncoords* pairs of indices from idx and calculate pairwise distance
 // betwixt
-#if BOXTYPE == ORTHO
+#if BOXTYPE == 1
 void CalcBondsIdxOrtho(const float *coords, const float *coords_end,
                        const unsigned int *idx, // holds [[1, 2], [7, 8], etc]
                        const float *box, unsigned int Ncoords, float *output) {
-#endif
   __m128 xbox[3], ib[3];
   for (unsigned char i = 0; i < 3; ++i) {
     // b[0] = [lx, lx, lx, lx], ib == inverse box
     xbox[i] = _mm_set_ps1(box[i]);
     ib[i] = _mm_set_ps1(1 / box[i]);
   }
+#elif BOXTYPE == 2
+  void CalcBondsIdx(const float *coords, const float *coords_end,
+                    const unsigned int *idx,
+                    unsigned int Ncoords, float *output) {
+    float* box = NULL;
+#endif
 
   unsigned int nsingle = Ncoords & 0x03;
   for (unsigned char ix = 0; ix < nsingle; ++ix) {
     unsigned int i = *(idx + ix * 2);
     unsigned int j = *(idx + ix * 2 + 1);
-    *output++ = SinglePairwiseDistance(coords + i * 3, coords + j * 3, box);
+    *output++ = SINGLEDISTANCE(coords + i * 3, coords + j * 3, box);
   }
   idx += nsingle * 2;
 
@@ -226,23 +205,28 @@ void CalcBondsIdxOrtho(const float *coords, const float *coords_end,
   }
 }
 
-#if BOXTYPE == ORTHO
+#if BOXTYPE == 1
 void DistanceArrayOrtho(const float *coords1, const float *coords2,
                         const float *box, unsigned int ncoords1,
                         unsigned int ncoords2, float *output) {
-#endif
   __m128 xbox[3], ib[3];
   for (unsigned char i = 0; i < 3; ++i) {
     // b[0] = [lx, lx, lx, lx], ib == inverse box
     xbox[i] = _mm_set_ps1(box[i]);
     ib[i] = _mm_set_ps1(1 / box[i]);
   }
+#elif BOXTYPE == 2
+  void DistanceArray(const float *coords1, const float *coords2,
+                     unsigned int ncoords1,
+                     unsigned int ncoords2, float *output) {
+    float* box = NULL;
+#endif
 
   for (unsigned int i = 0; i < ncoords1; ++i) {
     // single iterations of j
     unsigned int nsingle = ncoords2 & 0x03;
     for (unsigned int j = 0; j < nsingle; ++j) {
-      *output++ = SinglePairwiseDistance(coords1 + i * 3, coords2 + j * 3, box);
+      *output++ = SINGLEDISTANCE(coords1 + i * 3, coords2 + j * 3, box);
     }
 
     // broadcast i coordinate into 3 registers
@@ -276,19 +260,26 @@ void DistanceArrayOrtho(const float *coords1, const float *coords2,
   }
 }
 
-#if BOXTYPE == ORTHO
+#if BOXTYPE == 1
 void DistanceArrayIdxOrtho(
-    const float *coords, const float *coords_end,
-    const unsigned int *idx1, // array of indices within coords
-    const unsigned int *idx2, const float *box, unsigned int ncoords1,
-    unsigned int ncoords2, float *output) {
-#endif
+        const float *coords, const float *coords_end,
+        const unsigned int *idx1, // array of indices within coords
+        const unsigned int *idx2, const float *box, unsigned int ncoords1,
+        unsigned int ncoords2, float *output) {
   __m128 xbox[3], ib[3];
   for (unsigned char i = 0; i < 3; ++i) {
     // b[0] = [lx, lx, lx, lx], ib == inverse box
     xbox[i] = _mm_set_ps1(box[i]);
     ib[i] = _mm_set_ps1(1 / box[i]);
   }
+#elif BOXTYPE == 2
+  void DistanceArrayIdx(
+          const float *coords, const float *coords_end,
+          const unsigned int *idx1, // array of indices within coords
+          const unsigned int *idx2, unsigned int ncoords1,
+          unsigned int ncoords2, float *output) {
+    float* box = NULL;
+#endif
 
   for (unsigned int ix = 0; ix < ncoords1; ++ix) {
     unsigned int i = *(idx1 + ix);
@@ -296,7 +287,7 @@ void DistanceArrayIdxOrtho(
     unsigned int nsingle = ncoords2 & 0x03;
     for (unsigned int jx = 0; jx < nsingle; ++jx) {
       unsigned int j = *(idx2 + jx);
-      *output++ = SinglePairwiseDistance(coords + i * 3, coords + j * 3, box);
+      *output++ = SINGLEDISTANCE(coords + i * 3, coords + j * 3, box);
     }
 
     // broadcast i coordinate into 3 registers
@@ -329,22 +320,26 @@ void DistanceArrayIdxOrtho(
   }
 }
 
-#if BOXTYPE == ORTHO
+#if BOXTYPE == 1
 void SelfDistanceArrayOrtho(const float *coords, unsigned int ncoords,
                             const float *box, float *output) {
-#endif
   __m128 xbox[3], ib[3];
   for (unsigned char i = 0; i < 3; ++i) {
     // b[0] = [lx, lx, lx, lx], ib == inverse box
     xbox[i] = _mm_set_ps1(box[i]);
     ib[i] = _mm_set_ps1(1 / box[i]);
   }
+#elif BOXTYPE == 2
+  void SelfDistanceArray(const float *coords, unsigned int ncoords,
+                         float *output) {
+    float* box = NULL;
+#endif
 
   for (unsigned int i = 0; i < ncoords; ++i) {
     unsigned int nsingle = (ncoords - i - 1) & 0x03;
     const float *coords2 = coords + i * 3 + 3;
     for (unsigned int j = 0; j < nsingle; ++j)
-      *output++ = SinglePairwiseDistance(coords + i * 3, coords2 + j * 3, box);
+      *output++ = SINGLEDISTANCE(coords + i * 3, coords2 + j * 3, box);
 
     __m128 icoord[3];
     icoord[0] = _mm_set1_ps(*(coords + i * 3));
@@ -375,17 +370,22 @@ void SelfDistanceArrayOrtho(const float *coords, unsigned int ncoords,
   }
 }
 
-#if BOXTYPE == ORTHO
-void SelfDistanceArrayIdxOrtho(const float *coords, const float *coords_end,
+#if BOXTYPE == 1
+  void SelfDistanceArrayIdxOrtho(const float *coords, const float *coords_end,
                                const unsigned int *idx, unsigned int ncoords,
                                const float *box, float *output) {
-#endif
   __m128 xbox[3], ib[3];
   for (unsigned char i = 0; i < 3; ++i) {
     // b[0] = [lx, lx, lx, lx], ib == inverse box
     xbox[i] = _mm_set_ps1(box[i]);
     ib[i] = _mm_set_ps1(1 / box[i]);
   }
+#elif BOXTYPE == 2
+    void SelfDistanceArrayIdx(const float *coords, const float *coords_end,
+                              const unsigned int *idx, unsigned int ncoords,
+                              float *output) {
+      float* box = NULL;
+#endif
 
   for (unsigned int ix = 0; ix < ncoords; ++ix) {
     unsigned int i = *(idx + ix);
@@ -394,7 +394,7 @@ void SelfDistanceArrayIdxOrtho(const float *coords, const float *coords_end,
     const unsigned int *idx2 = idx + ix + 1;
     for (unsigned int jx = 0; jx < nsingle; ++jx) {
       unsigned int j = *(idx2 + jx);
-      *output++ = SinglePairwiseDistance(coords + i * 3, coords + j * 3, box);
+      *output++ = SINGLEDISTANCE(coords + i * 3, coords + j * 3, box);
     }
 
     __m128 icoord[3];
@@ -428,22 +428,27 @@ void SelfDistanceArrayIdxOrtho(const float *coords, const float *coords_end,
 
 // zip over coords1 and coords2 and calculate pairwise distance w/ periodic
 // boundary conditions store results in output, must be large enough etc etc
-#if BOXTYPE == ORTHO
+#if BOXTYPE == 1
 void CalcAnglesOrtho(const float *coords1, const float *coords2,
                      const float *coords3, const float *box, unsigned int nvals,
                      float *output) {
-#endif
   __m128 xbox[3], ib[3];
   for (unsigned char i = 0; i < 3; ++i) {
     // b[0] = [lx, lx, lx, lx], ib == inverse box
     xbox[i] = _mm_set_ps1(box[i]);
     ib[i] = _mm_set_ps1(1 / box[i]);
   }
+#elif BOXTYPE == 2
+  void CalcAngles(const float *coords1, const float *coords2,
+                  const float *coords3, unsigned int nvals,
+                  float *output) {
+    float* box = NULL;
+#endif
 
   // deal with single iterations find
   unsigned int nsingle = nvals & 0x03;
   for (unsigned char i = 0; i < nsingle; ++i)
-    *output++ = SinglePairwiseAngle(coords1 + i, coords2 + i, coords3 + i, box);
+    *output++ = SINGLEANGLE(coords1 + i, coords2 + i, coords3 + i, box);
 
   coords1 += nsingle * 3;
   coords2 += nsingle * 3;

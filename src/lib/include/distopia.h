@@ -27,7 +27,7 @@ void CalcBondsOrtho(const float* coords1,
 void CalcBondsIdxOrtho(const float* coords,
                        const float* coords_end,
                        const unsigned int* idx,  // holds [[1, 2], [7, 8], etc]
-                       float box,
+                       const float* box,
                        unsigned int Ncoords,
                        float* output);
 
@@ -74,5 +74,47 @@ void CalcAnglesOrtho(const float* coords1,
                     const float* box,
                     unsigned int nvals,
                     float* output);
+
+// No periodic boundaries
+void CalcBonds(const float* coords1,
+               const float* coords2,
+               unsigned int nvals,
+               float* output);
+
+void CalcBondsIdx(const float* coords,
+                  const float* coords_end,
+                  const unsigned int* idx,  // holds [[1, 2], [7, 8], etc]
+                  unsigned int Ncoords,
+                  float* output);
+
+void DistanceArray(const float* coords1,
+                   const float* coords2,
+                   unsigned int ncoords1,
+                   unsigned int ncoords2,
+                   float* output);
+
+void DistanceArrayIdx(const float* coords,
+                      const float* coords_end,
+                      const unsigned int* idx1,  // array of indices within coords
+                      const unsigned int* idx2,
+                      unsigned int ncoords1,
+                      unsigned int ncoords2,
+                      float* output);
+
+void SelfDistanceArray(const float* coords,
+                       unsigned int ncoords,
+                       float* output);
+
+void SelfDistanceArrayIdx(const float* coords,
+                          const float* coords_end,
+                          const unsigned int* idx,
+                          unsigned int ncoords,
+                          float* output);
+
+void CalcAngles(const float* coords1,
+                const float* coords2,
+                const float* coords3,
+                unsigned int nvals,
+                float* output);
 
 #endif //XDIST_DISTOPIA_H
