@@ -62,4 +62,17 @@ void SelfDistanceArrayIdxOrtho(const float* coords,
                                const float* box,
                                float* output);
 
+/*
+ * calculates *nvals* angles between *coords1* *coords2* and *coords3*
+ * *box* is an orthogonal box
+ * places results into *output*, which must be allocated large enough
+ * i.e. output[n] is the angle between coords1[n] coords2[n] and coords3
+ */
+void CalcAnglesOrtho(const float* coords1,
+                    const float* coords2,
+                    const float* coords3,
+                    const float* box,
+                    unsigned int nvals,
+                    float* output);
+
 #endif //XDIST_DISTOPIA_H
