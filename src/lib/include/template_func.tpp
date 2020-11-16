@@ -2,7 +2,7 @@
 #define XDIST_DISTOPIA_TEMPLATE_H
 
 template <typename T>
-float SingleTemplatePairwiseDistance(const T *coords1, const T *coords2,
+T SingleTemplatePairwiseDistance(const T *coords1, const T *coords2,
                                      const T *box) {
   T dx = 0.0;
 
