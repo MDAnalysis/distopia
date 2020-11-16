@@ -75,4 +75,6 @@ void CalcAnglesOrtho(const float* coords1,
                     unsigned int nvals,
                     float* output);
 
+#include "template_func.tpp" 
+
 #endif //XDIST_DISTOPIA_H
