@@ -34,6 +34,15 @@ SET(SSE3_CODE "
     return 0;
   }")
 
+SET(SSSE3_CODE "
+  #include <tmmintrin.h>
+  const double v = 0;
+  int main() {
+    __m128i a = _mm_setzero_si128();
+    __m128i b = _mm_abs_epi32(a);
+    return 0;
+  }")
+
 SET(SSE4_1_CODE "
   #include <smmintrin.h>
 
@@ -56,6 +65,8 @@ SET(SSE4_2_CODE "
     return 0;
   }
 ")
+
+
 
 MACRO(CHECK_SSE lang type flags)
   SET(__FLAG_I 1)
@@ -89,11 +100,13 @@ ENDMACRO()
 CHECK_SSE(C "SSE1" " ;-msse;/arch:SSE")
 CHECK_SSE(C "SSE2" " ;-msse2;/arch:SSE2")
 CHECK_SSE(C "SSE3" " ;-msse3;/arch:SSE3")
+CHECK_SSE(C "SSSE3" " ;-mssse3;/arch:SSSE3")
 CHECK_SSE(C "SSE4_1" " ;-msse4.1;-msse4;/arch:SSE4")
 CHECK_SSE(C "SSE4_2" " ;-msse4.2;-msse4;/arch:SSE4")
 
 CHECK_SSE(CXX "SSE1" " ;-msse;/arch:SSE")
 CHECK_SSE(CXX "SSE2" " ;-msse2;/arch:SSE2")
 CHECK_SSE(CXX "SSE3" " ;-msse3;/arch:SSE3")
+CHECK_SSE(CXX "SSSE3" " ;-mssse3;/arch:SSSE3")
 CHECK_SSE(CXX "SSE4_1" " ;-msse4.1;-msse4;/arch:SSE4")
 CHECK_SSE(CXX "SSE4_2" " ;-msse4.2;-msse4;/arch:SSE4")
