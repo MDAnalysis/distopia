@@ -8,7 +8,7 @@ SET(SSE1_CODE "
   {
     __m128 a;
     float vals[4] = {0,0,0,0};
-    a = _mm_loadu_ps(vals);
+    a = _mm_loadu_ps(vals);  // SSE1
     return 0;
   }")
 
@@ -19,27 +19,25 @@ SET(SSE2_CODE "
   {
     __m128d a;
     double vals[2] = {0,0};
-    a = _mm_loadu_pd(vals);
+    a = _mm_loadu_pd(vals);  // SSE2
     return 0;
   }")
 
 SET(SSE3_CODE "
-  #include <pmmintrin.h>
-
-  int main( )
-  {
-    const int vals[4] = {0,0,0,0};
-    __m128i a;
-    a = _mm_lddqu_si128( (const __m128i*)vals );
+#include <pmmintrin.h>
+int main() {
+    __m128 u, v;
+    u = _mm_set1_ps(0.0f);
+    v = _mm_moveldup_ps(u); // SSE3
     return 0;
-  }")
+}")
 
 SET(SSSE3_CODE "
   #include <tmmintrin.h>
   const double v = 0;
   int main() {
-    __m128i a = _mm_setzero_si128();
-    __m128i b = _mm_abs_epi32(a);
+    __m128i a = _mm_setzero_si128(); 
+    __m128i b = _mm_abs_epi32(a); // SSSE3
     return 0;
   }")
 
@@ -49,7 +47,7 @@ SET(SSE4_1_CODE "
   int main ()
   {
     __m128i a = {0,0,0,0}, b = {0,0,0,0};
-    __m128i res = _mm_max_epi8(a, b);
+    __m128i res = _mm_max_epi8(a, b); // SSE4_1
 
     return 0;
   }
@@ -61,7 +59,7 @@ SET(SSE4_2_CODE "
   int main()
   {
     __m128i a = {0,0,0,0}, b = {0,0,0,0}, c = {0,0,0,0};
-    c = _mm_cmpgt_epi64(a, b);
+    c = _mm_cmpgt_epi64(a, b);  // SSE4_2
     return 0;
   }
 ")
