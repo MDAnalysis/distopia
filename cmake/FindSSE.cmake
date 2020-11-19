@@ -89,7 +89,7 @@ MACRO(CHECK_SSE lang type flags)
   SET(CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS_SAVE})
 
   IF(NOT ${lang}_${type}_FOUND)
-    SET(${lang}_${type}_FOUND FALSE CACHE BOOL "${lang} ${type} support")
+    SET(${lang}_${type}_FOUND FALSE CACHE  BOOL "${lang} ${type} support")
     SET(${lang}_${type}_FLAGS "" CACHE STRING "${lang} ${type} flags")
   ENDIF()
 

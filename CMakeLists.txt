@@ -4,8 +4,7 @@ project(DISTOPIA LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# compiler flags
-set(CMAKE_CXX_FLAGS "-mavx -O3 -ffast-math")
+
 
 # options
 option(DISTOPIA_BUILD_TEST "Build distopia testing binary." ON)
@@ -23,38 +22,14 @@ SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
 
 file(GLOB distopia_src ${DISTOPIA_SRC_DIR}/*.cpp )
 file(GLOB compare_src ${DISTOPIA_COMPARE_DIR}/*.cpp )
-
 list (APPEND distopia_src ${compare_src})
+
 
 # find the level of SSE instruction supported
 find_package(SSE)
-if(C_SSE1_FOUND)
-  message(STATUS "SSE1 <xmmintrin.h> found ")
-  set(CMAKE_C_FLAGS "${C_SSE1_FLAGS} -DUSE_SSE1 ${CMAKE_C_FLAGS}")
-endif()
-if(C_SSE2_FOUND)
-  message(STATUS "SSE2 <emmintrin.h> found")
-  set(CMAKE_C_FLAGS "${C_SSE2_FLAGS} -DUSE_SSE2 ${CMAKE_C_FLAGS}")
-endif()
-if(C_SSE3_FOUND)
-  message(STATUS "SSE3 <pmmintrin.h> found")
-  set(CMAKE_C_FLAGS "${C_SSE3_FLAGS} -DUSE_SSE3 ${CMAKE_C_FLAGS}")
-endif()
-if(C_SSSE3_FOUND)
-  message(STATUS "SSSE3 <tmmintrin.h> found")
-  set(CMAKE_C_FLAGS "${C_SSSE3_FLAGS} -DUSE_SSSE3 ${CMAKE_C_FLAGS}")
-endif()
-if(C_SSE4_1_FOUND)
-  message(STATUS "SSE4_1 <smmintrin.h> found")
-  set(CMAKE_C_FLAGS "${C_SSE4_1_FLAGS} -DUSE_SSE4_1 ${CMAKE_C_FLAGS}")
-endif()
-if(C_SSE4_2_FOUND)
-  message(STATUS "SSE4_2 <nmmintrin.h> found")
-  set(CMAKE_C_FLAGS "${C_SSE4_2_FLAGS} -DUSE_SSE4_2 ${CMAKE_C_FLAGS}")
-endif()
 
+# find the level of AVX supported
 find_package(AVX)
-
 
 # ARM specific flags
 find_package(ARM)
@@ -71,6 +46,9 @@ if(CORTEXA9_FOUND)
   set(CMAKE_C_FLAGS "-mcpu=cortex-a9 ${CMAKE_C_FLAGS}")
 endif()
 
+
+# manually set compiler flags
+set(CMAKE_CXX_FLAGS "-mavx -O3 -ffast-math")
 
 include_directories(distopia ${DISTOPIA_INCLUDE_DIR})
 include_directories(distopia ${DISTOPIA_COMPARE_DIR})
