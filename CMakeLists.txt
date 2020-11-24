@@ -70,7 +70,7 @@ find_package(SSE)
 find_package(AVX)
 set(CMAKE_REQUIRED_QUIET false)
 
-MACRO
+
 # check both CXX and C supported and append to list for heuristics
 #TODO turn this disgusting copy paste job into a macro
 set(HIGHEST_SIMD_SUPPORTED "None")
@@ -166,28 +166,61 @@ endif()
 
 
 
+
+set(DISTOPIA_SIMD_FLAGS)
 if(DISTOPIA_USE_SSE1 AND SSE1_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA SSE1 SELECTED${ColourReset}")
+  list(APPEND DISTOPIA_SIMD_FLAGS "-msse")
 elseif(DISTOPIA_USE_SSE2 AND SSE2_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA SSE2 SELECTED${ColourReset}")
+  list(APPEND DISTOPIA_SIMD_FLAGS "-msse2")
 elseif(DISTOPIA_USE_SSE3 AND SSE3_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA SSE3 SELECTED${ColourReset}")
+  list(APPEND DISTOPIA_SIMD_FLAGS "-msse3")
 elseif(DISTOPIA_USE_SSSE3 AND SSSE3_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA SSSE3 SELECTED${ColourReset}")
+  list(APPEND DISTOPIA_SIMD_FLAGS "-mssse3")
 elseif(DISTOPIA_USE_SSE4_1 AND SSE4_1_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA SSE4_1 SELECTED${ColourReset}")
+  list(APPEND DISTOPIA_SIMD_FLAGS "-msse4.1")
 elseif(DISTOPIA_USE_SSE4_2 AND SSE4_2_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA SSE4_2 SELECTED${ColourReset}")
+  list(APPEND DISTOPIA_SIMD_FLAGS "-msse4.2")
 elseif(DISTOPIA_USE_AVX AND AVX_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA AVX SELECTED${ColourReset}")
+  list(APPEND DISTOPIA_SIMD_FLAGS "-mavx")
 elseif(DISTOPIA_USE_AVX2 AND AVX2_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA AVX2 SELECTED${ColourReset}")
+  list(APPEND DISTOPIA_SIMD_FLAGS "-mavx2")
+elseif(DISTOPIA_USE_AVX512 AND AVX512_SUPPORTED)
+  message(STATUS "${Cyan}DISTOPIA AVX512 SELECTED${ColourReset}")
+  list(APPEND DISTOPIA_SIMD_FLAGS "-mavx512") # note that this is a bit platform specific
 else()
   message(FATAL_ERROR "${Red}Selecting a SIMD type has failed.${ColourReset}")
 endif()
 
 
+#add more and get rid of them as we please
+set(COMPILER_FLAGS)
+set(COMPILER_FLAGS_DEBUG)
+set(COMPILER_FLAGS_RELEASE)
 
+# do cross platform compatibility here
+if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
+  list(APPEND CXX_FLAGS "-O3" "-ffast-math" "-fno-exceptions")
+  list(APPEND CXX_FLAGS_DEBUG "-Wdocumentation")
+  list(APPEND CXX_FLAGS_RELEASE "-Wno-unused")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES Clang)
+  list(APPEND CXX_FLAGS "-O3" "-ffast-math" "-fno-exceptions")
+  list(APPEND CXX_FLAGS_DEBUG "-Wdocumentation")
+  list(APPEND CXX_FLAGS_RELEASE "-Wno-unused")
+else()
+  message(FATAL_ERROR "${Red}Compiler not supported${ColourReset}")
+endif()
+
+list(APPEND CXX_FLAGS ${DISTOPIA_SIMD_FLAGS})
+list(APPEND CXX_FLAGS_DEBUG ${DISTOPIA_SIMD_FLAGS})
+list(APPEND CXX_FLAGS_RELEASE ${DISTOPIA_SIMD_FLAGS})
 
 
 #find all the files
@@ -195,12 +228,17 @@ file(GLOB distopia_src ${DISTOPIA_SRC_DIR}/*.cpp )
 file(GLOB compare_src ${DISTOPIA_COMPARE_DIR}/*.cpp )
 list (APPEND distopia_src ${compare_src})
 
-# manually set compiler flags
-set(CMAKE_CXX_FLAGS "-mavx -O3 -ffast-math")
 
 include_directories(distopia ${DISTOPIA_INCLUDE_DIR})
 include_directories(distopia ${DISTOPIA_COMPARE_DIR})
 add_library(distopia SHARED ${distopia_src})
+
+target_compile_options(distopia
+  PRIVATE
+    ${CXX_FLAGS}
+    "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
+    "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
+  )
 
 if(DISTOPIA_BUILD_TEST)
     # add googletest
@@ -210,6 +248,12 @@ if(DISTOPIA_BUILD_TEST)
     include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
     # add test executable
     add_executable(tests ${DISTOPIA_TEST_DIR}/tests.cpp)
+    target_compile_options(tests
+      PRIVATE
+        ${CXX_FLAGS}
+        "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
+        "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
+    )
     target_link_libraries(tests distopia)
     target_link_libraries(tests gtest gtest_main)
     # discover tests so that make test will work
@@ -218,5 +262,11 @@ endif()
 
 if(DISTOPIA_BUILD_TIMINGS)
     add_executable(timings ${DISTOPIA_TEST_DIR}/timings.cpp)
+    target_compile_options(timings
+    PRIVATE
+      ${CXX_FLAGS}
+      "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
+      "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
+    )
     target_link_libraries(timings distopia)
 endif()
