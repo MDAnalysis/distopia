@@ -166,35 +166,53 @@ endif()
 
 
 
-
+# choose SIMD and set flags 
 set(DISTOPIA_SIMD_FLAGS)
 if(DISTOPIA_USE_SSE1 AND SSE1_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA SSE1 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-msse")
+  add_compile_definitions(DISTOPIA_USE_SSE1=1)
+
 elseif(DISTOPIA_USE_SSE2 AND SSE2_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA SSE2 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-msse2")
+  add_compile_definitions(DISTOPIA_USE_SSE2=1)
+
 elseif(DISTOPIA_USE_SSE3 AND SSE3_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA SSE3 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-msse3")
+  add_compile_definitions(DISTOPIA_USE_SSE3=1)
+
 elseif(DISTOPIA_USE_SSSE3 AND SSSE3_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA SSSE3 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-mssse3")
+  add_compile_definitions(DISTOPIA_USE_SSE3=1)
+
 elseif(DISTOPIA_USE_SSE4_1 AND SSE4_1_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA SSE4_1 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-msse4.1")
+  add_compile_definitions(DISTOPIA_USE_SSE4_1=1)
+
 elseif(DISTOPIA_USE_SSE4_2 AND SSE4_2_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA SSE4_2 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-msse4.2")
+  add_compile_definitions(DISTOPIA_USE_SSE4_2=1)
+
 elseif(DISTOPIA_USE_AVX AND AVX_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA AVX SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-mavx")
+  add_compile_definitions(DISTOPIA_USE_AVX=1)
+
 elseif(DISTOPIA_USE_AVX2 AND AVX2_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA AVX2 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-mavx2")
+  add_compile_definitions(DISTOPIA_USE_AVX2=1)
+
 elseif(DISTOPIA_USE_AVX512 AND AVX512_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA AVX512 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-mavx512") # note that this is a bit platform specific
+  add_compile_definitions(DISTOPIA_USE_AVX512=1)
+
 else()
   message(FATAL_ERROR "${Red}Selecting a SIMD type has failed.${ColourReset}")
 endif()
