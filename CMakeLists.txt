@@ -36,7 +36,7 @@ option(DISTOPIA_USE_SSE4_2  "Use SSE4.2 instructions" off)
 
 set(SSE_LEVEL_LIST "")
 list(APPEND SSE_LEVEL_LIST DISTOPIA_USE_SSE1;DISTOPIA_USE_SSE2
-DISTOPIA_USE_SSE3;DISTOPIA_USE_SSSE3};DISTOPIA_USE_SSE4_1;DISTOPIA_USE_SSE4_2)
+DISTOPIA_USE_SSE3;DISTOPIA_USE_SSSE3;DISTOPIA_USE_SSE4_1;DISTOPIA_USE_SSE4_2)
 
 set(SSE_OPT_LIST "")
 list(APPEND SSE_OPT_LIST ${DISTOPIA_SELECT_SIMD};${DISTOPIA_USE_SSE1};${DISTOPIA_USE_SSE2};
@@ -62,6 +62,7 @@ else()
   message(FATAL_ERROR "${Red}More than one SIMD flavour specified.${ColourReset}")
 endif()
 
+message(STATUS "Checking what level of SIMD is supported by compiler")
 #check the levels of SIMD supported
 set(CMAKE_REQUIRED_QUIET true)
 find_package(SSE)
@@ -69,33 +70,87 @@ find_package(AVX)
 set(CMAKE_REQUIRED_QUIET false)
 
 # check both CXX and C supported and append to list for heuristics
-set(SSE_SUPPORTED_LIST "")
+set(HIGHEST_SIMD_SUPPORTED "None")
 
 if(C_SSE1_FOUND AND CXX_SSE1_FOUND)
   message(STATUS "SSE1 SUPPORTED for C and CXX")
   set(SSE1_SUPPORTED true)
-  if(DISTOPIA_USE_SSE1)
-    message(STATUS "${Cyan}DISTOPIA SSE1 SELECTED${ColourReset}")
-  else()
-    list(APPEND SSE_SUPPORTED_LIST  ${SSE1_SUPPORTED})
-  endif()
+  set(HIGHEST_SIMD_SUPPORTED "SSE1")
+  list(APPEND SSE_SUPPORTED_LIST  ${SSE1_SUPPORTED})
+else()
+  set(SSE1_SUPPORTED false)
 endif()
 
 if(C_SSE2_FOUND AND CXX_SSE2_FOUND)
   message(STATUS "SSE2 SUPPORTED for C and CXX")
-  set(SSE1_SUPPORTED true)
-  if(DISTOPIA_USE_SSE2)
-    message(STATUS "${Cyan}DISTOPIA SSE2 SELECTED${ColourReset}")
-  else()
-    list(APPEND SSE_SUPPORTED_LIST  ${SSE1_SUPPORTED})
-  endif()
+  set(SSE2_SUPPORTED true)
+  set(HIGHEST_SIMD_SUPPORTED "SSE2")
+  list(APPEND SSE_SUPPORTED_LIST  ${SSE2_SUPPORTED})
+else()
+  set(SSE2_SUPPORTED false)
 endif()
 
-if(DISTOPA_DISTOPIA_SELECT_SIMD)
-  foreach(_sse_level ${SSE_SUPPORTED_LIST})
-  
+if(C_SSE3_FOUND AND CXX_SSE3_FOUND)
+  message(STATUS "SSE3 SUPPORTED for C and CXX")
+  set(SSE3_SUPPORTED true)
+  set(HIGHEST_SIMD_SUPPORTED "SSE3")
+  list(APPEND SSE_SUPPORTED_LIST  ${SSE3_SUPPORTED})
+else()
+  set(SSE3_SUPPORTED false)
+endif()
 
-endforeach()
+if(C_SSSE3_FOUND AND CXX_SSSE3_FOUND)
+  message(STATUS "SSSE3 SUPPORTED for C and CXX")
+  set(SSSE3_SUPPORTED true)
+  set(HIGHEST_SIMD_SUPPORTED "SSSE3")
+  list(APPEND SSE_SUPPORTED_LIST  ${SSSE3_SUPPORTED})
+else()
+  set(SSSE3_SUPPORTED false)
+endif()
+
+if(C_SSE4_1_FOUND AND CXX_SSE4_1_FOUND)
+  message(STATUS "SSE4_1 SUPPORTED for C and CXX")
+  set(SSE4_1_SUPPORTED true)
+  set(HIGHEST_SIMD_SUPPORTED "SSE4_1")
+  list(APPEND SSE_SUPPORTED_LIST  ${SSE4_1_SUPPORTED})
+else()
+  set(SSE4_1_SUPPORTED false)
+endif()
+
+if(C_SSE4_2_FOUND AND CXX_SSE4_2_FOUND)
+  message(STATUS "SSE4_2 SUPPORTED for C and CXX")
+  set(SSE4_2_SUPPORTED true)
+  set(HIGHEST_SIMD_SUPPORTED "SSE4_2")  
+  list(APPEND SSE_SUPPORTED_LIST  ${SSE4_2_SUPPORTED})
+else()
+  set(SSE4_2_SUPPORTED false)
+endif()
+
+message(STATUS "Highest level of SIMD supported is ${HIGHEST_SIMD_SUPPORTED}")
+
+if(DISTOPIA_SELECT_SIMD)
+  message(STATUS "Selecting SIMD")
+  set(DISTOPIA_USE_${HIGHEST_SIMD_SUPPORTED} ON)  
+endif()
+
+
+
+if(DISTOPIA_USE_SSE1 AND SSE1_SUPPORTED)
+  message(STATUS "${Cyan}DISTOPIA SSE1 SELECTED${ColourReset}")
+elseif(DISTOPIA_USE_SSE2 AND SSE2_SUPPORTED)
+  message(STATUS "${Cyan}DISTOPIA SSE2 SELECTED${ColourReset}")
+elseif(DISTOPIA_USE_SSE3 AND SSE3_SUPPORTED)
+  message(STATUS "${Cyan}DISTOPIA SSE3 SELECTED${ColourReset}")
+elseif(DISTOPIA_USE_SSSE3 AND SSSE3_SUPPORTED)
+  message(STATUS "${Cyan}DISTOPIA SSSE3 SELECTED${ColourReset}")
+elseif(DISTOPIA_USE_SSE4_1 AND SSE4_1_SUPPORTED)
+  message(STATUS "${Cyan}DISTOPIA SSE4_1 SELECTED${ColourReset}")
+elseif(DISTOPIA_USE_SSE4_2 AND SSE4_2_SUPPORTED)
+  message(STATUS "${Cyan}DISTOPIA SSE4_2 SELECTED${ColourReset}")
+else()
+  message(FATAL_ERROR "${Red}Selecting a SIMD type has failed.${ColourReset}")
+endif()
+
 
 
 
