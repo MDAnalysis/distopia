@@ -6,6 +6,7 @@
 #include <iostream>
 #include <math.h>
 #include <xmmintrin.h>
+#include "simd_config.h"
 
 // [X1, Y1, Z1, X2], [Y2, Z2, X3, Y3], [Z3, X4, Y4, Z4]
 // TO
