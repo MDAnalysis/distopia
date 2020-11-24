@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 
 
 
+
 # options
 option(DISTOPIA_BUILD_TEST "Build distopia testing binary." on)
 option(DISTOPIA_BUILD_TIMINGS "Build distopia timings binary." on)
@@ -19,10 +20,19 @@ set(DISTOPIA_TEST_DIR ${CMAKE_CURRENT_LIST_DIR}/src/lib/tests)
 set(DISTOPIA_COMPARE_DIR ${CMAKE_CURRENT_LIST_DIR}/src/compare)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
 
+# include some pretty colors
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/ColorOutput.cmake)
 
-file(GLOB distopia_src ${DISTOPIA_SRC_DIR}/*.cpp )
-file(GLOB compare_src ${DISTOPIA_COMPARE_DIR}/*.cpp )
-list (APPEND distopia_src ${compare_src})
+
+# user options for SIMD instruction levels
+option(DISTOPIA_USE_SSE1    "Use SSE1 instructions" on)
+option(DISTOPIA_USE_SSE2    "Use SSE2 instructions" on)
+option(DISTOPIA_USE_SSE3    "Use SSE3 instructions" on)
+option(DISTOPIA_USE_SSSE3   "Use SSSE3 instructions" on)
+option(DISTOPIA_USE_SSE4_1  "Use SSE4.1 instructions" on)
+option(DISTOPIA_USE_SSE4_2  "Use SSE4.2 instructions" on)
+
+
 
 set(CMAKE_REQUIRED_QUIET true)
 # find the level of SSE instruction supported
@@ -32,24 +42,44 @@ find_package(AVX)
 set(CMAKE_REQUIRED_QUIET false)
 
 
+
+
 #check the levels of SIMD supported
 if(C_SSE1_FOUND AND CXX_SSE1_FOUND)
   message(STATUS "SSE1 SUPPORTED for C and CXX")
+  if(DISTOPIA_USE_SSE1)
+  message(STATUS "${Cyan}DISTOPIA SSE1 SELECTED${ColourReset}")
+  endif()
 endif()
 if(C_SSE2_FOUND AND CXX_SSE2_FOUND)
   message(STATUS "SSE2 SUPPORTED for C and CXX")
+  if(DISTOPIA_USE_SSE2)
+  message(STATUS "${Cyan}DISTOPIA SSE2 SELECTED${ColourReset}")
+  endif()
 endif()
 if(C_SSE3_FOUND AND CXX_SSE3_FOUND)
   message(STATUS "SSE3 SUPPORTED for C and CXX")
+  if(DISTOPIA_USE_SSE3)
+  message(STATUS "${Cyan}DISTOPIA SSE3 SELECTED${ColourReset}")
+  endif()
 endif()
 if(C_SSSE3_FOUND AND CXX_SSSE3_FOUND)
   message(STATUS "SSSE3 SUPPORTED for C and CXX")
+  if(DISTOPIA_USE_SSSE3)
+  message(STATUS "${Cyan}DISTOPIA SSSE3 SELECTED${ColourReset}")
+  endif()
 endif()
 if(C_SSE4_1_FOUND AND CXX_SSE4_1_FOUND)
   message(STATUS "SSE4_1 SUPPORTED for C and CXX")
+  if(DISTOPIA_USE_SSE4_1)
+  message(STATUS "${Cyan}DISTOPIA SSE4_1 SELECTED${ColourReset}")
+  endif()
 endif()
 if(C_SSE4_2_FOUND AND CXX_SSE4_2_FOUND)
   message(STATUS "SSE4_2 SUPPORTED for C and CXX")
+  if(DISTOPIA_USE_SSE4_2)
+  message(STATUS "${Cyan}DISTOPIA SSE4_2 SELECTED${ColourReset}")
+  endif()
 endif()
 
 
@@ -71,6 +101,11 @@ if(CORTEXA9_FOUND)
  set(CMAKE_C_FLAGS "-mcpu=cortex-a9 ${CMAKE_C_FLAGS}")
 endif()
 
+
+#find all the files
+file(GLOB distopia_src ${DISTOPIA_SRC_DIR}/*.cpp )
+file(GLOB compare_src ${DISTOPIA_COMPARE_DIR}/*.cpp )
+list (APPEND distopia_src ${compare_src})
 
 # manually set compiler flags
 set(CMAKE_CXX_FLAGS "-mavx -O3 -ffast-math")
