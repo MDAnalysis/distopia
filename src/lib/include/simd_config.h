@@ -2,7 +2,6 @@
 #ifndef DISTOPIA_SIMD_CONFIG_H
 #define DISTOPIA_SIMD_CONFIG_H
 
-
 #ifndef DISTOPIA_USE_SSE1
 #define DISTOPIA_USE_SSE1 0
 #endif
@@ -39,18 +38,23 @@
 #define DISTOPIA_USE_AVX512 0
 #endif
 
-
-
 // check we dont have overlapping defines
 
-static_assert(!DISTOPIA_USE_SSE2 || !DISTOPIA_USE_SSE1);
-static_assert(!DISTOPIA_USE_SSE3 || !DISTOPIA_USE_SSE2);
-static_assert(!DISTOPIA_USE_SSSE3 || !DISTOPIA_USE_SSE3);
-static_assert(!DISTOPIA_USE_SSE4_1 || !DISTOPIA_USE_SSSE3);
-static_assert(!DISTOPIA_USE_SSE4_2 || !DISTOPIA_USE_SSE4_1);
-static_assert(!DISTOPIA_USE_AVX || !DISTOPIA_USE_SSE4_2);
-static_assert(!DISTOPIA_USE_AVX2 || !DISTOPIA_USE_AVX);
-static_assert(!DISTOPIA_USE_AVX512 || !DISTOPIA_USE_AVX2);
-
+static_assert(!DISTOPIA_USE_SSE2 || !DISTOPIA_USE_SSE1,
+              "SIMD config is not self-consistent");
+static_assert(!DISTOPIA_USE_SSE3 || !DISTOPIA_USE_SSE2,
+              "SIMD config is not self-consistent");
+static_assert(!DISTOPIA_USE_SSSE3 || !DISTOPIA_USE_SSE3,
+              "SIMD config is not self-consistent");
+static_assert(!DISTOPIA_USE_SSE4_1 || !DISTOPIA_USE_SSSE3,
+              "SIMD config is not self-consistent");
+static_assert(!DISTOPIA_USE_SSE4_2 || !DISTOPIA_USE_SSE4_1,
+              "SIMD config is not self-consistent");
+static_assert(!DISTOPIA_USE_AVX || !DISTOPIA_USE_SSE4_2,
+              "SIMD config is not self-consistent");
+static_assert(!DISTOPIA_USE_AVX2 || !DISTOPIA_USE_AVX,
+              "SIMD config is not self-consistent");
+static_assert(!DISTOPIA_USE_AVX512 || !DISTOPIA_USE_AVX2,
+              "SIMD config is not self-consistent");
 
 #endif // DISTOPIA_SIMD_CONFIG_H
