@@ -8,7 +8,7 @@ The algorithm is taken from code written by Eric Postpischil and open-sourced by
 https://opensource.apple.com/source/Libm/Libm-287.1/Source/Intel/atanf.s
 
 This implementation requires AVX2.
-TODO: make file code compatible with older vector ISAs.
+TODO: make functions compatible with older vector ISAs.
 
 The algorithm, by cases:
    - If 0 <= input < 1, evaluate the polynomial
@@ -57,10 +57,11 @@ __m128 atan_nnve_one_ps(__m128 a) {
     __m128d x = _mm_cvtps_pd(a);
 
     /* Small means in [0, 1). */
-    __m128i is_small = _mm_cmpgt_epi64(_mm_castpd_si128(_mm_set1_pd(small_cutoff)), x);
+    __m128i is_small = _mm_cmpgt_epi64(_mm_castpd_si128(_mm_set1_pd(small_cutoff)),
+                                       _mm_castpd_si128(x));
 
     __m128d x_sq = x * x;
-    __m128d x_recip = 1.0 / x;
+    __m128d x_recip = _mm_set1_pd(1.0) / x;
     __m128d x_pow_n16 = x_recip * x_recip;
     x_pow_n16 *= x_pow_n16;
     x_pow_n16 *= x_pow_n16;
@@ -122,7 +123,7 @@ __m128 _mm_atan_ps(__m128 a) {
     __m128 special_result = _mm_castsi128_ps(special_result_i);
 
     /* Split into two 64-bit vectors (these will be converted to doubles). */
-    __m128 abs_a = _mm_castps_si128(abs_a_i);
+    __m128 abs_a = _mm_castsi128_ps(abs_a_i);
     __m128 abs_a_lo = abs_a;
     __m128 abs_a_hi = _mm_movehl_ps(_mm_undefined_ps(), abs_a);
     
@@ -133,7 +134,7 @@ __m128 _mm_atan_ps(__m128 a) {
 
     /* Choose between the special case (very big or NaN) and the usual case
        (0 <= input <= 16777215). */
-    res = _mm_blendv_ps(res, special_result, is_special);
+    res = _mm_blendv_ps(res, special_result, _mm_castsi128_ps(is_special));
     /* Restore the sign bit. */
     res = _mm_or_ps(res, a_sign);
 
@@ -146,22 +147,23 @@ __m128 atan_nnve_one_ps256(__m128 a) {
     __m256d x = _mm256_cvtps_pd(a);
     
     __m256d x_sq = x * x;
-    __m256d x_recip = 1.0 / x;
+    __m256d x_recip = _mm256_set1_pd(1.0) / x;
     __m256d x_pow_n16 = x_recip * x_recip;
     x_pow_n16 *= x_pow_n16;
     x_pow_n16 *= x_pow_n16;
     x_pow_n16 *= x_pow_n16;
     
-    __m256i is_small = _mm256_cmpgt_epi64(_mm256_castpd_si256(_mm256_set1_pd(small_cutoff)), x);
+    __m256i is_small = _mm256_cmpgt_epi64(_mm256_castpd_si256(_mm256_set1_pd(small_cutoff)),
+                                          _mm256_castpd_si256(x));
 
-    __m256 poly01 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs01), is_small);
-    __m256 poly00 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs00), is_small);
-    __m256 poly11 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs11), is_small);
-    __m256 poly10 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs10), is_small);
-    __m256 poly21 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs21), is_small);
-    __m256 poly20 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs20), is_small);
-    __m256 poly31 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs31), is_small);
-    __m256 poly30 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs30), is_small);
+    __m256d poly01 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs01), is_small);
+    __m256d poly00 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs00), is_small);
+    __m256d poly11 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs11), is_small);
+    __m256d poly10 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs10), is_small);
+    __m256d poly21 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs21), is_small);
+    __m256d poly20 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs20), is_small);
+    __m256d poly31 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs31), is_small);
+    __m256d poly30 = _mm256_permutevar_pd(_mm256_broadcast_pd(&coeffs30), is_small);
     
     __m256d q0 = _mm256_fmadd_pd(_mm256_fmadd_pd(x, x, poly01), x_sq, poly00);
     __m256d q1 = _mm256_fmadd_pd(_mm256_fmadd_pd(x, x, poly11), x_sq, poly10);
@@ -195,7 +197,7 @@ __m256 _mm256_atan_ps(__m256 a) {
                                        special_result_i);
     __m256 special_result = _mm256_castsi256_ps(special_result_i);
     
-    __m256 abs_a = _mm256_castps_si256(abs_a_i);
+    __m256 abs_a = _mm256_castsi256_ps(abs_a_i);
     __m128 abs_a_lo = _mm256_castps256_ps128(abs_a);
     __m128 abs_a_hi = _mm256_extractf128_ps(abs_a, 1);
     
@@ -203,7 +205,7 @@ __m256 _mm256_atan_ps(__m256 a) {
     __m128 res_hi = atan_nnve_one_ps256(abs_a_hi);
     __m256 res = _mm256_insertf128_ps(_mm256_castps128_ps256(res_lo), res_hi, 1);
     
-    res = _mm256_blendv_ps(res, special_result, is_special);
+    res = _mm256_blendv_ps(res, special_result, _mm256_castsi256_ps(is_special));
     res = _mm256_or_ps(res, a_sign);
     
     return res;
