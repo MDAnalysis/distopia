@@ -24,7 +24,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/ColorOutput.cmake)
 
 
-# user options for SIMD instruction levels
+# user options for SIMD instructions
 option(DISTOPIA_SELECT_SIMD "Let DISTOPIA choose instruction level" off)
 option(DISTOPIA_USE_SSE1    "Use SSE1 instructions" off)
 option(DISTOPIA_USE_SSE2    "Use SSE2 instructions" off)
@@ -33,8 +33,13 @@ option(DISTOPIA_USE_SSSE3   "Use SSSE3 instructions" off)
 option(DISTOPIA_USE_SSE4_1  "Use SSE4.1 instructions" off)
 option(DISTOPIA_USE_SSE4_2  "Use SSE4.2 instructions" off)
 
+
+set(SSE_LEVEL_LIST "")
+list(APPEND SSE_LEVEL_LIST DISTOPIA_USE_SSE1;DISTOPIA_USE_SSE2
+DISTOPIA_USE_SSE3;DISTOPIA_USE_SSSE3};DISTOPIA_USE_SSE4_1;DISTOPIA_USE_SSE4_2)
+
 set(SSE_OPT_LIST "")
-list(APPEND SSE_OPT_LIST ${DISTOPIA_USE_SSE1};${DISTOPIA_USE_SSE2};
+list(APPEND SSE_OPT_LIST ${DISTOPIA_SELECT_SIMD};${DISTOPIA_USE_SSE1};${DISTOPIA_USE_SSE2};
 ${DISTOPIA_USE_SSE3};${DISTOPIA_USE_SSSE3};${DISTOPIA_USE_SSE4_1};${DISTOPIA_USE_SSE4_2})
 
 set(_nopt 0)
@@ -57,60 +62,40 @@ else()
   message(FATAL_ERROR "${Red}More than one SIMD flavour specified.${ColourReset}")
 endif()
 
-#heuristics to choose best SIMD level given available options
-
-
+#check the levels of SIMD supported
 set(CMAKE_REQUIRED_QUIET true)
-# find the level of SSE instruction supported
 find_package(SSE)
-# find the level of AVX supported
 find_package(AVX)
 set(CMAKE_REQUIRED_QUIET false)
 
+# check both CXX and C supported and append to list for heuristics
+set(SSE_SUPPORTED_LIST "")
 
-
-
-#check the levels of SIMD supported
 if(C_SSE1_FOUND AND CXX_SSE1_FOUND)
   message(STATUS "SSE1 SUPPORTED for C and CXX")
+  set(SSE1_SUPPORTED true)
   if(DISTOPIA_USE_SSE1)
-  message(STATUS "${Cyan}DISTOPIA SSE1 SELECTED${ColourReset}")
+    message(STATUS "${Cyan}DISTOPIA SSE1 SELECTED${ColourReset}")
+  else()
+    list(APPEND SSE_SUPPORTED_LIST  ${SSE1_SUPPORTED})
   endif()
 endif()
+
 if(C_SSE2_FOUND AND CXX_SSE2_FOUND)
   message(STATUS "SSE2 SUPPORTED for C and CXX")
+  set(SSE1_SUPPORTED true)
   if(DISTOPIA_USE_SSE2)
-  message(STATUS "${Cyan}DISTOPIA SSE2 SELECTED${ColourReset}")
-  endif()
-endif()
-if(C_SSE3_FOUND AND CXX_SSE3_FOUND)
-  message(STATUS "SSE3 SUPPORTED for C and CXX")
-  if(DISTOPIA_USE_SSE3)
-  message(STATUS "${Cyan}DISTOPIA SSE3 SELECTED${ColourReset}")
-  endif()
-endif()
-if(C_SSSE3_FOUND AND CXX_SSSE3_FOUND)
-  message(STATUS "SSSE3 SUPPORTED for C and CXX")
-  if(DISTOPIA_USE_SSSE3)
-  message(STATUS "${Cyan}DISTOPIA SSSE3 SELECTED${ColourReset}")
-  endif()
-endif()
-if(C_SSE4_1_FOUND AND CXX_SSE4_1_FOUND)
-  message(STATUS "SSE4_1 SUPPORTED for C and CXX")
-  if(DISTOPIA_USE_SSE4_1)
-  message(STATUS "${Cyan}DISTOPIA SSE4_1 SELECTED${ColourReset}")
-  endif()
-endif()
-if(C_SSE4_2_FOUND AND CXX_SSE4_2_FOUND)
-  message(STATUS "SSE4_2 SUPPORTED for C and CXX")
-  if(DISTOPIA_USE_SSE4_2)
-  message(STATUS "${Cyan}DISTOPIA SSE4_2 SELECTED${ColourReset}")
+    message(STATUS "${Cyan}DISTOPIA SSE2 SELECTED${ColourReset}")
+  else()
+    list(APPEND SSE_SUPPORTED_LIST  ${SSE1_SUPPORTED})
   endif()
 endif()
 
+if(DISTOPA_DISTOPIA_SELECT_SIMD)
+  foreach(_sse_level ${SSE_SUPPORTED_LIST})
+  
 
-
-
+endforeach()
 
 
 
