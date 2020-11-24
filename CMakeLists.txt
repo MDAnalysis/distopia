@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 3.12)
 project(DISTOPIA LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED true)
 
 
 
 # options
-option(DISTOPIA_BUILD_TEST "Build distopia testing binary." ON)
-option(DISTOPIA_BUILD_TIMINGS "Build distopia timings binary." ON)
+option(DISTOPIA_BUILD_TEST "Build distopia testing binary." on)
+option(DISTOPIA_BUILD_TIMINGS "Build distopia timings binary." on)
 
 
 # add the directory structure 
@@ -17,19 +17,44 @@ set(DISTOPIA_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src/lib/src)
 set(DISTOPIA_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/src/lib/include)
 set(DISTOPIA_TEST_DIR ${CMAKE_CURRENT_LIST_DIR}/src/lib/tests)
 set(DISTOPIA_COMPARE_DIR ${CMAKE_CURRENT_LIST_DIR}/src/compare)
-SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
 
 
 file(GLOB distopia_src ${DISTOPIA_SRC_DIR}/*.cpp )
 file(GLOB compare_src ${DISTOPIA_COMPARE_DIR}/*.cpp )
 list (APPEND distopia_src ${compare_src})
 
-
+set(CMAKE_REQUIRED_QUIET true)
 # find the level of SSE instruction supported
 find_package(SSE)
-
 # find the level of AVX supported
 find_package(AVX)
+set(CMAKE_REQUIRED_QUIET false)
+
+
+#check the levels of SIMD supported
+if(C_SSE1_FOUND AND CXX_SSE1_FOUND)
+  message(STATUS "SSE1 SUPPORTED for C and CXX")
+endif()
+if(C_SSE2_FOUND AND CXX_SSE2_FOUND)
+  message(STATUS "SSE2 SUPPORTED for C and CXX")
+endif()
+if(C_SSE3_FOUND AND CXX_SSE3_FOUND)
+  message(STATUS "SSE3 SUPPORTED for C and CXX")
+endif()
+if(C_SSSE3_FOUND AND CXX_SSSE3_FOUND)
+  message(STATUS "SSSE3 SUPPORTED for C and CXX")
+endif()
+if(C_SSE4_1_FOUND AND CXX_SSE4_1_FOUND)
+  message(STATUS "SSE4_1 SUPPORTED for C and CXX")
+endif()
+if(C_SSE4_2_FOUND AND CXX_SSE4_2_FOUND)
+  message(STATUS "SSE4_2 SUPPORTED for C and CXX")
+endif()
+
+
+
+
 
 # ARM specific flags
 find_package(ARM)
@@ -43,7 +68,7 @@ if(CORTEXA8_FOUND)
 endif()
 if(CORTEXA9_FOUND)
   message(STATUS "Cortex-A9 Found with compiler flag : -mcpu=cortex-a9")
-  set(CMAKE_C_FLAGS "-mcpu=cortex-a9 ${CMAKE_C_FLAGS}")
+ set(CMAKE_C_FLAGS "-mcpu=cortex-a9 ${CMAKE_C_FLAGS}")
 endif()
 
 
