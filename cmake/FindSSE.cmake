@@ -87,9 +87,6 @@ MACRO(CHECK_SSE lang type flags)
 
   IF(NOT ${lang}_${type}_FOUND)
     SET(${lang}_${type}_FOUND FALSE  BOOL "${lang} ${type} support")
-    MESSAGE(STATUS "${lang}_${type}_FOUND = FALSE")
-  ELSE()
-    MESSAGE(STATUS "${lang}_${type}_FOUND = TRUE")
   ENDIF()
   MARK_AS_ADVANCED(${lang}_${type}_FOUND ${lang}_${type}_FLAGS)
 

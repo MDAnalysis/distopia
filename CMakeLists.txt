@@ -25,13 +25,39 @@ include(${CMAKE_CURRENT_LIST_DIR}/cmake/ColorOutput.cmake)
 
 
 # user options for SIMD instruction levels
-option(DISTOPIA_USE_SSE1    "Use SSE1 instructions" on)
-option(DISTOPIA_USE_SSE2    "Use SSE2 instructions" on)
-option(DISTOPIA_USE_SSE3    "Use SSE3 instructions" on)
-option(DISTOPIA_USE_SSSE3   "Use SSSE3 instructions" on)
-option(DISTOPIA_USE_SSE4_1  "Use SSE4.1 instructions" on)
-option(DISTOPIA_USE_SSE4_2  "Use SSE4.2 instructions" on)
+option(DISTOPIA_SELECT_SIMD "Let DISTOPIA choose instruction level" off)
+option(DISTOPIA_USE_SSE1    "Use SSE1 instructions" off)
+option(DISTOPIA_USE_SSE2    "Use SSE2 instructions" off)
+option(DISTOPIA_USE_SSE3    "Use SSE3 instructions" off)
+option(DISTOPIA_USE_SSSE3   "Use SSSE3 instructions" off)
+option(DISTOPIA_USE_SSE4_1  "Use SSE4.1 instructions" off)
+option(DISTOPIA_USE_SSE4_2  "Use SSE4.2 instructions" off)
 
+set(SSE_OPT_LIST "")
+list(APPEND SSE_OPT_LIST ${DISTOPIA_USE_SSE1};${DISTOPIA_USE_SSE2};
+${DISTOPIA_USE_SSE3};${DISTOPIA_USE_SSSE3};${DISTOPIA_USE_SSE4_1};${DISTOPIA_USE_SSE4_2})
+
+set(_nopt 0)
+set(_find_simd_flavour false)
+foreach(_option ${SSE_OPT_LIST})
+  if(_option)
+    math(EXPR _nopt "${_nopt}+1")
+  endif()
+endforeach()
+
+if(${_nopt} EQUAL 0)
+  message(STATUS "${Green}No instruction set selected DISTOPIA will attempt to choose for you.${ColourReset}")
+  message(STATUS "${Green}Setting DISTOPIA_SELECT_SIMD to ON.${ColourReset}")
+  set(DISTOPIA_SELECT_SIMD on)
+elseif(${_nopt} EQUAL 1)
+  message(STATUS "${Green}Instruction set selected by user.${ColourReset}")
+  message(STATUS "${Green}Setting DISTOPIA_SELECT_SIMD to OFF.${ColourReset}")
+  set(DISTOPIA_SELECT_SIMD off)
+else()
+  message(FATAL_ERROR "${Red}More than one SIMD flavour specified.${ColourReset}")
+endif()
+
+#heuristics to choose best SIMD level given available options
 
 
 set(CMAKE_REQUIRED_QUIET true)
@@ -86,20 +112,7 @@ endif()
 
 
 
-# ARM specific flags
-find_package(ARM)
-if(NEON_FOUND)
-  message(STATUS "Neon found with compiler flag : -mfpu=neon -D__NEON__")
-  set(CMAKE_C_FLAGS "-mfpu=neon -D__NEON__ ${CMAKE_C_FLAGS}")
-endif()
-if(CORTEXA8_FOUND)
-  message(STATUS "Cortex-A8 Found with compiler flag : -mcpu=cortex-a8")
-  set(CMAKE_C_FLAGS "-mcpu=cortex-a8 -fprefetch-loop-arrays ${CMAKE_C_FLAGS}")
-endif()
-if(CORTEXA9_FOUND)
-  message(STATUS "Cortex-A9 Found with compiler flag : -mcpu=cortex-a9")
- set(CMAKE_C_FLAGS "-mcpu=cortex-a9 ${CMAKE_C_FLAGS}")
-endif()
+
 
 
 #find all the files
