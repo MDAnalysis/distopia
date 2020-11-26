@@ -1,11 +1,11 @@
-#include <iostream>
-#include <math.h>
+#include <cmath>
+#include <vector>
 
 // Jakub's NearbyINT based function
 void CalcBondsNINT(const float *coords1, const float *coords2, const float *box,
-                  unsigned int nvals, float *output) {
+                 size_t nvals, float *output) {
   for (size_t i = 0; i < nvals; ++i) {
-    float dist = 0.0f;
+    float dist = 0.0;
     for (size_t j = 0; j < 3; ++j) {
       float r = coords1[3 * i + j] - coords2[3 * i + j];
       float b = box[j];
@@ -19,9 +19,9 @@ void CalcBondsNINT(const float *coords1, const float *coords2, const float *box,
 
 // Jakub's NINT + FMA based function
 void CalcBondsFMA(const float *coords1, const float *coords2, const float *box,
-                  unsigned int nvals, float *output) {
+                  size_t nvals, float *output) {
   for (size_t i = 0; i < nvals; ++i) {
-    float dist = 0.0f;
+    float dist = 0.0;
     for (size_t j = 0; j < 3; ++j) {
       float r = coords1[3 * i + j] - coords2[3 * i + j];
       float b = box[j];

@@ -3,11 +3,12 @@
 #include <math.h>
 #include <memory.h>
 
-#include "anglekernels.h"    // from mdtraj
-#include "calc_distances.h"  // from mdanalysis
-#include "distancekernels.h" // from mdtraj
-#include "distopia.h"        // a fancy approach
-#include "vanilla.h"         // a naive approach
+#include "anglekernels.h"              // from mdtraj
+#include "calc_distances.h"            // from mdanalysis
+#include "distancekernels.h"           // from mdtraj
+#include "distopia.h"                  // a fancy approach
+#include "distopia_better_distances.h" // Jakub's fancy approach
+#include "vanilla.h"                   // a naive approach
 
 bool loadHeader(FILE *fp, int *Ncoords, float *box) {
   // header format:
@@ -111,22 +112,6 @@ int main(int argc, char *argv[]) {
 
   t1 = std::chrono::steady_clock::now();
 
-  CalcBondsOrtho(coords1, coords2, box, Nresults, results);
-
-  t2 = std::chrono::steady_clock::now();
-
-  dt = (t2 - t1);
-
-  std::cout << "XMM calc_bonds:         " << dt.count() << "\n";
-  std::cout << "per result XMM:         " << dt.count() / Nresults << "\n";
-
-  if (!verify(ref_results, results, Nresults))
-    std::cout << "XMM result wrong!\n";
-  else
-    std::cout << "XMM Results verified\n";
-
-  t1 = std::chrono::steady_clock::now();
-
   _calc_bond_distance_ortho((coordinate *)coords1, (coordinate *)coords2,
                             Nresults, box, results);
 
@@ -157,6 +142,54 @@ int main(int argc, char *argv[]) {
     std::cout << "MDtraj result wrong!\n";
   else
     std::cout << "MDtraj Results verified\n";
+
+  t1 = std::chrono::steady_clock::now();
+
+  CalcBondsOrtho(coords1, coords2, box, Nresults, results);
+
+  t2 = std::chrono::steady_clock::now();
+
+  dt = (t2 - t1);
+
+  std::cout << "XMM calc_bonds:         " << dt.count() << "\n";
+  std::cout << "per result XMM:         " << dt.count() / Nresults << "\n";
+
+  if (!verify(ref_results, results, Nresults))
+    std::cout << "XMM result wrong!\n";
+  else
+    std::cout << "XMM Results verified\n";
+
+  t1 = std::chrono::steady_clock::now();
+
+  CalcBondsNINT(coords1, coords2, box, Nresults, results);
+
+  t2 = std::chrono::steady_clock::now();
+
+  dt = (t2 - t1);
+
+  std::cout << "NINT calc_bonds:        " << dt.count() << "\n";
+  std::cout << "per result NINT:        " << dt.count() / Nresults << "\n";
+
+  if (!verify(ref_results, results, Nresults))
+    std::cout << "NINT result wrong!\n";
+  else
+    std::cout << "NINT Results verified\n";
+
+  t1 = std::chrono::steady_clock::now();
+
+  CalcBondsFMA(coords1, coords2, box, Nresults, results);
+
+  t2 = std::chrono::steady_clock::now();
+
+  dt = (t2 - t1);
+
+  std::cout << "FMA calc_bonds:         " << dt.count() << "\n";
+  std::cout << "per result FMA:         " << dt.count() / Nresults << "\n";
+
+  if (!verify(ref_results, results, Nresults))
+    std::cout << "FMA result wrong!\n";
+  else
+    std::cout << "FMA Results verified\n";
 
   // ANGLES
   // split coordinates in three
@@ -221,7 +254,7 @@ int main(int argc, char *argv[]) {
     std::cout << "MDTraj Results verified\n";
   }
 
-    t1 = std::chrono::steady_clock::now();
+  t1 = std::chrono::steady_clock::now();
 
   CalcAnglesOrtho(coords1, coords2, coords3, box, Nresults, results);
 
@@ -229,15 +262,14 @@ int main(int argc, char *argv[]) {
 
   dt = (t2 - t1);
 
-  std::cout << "XMM calc_angles:     " << dt.count() << "\n";
-  std::cout << "per result XMM:      " << dt.count() / Nresults << "\n";
+  std::cout << "XMM calc_angles:        " << dt.count() << "\n";
+  std::cout << "per result XMM:         " << dt.count() / Nresults << "\n";
 
   if (!verify(ref_results, results, Nresults)) {
     std::cout << "XMM result wrong!\n";
   } else {
     std::cout << "XMM Results verified\n";
   }
-
 
   return 0;
 }

@@ -10,7 +10,7 @@
 void CalcBondsNINT(const float* coords1,
                     const float* coords2,
                     const float* box,
-                    unsigned int nvals,
+                    size_t nvals,
                     float* output);
 
 /*
@@ -22,7 +22,7 @@ void CalcBondsNINT(const float* coords1,
 void CalcBondsFMA(const float* coords1,
                     const float* coords2,
                     const float* box,
-                    unsigned int nvals,
+                    size_t nvals,
                     float* output);
 
 
