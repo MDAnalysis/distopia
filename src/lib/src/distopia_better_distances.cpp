@@ -1,5 +1,4 @@
 #include <cmath>
-#include <vector>
 
 // Jakub's NearbyINT based function
 void CalcBondsNINT(const float *coords1, const float *coords2, const float *box,
