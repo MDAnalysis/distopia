@@ -5,8 +5,8 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # compiler flags
-set(CMAKE_CXX_FLAGS "-mavx -O3 -ffast-math -fno-math-errno")
-set(CMAKE_C_FLAGS "-mavx -O3 -ffast-math -fno-math-errno")
+set(CMAKE_CXX_FLAGS "-mavx2 -O3 -ffast-math -fno-math-errno -mfma")
+set(CMAKE_C_FLAGS "-mavx2 -O3 -ffast-math -fno-math-errno -mfma")
 # options
 option(DISTOPIA_BUILD_TEST "Build distopia testing binary." ON)
 option(DISTOPIA_BUILD_TIMINGS "Build distopia timings binary." ON)
