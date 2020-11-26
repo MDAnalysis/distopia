@@ -1,5 +1,5 @@
-#ifndef atan_h
-#define atan_h
+#ifndef ATAN_DISTOPIA_H
+#define ATAN_DISTOPIA_H
 
 #include <immintrin.h>
 
@@ -10,4 +10,4 @@ __m256 _mm256_atan_ps(__m256 a);
 
 #endif /* __AVX2__ */
 
-#endif /* atan_h */
+#endif //ATAN_DISTOPIA_H
