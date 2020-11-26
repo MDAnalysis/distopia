@@ -1,5 +1,7 @@
 #include "atan.h"
 
+#ifdef __AVX2__
+
 /* SIMD-accelerated atanf.
 
 Written by Jakub Nabaglo in November 2020.
@@ -210,3 +212,4 @@ __m256 _mm256_atan_ps(__m256 a) {
     
     return res;
 }
+#endif // __AVX2__
