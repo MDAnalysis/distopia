@@ -2,6 +2,7 @@
 #include <iostream>
 #include <math.h>
 #include <memory.h>
+#include <vector>
 
 #include "anglekernels.h"              // from mdtraj
 #include "calc_distances.h"            // from mdanalysis
@@ -42,6 +43,24 @@ bool loadCoords(FILE *fp, int Ncoords, float *coords) {
   return true;
 }
 
+void timings(std::vector<std::chrono::duration<double>> tvec, int niter,
+             int nresults, std::string name) {
+  double time_sum = 0;
+  double average_time = 0;
+  double per_result = 0;
+  for (size_t i = 0; i < tvec.size(); i++) {
+    time_sum += tvec[i].count();
+  }
+  average_time = time_sum / niter;
+  per_result = average_time / nresults;
+
+  printf("\nDoing statistics for  %s \n", name.c_str());
+  std::cout << "time average  " << average_time << "  over number of iters "
+            << niter << "\n";
+  std::cout << "per result    " << per_result << "  over number of iters " << niter
+            << "\n";
+}
+
 // doesnt detect NAN, we should move to EXPECT_FLOAT_EQ() in gtest
 #define TOL 0.0005 // we should pay attention to this tol
 static bool verify(const float *ref, const float *other, unsigned int Ncoords) {
@@ -54,19 +73,27 @@ static bool verify(const float *ref, const float *other, unsigned int Ncoords) {
 }
 
 int main(int argc, char *argv[]) {
-  // usage: file.in
+  // usage: file.in niters
   if (argc <= 1) {
-    printf("Too few arguments, please supply a coordinate file as a command "
+    printf("Too few arguments, please supply a coordinate file and a number of "
+           "iterations as a command "
            "line argument.\n");
     return (0);
+  } else if (argc > 3) {
+    printf("Too many arguments\n");
+    return (0);
   }
+
   char *fname = argv[1];
+  int niters = std::stoi(argv[2]);
+
+  printf("Number of iterations selected %i \n", niters);
 
   float box[3];
-  float *coords, *coords1, *coords2, *coords3, *results;
+  float *coords, *coords1, *coords2, *coords3;
   int Ncoords = 0;
 
-  std::cout << "\nBEGIN TIMINGS\n";
+  printf("\nBEGIN TIMINGS\n");
 
   FILE *fp = fopen(fname, "r");
   if (!fp)
@@ -75,16 +102,19 @@ int main(int argc, char *argv[]) {
     return 2;
 
   coords = (float *)malloc(Ncoords * 3 * sizeof(float));
-  results = (float *)malloc(Ncoords * sizeof(float) / 2);
 
   loadCoords(fp, Ncoords, coords);
 
-  std::cout << "Read " << Ncoords << " coordinates \n";
+  printf("Read %i coordinates \n", Ncoords);
 
   // DISTANCES
   // split coordinates in half
   if (Ncoords % 2 != 0) {
-    std::cout << "Ncoords " << Ncoords << "are not able to be split into 2 \n";
+    printf("Ncoords is not divisible by 2 \n");
+    return 1;
+  }
+  if (Ncoords % 3 != 0) {
+    printf("Ncoords is not divisible by 3 \n");
     return 1;
   }
 
@@ -92,184 +122,171 @@ int main(int argc, char *argv[]) {
 
   coords1 = coords;
   coords2 = coords + (3 * Ncoords / 2);
-  int Nresults = Ncoords / 2;
+  int nresults_bonds = Ncoords / 2;
+  float *results = (float *)malloc(nresults_bonds * sizeof(float));
+  float *ref_results = (float *)malloc(nresults_bonds * sizeof(float));
 
   std::chrono::steady_clock::time_point t1, t2;
   std::chrono::duration<double> dt;
 
-  t1 = std::chrono::steady_clock::now();
+  std::vector<std::chrono::duration<double>> vanilla_calc_bonds;
+  std::vector<std::chrono::duration<double>> mda_calc_bonds;
+  std::vector<std::chrono::duration<double>> mdtraj_calc_bonds;
+  std::vector<std::chrono::duration<double>> intrinsic_calc_bonds;
+  std::vector<std::chrono::duration<double>> nint_calc_bonds;
+  std::vector<std::chrono::duration<double>> fma_calc_bonds;
 
-  VanillaCalcBonds(coords1, coords2, box, Nresults, results);
 
-  t2 = std::chrono::steady_clock::now();
 
-  dt = (t2 - t1);
-  std::cout << "Regular calc_bonds:     " << dt.count() << "\n";
-  std::cout << "per result regular:     " << dt.count() / Nresults << "\n";
 
-  float *ref_results = (float *)malloc(sizeof(float) * Nresults);
-  memcpy(ref_results, results, sizeof(float) * Nresults);
+  for (size_t i = 0; i < niters; i++) {
 
-  t1 = std::chrono::steady_clock::now();
+    // Vanilla
+    t1 = std::chrono::steady_clock::now();
+    VanillaCalcBonds(coords1, coords2, box, nresults_bonds, results);
+    t2 = std::chrono::steady_clock::now();
+    dt = (t2 - t1);
+    vanilla_calc_bonds.push_back(dt);
 
-  _calc_bond_distance_ortho((coordinate *)coords1, (coordinate *)coords2,
-                            Nresults, box, results);
+    memcpy(ref_results, results, sizeof(float) * nresults_bonds);
 
-  t2 = std::chrono::steady_clock::now();
+    // MDA
+    t1 = std::chrono::steady_clock::now();
+    _calc_bond_distance_ortho((coordinate *)coords1, (coordinate *)coords2,
+                              nresults_bonds, box, results);
+    t2 = std::chrono::steady_clock::now();
+    dt = (t2 - t1);
+    mda_calc_bonds.push_back(dt);
+    if (!verify(ref_results, results, nresults_bonds))
+      printf("MDA result wrong!\n");
 
-  dt = (t2 - t1);
+    // MDTraj
+    t1 = std::chrono::steady_clock::now();
+    dist_mic(coords1, coords2, box, results, nresults_bonds);
+    t2 = std::chrono::steady_clock::now();
+    dt = (t2 - t1);
+    mdtraj_calc_bonds.push_back(dt);
+    if (!verify(ref_results, results, nresults_bonds))
+      printf("MDtraj result wrong!\n");
 
-  std::cout << "MDA calc_bonds:         " << dt.count() << "\n";
-  std::cout << "per result MDA:         " << dt.count() / Nresults << "\n";
+    // hand rolled
+    t1 = std::chrono::steady_clock::now();
+    CalcBondsOrtho(coords1, coords2, box, nresults_bonds, results);
+    t2 = std::chrono::steady_clock::now();
+    dt = (t2 - t1);
+    intrinsic_calc_bonds.push_back(dt);
+    if (!verify(ref_results, results, nresults_bonds))
+      printf("XMM result wrong!\n");
 
-  if (!verify(ref_results, results, Nresults))
-    std::cout << "MDA result wrong!\n";
-  else
-    std::cout << "MDA Results verified\n";
+    // Nint based function
+    t1 = std::chrono::steady_clock::now();
+    CalcBondsNINT(coords1, coords2, box, nresults_bonds, results);
+    t2 = std::chrono::steady_clock::now();
+    dt = (t2 - t1);
+    nint_calc_bonds.push_back(dt);
+    if (!verify(ref_results, results, nresults_bonds))
+      printf("NINT result wrong!\n");
 
-  t1 = std::chrono::steady_clock::now();
+    // FMA based function
+    t1 = std::chrono::steady_clock::now();
+    CalcBondsFMA(coords1, coords2, box, nresults_bonds, results);
+    t2 = std::chrono::steady_clock::now();
+    dt = (t2 - t1);
+    fma_calc_bonds.push_back(dt);
+    if (!verify(ref_results, results, nresults_bonds))
+      printf("FMA result wrong!\n");
 
-  dist_mic(coords1, coords2, box, results, Nresults);
+    // ANGLES
+    // split coordinates in three
 
-  t2 = std::chrono::steady_clock::now();
+    // std::cout << "\nANGLES\n";
 
-  dt = (t2 - t1);
+    // if (Ncoords % 3 != 0) {
+    //   std::cout << "Ncoords " << Ncoords
+    //             << "are not able to be split into 3 \n";
+    //   return 1;
+    // }
 
-  std::cout << "MDtraj calc_bonds:      " << dt.count() << "\n";
-  std::cout << "per result MDtraj:      " << dt.count() / Nresults << "\n";
+    // coords1 = coords;
+    // coords2 = coords + (3 * Ncoords / 3);
+    // coords3 = coords + (6 * Ncoords / 3);
+    // Nresults = Ncoords / 3;
 
-  if (!verify(ref_results, results, Nresults))
-    std::cout << "MDtraj result wrong!\n";
-  else
-    std::cout << "MDtraj Results verified\n";
+    // // these are not strictly nessecary (should we check for failed realloc?)
+    // results = (float *)realloc(results, Nresults * sizeof(float));
+    // ref_results = (float *)realloc(ref_results, Nresults * sizeof(float));
 
-  t1 = std::chrono::steady_clock::now();
+    // t1 = std::chrono::steady_clock::now();
+    // // seems sensitive to roundoff
+    // VanillaCalcAngles(coords1, coords2, coords3, box, Nresults, results);
 
-  CalcBondsOrtho(coords1, coords2, box, Nresults, results);
+    // t2 = std::chrono::steady_clock::now();
 
-  t2 = std::chrono::steady_clock::now();
+    // dt = (t2 - t1);
+    // // std::cout << "Regular calc_angles:    " << dt.count() << "\n";
+    // // std::cout << "per result calc_angles: " << dt.count() / Nresults <<
+    // "\n"; memcpy(ref_results, results, sizeof(float) * Nresults);
 
-  dt = (t2 - t1);
+    // t1 = std::chrono::steady_clock::now();
 
-  std::cout << "XMM calc_bonds:         " << dt.count() << "\n";
-  std::cout << "per result XMM:         " << dt.count() / Nresults << "\n";
+    // _calc_angle_ortho((coordinate *)coords1, (coordinate *)coords2,
+    //                   (coordinate *)coords3, Nresults, box, results);
+    // t2 = std::chrono::steady_clock::now();
 
-  if (!verify(ref_results, results, Nresults))
-    std::cout << "XMM result wrong!\n";
-  else
-    std::cout << "XMM Results verified\n";
+    // dt = (t2 - t1);
+    // // std::cout << "MDA calc_angles:        " << dt.count() << "\n";
+    // // std::cout << "per result MDA:         " << dt.count() / Nresults <<
+    // "\n";
 
-  t1 = std::chrono::steady_clock::now();
+    // if (!verify(ref_results, results, Nresults)) {
+    //   std::cout << "MDA result wrong!\n";
+    // } else {
+    //   std::cout << "MDA Results verified\n";
+    // }
 
-  CalcBondsNINT(coords1, coords2, box, Nresults, results);
+    // t1 = std::chrono::steady_clock::now();
 
-  t2 = std::chrono::steady_clock::now();
+    // angle_mic(coords1, coords2, coords3, box, results, Nresults);
 
-  dt = (t2 - t1);
+    // t2 = std::chrono::steady_clock::now();
 
-  std::cout << "NINT calc_bonds:        " << dt.count() << "\n";
-  std::cout << "per result NINT:        " << dt.count() / Nresults << "\n";
+    // dt = (t2 - t1);
 
-  if (!verify(ref_results, results, Nresults))
-    std::cout << "NINT result wrong!\n";
-  else
-    std::cout << "NINT Results verified\n";
+    // // std::cout << "MDtraj calc_angles:     " << dt.count() << "\n";
+    // // std::cout << "per result MDtraj:      " << dt.count() / Nresults <<
+    // "\n";
 
-  t1 = std::chrono::steady_clock::now();
+    // if (!verify(ref_results, results, Nresults)) {
+    //   std::cout << "MDTraj result wrong!\n";
+    // } else {
+    //   std::cout << "MDTraj Results verified\n";
+    // }
 
-  CalcBondsFMA(coords1, coords2, box, Nresults, results);
+    // t1 = std::chrono::steady_clock::now();
 
-  t2 = std::chrono::steady_clock::now();
+    // CalcAnglesOrtho(coords1, coords2, coords3, box, Nresults, results);
 
-  dt = (t2 - t1);
+    // t2 = std::chrono::steady_clock::now();
 
-  std::cout << "FMA calc_bonds:         " << dt.count() << "\n";
-  std::cout << "per result FMA:         " << dt.count() / Nresults << "\n";
+    // dt = (t2 - t1);
 
-  if (!verify(ref_results, results, Nresults))
-    std::cout << "FMA result wrong!\n";
-  else
-    std::cout << "FMA Results verified\n";
+    // // std::cout << "XMM calc_angles:        " << dt.count() << "\n";
+    // // std::cout << "per result XMM:         " << dt.count() / Nresults <<
+    // "\n";
 
-  // ANGLES
-  // split coordinates in three
-
-  std::cout << "\nANGLES\n";
-
-  if (Ncoords % 3 != 0) {
-    std::cout << "Ncoords " << Ncoords << "are not able to be split into 3 \n";
-    return 1;
+    // if (!verify(ref_results, results, Nresults)) {
+    //   std::cout << "XMM result wrong!\n";
+    // } else {
+    //   std::cout << "XMM Results verified\n";
+    // }
   }
-
-  coords1 = coords;
-  coords2 = coords + (3 * Ncoords / 3);
-  coords3 = coords + (6 * Ncoords / 3);
-  Nresults = Ncoords / 3;
-
-  // these are not strictly nessecary (should we check for failed realloc?)
-  results = (float *)realloc(results, Nresults * sizeof(float));
-  ref_results = (float *)realloc(ref_results, Nresults * sizeof(float));
-
-  t1 = std::chrono::steady_clock::now();
-  // seems sensitive to roundoff
-  VanillaCalcAngles(coords1, coords2, coords3, box, Nresults, results);
-
-  t2 = std::chrono::steady_clock::now();
-
-  dt = (t2 - t1);
-  std::cout << "Regular calc_angles:    " << dt.count() << "\n";
-  std::cout << "per result calc_angles: " << dt.count() / Nresults << "\n";
-  memcpy(ref_results, results, sizeof(float) * Nresults);
-
-  t1 = std::chrono::steady_clock::now();
-
-  _calc_angle_ortho((coordinate *)coords1, (coordinate *)coords2,
-                    (coordinate *)coords3, Nresults, box, results);
-  t2 = std::chrono::steady_clock::now();
-
-  dt = (t2 - t1);
-  std::cout << "MDA calc_angles:        " << dt.count() << "\n";
-  std::cout << "per result MDA:         " << dt.count() / Nresults << "\n";
-
-  if (!verify(ref_results, results, Nresults)) {
-    std::cout << "MDA result wrong!\n";
-  } else {
-    std::cout << "MDA Results verified\n";
-  }
-
-  t1 = std::chrono::steady_clock::now();
-
-  angle_mic(coords1, coords2, coords3, box, results, Nresults);
-
-  t2 = std::chrono::steady_clock::now();
-
-  dt = (t2 - t1);
-
-  std::cout << "MDtraj calc_angles:     " << dt.count() << "\n";
-  std::cout << "per result MDtraj:      " << dt.count() / Nresults << "\n";
-
-  if (!verify(ref_results, results, Nresults)) {
-    std::cout << "MDTraj result wrong!\n";
-  } else {
-    std::cout << "MDTraj Results verified\n";
-  }
-
-  t1 = std::chrono::steady_clock::now();
-
-  CalcAnglesOrtho(coords1, coords2, coords3, box, Nresults, results);
-
-  t2 = std::chrono::steady_clock::now();
-
-  dt = (t2 - t1);
-
-  std::cout << "XMM calc_angles:        " << dt.count() << "\n";
-  std::cout << "per result XMM:         " << dt.count() / Nresults << "\n";
-
-  if (!verify(ref_results, results, Nresults)) {
-    std::cout << "XMM result wrong!\n";
-  } else {
-    std::cout << "XMM Results verified\n";
-  }
+  printf("STATISTICS\n");
+  timings(vanilla_calc_bonds, niters, nresults_bonds, "Vanilla");
+  timings(mda_calc_bonds, niters, nresults_bonds, "MDA");
+  timings(mdtraj_calc_bonds, niters, nresults_bonds, "MDTraj");
+  timings(intrinsic_calc_bonds, niters, nresults_bonds, "XMM");
+  timings(nint_calc_bonds, niters, nresults_bonds, "nint");
+  timings(fma_calc_bonds, niters, nresults_bonds, "fma");
 
   return 0;
 }
