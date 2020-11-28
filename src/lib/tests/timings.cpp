@@ -4,6 +4,7 @@
 #include <iostream>
 #include <math.h>
 #include <memory.h>
+#include <tuple>
 #include <vector>
 
 #include "anglekernels.h"              // from mdtraj
