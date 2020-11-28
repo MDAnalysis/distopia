@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -57,12 +58,10 @@ timings(std::vector<std::chrono::duration<double>> tvec, int niter,
   per_result = average_time / nresults;
 
   printf("\nDoing statistics for  %s \n", name.c_str());
-  std::cout << "total time  " << time_sum << "  over number of iters " << niter
-            << "\n";
-  std::cout << "time average  " << average_time << "  over number of iters "
+  std::cout << "total time    " << time_sum << "  over number of iters "
             << niter << "\n";
-  std::cout << "per result    " << per_result << "  over number of iters "
-            << niter << "\n";
+  std::cout << "time average  " << average_time << "\n";
+  std::cout << "per result    " << per_result << "\n";
   return std::make_tuple(per_result, time_sum);
 }
 
@@ -306,6 +305,18 @@ int main(int argc, char *argv[]) {
   timings_f << "FMA     " << std::get<0>(fma) << "  " << std::get<1>(fma)
             << "\n";
   timings_f.close();
+
+  printf("\nRELATIVE SPEEDUP\n\n");
+  float mda_scaled = std::get<0>(vanilla) / std::get<0>(mda);
+  printf("MDA speedup relative to vanilla    %f \n", mda_scaled);
+  float mdt_scaled = std::get<0>(vanilla) / std::get<0>(mdt);
+  printf("MDTraj speedup relative to vanilla %f \n", mdt_scaled);
+  float xmm_scaled = std::get<0>(vanilla) / std::get<0>(xmm);
+  printf("XMM speedup relative to vanilla    %f \n", xmm_scaled);
+  float nint_scaled = std::get<0>(vanilla) / std::get<0>(nint);
+  printf("Nint speedup relative to vanilla   %f \n", nint_scaled);
+  float fma_scaled = std::get<0>(vanilla) / std::get<0>(fma);
+  printf("FMA speedup relative to vanilla    %f \n", fma_scaled);
 
   return 0;
 }
