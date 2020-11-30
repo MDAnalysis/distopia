@@ -191,6 +191,22 @@ int main(int argc, char *argv[]) {
   else
     std::cout << "FMA Results verified\n";
 
+  t1 = std::chrono::steady_clock::now();
+
+  CalcBonds256(coords1, coords2, box, Nresults, results);
+
+  t2 = std::chrono::steady_clock::now();
+
+  dt = (t2 - t1);
+
+  std::cout << "YMM calc_bonds:         " << dt.count() << "\n";
+  std::cout << "per result YMM:         " << dt.count() / Nresults << "\n";
+
+  if (!verify(ref_results, results, Nresults))
+    std::cout << "YMM result wrong!\n";
+  else
+    std::cout << "YMM Results verified\n";
+
   // ANGLES
   // split coordinates in three
 
