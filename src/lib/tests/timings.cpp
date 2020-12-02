@@ -139,6 +139,7 @@ int main(int argc, char *argv[]) {
   std::vector<std::chrono::duration<double>> intrinsic_calc_bonds;
   std::vector<std::chrono::duration<double>> nint_calc_bonds;
   std::vector<std::chrono::duration<double>> fma_calc_bonds;
+  std::vector<std::chrono::duration<double>> ymm_calc_bonds;
 
   for (size_t i = 0; i < niters; i++) {
 
@@ -196,6 +197,15 @@ int main(int argc, char *argv[]) {
     fma_calc_bonds.push_back(dt);
     if (!verify(ref_results, results, nresults_bonds))
       printf("FMA result wrong!\n");
+
+    // YMM based function
+    t1 = std::chrono::steady_clock::now();
+    CalcBonds256(coords1, coords2, box, nresults_bonds, results);
+    t2 = std::chrono::steady_clock::now();
+    dt = (t2 - t1);
+    ymm_calc_bonds.push_back(dt);
+    if (!verify(ref_results, results, nresults_bonds))
+      printf("YMM result wrong!\n");
 
     // ANGLES
     // split coordinates in three
@@ -290,6 +300,7 @@ int main(int argc, char *argv[]) {
   auto xmm = timings(intrinsic_calc_bonds, niters, nresults_bonds, "XMM");
   auto nint = timings(nint_calc_bonds, niters, nresults_bonds, "nint");
   auto fma = timings(fma_calc_bonds, niters, nresults_bonds, "fma");
+  auto ymm = timings(ymm_calc_bonds, niters, nresults_bonds, "YMM");
   // dump to a file
   std::ofstream timings_f;
   timings_f.open("timings.dat");
@@ -305,6 +316,8 @@ int main(int argc, char *argv[]) {
             << "\n";
   timings_f << "FMA     " << std::get<0>(fma) << "  " << std::get<1>(fma)
             << "\n";
+  timings_f << "YMM     " << std::get<0>(ymm) << "  " << std::get<1>(ymm)
+            << "\n";
   timings_f.close();
 
   printf("\nRELATIVE SPEEDUP\n\n");
@@ -318,6 +331,8 @@ int main(int argc, char *argv[]) {
   printf("Nint speedup relative to vanilla   %f \n", nint_scaled);
   float fma_scaled = std::get<0>(vanilla) / std::get<0>(fma);
   printf("FMA speedup relative to vanilla    %f \n", fma_scaled);
+  float ymm_scaled = std::get<0>(vanilla) / std::get<0>(ymm);
+  printf("YMM speedup relative to vanilla    %f \n", ymm_scaled);
 
   return 0;
 }
