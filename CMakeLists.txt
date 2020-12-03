@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 
 
 
-
 # options
 option(DISTOPIA_BUILD_TEST "Build distopia testing binary." on)
 option(DISTOPIA_BUILD_TIMINGS "Build distopia timings binary." on)
