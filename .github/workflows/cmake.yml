@@ -14,8 +14,9 @@ jobs:
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ubuntu-latest
     strategy:
+      max-parallel: 8
       matrix:
-        instruction_set_flag: ["-DDISTOPIA_USE_SSE1", "-DDISTOPIA_USE_SSE2", "-DDISTOPIA_USE_SSE3", "-DDISTOPIA_USE_SSSE3", "-DDISTOPIA_USE_SSE4_1", "-DDISTOPIA_USE_SSE4_2", "-DDISTOPIA_USE_AVX", "-DDISTOPIA_USE_AVX2"]
+        instruction_set_flag: ["SSE1", "SSE2", "SSE3", "SSSE3", "SSE4_1", "SSE4_2", "AVX", "AVX2"]
   
 
     steps:
@@ -34,7 +35,7 @@ jobs:
       # Note the current convention is to use the -S and -B options here to specify source 
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE ${{ matrix.instruction_set_flag }}=ON
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DDISTOPIA_USE_${{ matrix.instruction_set_flag }}=ON
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
