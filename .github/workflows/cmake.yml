@@ -1,6 +1,13 @@
 name: CMake
 
-on: [push]
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        instruction_set_flag: ["-DDISTOPIA_USE_SSE1", "-DDISTOPIA_USE_SSE2", "-DDISTOPIA_USE_SSE3", "-DDISTOPIA_USE_SSSE3", "-DDISTOPIA_USE_SSE4_1", "-DDISTOPIA_USE_SSE4_2", "-DDISTOPIA_USE_AVX", "-DDISTOPIA_USE_AVX2"]
+  
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -36,7 +43,7 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: cmake --build . --config $BUILD_TYPE
+      run: cmake --build . ${{ matrix.instruction_set_flag }} --config $BUILD_TYPE  
 
     - name: Test
       working-directory: ${{runner.workspace}}/build
