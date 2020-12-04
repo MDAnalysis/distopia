@@ -33,7 +33,7 @@ void CalcBondsFMA(const float *coords1, const float *coords2, const float *box,
   }
 }
 
-#if defined(__AVX2__) && defined(__FMA__)
+#if DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
 
 typedef struct {
     __m256 a;
@@ -138,4 +138,5 @@ void CalcBonds256(
     }
 }
 
-#endif // __AVX2__ && __FMA__
+#endif //  DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
+

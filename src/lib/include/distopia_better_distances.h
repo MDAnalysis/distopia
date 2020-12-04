@@ -26,9 +26,7 @@ void CalcBondsFMA(const float* coords1,
                     float* output);
 
 
-
-#if defined(__AVX2__) && defined(__FMA__)
-
+#if DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
 /*
  * calculates *nvals* pairwise distances between *coords1* and *coords2*
  * *box* is an orthogonal box
@@ -43,7 +41,8 @@ void CalcBonds256(
     size_t n,
     float *out
 );
+#endif //DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
 
-#endif // __AVX2__ && __FMA__
+
 
 #endif //XDIST_BETTER_DISTOPIA_H

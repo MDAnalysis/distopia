@@ -208,7 +208,8 @@ int main(int argc, char *argv[]) {
     ymm_calc_bonds.push_back(dt);
     if (!verify(ref_results, results, nresults_bonds))
       printf("YMM result wrong!\n");
-#endif
+#endif // #if DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2 
+
     // ANGLES
     // split coordinates in three
 
