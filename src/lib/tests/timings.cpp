@@ -48,7 +48,7 @@ bool loadCoords(FILE *fp, int Ncoords, float *coords) {
 
 std::tuple<double, double>
 timings(std::vector<std::chrono::duration<double>> tvec, int niter,
-        int nresults, std::string name) {
+        int nresults, std::string name, std::ofstream &timings_f) {
   double time_sum = 0;
   double average_time = 0;
   double per_result = 0;
@@ -63,6 +63,7 @@ timings(std::vector<std::chrono::duration<double>> tvec, int niter,
             << niter << "\n";
   std::cout << "time average  " << average_time << "\n";
   std::cout << "per result    " << per_result << "\n";
+  timings_f << name << "     " << per_result << "    " << time_sum << "\n";
   return std::make_tuple(per_result, time_sum);
 }
 
@@ -79,7 +80,7 @@ static bool verify(const float *ref, const float *other, unsigned int Ncoords) {
 
 int main(int argc, char *argv[]) {
   // usage: file.in niters
-  if (argc <= 1) {
+  if (argc <= 2) {
     printf("Too few arguments, please supply a coordinate file and a number of "
            "iterations as a command "
            "line argument.\n");
@@ -198,6 +199,7 @@ int main(int argc, char *argv[]) {
     if (!verify(ref_results, results, nresults_bonds))
       printf("FMA result wrong!\n");
 
+#if DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
     // YMM based function
     t1 = std::chrono::steady_clock::now();
     CalcBonds256(coords1, coords2, box, nresults_bonds, results);
@@ -206,7 +208,7 @@ int main(int argc, char *argv[]) {
     ymm_calc_bonds.push_back(dt);
     if (!verify(ref_results, results, nresults_bonds))
       printf("YMM result wrong!\n");
-
+#endif
     // ANGLES
     // split coordinates in three
 
@@ -294,30 +296,21 @@ int main(int argc, char *argv[]) {
 
   printf("STATISTICS\n");
 
-  auto vanilla = timings(vanilla_calc_bonds, niters, nresults_bonds, "Vanilla");
-  auto mda = timings(mda_calc_bonds, niters, nresults_bonds, "MDA");
-  auto mdt = timings(mdtraj_calc_bonds, niters, nresults_bonds, "MDTraj");
-  auto xmm = timings(intrinsic_calc_bonds, niters, nresults_bonds, "XMM");
-  auto nint = timings(nint_calc_bonds, niters, nresults_bonds, "nint");
-  auto fma = timings(fma_calc_bonds, niters, nresults_bonds, "fma");
-  auto ymm = timings(ymm_calc_bonds, niters, nresults_bonds, "YMM");
-  // dump to a file
   std::ofstream timings_f;
   timings_f.open("timings.dat");
-  timings_f << "Vanilla " << std::get<0>(vanilla) << "  "
-            << std::get<1>(vanilla) << "\n";
-  timings_f << "MDA     " << std::get<0>(mda) << "  " << std::get<1>(mda)
-            << "\n";
-  timings_f << "MDT     " << std::get<0>(mdt) << "  " << std::get<1>(mdt)
-            << "\n";
-  timings_f << "XMM     " << std::get<0>(xmm) << "  " << std::get<1>(xmm)
-            << "\n";
-  timings_f << "NINT    " << std::get<0>(nint) << "  " << std::get<1>(nint)
-            << "\n";
-  timings_f << "FMA     " << std::get<0>(fma) << "  " << std::get<1>(fma)
-            << "\n";
-  timings_f << "YMM     " << std::get<0>(ymm) << "  " << std::get<1>(ymm)
-            << "\n";
+  auto vanilla =
+      timings(vanilla_calc_bonds, niters, nresults_bonds, "Vanilla", timings_f);
+  auto mda = timings(mda_calc_bonds, niters, nresults_bonds, "MDA", timings_f);
+  auto mdt =
+      timings(mdtraj_calc_bonds, niters, nresults_bonds, "MDTraj", timings_f);
+  auto xmm =
+      timings(intrinsic_calc_bonds, niters, nresults_bonds, "XMM", timings_f);
+  auto nint =
+      timings(nint_calc_bonds, niters, nresults_bonds, "NINT", timings_f);
+  auto fma = timings(fma_calc_bonds, niters, nresults_bonds, "FMA", timings_f);
+#if DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
+  auto ymm = timings(ymm_calc_bonds, niters, nresults_bonds, "YMM", timings_f);
+#endif
   timings_f.close();
 
   printf("\nRELATIVE SPEEDUP\n\n");
@@ -331,8 +324,10 @@ int main(int argc, char *argv[]) {
   printf("Nint speedup relative to vanilla   %f \n", nint_scaled);
   float fma_scaled = std::get<0>(vanilla) / std::get<0>(fma);
   printf("FMA speedup relative to vanilla    %f \n", fma_scaled);
+#if DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
   float ymm_scaled = std::get<0>(vanilla) / std::get<0>(ymm);
   printf("YMM speedup relative to vanilla    %f \n", ymm_scaled);
+#endif
 
   return 0;
 }
