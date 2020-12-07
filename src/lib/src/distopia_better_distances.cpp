@@ -108,8 +108,8 @@ void CalcBonds256(
     __m256 rbox2 = _mm256_permute_ps(rboxv, _MM_SHUFFLE(2,1,0,2));
     __m256 rbox3 = _mm256_permute_ps(rboxv, _MM_SHUFFLE(1,0,2,1));
     
-#pragma unroll(2)
-#pragma GCC unroll(2)
+//#pragma unroll(2)
+//#pragma GCC unroll(2)
     for (size_t i = 0; i < n; ++i) {
         size_t j = i * 3;
         
