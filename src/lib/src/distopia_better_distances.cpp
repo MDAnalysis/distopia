@@ -93,7 +93,7 @@ void CalcBonds256(
     if (n & 0x7) {
         throw "Number of particles must be a multiple of 8";
     }
-    n >>= 3;
+    size_t s = n >> 3;
 
     const __m256 *arr1_256 = (const __m256 *) arr1;
     const __m256 *arr2_256 = (const __m256 *) arr2;
@@ -110,7 +110,7 @@ void CalcBonds256(
     
 //#pragma unroll(2)
 //#pragma GCC unroll(2)
-    for (size_t i = 0; i < n; ++i) {
+    for (size_t i = 0; i < s; ++i) {
         size_t j = i * 3;
         
         __m256 m11 = arr1_256[j];
