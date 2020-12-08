@@ -133,4 +133,3 @@ void CalcBonds256(
 }
 
 #endif //  DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
-
