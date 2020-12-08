@@ -95,10 +95,6 @@ void CalcBonds256(
     }
     n >>= 3;
 
-    const __m256 *arr1_256 = (const __m256 *) arr1;
-    const __m256 *arr2_256 = (const __m256 *) arr2;
-    __m256 *out_256 = (__m256 *) out;
-
     __m256 boxv = {box[0], box[1], box[2], NAN, box[1], box[2], box[0], NAN};
     __m256 rboxv = _mm256_set1_ps(1.0f) / boxv;
     __m256 box1 = _mm256_permute_ps(boxv, _MM_SHUFFLE(0,2,1,0));
@@ -110,16 +106,14 @@ void CalcBonds256(
     
 #pragma unroll(2)
 #pragma GCC unroll(2)
-    for (size_t i = 0; i < n; ++i) {
-        size_t j = i * 3;
-        
-        __m256 m11 = arr1_256[j];
-        __m256 m12 = arr1_256[j+1];
-        __m256 m13 = arr1_256[j+2];
-        __m256 m21 = arr2_256[j];
-        __m256 m22 = arr2_256[j+1];
-        __m256 m23 = arr2_256[j+2];
-        
+    for (size_t i = 0; i < n; ++i) {    
+        __m256 m11 = _mm256_loadu_ps(&arr1[24 * i]);
+        __m256 m12 = _mm256_loadu_ps(&arr1[24 * i + 8]);
+        __m256 m13 = _mm256_loadu_ps(&arr1[24 * i + 16]);
+        __m256 m21 = _mm256_loadu_ps(&arr2[24 * i]);
+        __m256 m22 = _mm256_loadu_ps(&arr2[24 * i + 8]);
+        __m256 m23 = _mm256_loadu_ps(&arr2[24 * i + 16]);
+
         __m256 diffm1 = mm256_periodic_boundary_distance_round(m11, m21, box1, rbox1);
         __m256 diffm2 = mm256_periodic_boundary_distance_round(m12, m22, box2, rbox2);
         __m256 diffm3 = mm256_periodic_boundary_distance_round(m13, m23, box3, rbox3);
@@ -134,7 +128,7 @@ void CalcBonds256(
         dist_sq = _mm256_fmadd_ps(z_diff, z_diff, dist_sq);
 
         __m256 dist = _mm256_sqrt_ps(dist_sq);
-        out_256[i] = dist;
+        _mm256_storeu_ps(&out[8 * i], dist);
     }
 }
 
