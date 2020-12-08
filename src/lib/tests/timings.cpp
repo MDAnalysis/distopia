@@ -14,6 +14,10 @@
 #include "distopia_better_distances.h" // Jakub's fancy approach
 #include "vanilla.h"                   // a naive approach
 
+void printint(int a) {
+  std::cout << a << "\n";
+}
+
 bool loadHeader(FILE *fp, int *Ncoords, float *box) {
   // header format:
   // natoms
@@ -91,7 +95,7 @@ int main(int argc, char *argv[]) {
   }
 
   char *fname = argv[1];
-  int niters = std::stoi(argv[2]);
+  size_t niters = (size_t)std::stoi(argv[2]);
 
   float box[3];
   float *coords, *coords1, *coords2, *coords3;
