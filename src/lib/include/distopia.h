@@ -6,17 +6,6 @@
 #define XDIST_DISTOPIA_H
 
 /*
- * calculates *nvals* pairwise distances between *coords1* and *coords2*
- * *box* is an orthogonal box
- * places results into *output*, which must be allocated large enough
- * i.e. output[n] is the distance between coords1[n] and coords2[n]
- */
-void CalcBondsOrtho(const float* coords1,
-                    const float* coords2,
-                    const float* box,
-                    unsigned int nvals,
-                    float* output);
-/*
  * similar to calcbonds but..
  * *coords* points to the start of all coordinates
  * *coords_end* points to the end of the buffer (used internally for an optimisation)
@@ -27,7 +16,7 @@ void CalcBondsOrtho(const float* coords1,
 void CalcBondsIdxOrtho(const float* coords,
                        const float* coords_end,
                        const unsigned int* idx,  // holds [[1, 2], [7, 8], etc]
-                       float box,
+                       const float *box,
                        unsigned int Ncoords,
                        float* output);
 
