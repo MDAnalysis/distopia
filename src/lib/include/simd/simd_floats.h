@@ -1,5 +1,5 @@
-#ifndef DISTOPIA_SIMD_AVX2_H
-#define DISTOPIA_SIMD_AVX2_H
+#ifndef DISTOPIA_SIMD_FLOAT_H
+#define DISTOPIA_SIMD_FLOAT_H
 
 #include <immintrin.h>
 
@@ -154,4 +154,4 @@ inline SimdFloatX8 operator/(SimdFloatX8 a, SimdFloatX8 b) {
   return floatx8;
 }
 
-#endif // DISTOPIA_SIMD_AVX2_H
+#endif // DISTOPIA_SIMD_FLOAT_H

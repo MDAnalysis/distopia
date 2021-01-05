@@ -60,5 +60,6 @@ static_assert(!DISTOPIA_USE_AVX512 || !DISTOPIA_USE_AVX2,
 // now include headers for simd wrappers
 #include "simd/simd_floats.h"
 #include "simd/simd_doubles.h"
+#include "simd/simd_datastructures.h"
 
 #endif // DISTOPIA_SIMD_CONFIG_H

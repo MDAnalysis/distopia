@@ -1,5 +1,5 @@
-#ifndef DISTOPIA_SIMD_AVX2_H
-#define DISTOPIA_SIMD_AVX2_H
+#ifndef DISTOPIA_SIMD_DOUBLE_H
+#define DISTOPIA_SIMD_DOUBLE_H
 
 #include <immintrin.h>
 
@@ -12,7 +12,7 @@ public:
   inline void loadU(const double *source);
   inline void storeU(double *target);
   inline void zero();
- inline void reciprocal();
+  inline void reciprocal();
 
   __m128d contents;
 };
@@ -49,7 +49,9 @@ inline void SimdDoubleX2::zero() { contents = _mm_setzero_pd(); }
 
 // take reciprocal (1/contents)
 // max relative error ~ 0.000366
-inline void SimdDoubleX2::reciprocal() { contents = _mm_rcp_pd(contents); }
+inline void SimdDoubleX2::reciprocal() {
+  contents = _mm_cvtps_pd(_mm_rcp_ps(_mm_cvtpd_ps(contents)));
+}
 
 // subtract b from a (a - b)
 inline SimdDoubleX2 operator-(SimdDoubleX2 a, SimdDoubleX2 b) {
@@ -123,8 +125,10 @@ inline void SimdDoubleX4::storeU(double *target) {
 inline void SimdDoubleX4::zero() { contents = _mm256_setzero_pd(); }
 
 // take reciprocal (1/contents)
-// max relative error ~ 0.000366
-inline void SimdDoubleX4::reciprocal() { contents = _mm256_rcp_pd(contents); }
+// pass through packed single then convert back
+inline void SimdDoubleX4::reciprocal() {
+  contents = _mm256_cvtps_pd(_mm_rcp_ps(_mm256_cvtpd_ps(contents)));
+}
 
 // subtract b from a (a - b)
 inline SimdDoubleX4 operator-(SimdDoubleX4 a, SimdDoubleX4 b) {
@@ -153,4 +157,4 @@ inline SimdDoubleX4 operator/(SimdDoubleX4 a, SimdDoubleX4 b) {
   return doublex4;
 }
 
-#endif // DISTOPIA_SIMD_AVX2_H
+#endif // #define DISTOPIA_SIMD_DOUBLE_H
