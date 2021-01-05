@@ -57,4 +57,8 @@ static_assert(!DISTOPIA_USE_AVX2 || !DISTOPIA_USE_AVX,
 static_assert(!DISTOPIA_USE_AVX512 || !DISTOPIA_USE_AVX2,
               "SIMD config is not self-consistent");
 
+// now include headers for simd wrappers
+#include "simd/simd_floats.h"
+#include "simd/simd_doubles.h"
+
 #endif // DISTOPIA_SIMD_CONFIG_H
