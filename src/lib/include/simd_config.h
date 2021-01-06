@@ -59,7 +59,7 @@ static_assert(!DISTOPIA_USE_AVX512 || !DISTOPIA_USE_AVX2,
 
 // now include headers for simd wrappers
 // these headers contain logic to include correct methods based on defines above
-#include "simd/simd_double_datastructures.hpp"
+//#include "simd/simd_double_datastructures.hpp"
 #include "simd/simd_doubles.h"
 #include "simd/simd_float_datastructures.hpp"
 #include "simd/simd_floats.h"
