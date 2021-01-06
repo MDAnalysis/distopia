@@ -1,6 +1,7 @@
 #ifndef DISTOPIA_SIMD_FLOAT_H
 #define DISTOPIA_SIMD_FLOAT_H
 
+#include <cassert>
 #include <immintrin.h>
 
 // class to wrap __m128 4 x packed floats
@@ -12,7 +13,7 @@ public:
   inline void loadU(const float *source);
   inline void storeU(float *target);
   inline void zero();
- inline void reciprocal();
+  inline void reciprocal();
 
   __m128 contents;
 };
@@ -76,7 +77,7 @@ inline SimdFloatX4 operator*(SimdFloatX4 a, SimdFloatX4 b) {
 inline SimdFloatX4 operator/(SimdFloatX4 a, SimdFloatX4 b) {
   SimdFloatX4 floatx4;
   floatx4.contents = _mm_rcp_ps(b.contents);
-  floatx4.contents = _mm_mul_ps(floatx4.contents, b.contents);
+  floatx4.contents = _mm_mul_ps(floatx4.contents, a.contents);
   return floatx4;
 }
 

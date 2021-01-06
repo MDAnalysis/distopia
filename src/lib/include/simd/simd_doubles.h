@@ -1,6 +1,7 @@
 #ifndef DISTOPIA_SIMD_DOUBLE_H
 #define DISTOPIA_SIMD_DOUBLE_H
 
+#include <cassert>
 #include <immintrin.h>
 
 // class to wrap __m128d 2 x packed doubles
