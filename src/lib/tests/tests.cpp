@@ -18,10 +18,12 @@ TEST(SimdFloatX4, SetAndStore) {
   }
   delete[] result;
 }
+
+/* __m128 requires 16 bit alignment */
 TEST(SimdFloatX4, AlignedLoadAndStore) {
   SimdFloatX4 fx4;
-  float vals[4] = {1.0F, 2.0F, 3.0F, 4.0F} ; 
-  float *result = new float[4];
+  float vals[4] __attribute__((aligned(16))) = {1.0F, 2.0F, 3.0F, 4.0F};
+  float *result = static_cast<float *>(aligned_alloc(16, 4 * sizeof(float)));
   fx4.load(vals);
   fx4.store(result);
   for (size_t i = 0; i < 4; i++) {
@@ -71,16 +73,13 @@ TEST(SimdFloatX4, Reciprocal) {
 
 TEST(SimdFloatX4, OperatorPlus) {
   SimdFloatX4 a, b, c;
-
   float vals[4]{1.0F, 2.0F, 3.0F, 4.0F};
   float expected[4]{2.0F, 4.0F, 6.0F, 8.0F};
   float *result = new float[4];
-
   a.loadU(vals);
   b.loadU(vals);
   c = a + b;
   c.storeU(result);
-
   for (size_t i = 0; i < 4; i++) {
     EXPECT_FLOAT_EQ(result[i], expected[i]);
   }
@@ -89,7 +88,6 @@ TEST(SimdFloatX4, OperatorPlus) {
 
 TEST(SimdFloatX4, OperatorMinus) {
   SimdFloatX4 a, b, c;
-
   float vals[4]{1.0F, 2.0F, 3.0F, 4.0F};
   float expected[4]{0.0F, 0.0F, 0.0F, 0.0F};
   float *result = new float[4];
@@ -150,18 +148,18 @@ TEST(SimdFloatX8, SetAndStore) {
   delete[] result;
 }
 
-// must make sure memory is aligned, currently NOT WORKING
+/* __m256 requires 32 bit alignment */
 TEST(SimdFloatX8, AlignedLoadAndStore) {
   SimdFloatX8 fx8;
-  float vals[8]  __attribute__((aligned(32))) =  {1.0F, 2.0F, 3.0F, 4.0F, 5.0F, 6.0F, 7.0F, 8.0F};
-  float *result = new float[8]; //TODO need to fix alignment of dynamic memory
+  float vals[8] __attribute__((aligned(32))) = {1.0F, 2.0F, 3.0F, 4.0F,
+                                                5.0F, 6.0F, 7.0F, 8.0F};
+  float *result = static_cast<float *>(aligned_alloc(32, 8 * sizeof(float)));
   fx8.load(vals);
   fx8.store(result);
   for (size_t i = 0; i < 8; i++) {
     EXPECT_FLOAT_EQ(result[i], vals[i]);
   }
   delete[] result;
-  FAIL();
 }
 
 TEST(SimdFloatX8, UnalignedLoadAndStore) {
@@ -191,7 +189,8 @@ TEST(SimdFloatX8, Zero) {
 TEST(SimdFloatX8, Reciprocal) {
   SimdFloatX8 fx8;
   float vals[8]{1.0F, 2.0F, 3.0F, 4.0F, 5.0F, 6.0F, 7.0F, 8.0F};
-  float expected[8]{1.0F/1.0F, 1.0F/2.0F, 1.0F/3.0F, 1.0F/4.0F, 1.0F/5.0F, 1.0F/6.0F, 1.0F/7.0F, 1.0F/8.0F};
+  float expected[8]{1.0F / 1.0F, 1.0F / 2.0F, 1.0F / 3.0F, 1.0F / 4.0F,
+                    1.0F / 5.0F, 1.0F / 6.0F, 1.0F / 7.0F, 1.0F / 8.0F};
   float *result = new float[8];
   fx8.loadU(vals);
   fx8.reciprocal();
@@ -220,7 +219,6 @@ TEST(SimdFloatX8, OperatorPlus) {
 
 TEST(SimdFloatX8, OperatorMinus) {
   SimdFloatX8 a, b, c;
-
   float vals[8]{1.0F, 2.0F, 3.0F, 4.0F, 5.0F, 6.0F, 7.0F, 8.0F};
   float expected[8]{0.0F, 0.0F, 0.0F, 0.0F};
   float *result = new float[8];
@@ -252,7 +250,8 @@ TEST(SimdFloatX8, OperatorMultiply) {
 TEST(SimdFloatX8, OperatorDivide) {
   SimdFloatX8 a, b, c;
   float vals[8]{1.0F, 2.0F, 3.0F, 4.0F, 5.0F, 6.0F, 7.0F, 8.0F};
-  float expected[8]{0.5F, 1.0F, 3.0F / 2.0F, 2.0F, 5.0F/2.0F, 3.0F, 7.0F/2.0F, 4.0F};
+  float expected[8]{0.5F,        1.0F, 3.0F / 2.0F, 2.0F,
+                    5.0F / 2.0F, 3.0F, 7.0F / 2.0F, 4.0F};
   float *result = new float[8];
   a.loadU(vals);
   b.set(2.0F);
