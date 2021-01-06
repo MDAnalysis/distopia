@@ -143,7 +143,7 @@ TEST(SimdFloatX8, SetAndStore) {
   SimdFloatX8 fx8;
   float *result = new float[8];
   fx8.set(1.0F);
-  fx8.store(result);
+  fx8.storeU(result);
   for (size_t i = 0; i < 8; i++) {
     EXPECT_FLOAT_EQ(result[i], 1.0F);
   }
