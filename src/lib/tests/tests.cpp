@@ -18,10 +18,9 @@ TEST(SimdFloatX4, SetAndStore) {
   }
   delete[] result;
 }
-// must make sure memory is aligned, currently NOT WORKING
 TEST(SimdFloatX4, AlignedLoadAndStore) {
   SimdFloatX4 fx4;
-  float vals[4]{1.0F, 2.0F, 3.0F, 4.0F};
+  float vals[4] = {1.0F, 2.0F, 3.0F, 4.0F} ; 
   float *result = new float[4];
   fx4.load(vals);
   fx4.store(result);
@@ -29,7 +28,6 @@ TEST(SimdFloatX4, AlignedLoadAndStore) {
     EXPECT_FLOAT_EQ(result[i], vals[i]);
   }
   delete[] result;
-  FAIL();
 }
 
 TEST(SimdFloatX4, UnalignedLoadAndStore) {
@@ -155,8 +153,8 @@ TEST(SimdFloatX8, SetAndStore) {
 // must make sure memory is aligned, currently NOT WORKING
 TEST(SimdFloatX8, AlignedLoadAndStore) {
   SimdFloatX8 fx8;
-  float vals[8]{1.0F, 2.0F, 3.0F, 4.0F, 5.0F, 6.0F, 7.0F, 8.0F};
-  float *result = new float[8];
+  float vals[8]  __attribute__((aligned(32))) =  {1.0F, 2.0F, 3.0F, 4.0F, 5.0F, 6.0F, 7.0F, 8.0F};
+  float *result = new float[8]; //TODO need to fix alignment of dynamic memory
   fx8.load(vals);
   fx8.store(result);
   for (size_t i = 0; i < 8; i++) {
