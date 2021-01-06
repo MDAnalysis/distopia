@@ -101,14 +101,14 @@ inline void SimdFloatX8::set(const float f) { contents = _mm256_set1_ps(f); }
 // aligned load from float*
 inline void SimdFloatX8::load(const float *source) {
   // check alignment
-  assert(size_t(source) % 16 == 0);
+  assert(size_t(source) % 32 == 0);
   contents = _mm256_load_ps(source);
 }
 
 // aligned store to float*
 inline void SimdFloatX8::store(float *target) {
   // check alignment
-  assert(size_t(target) % 16 == 0);
+  assert(size_t(target) % 32 == 0);
   _mm256_store_ps(target, contents);
 }
 

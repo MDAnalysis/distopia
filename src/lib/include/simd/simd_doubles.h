@@ -93,23 +93,23 @@ public:
   inline void zero();
   inline void reciprocal();
 
-  __m256 contents;
+  __m256d contents;
 };
 
 // set to all same value
-inline void SimdDoubleX4::set(const double f) { contents = _mm256_set1_pd(f); }
+inline void SimdDoubleX4::set(const double d) { contents = _mm256_set1_pd(d); }
 
 // aligned load from double*
 inline void SimdDoubleX4::load(const double *source) {
   // check alignment
-  assert(size_t(source) % 16 == 0);
+  assert(size_t(source) % 32 == 0);
   contents = _mm256_load_pd(source);
 }
 
 // aligned store to double*
 inline void SimdDoubleX4::store(double *target) {
   // check alignment
-  assert(size_t(target) % 16 == 0);
+  assert(size_t(target) % 32 == 0);
   _mm256_store_pd(target, contents);
 }
 
@@ -127,6 +127,7 @@ inline void SimdDoubleX4::zero() { contents = _mm256_setzero_pd(); }
 
 // take reciprocal (1/contents)
 // pass through packed single then convert back
+// likely lossy
 inline void SimdDoubleX4::reciprocal() {
   contents = _mm256_cvtps_pd(_mm_rcp_ps(_mm256_cvtpd_ps(contents)));
 }
