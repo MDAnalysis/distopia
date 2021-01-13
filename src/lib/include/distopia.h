@@ -64,9 +64,4 @@ void CalcAnglesOrtho(const float* coords1,
                     unsigned int nvals,
                     float* output);
 
-void CalcBondsOrthoSingle(const float* coords0, const float* coords1,
-                    const float* box, std::size_t n, float* out);
-void CalcBondsOrthoMulti(const float* coords0, const float* coords1,
-                    const float* box, std::size_t n, float* out);
-
 #endif //XDIST_DISTOPIA_H
