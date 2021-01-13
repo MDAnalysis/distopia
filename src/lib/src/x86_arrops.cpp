@@ -131,11 +131,11 @@ void CalcBondsOrtho(const float* coords0, const float* coords1,
                     const float* box, std::size_t n, float* out) {
   CalcBondsOrthoDispatch(coords0, coords1, box, n, out);
 }
-// template<>
-// void CalcBondsOrtho(const double* coords0, const double* coords1,
-//                     const double* box, std::size_t n, double* out) {
-//   CalcBondsOrthoDispatch(coords0, coords1, box, n, out);
-// }
+template<>
+void CalcBondsOrtho(const double* coords0, const double* coords1,
+                    const double* box, std::size_t n, double* out) {
+  CalcBondsOrthoDispatch(coords0, coords1, box, n, out);
+}
 
 
 #endif // DISTOPIA_X86_SSE4_1
