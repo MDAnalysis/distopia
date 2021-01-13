@@ -99,7 +99,6 @@ template<typename T> using BigVecT = typename BigVecTStruct<T>::type;
 template<typename T>
 void CalcBondsOrthoDispatch(const T* coords0, const T* coords1,
                             const T* box, std::size_t n, T* out) {
-  bool out_aligned = reinterpret_cast<std::uintptr_t>(out) % sizeof(T) == 0;
   if (distopia_unlikely(!IsAligned<T>(out))) {
     // Seriously misaligned buffer. We're gonna nope out.
     CalcBondsOrthoScalar(coords0, coords1, box, n, out);
