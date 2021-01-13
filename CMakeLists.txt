@@ -50,10 +50,13 @@ foreach(_option ${SSE_OPT_LIST})
   endif()
 endforeach()
 
+if(DISTOPIA_SELECT_SIMD)
+  message(STATUS "${Green}DISTOPIA_SELECT_SIMD is set to ON, DISTOPIA will attempt to choose SIMD flavour for you.${ColourReset}")
+endif()
+
 if(${_nopt} EQUAL 0)
-  message(STATUS "${Green}No instruction set selected DISTOPIA will attempt to choose for you.${ColourReset}")
-  message(STATUS "${Green}Setting DISTOPIA_SELECT_SIMD to ON.${ColourReset}")
-  set(DISTOPIA_SELECT_SIMD on)
+  message(STATUS "${Yellow}No instruction set selected and DISTOPIA_SELECT_SIMD is set to OFF, DISTOPIA will NOT attempt to choose for you.${ColourReset}")
+  set(DISTOPIA_SELECT_SIMD off)
 elseif(${_nopt} EQUAL 1)
   message(STATUS "${Green}Instruction set selected by user.${ColourReset}")
   message(STATUS "${Green}Setting DISTOPIA_SELECT_SIMD to OFF.${ColourReset}")
@@ -213,7 +216,8 @@ elseif(DISTOPIA_USE_AVX512 AND AVX512_SUPPORTED)
   add_compile_definitions(DISTOPIA_USE_AVX512=1)
 
 else()
-  message(FATAL_ERROR "${Red}Selecting a SIMD type has failed.${ColourReset}")
+  message(STATUS "${Cyan} No SIMD type explicitly selected, fallthrough to autovectorisation.${ColourReset}")
+  add_compile_definitions(DISTOPIA_FALLTHROUGH=1)
 endif()
 
 

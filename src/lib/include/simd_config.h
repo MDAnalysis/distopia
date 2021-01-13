@@ -2,6 +2,10 @@
 #ifndef DISTOPIA_SIMD_CONFIG_H
 #define DISTOPIA_SIMD_CONFIG_H
 
+#ifndef DISTOPIA_FALLTHROUGH
+#define DISTOPIA_FALLTHROUGH 0
+#endif
+
 #ifndef DISTOPIA_USE_SSE1
 #define DISTOPIA_USE_SSE1 0
 #endif
@@ -40,6 +44,8 @@
 
 // check we dont have overlapping defines
 
+static_assert(!DISTOPIA_USE_SSE1 || !DISTOPIA_FALLTHROUGH,
+              "SIMD config is not self-consistent");
 static_assert(!DISTOPIA_USE_SSE2 || !DISTOPIA_USE_SSE1,
               "SIMD config is not self-consistent");
 static_assert(!DISTOPIA_USE_SSE3 || !DISTOPIA_USE_SSE2,
