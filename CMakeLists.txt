@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(DISTOPIA LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
 
@@ -224,11 +224,11 @@ set(COMPILER_FLAGS_RELEASE)
 
 # do cross platform compatibility here
 if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
-  list(APPEND CXX_FLAGS "-O3" "-ffast-math" "-mfma" "-fno-math-errno")
+  list(APPEND CXX_FLAGS "-O3" "-fno-math-errno" "-fno-trapping-math")
   list(APPEND CXX_FLAGS_DEBUG  "-g" "-O0" "-Wall"  "-Wextra" )
   list(APPEND CXX_FLAGS_RELEASE "-Wno-unused")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES Clang)
-  list(APPEND CXX_FLAGS "-O3" "-ffast-math" "-mfma" "-fno-math-errno")
+  list(APPEND CXX_FLAGS "-O3" "-fno-math-errno" "-fno-trapping-math")
   list(APPEND CXX_FLAGS_DEBUG   "-g" "-O0" "-Wall"  "-Wextra")
   list(APPEND CXX_FLAGS_RELEASE "-Wno-unused")
 else()

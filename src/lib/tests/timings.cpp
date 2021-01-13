@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "anglekernels.h"              // from mdtraj
+#include "arrops.h"
 #include "calc_distances.h"            // from mdanalysis
 #include "distancekernels.h"           // from mdtraj
 #include "distopia.h"                  // a fancy approach
