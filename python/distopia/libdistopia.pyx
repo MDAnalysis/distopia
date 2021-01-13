@@ -1,12 +1,13 @@
+# distutils: language = c++
+
 import numpy as np
 
-
-cdef extern from "distopia.h":
-     void CalcBondsOrtho(const float* coords1,
-                         const float* coords2,
-                         const float* box,
-                         unsigned int nvals,
-                         float* output)
+cdef extern from "distopia.h" nogil:
+     void CalcBondsOrtho[T](const T* coords0,
+                            const T* coords1,
+                            const T* box,
+                            size_t n,
+                            T* output)
      void CalcBondsIdxOrtho(const float* coords,
                             const float* coords_end,
                             const unsigned int* idx,

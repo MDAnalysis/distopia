@@ -3,8 +3,8 @@
 #include "ops.h"
 
 template<typename T>
-void CalcBondsOrtho(const T* coords0, const T* coords1,
-                    const T* box, std::size_t n, T* out) {
+void CalcBondsOrthoScalar(const T* coords0, const T* coords1,
+                          const T* box, std::size_t n, T* out) {
   T bx = box[0], by = box[1], bz = box[2];
   for (std::size_t i = 0; i < n; ++i) {
     T x0 = coords0[3 * i], x1 = coords1[3 * i];
@@ -14,12 +14,26 @@ void CalcBondsOrtho(const T* coords0, const T* coords1,
   }
 }
 
+template<typename T>
+void CalcBondsOrtho(const T* coords0, const T* coords1,
+                    const T* box, std::size_t n, T* out) {
+  CalcBondsOrthoScalar(coords0, coords1, box, n, out);
+}
+
 #ifndef DISTOPIA_X86_SSE4_1
 template
 void CalcBondsOrtho(const float* coords0, const float* coords1,
                     const float* box, std::size_t n, float* out);
 template
 void CalcBondsOrtho(const double* coords0, const double* coords1,
+                    const double* box, std::size_t n, double* out);
+#else
+// These get called in some pathological cases that are not worth optimizing.
+template
+void CalcBondsOrthoScalar(const float* coords0, const float* coords1,
+                    const float* box, std::size_t n, float* out);
+template
+void CalcBondsOrthoScalar(const double* coords0, const double* coords1,
                     const double* box, std::size_t n, double* out);
 #endif
 template
