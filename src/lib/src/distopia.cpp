@@ -60,6 +60,18 @@
     (out) = _mm_sqrt_ps(dx[0]);                                                \
   } while (0)
 
+inline float SinglePairwiseDistance(const float *coords1, const float *coords2,
+                                    const float *box) {
+  float dx = 0.0;
+
+  for (unsigned char i = 0; i < 3; ++i) {
+    float rij = coords1[i] - coords2[i];
+    float adj = round(rij / box[i]);
+    rij -= adj * box[i];
+    dx += rij * rij;
+  }
+  return sqrtf(dx);
+}
 
 inline float SinglePairwiseAngle(const float *coords1, const float *coords2,
                                  const float *coords3, const float *box) {
@@ -89,19 +101,6 @@ inline float SinglePairwiseAngle(const float *coords1, const float *coords2,
 
   float acc = rji[0] * rjk[0] + rji[1] * rjk[1] + rji[2] * rjk[2];
   return acosf(acc);
-}
-
-inline float SinglePairwiseDistance(const float *coords1, const float *coords2,
-                                    const float *box) {
-  float dx = 0.0;
-
-  for (unsigned char i = 0; i < 3; ++i) {
-    float rij = coords1[i] - coords2[i];
-    float adj = round(rij / box[i]);
-    rij -= adj * box[i];
-    dx += rij * rij;
-  }
-  return sqrtf(dx);
 }
 
 // identical to _MM_TRANSPOSE4_ps except we don't care about the last column in
