@@ -5,14 +5,9 @@
 #include <immintrin.h>
 #include <iostream>
 #include <cmath>
-#include <immintrin.h>
 
 #include "distopia.h"
 #include "simd_config.h"
-
-#ifdef DISTOPIA_X86_SSE
-#include <immintrin.h>
-#endif
 
 // [X1, Y1, Z1, X2], [Y2, Z2, X3, Y3], [Z3, X4, Y4, Z4]
 // TO
