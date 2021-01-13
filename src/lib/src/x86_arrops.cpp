@@ -19,7 +19,15 @@ constexpr bool IsAligned(const U* addr) {
   return reinterpret_cast<std::uintptr_t>(addr) % sizeof(T) == 0;
 }
 
+// Big vector operations cause the CPU to stall while it changes voltage.
+// Small tasks should therefore use small (128-bit) vectors.
 constexpr std::size_t kBigVectorThreshold = 256 * 1024;
+
+// Normal stores perform a read from memory, change the data in the cache, and
+// write back to memory when the cacheline is being evicted. Streaming stores
+// write directly to memory. This means that normal stores are faster for
+// smaller tasks (when the output fits in cache) whereas streaming stores are
+// faster for bigger tasks (saving one read for every write).
 constexpr std::size_t kStreamingThreshold = 16 * 1024 * 1024;
 
 template<bool streaming_store, typename VectorT, typename FloatingT>
