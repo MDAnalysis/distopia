@@ -43,11 +43,11 @@ TEST(TestX86Swizzle, Double128Deinterleave) {
   Deinterleave3(a, b, c, res_x, res_y, res_z);
   
   bool x_is_correct
-    = _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_pd(res_x, correct_x)));
+    = _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(res_x, correct_x)));
   bool y_is_correct
-    = _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_pd(res_y, correct_y)));
+    = _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(res_y, correct_y)));
   bool z_is_correct
-    = _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_pd(res_z, correct_z)));
+    = _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(res_z, correct_z)));
   EXPECT_TRUE(x_is_correct);
   EXPECT_TRUE(y_is_correct);
   EXPECT_TRUE(z_is_correct);
