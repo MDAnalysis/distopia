@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(DISTOPIA LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
 
@@ -295,6 +295,8 @@ if(DISTOPIA_BUILD_TIMINGS)
   if(NOT DISTOPIA_BUILD_TEST)
     message(FATAL_ERROR "Building googlebench timings requires building googletest also")
   endif()
+
+  # old timings executable
   add_subdirectory(${DISTOPIA_TEST_DIR}/googlebench)
   add_executable(timings ${DISTOPIA_TEST_DIR}/timings.cpp)
   target_compile_options(timings
@@ -304,5 +306,15 @@ if(DISTOPIA_BUILD_TIMINGS)
       "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
     )
   target_link_libraries(timings distopia)
-  target_link_libraries(timings benchmark::benchmark)
+
+  # googlebench executable
+  add_executable(benchmarks ${DISTOPIA_TEST_DIR}/benchmark.cpp)
+  target_compile_options(benchmarks
+  PRIVATE
+    ${CXX_FLAGS}
+    "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
+    "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
+  )
+  target_link_libraries(benchmarks distopia)
+  target_link_libraries(benchmarks benchmark::benchmark)
 endif()
