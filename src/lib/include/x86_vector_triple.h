@@ -1,5 +1,5 @@
-#ifndef DISTOPIA_DATASTRUCTURES
-#define DISTOPIA_DATASTRUCTURES
+#ifndef DISTOPIA_X86_VECTOR_TRIPLE
+#define DISTOPIA_X86_VECTOR_TRIPLE
 
 #include "distopia_type_traits.h"
 #include "x86_swizzle.h"
@@ -19,21 +19,28 @@ public:
   // from 3 SIMD Vector datatypes eg __m128 or __m128d
   inline VectorTriple(VectorT a, VectorT b, VectorT c) : a(a), b(b), c(c) {}
 
-  // load from a vector of ScalarT eg float* or double *
+  // load from a vector of ScalarT eg float* or double * as constructor
   inline VectorTriple(ScalarT *source) {
     a = load_p(source);
     b = load_p(source[nvals_per_pack]);
     c = load_p(source[2 * nvals_per_pack]);
   }
 
+  // load from a vector of ScalarT eg float* or double *
+  inline void load(ScalarT *source) {
+    a = load_p(source);
+    b = load_p(source[nvals_per_pack]);
+    c = load_p(source[2 * nvals_per_pack]);
+  }
+
     // to a vector of ScalarT eg float* or double *
-  inline void Store(ScalarT *target) {
-    target = store_p(a);
-    target[nvals_per_pack] = store_p(b);
-    target[2*nvals_per_pack] = store_p(c);
+  inline void store(ScalarT *target) {
+    store_p(target, a);
+    store_p(target[nvals_per_pack], b);
+    store_p(target[2*nvals_per_pack], c);
   }
   // AOS2SOA
-  inline VectorTriple<VectorT, ScalarT> Deinterleave() {
+  inline VectorTriple<VectorT, ScalarT> deinterleave() {
     VectorT a1, b1, c1;
     Deinterleave3(a, b, c, a1, b1, c1);
     VectorTriple<VectorT, ScalarT> vt(a1, b1, c1);
@@ -41,4 +48,4 @@ public:
   }
 };
 
-#endif // DISTOPIA_DATASTRUCTURES
+#endif // DISTOPIA_X86_VECTOR_TRIPLE
