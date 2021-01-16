@@ -20,9 +20,9 @@ public:
 
   // load from a vector of ScalarT eg float* or double * as constructor
   inline VectorTriple(ScalarT *source) {
-    a = load_p(source);
-    b = load_p(source[nvals_per_pack]);
-    c = load_p(source[2 * nvals_per_pack]);
+    a = load_p<VectorT>(source);
+    b = load_p<VectorT>(source[nvals_per_pack]);
+    c = load_p<VectorT>(source[2 * nvals_per_pack]);
   }
 
   // load from a vector of ScalarT eg float* or double *
