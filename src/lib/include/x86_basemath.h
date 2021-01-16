@@ -9,7 +9,7 @@
 #include <type_traits>
 
 #include "compiler_hints.h"
-#include "x86_gintrin.h"
+#include "x86_tgintrin.h"
 #include "x86_vectors.h"
 
 namespace {

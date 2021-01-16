@@ -7,7 +7,7 @@
 
 #include <immintrin.h>
 
-#include "x86_gintrin.h"
+#include "x86_tgintrin.h"
 
 namespace {
 

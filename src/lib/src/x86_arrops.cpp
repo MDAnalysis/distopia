@@ -8,7 +8,7 @@
 
 #include "arrops.h"
 #include "compiler_hints.h"
-#include "x86_gintrin.h"
+#include "x86_tgintrin.h"
 #include "x86_swizzle.h"
 #include "ops.h"
 

@@ -5,7 +5,7 @@
 #ifdef DISTOPIA_X86_SSE4_1
 
 #include <immintrin.h>
-#include "x86_gintrin.h"
+#include "x86_tgintrin.h"
 
 namespace {
 
