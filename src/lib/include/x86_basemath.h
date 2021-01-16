@@ -5,6 +5,7 @@
 
 #ifdef DISTOPIA_X86_SSE4_1
 
+#include <cfloat>
 #include <immintrin.h>
 #include <type_traits>
 
