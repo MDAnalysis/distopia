@@ -60,27 +60,19 @@ using EnableIfMatching =
 #pragma GCC diagnostic pop
 #endif
 
-template <typename T, EnableIfVector<T> = 0> struct ValuesPerPack {
-  // should not be callable due to EnableIfVector<T> can we make formal?
-  static constexpr std::size_t value = 0;
-  static constexpr uintptr_t value_p = 0;
-};
+template <typename T, EnableIfVector<T> = 0> struct ValuesPerPack;
 template <> struct ValuesPerPack<__m128> {
   static constexpr std::size_t value = 4;
-  static constexpr uintptr_t value_p = 4;
 };
 template <> struct ValuesPerPack<__m128d> {
   static constexpr std::size_t value = 2;
-  static constexpr uintptr_t value_p = 2;
 };
 #ifdef DISTOPIA_X86_AVX
 template <> struct ValuesPerPack<__m256> {
   static constexpr std::size_t value = 8;
-  static constexpr uintptr_t value_p = 8;
 };
 template <> struct ValuesPerPack<__m256d> {
   static constexpr std::size_t value = 4;
-  static constexpr uintptr_t value_p = 4;
 };
 
 #endif // DISTOPIA_X86_AVX
