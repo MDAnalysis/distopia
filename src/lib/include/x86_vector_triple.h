@@ -36,7 +36,7 @@ public:
   inline void store(ScalarT *target) {
     store_p<VectorT>(target, a);
     store_p<VectorT>(target[nvals_per_pack], b);
-    store_p(target[2*nvals_per_pack], c);
+    store_p<VectorT>(target[2*nvals_per_pack], c);
   }
   // AOS2SOA
   inline VectorTriple<VectorT, ScalarT> deinterleave() {
