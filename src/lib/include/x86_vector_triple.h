@@ -13,8 +13,7 @@ public:
   VectorT a;
   VectorT b;
   VectorT c;
-  // should this be size_t or uintptr_t?
-  constexpr static intptr_t nvals_per_pack = ValuesPerPack<VectorT>::value_p;
+  constexpr static std::size_t nvals_per_pack = ValuesPerPack<VectorT>::value;
 
   // from 3 SIMD Vector datatypes eg __m128 or __m128d
   inline VectorTriple(VectorT a, VectorT b, VectorT c) : a(a), b(b), c(c) {}
@@ -28,15 +27,15 @@ public:
 
   // load from a vector of ScalarT eg float* or double *
   inline void load(ScalarT *source) {
-    a = load_p(source);
-    b = load_p(source[nvals_per_pack]);
-    c = load_p(source[2 * nvals_per_pack]);
+    a = load_p<VectorT>(source);
+    b = load_p<VectorT>(source[nvals_per_pack]);
+    c = load_p<VectorT>(source[2 * nvals_per_pack]);
   }
 
-    // to a vector of ScalarT eg float* or double *
+  // to a vector of ScalarT eg float* or double *
   inline void store(ScalarT *target) {
-    store_p(target, a);
-    store_p(target[nvals_per_pack], b);
+    store_p<VectorT>(target, a);
+    store_p<VectorT>(target[nvals_per_pack], b);
     store_p(target[2*nvals_per_pack], c);
   }
   // AOS2SOA
