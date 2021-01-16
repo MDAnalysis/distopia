@@ -4,8 +4,9 @@
 
 #include <immintrin.h>
 #include <iostream>
-#include <math.h>
-#include <xmmintrin.h>
+#include <cmath>
+
+#include "distopia.h"
 #include "simd_config.h"
 
 // [X1, Y1, Z1, X2], [Y2, Z2, X3, Y3], [Z3, X4, Y4, Z4]
@@ -95,57 +96,6 @@ inline float SinglePairwiseAngle(const float *coords1, const float *coords2,
 
   float acc = rji[0] * rjk[0] + rji[1] * rjk[1] + rji[2] * rjk[2];
   return acosf(acc);
-}
-
-// zip over coords1 and coords2 and calculate pairwise distance w/ periodic
-// boundary conditions store results in output, must be large enough etc etc
-void CalcBondsOrtho(const float *coords1, const float *coords2,
-                    const float *box, unsigned int nvals, float *output) {
-  __m128 xbox[3], ib[3];
-  for (unsigned char i = 0; i < 3; ++i) {
-    // b[0] = [lx, lx, lx, lx], ib == inverse box
-    xbox[i] = _mm_set_ps1(box[i]);
-    ib[i] = _mm_set_ps1(1 / box[i]);
-  }
-
-  // deal with single iterations
-  unsigned int nsingle = nvals & 0x03;
-  for (unsigned char i = 0; i < nsingle; ++i)
-    *output++ = SinglePairwiseDistance(coords1 + i, coords2 + i, box);
-
-  coords1 += nsingle * 3;
-  coords2 += nsingle * 3;
-
-  unsigned int niters = nvals >> 2;
-  for (unsigned int i = 0; i < niters; ++i) {
-    // load 4 coords from each
-    __m128 icoord[3], jcoord[3];
-    icoord[0] = _mm_loadu_ps(coords1 + i * 12);
-    icoord[1] = _mm_loadu_ps(coords1 + i * 12 + 4);
-    icoord[2] = _mm_loadu_ps(coords1 + i * 12 + 8);
-    jcoord[0] = _mm_loadu_ps(coords2 + i * 12);
-    jcoord[1] = _mm_loadu_ps(coords2 + i * 12 + 4);
-    jcoord[2] = _mm_loadu_ps(coords2 + i * 12 + 8);
-
-    // TODO: Can push the conversion to only the deltas (i.e. only one
-    // conversion needed)
-    AoS2SoA(icoord[0], icoord[1], icoord[2]);
-    AoS2SoA(jcoord[0], jcoord[1], jcoord[2]);
-
-    // calculate deltas
-    __m128 delta[3];
-    for (unsigned char x = 0; x < 3; ++x) {
-      delta[x] = _mm_sub_ps(icoord[x], jcoord[x]);
-    }
-
-    MIC_ORTHO(delta, xbox, ib);
-
-    __m128 r;
-    VECTOR_NORM(delta, r);
-
-    _mm_storeu_ps(output, r);
-    output += 4;
-  }
 }
 
 // identical to _MM_TRANSPOSE4_ps except we don't care about the last column in
