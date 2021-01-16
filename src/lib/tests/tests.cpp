@@ -3,9 +3,44 @@
 #include <iostream>
 #ifdef DISTOPIA_X86_SSE4_1
 
-#include "datastructures.h"
+#include "x86_vector_triple.h"
 #include "x86_swizzle.h"
 #include <immintrin.h>
+
+TEST(TestX86Vec, Float128Load) {
+  float abc[12] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f,
+                   06.f, 07.f, 08.f, 09.f, 10.f, 11.f};
+
+  __m128 correct_x = _mm_setr_ps(00.f, 01.f, 02.f, 03.f);
+  __m128 correct_y = _mm_setr_ps(04.f, 05.f, 06.f, 07.f);
+  __m128 correct_z = _mm_setr_ps(08.f, 09.f, 10.f, 11.f);
+
+  VectorTriple<__m128, float> vt = VectorTriple<__m128, float>(abc);
+    bool x_is_correct =
+_mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.a, correct_x)));
+    bool y_is_correct =
+_mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.b, correct_y)));
+    bool z_is_correct =
+_mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.c, correct_z)));
+
+}
+
+TEST(TestX86Vec, Float128Store) {
+  float correct_abc[12] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f,
+                   06.f, 07.f, 08.f, 09.f, 10.f, 11.f};
+
+  __m128 x = _mm_set_ps(00.f, 01.f, 02.f, 03.f);
+  __m128 y = _mm_set_ps(04.f, 05.f, 06.f, 07.f);
+  __m128 z = _mm_set_ps(08.f, 09.f, 10.f, 11.f);
+
+  VectorTriple<__m128, float> vt = VectorTriple<__m128, float>(x,y,z);
+  float* result = new float[12]; 
+  vt.store(result);
+  for(std::size_t i=0; i< 12; i++){
+    EXPECT_FLOAT_EQ(correct_abc[i], result[i]);
+  }
+
+}
 
 TEST(TestX86SwizzleVec, Float128Deinterleave) {
   __m128 a = _mm_setr_ps(00.f, 01.f, 02.f, 10.f);
@@ -17,7 +52,7 @@ TEST(TestX86SwizzleVec, Float128Deinterleave) {
   __m128 correct_z = _mm_setr_ps(02.f, 12.f, 22.f, 32.f);
 
   VectorTriple<__m128, float> vt = VectorTriple<__m128, float>(a, b, c);
-  VectorTriple<__m128, float> vt_res = vt.Deinterleave();
+  VectorTriple<__m128, float> vt_res = vt.deinterleave();
 
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.a, correct_x)));
@@ -40,7 +75,7 @@ TEST(TestX86SwizzleVec, Double128Deinterleave) {
   __m128d correct_z = _mm_setr_pd(02., 12.);
 
   VectorTriple<__m128d, double> vt = VectorTriple<__m128d, double>(a, b, c);
-  auto vt_res = vt.Deinterleave();
+  auto vt_res = vt.deinterleave();
 
   bool x_is_correct =
       _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(vt_res.a, correct_x)));
@@ -67,7 +102,7 @@ TEST(TestX86SwizzleVec, Float256Deinterleave) {
       _mm256_setr_ps(02.f, 12.f, 22.f, 32.f, 42.f, 52.f, 62.f, 72.f);
 
   VectorTriple<__m256, float> vt = VectorTriple<__m256, float>(a, b, c);
-  auto vt_res = vt.Deinterleave();
+  auto vt_res = vt.deinterleave();
 
   bool x_is_correct = _mm256_testc_ps(
       _mm256_setzero_ps(), _mm256_cmp_ps(vt_res.a, correct_x, _CMP_NEQ_UQ));
@@ -90,7 +125,7 @@ TEST(TestX86SwizzleVec, Double256Deinterleave) {
   __m256d correct_z = _mm256_setr_pd(02., 12., 22., 32.);
 
   VectorTriple<__m256d, double> vt = VectorTriple<__m256d, double>(a, b, c);
-  auto vt_res = vt.Deinterleave();
+  auto vt_res = vt.deinterleave();
 
   bool x_is_correct = _mm256_testc_pd(
       _mm256_setzero_pd(), _mm256_cmp_pd(vt_res.a, correct_x, _CMP_NEQ_UQ));
