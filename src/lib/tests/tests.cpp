@@ -4,7 +4,7 @@
 #ifdef DISTOPIA_X86_SSE4_1
 
 #include <immintrin.h>
-
+#include "datastructures.h"
 #include "x86_swizzle.h"
 
 TEST(TestX86Swizzle, Float128Deinterleave) {
@@ -102,6 +102,34 @@ TEST(TestX86Swizzle, Double256Deinterleave) {
   EXPECT_TRUE(y_is_correct);
   EXPECT_TRUE(z_is_correct);
 }
+
+TEST(VectorTripleX86, Double256Deinterleave) {
+  __m256d a = _mm256_setr_pd(00., 01., 02., 10.);
+  __m256d b = _mm256_setr_pd(11., 12., 20., 21.);
+  __m256d c = _mm256_setr_pd(22., 30., 31., 32.);
+
+
+  __m256d correct_x = _mm256_setr_pd(00., 10., 20., 30.);
+  __m256d correct_y = _mm256_setr_pd(01., 11., 21., 31.);
+  __m256d correct_z = _mm256_setr_pd(02., 12., 22., 32.);
+  
+  VectorTriple vt = VectorTriple<__m256d, double>(a, b, c);
+  VectorTriple<__m256d, double> vt_res = vt.Deinterleave();
+  
+  bool x_is_correct = _mm256_testc_pd(
+    _mm256_setzero_pd(), _mm256_cmp_pd(vt_res.a, correct_x, _CMP_NEQ_UQ));
+  bool y_is_correct = _mm256_testc_pd(
+    _mm256_setzero_pd(), _mm256_cmp_pd(vt_res.b, correct_y, _CMP_NEQ_UQ));
+  bool z_is_correct = _mm256_testc_pd(
+    _mm256_setzero_pd(), _mm256_cmp_pd(vt_res.c, correct_z, _CMP_NEQ_UQ));
+  EXPECT_TRUE(x_is_correct);
+  EXPECT_TRUE(y_is_correct);
+  EXPECT_TRUE(z_is_correct);
+}
+
 #endif // DISTOPIA_X86_AVX
 
 #endif // DISTOPIA_X86_SSE4_1
+
+
+

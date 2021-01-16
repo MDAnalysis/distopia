@@ -6,14 +6,9 @@
 
 #include "compiler_hints.h"
 #include "x86_vectors.h"
+#include "distopia_type_traits.h"
 
 namespace {
-
-// Ensure that below are only enabled for scalar types.
-template<typename T>
-using EnableIfFloating
-  = typename std::enable_if<std::is_floating_point<T>::value, int>::type;
-
 
 template<typename T, EnableIfFloating<T> = 0>
 inline T Abs(T x) { return std::fabs(x); }

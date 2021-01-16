@@ -12,30 +12,9 @@
 #include "compiler_hints.h"
 #include "x86_tgintrin.h"
 #include "x86_vectors.h"
+#include "distopia_type_traits.h"
 
 namespace {
-
-
-#ifdef DISTOPIA_GCC
-  // Silence GCC warning when explicitly specializing.
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wignored-attributes"
-#endif
-
-// Ensure these overloads are only enabled for native vector types.
-template<typename T> struct IsVector { static const bool value = false; };
-template<> struct IsVector<__m128> { static const bool value = true; };
-template<> struct IsVector<__m128d> { static const bool value = true; };
-#ifdef DISTOPIA_X86_AVX
-  template<> struct IsVector<__m256> { static const bool value = true; };
-  template<> struct IsVector<__m256d> { static const bool value = true; };
-#endif
-template<typename T>
-using EnableIfVector = typename std::enable_if<IsVector<T>::value, int>::type;
-
-#ifdef DISTOPIA_GCC
-  #pragma GCC diagnostic pop
-#endif
 
 
 template<typename T, EnableIfVector<T> = 0>
