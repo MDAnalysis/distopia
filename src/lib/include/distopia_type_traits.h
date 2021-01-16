@@ -6,11 +6,9 @@
 #include <type_traits>
 
 // Ensure that only enabled for scalar types.
-template<typename T>
-using EnableIfFloating
-  = typename std::enable_if<std::is_floating_point<T>::value, int>::type;
-
-
+template <typename T>
+using EnableIfFloating =
+    typename std::enable_if<std::is_floating_point<T>::value, int>::type;
 
 #ifdef DISTOPIA_X86_SSE4_1
 
@@ -27,28 +25,65 @@ template <typename T> struct IsVector { static constexpr bool value = false; };
 template <> struct IsVector<__m128> { static constexpr bool value = true; };
 template <> struct IsVector<__m128d> { static constexpr bool value = true; };
 
-template <typename T, typename U> struct MatchingType {static constexpr bool value = false;};
-template <> struct  MatchingType<__m128, float>  { static constexpr bool value = true; };
-template <> struct  MatchingType<__m128d, double>  { static constexpr bool value = true; };
-
+// check that a simd type matches a scalar type eg __m128 and float, __m128d
+// and double
+template <typename T, typename U> struct MatchingType {
+  static constexpr bool value = false;
+};
+template <> struct MatchingType<__m128, float> {
+  static constexpr bool value = true;
+};
+template <> struct MatchingType<__m128d, double> {
+  static constexpr bool value = true;
+};
 
 #ifdef DISTOPIA_X86_AVX
 template <> struct IsVector<__m256> { static constexpr bool value = true; };
 template <> struct IsVector<__m256d> { static constexpr bool value = true; };
 
-template <> struct  MatchingType<__m256, float>  { static constexpr bool value = true; };
-template <> struct  MatchingType<__m256d, double>  { static constexpr bool value = true; };
+template <> struct MatchingType<__m256, float> {
+  static constexpr bool value = true;
+};
+template <> struct MatchingType<__m256d, double> {
+  static constexpr bool value = true;
+};
 
 #endif // DISTOPIA_X86_AVX
 template <typename T>
 using EnableIfVector = typename std::enable_if<IsVector<T>::value, int>::type;
 
 template <typename T, typename U>
-using EnableIfMatching = typename std::enable_if<MatchingType<T,U>::value, int>::type;
+using EnableIfMatching =
+    typename std::enable_if<MatchingType<T, U>::value, int>::type;
 
 #ifdef DISTOPIA_GCC
 #pragma GCC diagnostic pop
 #endif
+
+template <typename T, EnableIfVector<T> = 0> struct ValuesPerPack {
+  // should not be callable due to EnableIfVector<T> can we make formal?
+  static constexpr std::size_t value = 0;
+  static constexpr uintptr_t value_p = 0;
+};
+template <> struct ValuesPerPack<__m128> {
+  static constexpr std::size_t value = 4;
+  static constexpr uintptr_t value_p = 4;
+};
+template <> struct ValuesPerPack<__m128d> {
+  static constexpr std::size_t value = 2;
+  static constexpr uintptr_t value_p = 2;
+};
+#ifdef DISTOPIA_X86_AVX
+template <> struct ValuesPerPack<__m256> {
+  static constexpr std::size_t value = 8;
+  static constexpr uintptr_t value_p = 8;
+};
+template <> struct ValuesPerPack<__m256d> {
+  static constexpr std::size_t value = 4;
+  static constexpr uintptr_t value_p = 4;
+};
+
+#endif // DISTOPIA_X86_AVX
 
 #endif // DISTOPIA_X86_SSE4_1
 
