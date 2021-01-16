@@ -99,11 +99,12 @@ inline T DistanceModulo(T x0, T x1, T y) {
 #endif // DISTOPIA_X86_SSE4_1
 
 // 80-bit extended precision handling.
+// Need to check if we're on x86 and if long double is the x87 native type.
 namespace {
 #if defined(DISTOPIA_X86) && \
     (defined(DISTOPIA_CLANG) || defined(DISTOPIA_ICC)) && \
-    (__SIZEOF_LONG_DOUBLE__ == 10 || __SIZEOF_LONG_DOUBLE__ == 12 || \
-     __SIZEOF_LONG_DOUBLE__ == 16)
+    (FLT_RADIX == 2 && LDBL_MANT_DIG == 64 \
+     && LDBL_MIN_EXP == -16381 && LDBL_MAX_EXP == 16384)
   // x86 long doubles are usually 80-bit extended-precision floats native to
   // the legacy x87 ISA. x87 has an instruction (fprem1) that calculates their
   // remainder. Clang and ICC refuse to emit it, so let's help them out.
