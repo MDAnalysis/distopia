@@ -30,23 +30,23 @@ public:
 
   // load from a vector of ScalarT eg float* or double * as constructor
   inline explicit VectorTriple(ScalarT *source) {
-    a = load_p<VectorT>(source);
-    b = load_p<VectorT>(source[nvals_per_pack]);
-    c = load_p<VectorT>(source[2 * nvals_per_pack]);
+    a = loadu_p<VectorT>(source);
+    b = loadu_p<VectorT>(source + nvals_per_pack);
+    c = loadu_p<VectorT>(source + 2 * nvals_per_pack);
   }
 
   // load from a vector of ScalarT eg float* or double *
   inline void load(ScalarT *source) {
-    a = load_p<VectorT>(source);
-    b = load_p<VectorT>(source[nvals_per_pack]);
-    c = load_p<VectorT>(source[2 * nvals_per_pack]);
+    a = loadu_p<VectorT>(source);
+    b = loadu_p<VectorT>(source + nvals_per_pack);
+    c = loadu_p<VectorT>(source + 2 * nvals_per_pack);
   }
 
   // to a vector of ScalarT eg float* or double *
   inline void store(ScalarT *target) {
-    store_p(target, a);
-    store_p(target[nvals_per_pack], b);
-    store_p(target[2 * nvals_per_pack], c);
+    storeu_p(target, a);
+    storeu_p(target[nvals_per_pack], b);
+    storeu_p(target[2 * nvals_per_pack], c);
   }
 };
 
