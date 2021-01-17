@@ -124,17 +124,17 @@ TEST(TestX86Vec, Double256Load) {
   __m128d c_lower = _mm256_castpd256_pd128(vt.c);
 
   bool x_upper_is_correct = _mm_test_all_ones(
-      _mm_castps_si128(_mm_cmpeq_pd(a_upper, correct_x_upper)));
+      _mm_castpd_si128(_mm_cmpeq_pd(a_upper, correct_x_upper)));
   bool y_upper_is_correct = _mm_test_all_ones(
-      _mm_castps_si128(_mm_cmpeq_pd(b_upper, correct_y_upper)));
+      _mm_castpd_si128(_mm_cmpeq_pd(b_upper, correct_y_upper)));
   bool z_upper_is_correct = _mm_test_all_ones(
-      _mm_castps_si128(_mm_cmpeq_pd(c_upper, correct_z_upper)));
+      _mm_castpd_si128(_mm_cmpeq_pd(c_upper, correct_z_upper)));
   bool x_lower_is_correct = _mm_test_all_ones(
-      _mm_castps_si128(_mm_cmpeq_pd(a_lower, correct_x_lower)));
+      _mm_castpd_si128(_mm_cmpeq_pd(a_lower, correct_x_lower)));
   bool y_lower_is_correct = _mm_test_all_ones(
-      _mm_castps_si128(_mm_cmpeq_pd(b_lower, correct_y_lower)));
+      _mm_castpd_si128(_mm_cmpeq_pd(b_lower, correct_y_lower)));
   bool z_lower_is_correct = _mm_test_all_ones(
-      _mm_castps_si128(_mm_cmpeq_pd(c_lower, correct_z_lower)));
+      _mm_castpd_si128(_mm_cmpeq_pd(c_lower, correct_z_lower)));
 
   EXPECT_TRUE(x_upper_is_correct);
   EXPECT_TRUE(y_upper_is_correct);
