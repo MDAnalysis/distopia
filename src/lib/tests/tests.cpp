@@ -15,7 +15,7 @@ TEST(TestX86Vec, Float128Load) {
   __m128 correct_y = _mm_setr_ps(04.f, 05.f, 06.f, 07.f);
   __m128 correct_z = _mm_setr_ps(08.f, 09.f, 10.f, 11.f);
 
-  VectorTriple<__m128, float> vt = VectorTriple<__m128, float>(abc);
+  VectorTriple<__m128> vt = VectorTriple<__m128>(abc);
 
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.a, correct_x)));
@@ -35,7 +35,7 @@ TEST(TestX86Vec, Double128Load) {
   __m128d correct_y = _mm_setr_pd(02.0, 03.0);
   __m128d correct_z = _mm_setr_pd(04.0, 05.0);
 
-  VectorTriple<__m128d, double> vt = VectorTriple<__m128d, double>(abc);
+  VectorTriple<__m128d> vt = VectorTriple<__m128d>(abc);
 
   bool x_is_correct =
       _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(vt.a, correct_x)));
@@ -69,7 +69,7 @@ TEST(TestX86Vec, Float256Load) {
   __m128 correct_y_lower = _mm256_castps256_ps128(correct_y);
   __m128 correct_z_lower = _mm256_castps256_ps128(correct_z);
 
-  VectorTriple<__m256, float> vt = VectorTriple<__m256, float>(abc);
+  VectorTriple<__m256> vt = VectorTriple<__m256>(abc);
 
   __m128 a_upper = _mm256_extractf128_ps(vt.a, 1);
   __m128 b_upper = _mm256_extractf128_ps(vt.b, 1);
@@ -114,7 +114,7 @@ TEST(TestX86Vec, Double256Load) {
   __m128d correct_y_lower = _mm256_castpd256_pd128(correct_y);
   __m128d correct_z_lower = _mm256_castpd256_pd128(correct_z);
 
-  VectorTriple<__m256d, double> vt = VectorTriple<__m256d, double>(abc);
+  VectorTriple<__m256d> vt = VectorTriple<__m256d>(abc);
 
   __m128d a_upper = _mm256_extractf128_pd(vt.a, 1);
   __m128d b_upper = _mm256_extractf128_pd(vt.b, 1);
@@ -171,9 +171,9 @@ TEST(TestX86SwizzleVec, Float128Deinterleave) {
   __m128 correct_y = _mm_setr_ps(01.f, 11.f, 21.f, 31.f);
   __m128 correct_z = _mm_setr_ps(02.f, 12.f, 22.f, 32.f);
 
-  InterleavedVectorTriple<__m128, float> vt =
-      InterleavedVectorTriple<__m128, float>(a, b, c);
-  DeinterleavedVectorTriple<__m128, float> vt_res = vt.deinterleave();
+  InterleavedVectorTriple<__m128> vt =
+      InterleavedVectorTriple<__m128>(a, b, c);
+  DeinterleavedVectorTriple<__m128> vt_res = vt.deinterleave();
 
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.a, correct_x)));
@@ -195,9 +195,9 @@ TEST(TestX86SwizzleVec, Double128Deinterleave) {
   __m128d correct_y = _mm_setr_pd(01., 11.);
   __m128d correct_z = _mm_setr_pd(02., 12.);
 
-  InterleavedVectorTriple<__m128d, double> vt =
-      InterleavedVectorTriple<__m128d, double>(a, b, c);
-  DeinterleavedVectorTriple<__m128d, double> vt_res = vt.deinterleave();
+  InterleavedVectorTriple<__m128d> vt =
+      InterleavedVectorTriple<__m128d>(a, b, c);
+  DeinterleavedVectorTriple<__m128d> vt_res = vt.deinterleave();
 
   bool x_is_correct =
       _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(vt_res.a, correct_x)));
@@ -223,9 +223,9 @@ TEST(TestX86SwizzleVec, Float256Deinterleave) {
   __m256 correct_z =
       _mm256_setr_ps(02.f, 12.f, 22.f, 32.f, 42.f, 52.f, 62.f, 72.f);
 
-  InterleavedVectorTriple<__m256, float> vt =
-      InterleavedVectorTriple<__m256, float>(a, b, c);
-  DeinterleavedVectorTriple<__m256, float> vt_res = vt.deinterleave();
+  InterleavedVectorTriple<__m256> vt =
+      InterleavedVectorTriple<__m256>(a, b, c);
+  DeinterleavedVectorTriple<__m256> vt_res = vt.deinterleave();
 
   bool x_is_correct = _mm256_testc_ps(
       _mm256_setzero_ps(), _mm256_cmp_ps(vt_res.a, correct_x, _CMP_NEQ_UQ));
@@ -247,9 +247,9 @@ TEST(TestX86SwizzleVec, Double256Deinterleave) {
   __m256d correct_y = _mm256_setr_pd(01., 11., 21., 31.);
   __m256d correct_z = _mm256_setr_pd(02., 12., 22., 32.);
 
-  InterleavedVectorTriple<__m256d, double> vt =
-      InterleavedVectorTriple<__m256d, double>(a, b, c);
-  DeinterleavedVectorTriple<__m256d, double> vt_res = vt.deinterleave();
+  InterleavedVectorTriple<__m256d> vt =
+      InterleavedVectorTriple<__m256d>(a, b, c);
+  DeinterleavedVectorTriple<__m256d> vt_res = vt.deinterleave();
 
   bool x_is_correct = _mm256_testc_pd(
       _mm256_setzero_pd(), _mm256_cmp_pd(vt_res.a, correct_x, _CMP_NEQ_UQ));
