@@ -39,11 +39,11 @@ public:
       : a(a), b(b), c(c) {}
 
   // construct by loading from an array of ScalarT eg float* or double *.
-  inline explicit VectorTriple(ScalarT *source) {
-    a = loadu_p<VectorT>(source);
-    b = loadu_p<VectorT>(source + nvals_per_pack);
-    c = loadu_p<VectorT>(source + 2 * nvals_per_pack);
-  }
+  inline explicit VectorTriple(ScalarT *source) : 
+    a(loadu_p<VectorT>(source)),
+    b(loadu_p<VectorT>(source + nvals_per_pack)),
+    c(loadu_p<VectorT>(source + 2 * nvals_per_pack)) {}
+
 
   // reload values from a array of ScalarT eg float* or double *.
   inline void load(ScalarT *source) {
