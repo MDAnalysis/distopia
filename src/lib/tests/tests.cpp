@@ -48,27 +48,103 @@ TEST(TestX86Vec, Double128Load) {
   EXPECT_TRUE(z_is_correct);
 }
 
-// TEST(TestX86Vec, Float256Load) {
-//   float abc[12] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f, 06.f, 07.f,
-//                    08.f, 09.f, 10.f, 11.f, 12.f, 13.f, 14.f, 15.f,
-//                    16.f, 17.f, 18.f, 19.f, 20.f, 21.f, 22.f, 23.f};
+#ifdef DISTOPIA_X86_AVX
 
-//   __m256 correct_x = _mm256_setr_pd(00.f, 01.f, 02.f, 03.f, 04.f, 05.f, 06.f, 07.f);
-//   __m256 correct_y = _mm256_setr_pd(08.f, 09.f, 10.f, 11.f, 12.f, 13.f, 14.f, 15.f);
-//   __m256 correct_z = _mm256_setr_pd(16.f, 17.f, 18.f, 19.f, 20.f, 21.f, 22.f, 23.f);
+TEST(TestX86Vec, Float256Load) {
+  float abc[24] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f, 06.f, 07.f,
+                   08.f, 09.f, 10.f, 11.f, 12.f, 13.f, 14.f, 15.f,
+                   16.f, 17.f, 18.f, 19.f, 20.f, 21.f, 22.f, 23.f};
 
-//   VectorTriple<__m256, float> vt = VectorTriple<__m256, float>(abc);
+  __m256 correct_x =
+      _mm256_setr_ps(00.f, 01.f, 02.f, 03.f, 04.f, 05.f, 06.f, 07.f);
+  __m256 correct_y =
+      _mm256_setr_ps(08.f, 09.f, 10.f, 11.f, 12.f, 13.f, 14.f, 15.f);
+  __m256 correct_z =
+      _mm256_setr_ps(16.f, 17.f, 18.f, 19.f, 20.f, 21.f, 22.f, 23.f);
 
-//   bool x_is_correct =
-//       _mm_test_all_ones(_mm256_castps_si256(_mm256_cmpeq_ps(vt.a, correct_x)));
-//   bool y_is_correct =
-//       _mm_test_all_ones(_mm256_castps_si256(_mm256_cmpeq_ps(vt.b, correct_y)));
-//   bool z_is_correct =
-//       _mm_test_all_ones(_mm256_castps_si256(_mm256_cmpeq_ps(vt.c, correct_z)));
-//   EXPECT_TRUE(x_is_correct);
-//   EXPECT_TRUE(y_is_correct);
-//   EXPECT_TRUE(z_is_correct);
-// }
+  __m128 correct_x_upper = _mm256_extractf128_ps(correct_x, 1);
+  __m128 correct_y_upper = _mm256_extractf128_ps(correct_y, 1);
+  __m128 correct_z_upper = _mm256_extractf128_ps(correct_z, 1);
+  __m128 correct_x_lower = _mm256_castps256_ps128(correct_x);
+  __m128 correct_y_lower = _mm256_castps256_ps128(correct_y);
+  __m128 correct_z_lower = _mm256_castps256_ps128(correct_z);
+
+  VectorTriple<__m256, float> vt = VectorTriple<__m256, float>(abc);
+
+  __m128 a_upper = _mm256_extractf128_ps(vt.a, 1);
+  __m128 b_upper = _mm256_extractf128_ps(vt.b, 1);
+  __m128 c_upper = _mm256_extractf128_ps(vt.c, 1);
+  __m128 a_lower = _mm256_castps256_ps128(vt.a);
+  __m128 b_lower = _mm256_castps256_ps128(vt.b);
+  __m128 c_lower = _mm256_castps256_ps128(vt.c);
+
+  bool x_upper_is_correct = _mm_test_all_ones(
+      _mm_castps_si128(_mm_cmpeq_ps(a_upper, correct_x_upper)));
+  bool y_upper_is_correct = _mm_test_all_ones(
+      _mm_castps_si128(_mm_cmpeq_ps(b_upper, correct_y_upper)));
+  bool z_upper_is_correct = _mm_test_all_ones(
+      _mm_castps_si128(_mm_cmpeq_ps(c_upper, correct_z_upper)));
+  bool x_lower_is_correct = _mm_test_all_ones(
+      _mm_castps_si128(_mm_cmpeq_ps(a_lower, correct_x_lower)));
+  bool y_lower_is_correct = _mm_test_all_ones(
+      _mm_castps_si128(_mm_cmpeq_ps(b_lower, correct_y_lower)));
+  bool z_lower_is_correct = _mm_test_all_ones(
+      _mm_castps_si128(_mm_cmpeq_ps(c_lower, correct_z_lower)));
+
+  EXPECT_TRUE(x_upper_is_correct);
+  EXPECT_TRUE(y_upper_is_correct);
+  EXPECT_TRUE(z_upper_is_correct);
+  EXPECT_TRUE(x_lower_is_correct);
+  EXPECT_TRUE(y_lower_is_correct);
+  EXPECT_TRUE(z_lower_is_correct);
+}
+
+TEST(TestX86Vec, Double256Load) {
+  double abc[12] = {00.0, 01.0, 02.0, 03.0, 04.0, 05.0,
+                    06.0, 07.0, 08.0, 09.0, 10.0, 11.0};
+
+  __m256d correct_x = _mm256_setr_pd(00.0, 01.0, 02.0, 03.0);
+  __m256d correct_y = _mm256_setr_pd(04.0, 05.0, 06.0, 07.0);
+  __m256d correct_z = _mm256_setr_pd(08.0, 09.0, 10.0, 11.0);
+
+  __m128d correct_x_upper = _mm256_extractf128_pd(correct_x, 1);
+  __m128d correct_y_upper = _mm256_extractf128_pd(correct_y, 1);
+  __m128d correct_z_upper = _mm256_extractf128_pd(correct_z, 1);
+  __m128d correct_x_lower = _mm256_castpd256_pd128(correct_x);
+  __m128d correct_y_lower = _mm256_castpd256_pd128(correct_y);
+  __m128d correct_z_lower = _mm256_castpd256_pd128(correct_z);
+
+  VectorTriple<__m256d, double> vt = VectorTriple<__m256d, double>(abc);
+
+  __m128d a_upper = _mm256_extractf128_pd(vt.a, 1);
+  __m128d b_upper = _mm256_extractf128_pd(vt.b, 1);
+  __m128d c_upper = _mm256_extractf128_pd(vt.c, 1);
+  __m128d a_lower = _mm256_castpd256_pd128(vt.a);
+  __m128d b_lower = _mm256_castpd256_pd128(vt.b);
+  __m128d c_lower = _mm256_castpd256_pd128(vt.c);
+
+  bool x_upper_is_correct = _mm_test_all_ones(
+      _mm_castps_si128(_mm_cmpeq_pd(a_upper, correct_x_upper)));
+  bool y_upper_is_correct = _mm_test_all_ones(
+      _mm_castps_si128(_mm_cmpeq_pd(b_upper, correct_y_upper)));
+  bool z_upper_is_correct = _mm_test_all_ones(
+      _mm_castps_si128(_mm_cmpeq_pd(c_upper, correct_z_upper)));
+  bool x_lower_is_correct = _mm_test_all_ones(
+      _mm_castps_si128(_mm_cmpeq_pd(a_lower, correct_x_lower)));
+  bool y_lower_is_correct = _mm_test_all_ones(
+      _mm_castps_si128(_mm_cmpeq_pd(b_lower, correct_y_lower)));
+  bool z_lower_is_correct = _mm_test_all_ones(
+      _mm_castps_si128(_mm_cmpeq_pd(c_lower, correct_z_lower)));
+
+  EXPECT_TRUE(x_upper_is_correct);
+  EXPECT_TRUE(y_upper_is_correct);
+  EXPECT_TRUE(z_upper_is_correct);
+  EXPECT_TRUE(x_lower_is_correct);
+  EXPECT_TRUE(y_lower_is_correct);
+  EXPECT_TRUE(z_lower_is_correct);
+}
+
+#endif // DISTOPIA_X86_AVX
 
 // TEST(TestX86Vec, Float128Store) {
 //   float correct_abc[12] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f,
