@@ -38,11 +38,11 @@ TEST(TestX86Vec, Double128Load) {
   VectorTriple<__m128d, double> vt = VectorTriple<__m128d, double>(abc);
 
   bool x_is_correct =
-      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_pd(vt.a, correct_x)));
+      _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(vt.a, correct_x)));
   bool y_is_correct =
-      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_pd(vt.b, correct_y)));
+      _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(vt.b, correct_y)));
   bool z_is_correct =
-      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_pd(vt.c, correct_z)));
+      _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(vt.c, correct_z)));
   EXPECT_TRUE(x_is_correct);
   EXPECT_TRUE(y_is_correct);
   EXPECT_TRUE(z_is_correct);
