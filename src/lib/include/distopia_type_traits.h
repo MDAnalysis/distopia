@@ -25,8 +25,13 @@ template <typename T> struct IsVector { static constexpr bool value = false; };
 template <> struct IsVector<__m128> { static constexpr bool value = true; };
 template <> struct IsVector<__m128d> { static constexpr bool value = true; };
 
-// check that a simd type matches a scalar type eg __m128 and float, __m128d
-// and double
+// map each vector to matching scalar type
+template <typename VectorT> struct VectorToScalarTStruct;
+template <> struct VectorToScalarTStruct<__m128> { using type = float; };
+template <> struct VectorToScalarTStruct<__m128d> { using type = double; };
+
+// check (T/F) that a simd type matches a scalar type eg __m128 and float,
+// __m128d and double
 template <typename T, typename U> struct MatchingType {
   static constexpr bool value = false;
 };
@@ -48,13 +53,19 @@ template <> struct MatchingType<__m256d, double> {
   static constexpr bool value = true;
 };
 
-#endif // DISTOPIA_X86_AVX
+template <> struct VectorToScalarTStruct<__m256> { using type = float; };
+template <> struct VectorToScalarTStruct<__m256d> { using type = double; };
+
+#endif // DISTOPIA_X86_AVXw
 template <typename T>
 using EnableIfVector = typename std::enable_if<IsVector<T>::value, int>::type;
 
 template <typename T, typename U>
 using EnableIfMatching =
     typename std::enable_if<MatchingType<T, U>::value, int>::type;
+
+template <typename VectorT>
+using VectorToScalarT = typename VectorToScalarTStruct<VectorT>::type;
 
 #ifdef DISTOPIA_GCC
 #pragma GCC diagnostic pop
