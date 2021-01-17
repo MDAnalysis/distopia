@@ -238,7 +238,7 @@ set(COMPILER_FLAGS_RELEASE)
 
 # do cross platform compatibility here
 if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
-  list(APPEND CXX_FLAGS "-O3" "-mfma" "-fno-math-errno" "-fno-trapping-math -Wno-ignored-attributes")
+  list(APPEND CXX_FLAGS "-O3" "-mfma" "-fno-math-errno" "-fno-trapping-math" "-Wno-ignored-attributes")
   list(APPEND CXX_FLAGS_DEBUG  "-g" "-O0" "-Wall"  "-Wextra" )
   list(APPEND CXX_FLAGS_RELEASE "-Wno-unused")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES Clang)
