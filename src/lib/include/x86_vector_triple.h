@@ -15,8 +15,7 @@ template <typename VectorT, EnableIfVector<VectorT> = 0>
 class DeinterleavedVectorTriple;
 
 // VectorTriple base class
-template <typename VectorT, EnableIfVector<VectorT> = 0>
-class VectorTriple {
+template <typename VectorT, EnableIfVector<VectorT> = 0> class VectorTriple {
 public:
   // maps to vectorT to ScalarT
   using ScalarT = VectorToScalarT<VectorT>;
@@ -24,6 +23,8 @@ public:
   VectorT b;
   VectorT c;
   constexpr static std::size_t nvals_per_pack = ValuesPerPack<VectorT>::value;
+  constexpr static std::size_t nvals_per_struct = ValuesPerPack<VectorT>::value*3;
+
 
   // from 3 SIMD Vector datatypes eg __m128 or __m128d
   inline explicit VectorTriple(VectorT a, VectorT b, VectorT c)
@@ -46,8 +47,8 @@ public:
   // to a vector of ScalarT eg float* or double *
   inline void store(ScalarT *target) {
     storeu_p(target, a);
-    storeu_p(target[nvals_per_pack], b);
-    storeu_p(target[2 * nvals_per_pack], c);
+    storeu_p(target + nvals_per_pack, b);
+    storeu_p(target + 2 * nvals_per_pack, c);
   }
 };
 
@@ -57,7 +58,7 @@ template <typename VectorT, EnableIfVector<VectorT>>
 class InterleavedVectorTriple : public VectorTriple<VectorT> {
 public:
   // inherit both constructors with right SFINAE template argument
-  using VectorTriple<VectorT,0>::VectorTriple;
+  using VectorTriple<VectorT, 0>::VectorTriple;
 
   // AOS2SOA deinterleave
   inline DeinterleavedVectorTriple<VectorT> deinterleave() {
@@ -74,7 +75,7 @@ template <typename VectorT, EnableIfVector<VectorT>>
 class DeinterleavedVectorTriple : public VectorTriple<VectorT> {
 public:
   // inherit both constructors with right SFINAE template argument
-  using VectorTriple<VectorT,0>::VectorTriple;
+  using VectorTriple<VectorT, 0>::VectorTriple;
 
   // SOA2AOS interleave
   inline InterleavedVectorTriple<VectorT> interleave() {
