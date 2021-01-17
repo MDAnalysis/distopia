@@ -56,7 +56,7 @@ public:
 template <typename VectorT, EnableIfVector<VectorT>>
 class InterleavedVectorTriple : public VectorTriple<VectorT> {
 public:
-  // inherit both constructors with right SFINAE template arguments?
+  // inherit both constructors with right SFINAE template argument
   using VectorTriple<VectorT,0>::VectorTriple;
 
   // AOS2SOA deinterleave
@@ -73,7 +73,7 @@ public:
 template <typename VectorT, EnableIfVector<VectorT>>
 class DeinterleavedVectorTriple : public VectorTriple<VectorT> {
 public:
-  // inherit both constructors with right SFINAE template arguments?
+  // inherit both constructors with right SFINAE template argument
   using VectorTriple<VectorT,0>::VectorTriple;
 
   // SOA2AOS interleave
