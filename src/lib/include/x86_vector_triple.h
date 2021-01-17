@@ -11,7 +11,6 @@
 template <typename VectorT, EnableIfVector<VectorT> = 0>
 class InterleavedVectorTriple;
 
-
 // forward declaration has default EnableIfX template arguments.
 // So no longer allows EnableIfX = 0 default in definition.
 template <typename VectorT, EnableIfVector<VectorT> = 0>
@@ -32,8 +31,8 @@ public:
   // number of values in each VectorT datatype.
   constexpr static std::size_t nvals_per_pack = ValuesPerPack<VectorT>::value;
   // number of values in the packed into the whole 3 x VectorT struct.
-  constexpr static std::size_t nvals_per_struct = ValuesPerPack<VectorT>::value*3;
-
+  constexpr static std::size_t nvals_per_struct =
+      ValuesPerPack<VectorT>::value * 3;
 
   // construct from 3 SIMD Vector datatypes eg __m128 or __m128d
   inline explicit VectorTriple(VectorT a, VectorT b, VectorT c)
