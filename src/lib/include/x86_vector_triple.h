@@ -39,11 +39,47 @@ public:
       : a(a), b(b), c(c) {}
 
   // construct by loading from an array of ScalarT eg float* or double *.
-  inline explicit VectorTriple(ScalarT *source) : 
-    a(loadu_p<VectorT>(source)),
-    b(loadu_p<VectorT>(source + nvals_per_pack)),
-    c(loadu_p<VectorT>(source + 2 * nvals_per_pack)) {}
+  inline explicit VectorTriple(ScalarT *source)
+      : a(loadu_p<VectorT>(source)),
+        b(loadu_p<VectorT>(source + nvals_per_pack)),
+        c(loadu_p<VectorT>(source + 2 * nvals_per_pack)) {}
 
+  // construct by loading discontiguously from an array of ScalarT eg float* or
+  // double* for which the SIMD width is 4 (__m128 and __m256d). The access is
+  // indexed by 4 integers i,j,k,l where each index is the x (first) coordinate
+  // of the particle. assumes the input vector is in AOS format ie:
+  // x0y0z0x1y1z1x2y2z2.... Note X=junk coordinate in notation below
+  inline void EarlyIdxLoad(ScalarT *source, int i, int j, int k, int l) {
+    static_assert(nvals_per_pack == 4, "Cannot use this constructor on a type "
+                                       "that does not have a SIMD width of 4");
+
+    // load xiyiziX
+    VectorT a_1 = loadu_p(source + i);
+    // load xjyjzjX
+    VectorT b_1 = loadu_p<VectorT>(source + j);
+    // load xkykzkX
+    VectorT c_1 = loadu_p<VectorT>(source + k);
+    // load xlylzlX
+    VectorT d_1 = loadu_p<VectorT>(source + l);
+
+    // DO shuffle and blend till we get the right answer
+  }
+  // this is the dumb way to do it?
+  inline explicit VectorTriple(ScalarT *source, int i, int j, int k, int l) {
+    static_assert(nvals_per_pack == 4, "Cannot use this constructor on a type "
+                                       "that does not have a SIMD width of 4");
+
+    ScalarT a_1[nvals_per_pack]{source[i], source[i + 1], source[i + 2],
+                                source[j]};
+    ScalarT b_1[nvals_per_pack]{source[j + 1], source[j + 2], source[k],
+                                source[k + 1]};
+    ScalarT c_1[nvals_per_pack]{source[k + 2], source[l], source[l + 1],
+                                source[l + 2]};
+
+    a = loadu_p<VectorT>(a_1);
+    b = loadu_p<VectorT>(b_1);
+    c = loadu_p<VectorT>(c_1);
+  }
 
   // reload values from a array of ScalarT eg float* or double *.
   inline void load(ScalarT *source) {
