@@ -8,19 +8,17 @@
 
 // forward declaration has default EnableIfX template arguments.
 // So no longer allows EnableIfX = 0 default in definition.
-template <typename VectorT, EnableIfVector<VectorT> = 0>
-class InterleavedVectorTriple;
+template <typename VectorT> class InterleavedVectorTriple;
 
 // forward declaration has default EnableIfX template arguments.
 // So no longer allows EnableIfX = 0 default in definition.
-template <typename VectorT, EnableIfVector<VectorT> = 0>
-class DeinterleavedVectorTriple;
+template <typename VectorT> class DeinterleavedVectorTriple;
 
 // VectorTriple base class packs 3xSimd datatypes into a single class.
 // Can be constructed from 3 x VectorT.
 // Can also be constructed from a ScalarT array which loads the right number
 // of values into the 3 x VectorT.
-template <typename VectorT, EnableIfVector<VectorT> = 0> class VectorTriple {
+template <typename VectorT> class VectorTriple {
 public:
   // maps to vectorT to ScalarT
   using ScalarT = VectorToScalarT<VectorT>;
@@ -62,9 +60,8 @@ public:
     // load xlylzlX
     VectorT d_1 = loadu_p<VectorT>(source + l);
 
-    VectorT a_1_shuf = 
 
-    //shuffle the first element to the end 
+    // shuffle the first element to the end
 
     // DO shuffle and blend till we get the right answer
   }
@@ -102,11 +99,11 @@ public:
 
 // Derived class for interleaved (AOS) vector triples. Can create a
 // deinterleaved (SOA) equivalent by calling deinterleave method.
-template <typename VectorT, EnableIfVector<VectorT>>
+template <typename VectorT>
 class InterleavedVectorTriple : public VectorTriple<VectorT> {
 public:
   // inherit both constructors with right SFINAE template argument.
-  using VectorTriple<VectorT, 0>::VectorTriple;
+  using VectorTriple<VectorT>::VectorTriple;
 
   // AOS2SOA deinterleave, returns deinterleaved derived class.
   inline DeinterleavedVectorTriple<VectorT> deinterleave() {
@@ -120,11 +117,11 @@ public:
 // Derived class for Deinterleaved (SOA) vector triples. Can create a
 // interleaved (AOS) equivalent by calling interleave method.
 // TODO Interleave is not working or even a valid template.
-template <typename VectorT, EnableIfVector<VectorT>>
+template <typename VectorT>
 class DeinterleavedVectorTriple : public VectorTriple<VectorT> {
 public:
   // inherit both constructors with right SFINAE template argument.
-  using VectorTriple<VectorT, 0>::VectorTriple;
+  using VectorTriple<VectorT>::VectorTriple;
 
   // SOA2AOS interleave returns interleaved derived class.
   inline InterleavedVectorTriple<VectorT> interleave() {
