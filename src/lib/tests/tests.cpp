@@ -177,6 +177,8 @@ TEST(TestX86Vec, Double128LoadVectorAndStore) {
   }
 }
 
+#ifdef DISTOPIA_X86_AVX
+
 TEST(TestX86Vec, Float256LoadVectorAndStore) {
   float correct_abc[24] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f, 06.f, 07.f,
                            08.f, 09.f, 10.f, 11.f, 12.f, 13.f, 14.f, 15.f,
@@ -207,6 +209,22 @@ TEST(TestX86Vec, Double256LoadVectorAndStore) {
   vt.store(result);
   for (std::size_t i = 0; i < vt.nvals_per_struct; i++) {
     EXPECT_DOUBLE_EQ(correct_abc[i], result[i]);
+  }
+}
+
+#endif //DISTOPIA_X86_AVX
+
+
+TEST(TestX86Vec, Float128DumbIdxLoad) {
+  float abc[15] = {-01.f, -01.f, -01.f,00.f, 01.f, 02.f, 03.f, 04.f, 05.f,
+                           06.f, 07.f, 08.f, 09.f, 10.f, 11.f};
+
+
+  VectorTriple<__m128> vt = VectorTriple<__m128>(abc,3,6,9,12);
+  float *result = new float[vt.nvals_per_struct];
+  vt.store(result);
+  for (std::size_t i = 0; i < vt.nvals_per_struct; i++) {
+    EXPECT_FLOAT_EQ(abc[i+3], result[i]);
   }
 }
 
