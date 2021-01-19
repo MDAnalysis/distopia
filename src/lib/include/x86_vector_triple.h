@@ -9,7 +9,7 @@
 // forward declaration
 template <typename VectorT> class InterleavedVectorTriple;
 
-// forward declaration 
+// forward declaration
 template <typename VectorT> class DeinterleavedVectorTriple;
 
 // VectorTriple base class packs 3xSIMD datatypes into a single class.
@@ -25,8 +25,7 @@ public:
   VectorT b;
   VectorT c;
   // number of values in the packed into the whole 3 x VectorT struct.
-  constexpr static std::size_t n_scalars =
-      ValuesPerPack<VectorT> * 3;
+  constexpr static std::size_t n_scalars = ValuesPerPack<VectorT> * 3;
 
   // construct from 3 SIMD Vector datatypes eg __m128 or __m128d
   inline explicit VectorTriple(VectorT a, VectorT b, VectorT c)
@@ -44,8 +43,9 @@ public:
   // of the particle. assumes the input vector is in AOS format ie:
   // x0y0z0x1y1z1x2y2z2.... Note X=junk coordinate in notation below
   inline void EarlyIdxLoad(ScalarT *source, int i, int j, int k, int l) {
-    static_assert(ValuesPerPack<VectorT> == 4, "Cannot use this constructor on a type "
-                                       "that does not have a SIMD width of 4");
+    static_assert(ValuesPerPack<VectorT> == 4,
+                  "Cannot use this constructor on a type "
+                  "that does not have a SIMD width of 4");
 
     // load xiyiziX
     VectorT a_1 = loadu_p(source + i);
@@ -56,22 +56,22 @@ public:
     // load xlylzlX
     VectorT d_1 = loadu_p<VectorT>(source + l);
 
-
     // shuffle the first element to the end
 
     // DO shuffle and blend till we get the right answer
   }
   // this is the dumb way to do it and is primarily for benchmarking
   inline explicit VectorTriple(ScalarT *source, int i, int j, int k, int l) {
-    static_assert(ValuesPerPack<VectorT> == 4, "Cannot use this constructor on a type "
-                                       "that does not have a SIMD width of 4");
+    static_assert(ValuesPerPack<VectorT> == 4,
+                  "Cannot use this constructor on a type "
+                  "that does not have a SIMD width of 4");
 
     ScalarT a_1[ValuesPerPack<VectorT>]{source[i], source[i + 1], source[i + 2],
-                                source[j]};
+                                        source[j]};
     ScalarT b_1[ValuesPerPack<VectorT>]{source[j + 1], source[j + 2], source[k],
-                                source[k + 1]};
+                                        source[k + 1]};
     ScalarT c_1[ValuesPerPack<VectorT>]{source[k + 2], source[l], source[l + 1],
-                                source[l + 2]};
+                                        source[l + 2]};
 
     a = loadu_p<VectorT>(a_1);
     b = loadu_p<VectorT>(b_1);
@@ -85,11 +85,18 @@ public:
     c = loadu_p<VectorT>(source + 2 * ValuesPerPack<VectorT>);
   }
 
-  // store to an array of ScalarT eg float* or double *.
+  // store or stream to an array of ScalarT eg float* or double *.
+  template <bool streaming = false>
   inline void store(ScalarT *target) {
-    storeu_p(target, a);
-    storeu_p(&target[ValuesPerPack<VectorT>], b);
-    storeu_p(&target[2* ValuesPerPack<VectorT>], c);
+    if constexpr (streaming) {
+      stream_p(target, a);
+      stream_p(&target[ValuesPerPack<VectorT>], b);
+      stream_p(&target[2 * ValuesPerPack<VectorT>], c);
+    } else {
+      storeu_p(target, a);
+      storeu_p(&target[ValuesPerPack<VectorT>], b);
+      storeu_p(&target[2 * ValuesPerPack<VectorT>], c);
+    }
   }
 };
 
