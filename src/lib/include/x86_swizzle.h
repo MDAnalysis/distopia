@@ -6,10 +6,19 @@
 #ifdef DISTOPIA_X86_SSE4_1
 
 #include <immintrin.h>
-
 #include "x86_tgintrin.h"
+#include "distopia_type_traits"
 
 namespace {
+
+// concatenates a two VectorTs eliminating the last element of A
+// designed for 
+template <typename VectorT, EnableIfVector<VectorT> = 0>
+inline void JoinFinal(VectorT a, VectorT, b) {
+  
+
+} 
+
 
 inline void Deinterleave3(__m128 a, __m128 b, __m128 c,
                           __m128& x, __m128& y, __m128& z) {
