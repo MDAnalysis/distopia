@@ -62,9 +62,13 @@ public:
     // load xlylzlX
     VectorT d_1 = loadu_p<VectorT>(source + l);
 
+    VectorT a_1_shuf = 
+
+    //shuffle the first element to the end 
+
     // DO shuffle and blend till we get the right answer
   }
-  // this is the dumb way to do it?
+  // this is the dumb way to do it and is primarily for benchmarking
   inline explicit VectorTriple(ScalarT *source, int i, int j, int k, int l) {
     static_assert(nvals_per_pack == 4, "Cannot use this constructor on a type "
                                        "that does not have a SIMD width of 4");
