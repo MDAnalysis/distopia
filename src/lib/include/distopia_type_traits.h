@@ -30,39 +30,19 @@ template <typename VectorT> struct VectorToScalarTStruct;
 template <> struct VectorToScalarTStruct<__m128> { using type = float; };
 template <> struct VectorToScalarTStruct<__m128d> { using type = double; };
 
-// check (T/F) that a simd type matches a scalar type eg __m128 and float,
-// __m128d and double
-template <typename T, typename U> struct MatchingType {
-  static constexpr bool value = false;
-};
-template <> struct MatchingType<__m128, float> {
-  static constexpr bool value = true;
-};
-template <> struct MatchingType<__m128d, double> {
-  static constexpr bool value = true;
-};
 
 #ifdef DISTOPIA_X86_AVX
 template <> struct IsVector<__m256> { static constexpr bool value = true; };
 template <> struct IsVector<__m256d> { static constexpr bool value = true; };
 
-template <> struct MatchingType<__m256, float> {
-  static constexpr bool value = true;
-};
-template <> struct MatchingType<__m256d, double> {
-  static constexpr bool value = true;
-};
 
 template <> struct VectorToScalarTStruct<__m256> { using type = float; };
 template <> struct VectorToScalarTStruct<__m256d> { using type = double; };
 
-#endif // DISTOPIA_X86_AVXw
+#endif // DISTOPIA_X86_AVX
+
 template <typename T>
 using EnableIfVector = typename std::enable_if<IsVector<T>::value, int>::type;
-
-template <typename T, typename U>
-using EnableIfMatching =
-    typename std::enable_if<MatchingType<T, U>::value, int>::type;
 
 template <typename VectorT>
 using VectorToScalarT = typename VectorToScalarTStruct<VectorT>::type;
@@ -71,22 +51,8 @@ using VectorToScalarT = typename VectorToScalarTStruct<VectorT>::type;
 #pragma GCC diagnostic pop
 #endif
 
-template <typename T, EnableIfVector<T> = 0> struct ValuesPerPack;
-template <> struct ValuesPerPack<__m128> {
-  static constexpr std::size_t value = 4;
-};
-template <> struct ValuesPerPack<__m128d> {
-  static constexpr std::size_t value = 2;
-};
-#ifdef DISTOPIA_X86_AVX
-template <> struct ValuesPerPack<__m256> {
-  static constexpr std::size_t value = 8;
-};
-template <> struct ValuesPerPack<__m256d> {
-  static constexpr std::size_t value = 4;
-};
+template<typename T> constexpr std::size_t ValuesPerPack = sizeof(T) / sizeof(VectorToScalarT<T>);
 
-#endif // DISTOPIA_X86_AVX
 
 #endif // DISTOPIA_X86_SSE4_1
 

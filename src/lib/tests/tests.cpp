@@ -155,9 +155,9 @@ TEST(TestX86Vec, Float128LoadVectorAndStore) {
   __m128 z = _mm_setr_ps(08.f, 09.f, 10.f, 11.f);
 
   VectorTriple<__m128> vt = VectorTriple<__m128>(x, y, z);
-  float *result = new float[vt.nvals_per_struct];
+  float *result = new float[vt.n_scalars];
   vt.store(result);
-  for (std::size_t i = 0; i < vt.nvals_per_struct; i++) {
+  for (std::size_t i = 0; i < vt.n_scalars; i++) {
     EXPECT_FLOAT_EQ(correct_abc[i], result[i]);
   }
 }
@@ -170,9 +170,9 @@ TEST(TestX86Vec, Double128LoadVectorAndStore) {
   __m128d z = _mm_setr_pd(04.0, 05.0);
 
   VectorTriple<__m128d> vt = VectorTriple<__m128d>(x, y, z);
-  double *result = new double[vt.nvals_per_struct];
+  double *result = new double[vt.n_scalars];
   vt.store(result);
-  for (std::size_t i = 0; i < vt.nvals_per_struct; i++) {
+  for (std::size_t i = 0; i < vt.n_scalars; i++) {
     EXPECT_DOUBLE_EQ(correct_abc[i], result[i]);
   }
 }
@@ -189,9 +189,9 @@ TEST(TestX86Vec, Float256LoadVectorAndStore) {
   __m256 z = _mm256_setr_ps(16.f, 17.f, 18.f, 19.f, 20.f, 21.f, 22.f, 23.f);
 
   VectorTriple<__m256> vt = VectorTriple<__m256>(x, y, z);
-  float *result = new float[vt.nvals_per_struct];
+  float *result = new float[vt.n_scalars];
   vt.store(result);
-  for (std::size_t i = 0; i < vt.nvals_per_struct; i++) {
+  for (std::size_t i = 0; i < vt.n_scalars; i++) {
     EXPECT_FLOAT_EQ(correct_abc[i], result[i]);
   }
 }
@@ -205,9 +205,9 @@ TEST(TestX86Vec, Double256LoadVectorAndStore) {
   __m256d z = _mm256_setr_pd(08.0, 09.0, 10.0, 11.0);
 
   VectorTriple<__m256d> vt = VectorTriple<__m256d>(x, y, z);
-  double *result = new double[vt.nvals_per_struct];
+  double *result = new double[vt.n_scalars];
   vt.store(result);
-  for (std::size_t i = 0; i < vt.nvals_per_struct; i++) {
+  for (std::size_t i = 0; i < vt.n_scalars; i++) {
     EXPECT_DOUBLE_EQ(correct_abc[i], result[i]);
   }
 }
@@ -219,9 +219,9 @@ TEST(TestX86Vec, Float128DumbIdxLoad) {
                    05.f,  06.f,  07.f,  08.f, 09.f, 10.f, 11.f};
 
   VectorTriple<__m128> vt = VectorTriple<__m128>(abc, 3, 6, 9, 12);
-  float *result = new float[vt.nvals_per_struct];
+  float *result = new float[vt.n_scalars];
   vt.store(result);
-  for (std::size_t i = 0; i < vt.nvals_per_struct; i++) {
+  for (std::size_t i = 0; i < vt.n_scalars; i++) {
     EXPECT_FLOAT_EQ(abc[i + 3], result[i]);
   }
 }
