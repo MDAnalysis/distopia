@@ -1,6 +1,5 @@
 #include "arch_config.h"
 #include "gtest/gtest.h"
-#include <iostream>
 #ifdef DISTOPIA_X86_SSE4_1
 
 #include "x86_swizzle.h"

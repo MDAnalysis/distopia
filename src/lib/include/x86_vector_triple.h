@@ -6,15 +6,13 @@
 #include "x86_tgintrin.h"
 #include "x86_vectors.h"
 
-// forward declaration has default EnableIfX template arguments.
-// So no longer allows EnableIfX = 0 default in definition.
+// forward declaration
 template <typename VectorT> class InterleavedVectorTriple;
 
-// forward declaration has default EnableIfX template arguments.
-// So no longer allows EnableIfX = 0 default in definition.
+// forward declaration 
 template <typename VectorT> class DeinterleavedVectorTriple;
 
-// VectorTriple base class packs 3xSimd datatypes into a single class.
+// VectorTriple base class packs 3xSIMD datatypes into a single class.
 // Can be constructed from 3 x VectorT.
 // Can also be constructed from a ScalarT array which loads the right number
 // of values into the 3 x VectorT.
@@ -90,8 +88,8 @@ public:
   // store to an array of ScalarT eg float* or double *.
   inline void store(ScalarT *target) {
     storeu_p(target, a);
-    storeu_p(target + ValuesPerPack<VectorT>, b);
-    storeu_p(target + 2 * ValuesPerPack<VectorT>, c);
+    storeu_p(&target[ValuesPerPack<VectorT>], b);
+    storeu_p(&target[2* ValuesPerPack<VectorT>], c);
   }
 };
 
@@ -118,16 +116,17 @@ public:
 template <typename VectorT>
 class DeinterleavedVectorTriple : public VectorTriple<VectorT> {
 public:
-  // inherit both constructors with right SFINAE template argument.
+  // inherit both constructors
   using VectorTriple<VectorT>::VectorTriple;
 
-  // SOA2AOS interleave returns interleaved derived class.
-  inline InterleavedVectorTriple<VectorT> interleave() {
-    VectorT a1, b1, c1;
-    Interleave3(this->a, this->b, this->c, a1, b1, c1);
-    InterleavedVectorTriple<VectorT> vt(a1, b1, c1);
-    return vt;
-  }
+  // TODO make SOA2AOS deinterleave method
+  // // SOA2AOS interleave returns interleaved derived class.
+  // inline InterleavedVectorTriple<VectorT> interleave() {
+  //   VectorT a1, b1, c1;
+  //   Interleave3(this->a, this->b, this->c, a1, b1, c1);
+  //   InterleavedVectorTriple<VectorT> vt(a1, b1, c1);
+  //   return vt;
+  // }
 };
 
 #endif // DISTOPIA_X86_VECTOR_TRIPLE
