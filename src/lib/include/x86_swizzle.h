@@ -7,15 +7,15 @@
 
 #include <immintrin.h>
 #include "x86_tgintrin.h"
-#include "distopia_type_traits"
+#include "distopia_type_traits.h"
 
 namespace {
 
 // concatenates a two VectorTs eliminating the last element of A
 // designed for 
 template <typename VectorT, EnableIfVector<VectorT> = 0>
-inline void JoinFinal(VectorT a, VectorT, b) {
-  
+inline void JoinFinal(VectorT a, VectorT b) {
+
 
 } 
 
