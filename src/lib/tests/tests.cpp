@@ -215,15 +215,15 @@ TEST(TestX86Vec, Double256LoadVectorAndStore) {
 #endif // DISTOPIA_X86_AVX
 
 TEST(TestX86Vec, Float128DumbIdxLoad) {
-    // make a an array of 15 vals (5 atoms)
+  // make a an array of 15 vals (5 atoms)
   float abc[15] = {-01.f, -01.f, -01.f, 00.f, 01.f, 02.f, 03.f, 04.f,
                    05.f,  06.f,  07.f,  08.f, 09.f, 10.f, 11.f};
 
-    // use idx loader to get coords for atoms 1,2,3,4 and not 0
-  VectorTriple<__m128> vt = VectorTriple<__m128>(abc,1,2,3,4);
+  // use idx loader to get coords for atoms 1,2,3,4 and not 0
+  VectorTriple<__m128> vt = VectorTriple<__m128>(abc, 1, 2, 3, 4);
   float result[vt.n_scalars];
   // offset to compare correct values
-  int offset = 15 - vt.n_scalars; 
+  int offset = 15 - vt.n_scalars;
   vt.store(result);
   for (std::size_t i = 0; i < vt.n_scalars; i++) {
     EXPECT_FLOAT_EQ(abc[i + offset], result[i]);
@@ -331,56 +331,73 @@ TEST(TestX86SwizzleVec, Double256Deinterleave) {
 #endif // DISTOPIA_X86_AVX
 
 TEST(TestX86SwizzleVec, Float128OverlapOne) {
-    float a[4] {00.f, 01.f, 02.f,-01.f};
-    float b[4] {03.f, 04.f, 05.f, -01.f};
-    float correct[4] = {00.f, 01.f, 02.f,03.f};
+  float a[4]{00.f, 01.f, 02.f, -01.f};
+  float b[4]{03.f, 04.f, 05.f, -01.f};
+  float correct[4] = {00.f, 01.f, 02.f, 03.f};
 
-    __m128 a_packed = load_p<__m128>(a);
-    __m128 b_packed = load_p<__m128>(b);
-    __m128 result =  OverlapOne(a_packed,b_packed);
-    // store in b
-    storeu_p(b, result);
-    for(std::size_t i=0; i<4; i++) {
-        EXPECT_FLOAT_EQ(b[i], correct[i]);
-    }
-
+  __m128 a_packed = load_p<__m128>(a);
+  __m128 b_packed = load_p<__m128>(b);
+  __m128 result = OverlapOne(a_packed, b_packed);
+  // store in b
+  storeu_p(b, result);
+  for (std::size_t i = 0; i < 4; i++) {
+    EXPECT_FLOAT_EQ(b[i], correct[i]);
+  }
 }
 
 TEST(TestX86SwizzleVec, Float128OverlapTwo) {
-    float a[4] {00.f, 01.f, -01.f,-01.f};
-    float b[4] {02.f, 03.f, -01.f, -01.f};
-    float correct[4] = {00.f, 01.f, 02.f,03.f};
+  float a[4]{00.f, 01.f, -01.f, -01.f};
+  float b[4]{02.f, 03.f, -01.f, -01.f};
+  float correct[4] = {00.f, 01.f, 02.f, 03.f};
 
-    __m128 a_packed = load_p<__m128>(a);
-    __m128 b_packed = load_p<__m128>(b);
-    __m128 result =  OverlapTwo(a_packed,b_packed);
-    // store in b
-    storeu_p(b, result);
-    for(std::size_t i=0; i<4; i++) {
-        EXPECT_FLOAT_EQ(b[i], correct[i]);
-    }
-
+  __m128 a_packed = load_p<__m128>(a);
+  __m128 b_packed = load_p<__m128>(b);
+  __m128 result = OverlapTwo(a_packed, b_packed);
+  // store in b
+  storeu_p(b, result);
+  for (std::size_t i = 0; i < 4; i++) {
+    EXPECT_FLOAT_EQ(b[i], correct[i]);
+  }
 }
 
-
 TEST(TestX86SwizzleVec, Float128OverlapThree) {
-    float a[4] {00.f, -01.f, -01.f,-01.f};
-    float b[4] {01.f, 02.f, 03.f, -01.f};
-    float correct[4] = {00.f, 01.f, 02.f,03.f};
+  float a[4]{00.f, -01.f, -01.f, -01.f};
+  float b[4]{01.f, 02.f, 03.f, -01.f};
+  float correct[4] = {00.f, 01.f, 02.f, 03.f};
 
-    __m128 a_packed = load_p<__m128>(a);
-    __m128 b_packed = load_p<__m128>(b);
-    __m128 t1 =  shuffle_p<_MM_SHUFFLE(2,1,0,3)>(b_packed,b_packed);
-    storeu_p(b, t1);
-    for(std::size_t i=0; i<4; i++) {
-        std::cout << "t1 " << b[i] << "\n";
-    }
-    __m128 result = OverlapThree(a_packed,b_packed);
-    storeu_p(b, result);
-    for(std::size_t i=0; i<4; i++) {
-        EXPECT_FLOAT_EQ(b[i], correct[i]);
-    }
+  __m128 a_packed = load_p<__m128>(a);
+  __m128 b_packed = load_p<__m128>(b);
+  __m128 result = OverlapThree(a_packed, b_packed);
+  storeu_p(b, result);
+  for (std::size_t i = 0; i < 4; i++) {
+    EXPECT_FLOAT_EQ(b[i], correct[i]);
+  }
+}
 
+TEST(TestX86SwizzleVec, Float128Transpose4x3) {
+  float a[4]{00.f, 01.f, 02.f, -01.f};
+  float b[4]{03.f, 04.f, 05.f, -01.f};
+  float c[4]{06.f, 07.f, 08.f, -01.f};
+  float d[4]{09.f, 10.f, 11.f, -01.f};
+  float correct_xyz[12] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f,
+                           06.f, 07.f, 08.f, 09.f, 10.f, 11.f};
+
+  __m128 a_packed = load_p<__m128>(a);
+  __m128 b_packed = load_p<__m128>(b);
+  __m128 c_packed = load_p<__m128>(c);
+  __m128 d_packed = load_p<__m128>(d);
+  __m128 a1, b1, c1;
+
+  Transpose4x3(a_packed, b_packed, c_packed, d_packed, a1, b1, c1);
+  float result_buf[12];
+  storeu_p(result_buf, a1);
+  storeu_p(result_buf + 4, b1);
+  storeu_p(result_buf + 8, c1);
+
+  for (std::size_t i = 0; i < 12; i++) {
+    std::cout << result_buf[i] << "\n";
+    EXPECT_FLOAT_EQ(result_buf[i], correct_xyz[i]);
+  }
 }
 
 #endif // DISTOPIA_X86_SSE4_1

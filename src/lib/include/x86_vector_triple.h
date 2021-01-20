@@ -51,8 +51,10 @@ public:
     VectorT a_1 = loadu_p(source + i);
     // load xjyjzjX
     VectorT b_1 = loadu_p<VectorT>(source + j);
+    
     // load xkykzkX
     VectorT c_1 = loadu_p<VectorT>(source + k);
+    // combine b_1 and c_1 to make y
     // load xlylzlX
     VectorT d_1 = loadu_p<VectorT>(source + l);
 
