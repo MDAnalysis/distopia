@@ -1,5 +1,6 @@
 #include "arch_config.h"
 #include "gtest/gtest.h"
+#include <iostream>
 #ifdef DISTOPIA_X86_SSE4_1
 
 #include "x86_swizzle.h"
@@ -328,5 +329,58 @@ TEST(TestX86SwizzleVec, Double256Deinterleave) {
 }
 
 #endif // DISTOPIA_X86_AVX
+
+TEST(TestX86SwizzleVec, Float128OverlapOne) {
+    float a[4] {00.f, 01.f, 02.f,-01.f};
+    float b[4] {03.f, 04.f, 05.f, -01.f};
+    float correct[4] = {00.f, 01.f, 02.f,03.f};
+
+    __m128 a_packed = load_p<__m128>(a);
+    __m128 b_packed = load_p<__m128>(b);
+    __m128 result =  OverlapOne(a_packed,b_packed);
+    // store in b
+    storeu_p(b, result);
+    for(std::size_t i=0; i<4; i++) {
+        EXPECT_FLOAT_EQ(b[i], correct[i]);
+    }
+
+}
+
+TEST(TestX86SwizzleVec, Float128OverlapTwo) {
+    float a[4] {00.f, 01.f, -01.f,-01.f};
+    float b[4] {02.f, 03.f, -01.f, -01.f};
+    float correct[4] = {00.f, 01.f, 02.f,03.f};
+
+    __m128 a_packed = load_p<__m128>(a);
+    __m128 b_packed = load_p<__m128>(b);
+    __m128 result =  OverlapTwo(a_packed,b_packed);
+    // store in b
+    storeu_p(b, result);
+    for(std::size_t i=0; i<4; i++) {
+        EXPECT_FLOAT_EQ(b[i], correct[i]);
+    }
+
+}
+
+
+TEST(TestX86SwizzleVec, Float128OverlapThree) {
+    float a[4] {00.f, -01.f, -01.f,-01.f};
+    float b[4] {01.f, 02.f, 03.f, -01.f};
+    float correct[4] = {00.f, 01.f, 02.f,03.f};
+
+    __m128 a_packed = load_p<__m128>(a);
+    __m128 b_packed = load_p<__m128>(b);
+    __m128 t1 =  shuffle_p<_MM_SHUFFLE(2,1,0,3)>(b_packed,b_packed);
+    storeu_p(b, t1);
+    for(std::size_t i=0; i<4; i++) {
+        std::cout << "t1 " << b[i] << "\n";
+    }
+    __m128 result = OverlapThree(a_packed,b_packed);
+    storeu_p(b, result);
+    for(std::size_t i=0; i<4; i++) {
+        EXPECT_FLOAT_EQ(b[i], correct[i]);
+    }
+
+}
 
 #endif // DISTOPIA_X86_SSE4_1
