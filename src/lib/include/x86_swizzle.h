@@ -46,6 +46,23 @@ inline Vec4T OverlapThree(const Vec4T a, const Vec4T b) {
   return t1;
 }
 
+template <typename Vec4T>
+inline void Transpose4x3(const Vec4T a, const Vec4T b, const Vec4T c,
+                          const Vec4T d, Vec4T &a1, Vec4T &b1, Vec4T &c1) {
+  // PRE: a  = x0y0z0X b = x1y1z1X c = x2y2z2X d = x3y3z3X
+  Vec4T t1 = shuffle_p<_MM_SHUFFLE(0, 3, 2, 1)>(b, b);
+  // t1 = y1z1Xx1
+  a1 = blend_p<0x8>(a, t1);
+  // res_a = x0y0z0x1
+  b1 = shuffle_p<_MM_SHUFFLE(1, 0, 1, 0)>(t1, c);
+  // res_b = y1z1x2y2
+  Vec4T t2 = shuffle_p<_MM_SHUFFLE(2, 3, 1, 0)>(c, c);
+  // t2 = x2y2Xz2
+  Vec4T t3 = blend_p<0x1>(d, t2);
+  // t3 = x3y3z3z2
+  c1 = shuffle_p<_MM_SHUFFLE(2, 1, 0, 3)>(t3,t3);
+}
+
 inline void Deinterleave3(__m128 a, __m128 b, __m128 c, __m128 &x, __m128 &y,
                           __m128 &z) {
   // a = x0y0z0x1, b = y1z1x2y2, c = z2x3y3z3
