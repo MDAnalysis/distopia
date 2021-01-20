@@ -214,14 +214,18 @@ TEST(TestX86Vec, Double256LoadVectorAndStore) {
 #endif // DISTOPIA_X86_AVX
 
 TEST(TestX86Vec, Float128DumbIdxLoad) {
+    // make a an array of 15 vals (5 atoms)
   float abc[15] = {-01.f, -01.f, -01.f, 00.f, 01.f, 02.f, 03.f, 04.f,
                    05.f,  06.f,  07.f,  08.f, 09.f, 10.f, 11.f};
 
-  VectorTriple<__m128> vt = VectorTriple<__m128>(abc, 3, 6, 9, 12);
+    // use idx loader to get coords for atoms 1,2,3,4 and not 0
+  VectorTriple<__m128> vt = VectorTriple<__m128>(abc,1,2,3,4);
   float result[vt.n_scalars];
+  // offset to compare correct values
+  int offset = 15 - vt.n_scalars; 
   vt.store(result);
   for (std::size_t i = 0; i < vt.n_scalars; i++) {
-    EXPECT_FLOAT_EQ(abc[i + 3], result[i]);
+    EXPECT_FLOAT_EQ(abc[i + offset], result[i]);
   }
 }
 

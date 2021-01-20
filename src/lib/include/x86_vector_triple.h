@@ -66,12 +66,12 @@ public:
                   "Cannot use this constructor on a type "
                   "that does not have a SIMD width of 4");
 
-    ScalarT a_1[ValuesPerPack<VectorT>]{source[i], source[i + 1], source[i + 2],
-                                        source[j]};
-    ScalarT b_1[ValuesPerPack<VectorT>]{source[j + 1], source[j + 2], source[k],
-                                        source[k + 1]};
-    ScalarT c_1[ValuesPerPack<VectorT>]{source[k + 2], source[l], source[l + 1],
-                                        source[l + 2]};
+    ScalarT a_1[ValuesPerPack<VectorT>]{source[3 * i], source[3 * i + 1],
+                                        source[3 * i + 2], source[3 * j]};
+    ScalarT b_1[ValuesPerPack<VectorT>]{source[3 * j + 1], source[3 * j + 2],
+                                        source[3 * k], source[3 * k + 1]};
+    ScalarT c_1[ValuesPerPack<VectorT>]{source[3 * k + 2], source[3 * l],
+                                        source[3 * l + 1], source[3 * l + 2]};
 
     a = loadu_p<VectorT>(a_1);
     b = loadu_p<VectorT>(b_1);
@@ -86,8 +86,7 @@ public:
   }
 
   // store or stream to an array of ScalarT eg float* or double *.
-  template <bool streaming = false>
-  inline void store(ScalarT *target) {
+  template <bool streaming = false> inline void store(ScalarT *target) {
     if constexpr (streaming) {
       stream_p(target, a);
       stream_p(&target[ValuesPerPack<VectorT>], b);
