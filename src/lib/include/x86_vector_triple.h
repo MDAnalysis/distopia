@@ -39,29 +39,52 @@ public:
 
   // construct by loading discontiguously from an array of ScalarT eg float* or
   // double* for which the SIMD width is 4 (__m128 and __m256d). The access is
-  // indexed by 4 integers i,j,k,l where each index is the x (first) coordinate
+  // indexed by 4 integers i,j,k,l where each index is the number
   // of the particle. assumes the input vector is in AOS format ie:
   // x0y0z0x1y1z1x2y2z2.... Note X=junk coordinate in notation below
-  inline void EarlyIdxLoad(ScalarT *source, int i, int j, int k, int l) {
+  // WARNING: will segfault if the final 3 coordinates in source are loaded.
+  inline void IdxLoadUnsafe(ScalarT *source, int i, int j, int k, int l) {
     static_assert(ValuesPerPack<VectorT> == 4,
                   "Cannot use this constructor on a type "
                   "that does not have a SIMD width of 4");
-
     // load xiyiziX
-    VectorT a_1 = loadu_p(source + i);
+    VectorT a_1 = loadu_p<VectorT>(&source[3 * i]);
     // load xjyjzjX
-    VectorT b_1 = loadu_p<VectorT>(source + j);
-    
+    VectorT b_1 = loadu_p<VectorT>(&source[3 * j]);
     // load xkykzkX
-    VectorT c_1 = loadu_p<VectorT>(source + k);
-    // combine b_1 and c_1 to make y
+    VectorT c_1 = loadu_p<VectorT>(&source[3 * k]);
     // load xlylzlX
-    VectorT d_1 = loadu_p<VectorT>(source + l);
-
-    // shuffle the first element to the end
-
-    // DO shuffle and blend till we get the right answer
+    VectorT d_1 = loadu_p<VectorT>(&source[3 * l]);
+    // transpose into right order
+    Transpose4x3(a_1, b_1, c_1, d_1, this->a, this->b, this->c);
+    // a = x0y0z0x1 b = y1z1x2y2 c = z2x3y3z3
   }
+  // construct by loading discontiguously from an array of ScalarT eg float* or
+  // double* for which the SIMD width is 4 (__m128 and __m256d). The access is
+  // indexed by 4 integers i,j,k,l where each index is the number
+  // of the particle. assumes the input vector is in AOS format ie:
+  // x0y0z0x1y1z1x2y2z2.... Note X=junk coordinate in notation below
+  // NOTE costs one extra shuffle relative to Unsafe
+  inline void IdxLoadSafe(ScalarT *source, int i, int j, int k, int l) {
+    static_assert(ValuesPerPack<VectorT> == 4,
+                  "Cannot use this constructor on a type "
+                  "that does not have a SIMD width of 4");
+    // load xiyiziX
+    VectorT a_1 = loadu_p<VectorT>(&source[3 * i]);
+    // load xjyjzjX
+    VectorT b_1 = loadu_p<VectorT>(&source[3 * j]);
+    // load xkykzkX
+    VectorT c_1 = loadu_p<VectorT>(&source[3 * k]);
+    // load Xxlylzl
+    VectorT d_1 = loadu_p<VectorT>(&source[3 * l -1]);
+    // shuffle X to back of d_1
+    d_1 = shuffle_p<_MM_SHUFFLE(0,3,2,1)>(d_1,d_1);
+    // d1 = xlylzlX
+    // transpose into right order
+    Transpose4x3(a_1, b_1, c_1, d_1, this->a, this->b, this->c);
+    // a = x0y0z0x1 b = y1z1x2y2 c = z2x3y3z3
+  }
+
   // this is the dumb way to do it and is primarily for benchmarking
   inline explicit VectorTriple(ScalarT *source, int i, int j, int k, int l) {
     static_assert(ValuesPerPack<VectorT> == 4,

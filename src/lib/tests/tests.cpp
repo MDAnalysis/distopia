@@ -214,22 +214,6 @@ TEST(TestX86Vec, Double256LoadVectorAndStore) {
 
 #endif // DISTOPIA_X86_AVX
 
-TEST(TestX86Vec, Float128DumbIdxLoad) {
-  // make a an array of 15 vals (5 atoms)
-  float abc[15] = {-01.f, -01.f, -01.f, 00.f, 01.f, 02.f, 03.f, 04.f,
-                   05.f,  06.f,  07.f,  08.f, 09.f, 10.f, 11.f};
-
-  // use idx loader to get coords for atoms 1,2,3,4 and not 0
-  VectorTriple<__m128> vt = VectorTriple<__m128>(abc, 1, 2, 3, 4);
-  float result[vt.n_scalars];
-  // offset to compare correct values
-  int offset = 15 - vt.n_scalars;
-  vt.store(result);
-  for (std::size_t i = 0; i < vt.n_scalars; i++) {
-    EXPECT_FLOAT_EQ(abc[i + offset], result[i]);
-  }
-}
-
 TEST(TestX86SwizzleVec, Float128Deinterleave) {
   __m128 a = _mm_setr_ps(00.f, 01.f, 02.f, 10.f);
   __m128 b = _mm_setr_ps(11.f, 12.f, 20.f, 21.f);
@@ -330,72 +314,60 @@ TEST(TestX86SwizzleVec, Double256Deinterleave) {
 
 #endif // DISTOPIA_X86_AVX
 
-TEST(TestX86SwizzleVec, Float128OverlapOne) {
-  float a[4]{00.f, 01.f, 02.f, -01.f};
-  float b[4]{03.f, 04.f, 05.f, -01.f};
-  float correct[4] = {00.f, 01.f, 02.f, 03.f};
 
-  __m128 a_packed = load_p<__m128>(a);
-  __m128 b_packed = load_p<__m128>(b);
-  __m128 result = OverlapOne(a_packed, b_packed);
-  // store in b
-  storeu_p(b, result);
-  for (std::size_t i = 0; i < 4; i++) {
-    EXPECT_FLOAT_EQ(b[i], correct[i]);
+TEST(TestX86Vec, Float128DumbIdxLoad) {
+  // make a an array of 15 vals (5 atoms)
+  float abc[15] = {-01.f, -01.f, -01.f, 00.f, 01.f, 02.f, 03.f, 04.f,
+                   05.f,  06.f,  07.f,  08.f, 09.f, 10.f, 11.f};
+
+  // use idx loader to get coords for atoms 1,2,3,4 and not 0
+  VectorTriple<__m128> vt = VectorTriple<__m128>(abc, 1, 2, 3, 4);
+  float result[vt.n_scalars];
+  // offset to compare correct values
+  int offset = 15 - vt.n_scalars;
+  vt.store(result);
+  for (std::size_t i = 0; i < vt.n_scalars; i++) {
+    EXPECT_FLOAT_EQ(abc[i + offset], result[i]);
   }
 }
 
-TEST(TestX86SwizzleVec, Float128OverlapTwo) {
-  float a[4]{00.f, 01.f, -01.f, -01.f};
-  float b[4]{02.f, 03.f, -01.f, -01.f};
-  float correct[4] = {00.f, 01.f, 02.f, 03.f};
-
-  __m128 a_packed = load_p<__m128>(a);
-  __m128 b_packed = load_p<__m128>(b);
-  __m128 result = OverlapTwo(a_packed, b_packed);
-  // store in b
-  storeu_p(b, result);
-  for (std::size_t i = 0; i < 4; i++) {
-    EXPECT_FLOAT_EQ(b[i], correct[i]);
-  }
-}
-
-TEST(TestX86SwizzleVec, Float128OverlapThree) {
-  float a[4]{00.f, -01.f, -01.f, -01.f};
-  float b[4]{01.f, 02.f, 03.f, -01.f};
-  float correct[4] = {00.f, 01.f, 02.f, 03.f};
-
-  __m128 a_packed = load_p<__m128>(a);
-  __m128 b_packed = load_p<__m128>(b);
-  __m128 result = OverlapThree(a_packed, b_packed);
-  storeu_p(b, result);
-  for (std::size_t i = 0; i < 4; i++) {
-    EXPECT_FLOAT_EQ(b[i], correct[i]);
-  }
-}
-
-TEST(TestX86SwizzleVec, Float128Transpose4x3) {
-  float a[4]{00.f, 01.f, 02.f, -01.f};
-  float b[4]{03.f, 04.f, 05.f, -01.f};
-  float c[4]{06.f, 07.f, 08.f, -01.f};
-  float d[4]{09.f, 10.f, 11.f, -01.f};
+TEST(TestX86SwizzleVec, Float128IdxLoadUnsafe) {
+  float xyz[24] = {00.f, 01.f, 02.f, 0.0f, 0.0f, 0.0f, 03.f, 04.f,
+                   05.f, 0.0f, 0.0f, 0.0f, 06.f, 07.f, 08.f, 0.0f,
+                   0.0f, 0.0f, 09.f, 10.f, 11.f, 0.0f, 0.0f, 0.0f};
   float correct_xyz[12] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f,
                            06.f, 07.f, 08.f, 09.f, 10.f, 11.f};
-
-  __m128 a_packed = load_p<__m128>(a);
-  __m128 b_packed = load_p<__m128>(b);
-  __m128 c_packed = load_p<__m128>(c);
-  __m128 d_packed = load_p<__m128>(d);
-  __m128 a1, b1, c1;
-  float result_buf[12];
-
-  Transpose4x3(a_packed, b_packed, c_packed, d_packed, a1, b1, c1);
-  storeu_p(result_buf, a1);
-  storeu_p(&result_buf[4], b1);
-  storeu_p(&result_buf[8], c1);
+  // dummy data to load
+  float buf[12] = {-01.f, 01.f,  -01.f, -01.f, -01.f, -01.f,
+                        -01.f, -01.f, -01.f, -01.f, -01.f, -01.f};
+  // load dummy data
+  VectorTriple<__m128> vt = VectorTriple<__m128>(buf);
+  // load actual data and transpose
+  vt.IdxLoadUnsafe(xyz, 0, 2, 4, 6);
+  vt.store(buf);
 
   for (std::size_t i = 0; i < 12; i++) {
-    EXPECT_FLOAT_EQ(result_buf[i], correct_xyz[i]);
+    EXPECT_FLOAT_EQ(buf[i], correct_xyz[i]);
+  }
+}
+
+TEST(TestX86SwizzleVec, Float128IdxLoadSafe) {
+  float xyz[24] = {00.f, 01.f, 02.f, 0.0f, 0.0f, 0.0f, 03.f, 04.f,
+                   05.f, 0.0f, 0.0f, 0.0f, 06.f, 07.f, 08.f, 0.0f,
+                   0.0f, 0.0f, 09.f, 10.f, 11.f, 0.0f, 0.0f, 0.0f};
+  float correct_xyz[12] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f,
+                           06.f, 07.f, 08.f, 09.f, 10.f, 11.f};
+  // dummy data to load
+  float buf[12] = {-01.f, 01.f,  -01.f, -01.f, -01.f, -01.f,
+                        -01.f, -01.f, -01.f, -01.f, -01.f, -01.f};
+  // load dummy data
+  VectorTriple<__m128> vt = VectorTriple<__m128>(buf);
+  // load actual data and transpose
+  vt.IdxLoadSafe(xyz, 0, 2, 4, 6);
+  vt.store(buf);
+
+  for (std::size_t i = 0; i < 12; i++) {
+    EXPECT_FLOAT_EQ(buf[i], correct_xyz[i]);
   }
 }
 

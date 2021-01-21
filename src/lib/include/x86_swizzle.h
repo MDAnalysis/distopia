@@ -10,62 +10,28 @@
 
 namespace {
 
-// combines two 4 wide SIMD types replacing the last element of A, with the
-// first element of B. Designed to eliminate useless a single trailing useless
-// floats in A
-template <typename Vec4T>
-inline Vec4T OverlapOne(const Vec4T a, const Vec4T b) {
-  // a  = x0y0z0X b = x1y1z1X
-  Vec4T t1 = shuffle_p<_MM_SHUFFLE(0, 3, 2, 1)>(b, b);
-  // t1 = y1z1Xx1
-  t1 = blend_p<0x8>(a, t1);
-  // t1 = x0y0z0x1
-  return t1;
-}
 
-// combines 4 wide SIMD types replacing the last 2 elements of A, with the first
-// 2 elements of B. Designed to eliminate two trailing useless floats in A
-template <typename Vec4T>
-inline Vec4T OverlapTwo(const Vec4T a, const Vec4T b) {
-  // a = x0y0XX b = z0x1XX
-  Vec4T t1 = shuffle_p<_MM_SHUFFLE(1, 0, 1, 0)>(a, b);
-  // t1 x0y0z0x1
-  return t1;
-}
-
-// combines two 4 wide SIMD types replacing the last 3 elements of A, with the
-// first 3 elements of B. Designed to eliminate three trailing useless floats in
-// A
-template <typename Vec4T>
-inline Vec4T OverlapThree(const Vec4T a, const Vec4T b) {
-  // a  = x0XXX b = y0z0x1X
-  Vec4T t1 = shuffle_p<_MM_SHUFFLE(2, 1, 0, 3)>(b, b);
-  // t1 = Xy0z0x1
-  t1 = blend_p<0x1>(t1, a);
-  // t1 = x0y0z0x1
-  return t1;
-}
-
-template <typename Vec4T>
-inline void Transpose4x3(const Vec4T a, const Vec4T b, const Vec4T c,
-                          const Vec4T d, Vec4T &a1, Vec4T &b1, Vec4T &c1) {
+inline void Transpose4x3(const __m128 a, const __m128 b, const __m128 c,
+                          const __m128 d, __m128 &a1, __m128 &b1, __m128 &c1) {
   // PRE: a  = x0y0z0X b = x1y1z1X c = x2y2z2X d = x3y3z3X
-  Vec4T t1 = shuffle_p<_MM_SHUFFLE(0, 3, 2, 1)>(b, b);
+  __m128 t1 = shuffle_p<_MM_SHUFFLE(0, 3, 2, 1)>(b, b);
   // t1 = y1z1Xx1
   a1 = blend_p<0x8>(a, t1);
-  // res_a = x0y0z0x1
+  // a1 = x0y0z0x1
   b1 = shuffle_p<_MM_SHUFFLE(1, 0, 1, 0)>(t1, c);
-  // res_b = y1z1x2y2
-  Vec4T t2 = shuffle_p<_MM_SHUFFLE(2, 3, 1, 0)>(c, c);
+  // b1 = y1z1x2y2
+  __m128 t2 = shuffle_p<_MM_SHUFFLE(2, 3, 1, 0)>(c, c);
   // t2 = x2y2Xz2
-  Vec4T t3 = blend_p<0x8>(d, t2);
+  __m128 t3 = blend_p<0x8>(d, t2);
   // t3 = x3y3z3z2
   c1 = shuffle_p<_MM_SHUFFLE(2, 1, 0, 3)>(t3,t3);
+  // c1 = z2x3y3z3
 }
+
 
 inline void Deinterleave3(__m128 a, __m128 b, __m128 c, __m128 &x, __m128 &y,
                           __m128 &z) {
-  // a = x0y0z0x1, b = y1z1x2y2, c = z2x3y3z3
+  // PRE: a = x0y0z0x1, b = y1z1x2y2, c = z2x3y3z3
   __m128 t1 = shuffle_p<_MM_SHUFFLE(2, 1, 3, 2)>(b, c);
   __m128 t2 = shuffle_p<_MM_SHUFFLE(1, 0, 2, 1)>(a, b);
   // t1 = x2y2x3y3, t2 = y0z0y1z1
@@ -76,7 +42,7 @@ inline void Deinterleave3(__m128 a, __m128 b, __m128 c, __m128 &x, __m128 &y,
 }
 inline void Deinterleave3(__m128d a, __m128d b, __m128d c, __m128d &x,
                           __m128d &y, __m128d &z) {
-  // a = x0y0, b = z0x1, c = y1z1
+  // PRE: a = x0y0, b = z0x1, c = y1z1
   x = blend_p<0x2>(a, b);
   y = shuffle_p<0x1>(a, c);
   z = blend_p<0x2>(b, c);
@@ -85,7 +51,7 @@ inline void Deinterleave3(__m128d a, __m128d b, __m128d c, __m128d &x,
 #ifdef DISTOPIA_X86_AVX
 inline void Deinterleave3(__m256 a, __m256 b, __m256 c, __m256 &x, __m256 &y,
                           __m256 &z) {
-  // a = x0y0z0x1y1z1x2y2, b = z2x3y3z3x4y4z4x5, c = y6z6x7y7z7x8y8z8
+  // PRE: a = x0y0z0x1y1z1x2y2, b = z2x3y3z3x4y4z4x5, c = y6z6x7y7z7x8y8z8
   __m256 m1 = blend_p<0xf0>(a, b);
   __m256 m2 = permute2f128_p<0x21>(a, c);
   __m256 m3 = blend_p<0xf0>(b, c);
