@@ -387,15 +387,14 @@ TEST(TestX86SwizzleVec, Float128Transpose4x3) {
   __m128 c_packed = load_p<__m128>(c);
   __m128 d_packed = load_p<__m128>(d);
   __m128 a1, b1, c1;
+  float result_buf[12];
 
   Transpose4x3(a_packed, b_packed, c_packed, d_packed, a1, b1, c1);
-  float result_buf[12];
   storeu_p(result_buf, a1);
-  storeu_p(result_buf + 4, b1);
-  storeu_p(result_buf + 8, c1);
+  storeu_p(&result_buf[4], b1);
+  storeu_p(&result_buf[8], c1);
 
   for (std::size_t i = 0; i < 12; i++) {
-    std::cout << result_buf[i] << "\n";
     EXPECT_FLOAT_EQ(result_buf[i], correct_xyz[i]);
   }
 }
