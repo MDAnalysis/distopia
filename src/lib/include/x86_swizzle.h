@@ -58,7 +58,7 @@ inline void Transpose4x3(const Vec4T a, const Vec4T b, const Vec4T c,
   // res_b = y1z1x2y2
   Vec4T t2 = shuffle_p<_MM_SHUFFLE(2, 3, 1, 0)>(c, c);
   // t2 = x2y2Xz2
-  Vec4T t3 = blend_p<0x1>(d, t2);
+  Vec4T t3 = blend_p<0x8>(d, t2);
   // t3 = x3y3z3z2
   c1 = shuffle_p<_MM_SHUFFLE(2, 1, 0, 3)>(t3,t3);
 }
