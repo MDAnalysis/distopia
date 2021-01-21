@@ -319,9 +319,14 @@ TEST(TestX86Vec, Float128DumbIdxLoad) {
   // make a an array of 15 vals (5 atoms)
   float abc[15] = {-01.f, -01.f, -01.f, 00.f, 01.f, 02.f, 03.f, 04.f,
                    05.f,  06.f,  07.f,  08.f, 09.f, 10.f, 11.f};
+                   
+  float buf[12] = {-01.f, 01.f,  -01.f, -01.f, -01.f, -01.f,
+                        -01.f, -01.f, -01.f, -01.f, -01.f, -01.f};
 
-  // use idx loader to get coords for atoms 1,2,3,4 and not 0
-  VectorTriple<__m128> vt = VectorTriple<__m128>(abc, 1, 2, 3, 4);
+  // load dummy data
+  VectorTriple<__m128> vt = VectorTriple<__m128>(buf);
+  // use slow idx loader to get coords for atoms 1,2,3,4 and not 0
+  vt.DumbLoad(abc, 1, 2, 3, 4);
   float result[vt.n_scalars];
   // offset to compare correct values
   int offset = 15 - vt.n_scalars;
@@ -342,7 +347,8 @@ TEST(TestX86SwizzleVec, Float128IdxLoadUnsafe) {
                         -01.f, -01.f, -01.f, -01.f, -01.f, -01.f};
   // load dummy data
   VectorTriple<__m128> vt = VectorTriple<__m128>(buf);
-  // load actual data and transpose
+  // load actual data and do unsafe transpose
+  // end of array is padded so is no buffer overrun
   vt.IdxLoadUnsafe(xyz, 0, 2, 4, 6);
   vt.store(buf);
 
@@ -352,22 +358,17 @@ TEST(TestX86SwizzleVec, Float128IdxLoadUnsafe) {
 }
 
 TEST(TestX86SwizzleVec, Float128IdxLoadSafe) {
-  float xyz[24] = {00.f, 01.f, 02.f, 0.0f, 0.0f, 0.0f, 03.f, 04.f,
+  float xyz[21] = {00.f, 01.f, 02.f, 0.0f, 0.0f, 0.0f, 03.f, 04.f,
                    05.f, 0.0f, 0.0f, 0.0f, 06.f, 07.f, 08.f, 0.0f,
-                   0.0f, 0.0f, 09.f, 10.f, 11.f, 0.0f, 0.0f, 0.0f};
+                   0.0f, 0.0f, 09.f, 10.f, 11.f};
   float correct_xyz[12] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f,
                            06.f, 07.f, 08.f, 09.f, 10.f, 11.f};
-  // dummy data to load
-  float buf[12] = {-01.f, 01.f,  -01.f, -01.f, -01.f, -01.f,
-                        -01.f, -01.f, -01.f, -01.f, -01.f, -01.f};
-  // load dummy data
-  VectorTriple<__m128> vt = VectorTriple<__m128>(buf);
-  // load actual data and transpose
-  vt.IdxLoadSafe(xyz, 0, 2, 4, 6);
-  vt.store(buf);
-
-  for (std::size_t i = 0; i < 12; i++) {
-    EXPECT_FLOAT_EQ(buf[i], correct_xyz[i]);
+  // safeload data and transpose
+  VectorTriple<__m128> vt = VectorTriple<__m128>(xyz, 0, 2, 4, 6);
+  float result[vt.n_scalars];
+  vt.store(result);
+  for (std::size_t i = 0; i < vt.n_scalars; i++) {
+    EXPECT_FLOAT_EQ(result[i], correct_xyz[i]);
   }
 }
 

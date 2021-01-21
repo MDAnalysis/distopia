@@ -64,8 +64,8 @@ public:
   // indexed by 4 integers i,j,k,l where each index is the number
   // of the particle. assumes the input vector is in AOS format ie:
   // x0y0z0x1y1z1x2y2z2.... Note X=junk coordinate in notation below
-  // NOTE costs one extra shuffle relative to Unsafe
-  inline void IdxLoadSafe(ScalarT *source, int i, int j, int k, int l) {
+  // NOTE: costs one extra shuffle relative to Unsafe
+  inline explicit  VectorTriple(ScalarT *source, int i, int j, int k, int l) {
     static_assert(ValuesPerPack<VectorT> == 4,
                   "Cannot use this constructor on a type "
                   "that does not have a SIMD width of 4");
@@ -75,7 +75,7 @@ public:
     VectorT b_1 = loadu_p<VectorT>(&source[3 * j]);
     // load xkykzkX
     VectorT c_1 = loadu_p<VectorT>(&source[3 * k]);
-    // load Xxlylzl
+    // load Xxlylzl << NOTE X at front 
     VectorT d_1 = loadu_p<VectorT>(&source[3 * l -1]);
     // shuffle X to back of d_1
     d_1 = shuffle_p<_MM_SHUFFLE(0,3,2,1)>(d_1,d_1);
@@ -86,7 +86,7 @@ public:
   }
 
   // this is the dumb way to do it and is primarily for benchmarking
-  inline explicit VectorTriple(ScalarT *source, int i, int j, int k, int l) {
+  inline void DumbLoad(ScalarT *source, int i, int j, int k, int l) {
     static_assert(ValuesPerPack<VectorT> == 4,
                   "Cannot use this constructor on a type "
                   "that does not have a SIMD width of 4");
