@@ -315,7 +315,7 @@ TEST(TestX86SwizzleVec, Double256Deinterleave) {
 #endif // DISTOPIA_X86_AVX
 
 
-TEST(TestX86Vec, Float128DumbIdxLoad) {
+TEST(TestX86SwizzleVec, Float128DumbIdxLoad) {
   // make a an array of 15 vals (5 atoms)
   float abc[15] = {-01.f, -01.f, -01.f, 00.f, 01.f, 02.f, 03.f, 04.f,
                    05.f,  06.f,  07.f,  08.f, 09.f, 10.f, 11.f};
