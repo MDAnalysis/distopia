@@ -314,62 +314,82 @@ TEST(TestX86SwizzleVec, Double256Deinterleave) {
 
 #endif // DISTOPIA_X86_AVX
 
-
 TEST(TestX86SwizzleVec, Float128DumbIdxLoad) {
   // make a an array of 15 vals (5 atoms)
   float abc[15] = {-01.f, -01.f, -01.f, 00.f, 01.f, 02.f, 03.f, 04.f,
                    05.f,  06.f,  07.f,  08.f, 09.f, 10.f, 11.f};
-                   
+
   float buf[12] = {-01.f, 01.f,  -01.f, -01.f, -01.f, -01.f,
-                        -01.f, -01.f, -01.f, -01.f, -01.f, -01.f};
+                   -01.f, -01.f, -01.f, -01.f, -01.f, -01.f};
+
+  __m128 correct_x = _mm_setr_ps(00.f, 01.f, 02.f, 03.f);
+  __m128 correct_y = _mm_setr_ps(04.f, 05.f, 06.f, 07.f);
+  __m128 correct_z = _mm_setr_ps(08.f, 09.f, 10.f, 11.f);
 
   // load dummy data
   VectorTriple<__m128> vt = VectorTriple<__m128>(buf);
   // use slow idx loader to get coords for atoms 1,2,3,4 and not 0
   vt.DumbLoad(abc, 1, 2, 3, 4);
-  float result[vt.n_scalars];
-  // offset to compare correct values
-  int offset = 15 - vt.n_scalars;
-  vt.store(result);
-  for (std::size_t i = 0; i < vt.n_scalars; i++) {
-    EXPECT_FLOAT_EQ(abc[i + offset], result[i]);
-  }
+
+  bool x_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.a, correct_x)));
+  bool y_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.b, correct_y)));
+  bool z_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.c, correct_z)));
+  EXPECT_TRUE(x_is_correct);
+  EXPECT_TRUE(y_is_correct);
+  EXPECT_TRUE(z_is_correct);
 }
 
 TEST(TestX86SwizzleVec, Float128IdxLoadUnsafe) {
   float xyz[24] = {00.f, 01.f, 02.f, 0.0f, 0.0f, 0.0f, 03.f, 04.f,
                    05.f, 0.0f, 0.0f, 0.0f, 06.f, 07.f, 08.f, 0.0f,
                    0.0f, 0.0f, 09.f, 10.f, 11.f, 0.0f, 0.0f, 0.0f};
-  float correct_xyz[12] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f,
-                           06.f, 07.f, 08.f, 09.f, 10.f, 11.f};
   // dummy data to load
   float buf[12] = {-01.f, 01.f,  -01.f, -01.f, -01.f, -01.f,
-                        -01.f, -01.f, -01.f, -01.f, -01.f, -01.f};
+                   -01.f, -01.f, -01.f, -01.f, -01.f, -01.f};
+  __m128 correct_x = _mm_setr_ps(00.f, 01.f, 02.f, 03.f);
+  __m128 correct_y = _mm_setr_ps(04.f, 05.f, 06.f, 07.f);
+  __m128 correct_z = _mm_setr_ps(08.f, 09.f, 10.f, 11.f);
+
   // load dummy data
   VectorTriple<__m128> vt = VectorTriple<__m128>(buf);
   // load actual data and do unsafe transpose
   // end of array is padded so is no buffer overrun
   vt.IdxLoadUnsafe(xyz, 0, 2, 4, 6);
-  vt.store(buf);
-
-  for (std::size_t i = 0; i < 12; i++) {
-    EXPECT_FLOAT_EQ(buf[i], correct_xyz[i]);
-  }
+  bool x_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.a, correct_x)));
+  bool y_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.b, correct_y)));
+  bool z_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.c, correct_z)));
+  EXPECT_TRUE(x_is_correct);
+  EXPECT_TRUE(y_is_correct);
+  EXPECT_TRUE(z_is_correct);
 }
 
 TEST(TestX86SwizzleVec, Float128IdxLoadSafe) {
-  float xyz[21] = {00.f, 01.f, 02.f, 0.0f, 0.0f, 0.0f, 03.f, 04.f,
-                   05.f, 0.0f, 0.0f, 0.0f, 06.f, 07.f, 08.f, 0.0f,
-                   0.0f, 0.0f, 09.f, 10.f, 11.f};
+  float xyz[21] = {00.f, 01.f, 02.f, 0.0f, 0.0f, 0.0f, 03.f,
+                   04.f, 05.f, 0.0f, 0.0f, 0.0f, 06.f, 07.f,
+                   08.f, 0.0f, 0.0f, 0.0f, 09.f, 10.f, 11.f};
   float correct_xyz[12] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f,
                            06.f, 07.f, 08.f, 09.f, 10.f, 11.f};
+  __m128 correct_x = _mm_setr_ps(00.f, 01.f, 02.f, 03.f);
+  __m128 correct_y = _mm_setr_ps(04.f, 05.f, 06.f, 07.f);
+  __m128 correct_z = _mm_setr_ps(08.f, 09.f, 10.f, 11.f);
   // safeload data and transpose
   VectorTriple<__m128> vt = VectorTriple<__m128>(xyz, 0, 2, 4, 6);
-  float result[vt.n_scalars];
-  vt.store(result);
-  for (std::size_t i = 0; i < vt.n_scalars; i++) {
-    EXPECT_FLOAT_EQ(result[i], correct_xyz[i]);
-  }
+
+  bool x_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.a, correct_x)));
+  bool y_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.b, correct_y)));
+  bool z_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.c, correct_z)));
+  EXPECT_TRUE(x_is_correct);
+  EXPECT_TRUE(y_is_correct);
+  EXPECT_TRUE(z_is_correct);
 }
 
 #endif // DISTOPIA_X86_SSE4_1
