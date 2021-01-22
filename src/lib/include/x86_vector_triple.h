@@ -1,6 +1,8 @@
 #ifndef DISTOPIA_X86_VECTOR_TRIPLE
 #define DISTOPIA_X86_VECTOR_TRIPLE
 
+enum Layout { Interleaved = 0, Deinterleaved = 1 };
+
 #include "compiler_hints.h"
 #include "distopia_type_traits.h"
 #include "x86_swizzle.h"
@@ -44,16 +46,22 @@ public:
   // indexed by 4 integers i,j,k,l where each index is the number
   // of the particle. assumes the input vector is in AOS format
   inline explicit VectorTriple(ScalarT *source, ScalarT *end, int i, int j,
-                               int k, int l) {
+                               int k, int l, Layout layout) {
     static_assert(ValuesPerPack<VectorT> == 4,
                   "Cannot use this constructor on a type "
                   "that does not have a SIMD width of 4");
-    VectorT a1 = SafeIdxLoad(source, 3*i, end);
-    VectorT b1 = SafeIdxLoad(source, 3*j, end);
-    VectorT c1 = SafeIdxLoad(source, 3*k, end);
-    VectorT d1 = SafeIdxLoad(source, 3*l, end);
-    Deinterleave4x3(a1,b1,c1,d1, this->a, this->b, this->c);
+    VectorT a_1 = SafeIdxLoad(source, 3 * i, end);
+    VectorT b_1 = SafeIdxLoad(source, 3 * j, end);
+    VectorT c_1 = SafeIdxLoad(source, 3 * k, end);
+    VectorT d_1 = SafeIdxLoad(source, 3 * l, end);
+    if (layout) {
+      //  deinterleaved
+      Deinterleave4x3(a_1, b_1, c_1, d_1, this->a, this->b, this->c);
 
+    } else {
+      // deinterleaved
+      Transpose4x3(a_1, b_1, c_1, d_1, this->a, this->b, this->c);
+    }
   }
 
   // this is the dumb way to do it and is primarily for benchmarking
@@ -73,7 +81,7 @@ public:
     b = loadu_p<VectorT>(b_1);
     c = loadu_p<VectorT>(c_1);
   }
-  
+
   // reload values from a array of ScalarT eg float* or double *.
   inline void load(ScalarT *source) {
     a = loadu_p<VectorT>(source);
@@ -93,54 +101,53 @@ public:
       storeu_p(&target[2 * ValuesPerPack<VectorT>], c);
     }
   }
-  inline static VectorT SafeIdxLoad(ScalarT *source , int idx, ScalarT *end) {
-    VectorT tmp;
-  if (distopia_likely(source + idx + ValuesPerPack<VectorT> < end)) {
-    // load as is, no overflow
-    tmp = loadu_p<VectorT>(&source[idx + ValuesPerPack<VectorT>]);
-  } else {
-    // load offset by one
-    tmp = loadu_p<VectorT>(&source[idx + ValuesPerPack<VectorT> - 1]);
-    tmp = ShuntFirst2Last(tmp);
-  }
-  return tmp;
-  }
-};
-
-// Derived class for interleaved (AOS) vector triples. Can create a
-// deinterleaved (SOA) equivalent by calling deinterleave method.
-template <typename VectorT>
-class InterleavedVectorTriple : public VectorTriple<VectorT> {
-public:
-  // inherit both constructors with right SFINAE template argument.
-  using VectorTriple<VectorT>::VectorTriple;
-
-  // AOS2SOA deinterleave, returns deinterleaved derived class.
-  inline DeinterleavedVectorTriple<VectorT> deinterleave() {
+  inline VectorTriple<VectorT> deinterleave() {
     VectorT a1, b1, c1;
     Deinterleave3(this->a, this->b, this->c, a1, b1, c1);
-    DeinterleavedVectorTriple<VectorT> vt(a1, b1, c1);
+    VectorTriple<VectorT> vt(a1, b1, c1);
     return vt;
+  }
+
+private:
+  inline VectorT SafeIdxLoad(ScalarT *source, int idx, ScalarT *end) {
+    VectorT tmp;
+    if (distopia_likely(source + idx + ValuesPerPack<VectorT> < end)) {
+      // load as is, no overflow
+      tmp = loadu_p<VectorT>(&source[idx]);
+    } else {
+      // load offset by one
+      tmp = loadu_p<VectorT>(&source[idx - 1]);
+      tmp = ShuntFirst2Last(tmp);
+    }
+    return tmp;
   }
 };
 
-// Derived class for Deinterleaved (SOA) vector triples. Can create a
-// interleaved (AOS) equivalent by calling interleave method.
-// TODO Interleave is not working or even a valid template.
-template <typename VectorT>
-class DeinterleavedVectorTriple : public VectorTriple<VectorT> {
-public:
-  // inherit both constructors
-  using VectorTriple<VectorT>::VectorTriple;
+// // Derived class for interleaved (AOS) vector triples. Can create a
+// // deinterleaved (SOA) equivalent by calling deinterleave method.
+// template <typename VectorT>
+// class InterleavedVectorTriple : public VectorTriple<VectorT> {
+// public:
+//   // inherit both constructors with right SFINAE template argument.
+//   using VectorTriple<VectorT>::VectorTriple;
 
-  // TODO make SOA2AOS deinterleave method
-  // // SOA2AOS interleave returns interleaved derived class.
-  // inline InterleavedVectorTriple<VectorT> interleave() {
-  //   VectorT a1, b1, c1;
-  //   Interleave3(this->a, this->b, this->c, a1, b1, c1);
-  //   InterleavedVectorTriple<VectorT> vt(a1, b1, c1);
-  //   return vt;
-  // }
-};
+//   // AOS2SOA deinterleave, returns deinterleaved derived class.
+//   inline DeinterleavedVectorTriple<VectorT> deinterleave() {
+//     VectorT a1, b1, c1;
+//     Deinterleave3(this->a, this->b, this->c, a1, b1, c1);
+//     DeinterleavedVectorTriple<VectorT> vt(a1, b1, c1);
+//     return vt;
+//   }
+// };
+
+// // Derived class for Deinterleaved (SOA) vector triples. Can create a
+// // interleaved (AOS) equivalent by calling interleave method.
+// // TODO Interleave is not working or even a valid template.
+// template <typename VectorT>
+// class DeinterleavedVectorTriple : public VectorTriple<VectorT> {
+// public:
+//   // inherit both constructors
+//   using VectorTriple<VectorT>::VectorTriple;
+// };
 
 #endif // DISTOPIA_X86_VECTOR_TRIPLE

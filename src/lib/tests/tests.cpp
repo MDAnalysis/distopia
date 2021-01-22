@@ -223,8 +223,8 @@ TEST(TestX86SwizzleVec, Float128Deinterleave) {
   __m128 correct_y = _mm_setr_ps(01.f, 11.f, 21.f, 31.f);
   __m128 correct_z = _mm_setr_ps(02.f, 12.f, 22.f, 32.f);
 
-  InterleavedVectorTriple<__m128> vt = InterleavedVectorTriple<__m128>(a, b, c);
-  DeinterleavedVectorTriple<__m128> vt_res = vt.deinterleave();
+  VectorTriple<__m128> vt = VectorTriple<__m128>(a, b, c);
+  VectorTriple<__m128> vt_res = vt.deinterleave();
 
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.a, correct_x)));
@@ -246,9 +246,9 @@ TEST(TestX86SwizzleVec, Double128Deinterleave) {
   __m128d correct_y = _mm_setr_pd(01., 11.);
   __m128d correct_z = _mm_setr_pd(02., 12.);
 
-  InterleavedVectorTriple<__m128d> vt =
-      InterleavedVectorTriple<__m128d>(a, b, c);
-  DeinterleavedVectorTriple<__m128d> vt_res = vt.deinterleave();
+  VectorTriple<__m128d> vt =
+      VectorTriple<__m128d>(a, b, c);
+  VectorTriple<__m128d> vt_res = vt.deinterleave();
 
   bool x_is_correct =
       _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(vt_res.a, correct_x)));
@@ -274,8 +274,8 @@ TEST(TestX86SwizzleVec, Float256Deinterleave) {
   __m256 correct_z =
       _mm256_setr_ps(02.f, 12.f, 22.f, 32.f, 42.f, 52.f, 62.f, 72.f);
 
-  InterleavedVectorTriple<__m256> vt = InterleavedVectorTriple<__m256>(a, b, c);
-  DeinterleavedVectorTriple<__m256> vt_res = vt.deinterleave();
+  VectorTriple<__m256> vt = VectorTriple<__m256>(a, b, c);
+  VectorTriple<__m256> vt_res = vt.deinterleave();
 
   bool x_is_correct = _mm256_testc_ps(
       _mm256_setzero_ps(), _mm256_cmp_ps(vt_res.a, correct_x, _CMP_NEQ_UQ));
@@ -297,9 +297,9 @@ TEST(TestX86SwizzleVec, Double256Deinterleave) {
   __m256d correct_y = _mm256_setr_pd(01., 11., 21., 31.);
   __m256d correct_z = _mm256_setr_pd(02., 12., 22., 32.);
 
-  InterleavedVectorTriple<__m256d> vt =
-      InterleavedVectorTriple<__m256d>(a, b, c);
-  DeinterleavedVectorTriple<__m256d> vt_res = vt.deinterleave();
+  VectorTriple<__m256d> vt =
+      VectorTriple<__m256d>(a, b, c);
+  VectorTriple<__m256d> vt_res = vt.deinterleave();
 
   bool x_is_correct = _mm256_testc_pd(
       _mm256_setzero_pd(), _mm256_cmp_pd(vt_res.a, correct_x, _CMP_NEQ_UQ));
@@ -342,7 +342,7 @@ TEST(TestX86SwizzleVec, Float128DumbIdxLoad) {
   EXPECT_TRUE(z_is_correct);
 }
 
-TEST(TestX86SwizzleVec, Float128IdxLoadSafe) {
+TEST(TestX86SwizzleVec, Float128IdxLoadInterleaved) {
   float xyz[21] = {00.f, 01.f, 02.f, 0.0f, 0.0f, 0.0f, 03.f,
                    04.f, 05.f, 0.0f, 0.0f, 0.0f, 06.f, 07.f,
                    08.f, 0.0f, 0.0f, 0.0f, 09.f, 10.f, 11.f};
@@ -351,12 +351,29 @@ TEST(TestX86SwizzleVec, Float128IdxLoadSafe) {
   __m128 correct_y = _mm_setr_ps(04.f, 05.f, 06.f, 07.f);
   __m128 correct_z = _mm_setr_ps(08.f, 09.f, 10.f, 11.f);
   // safeload data and transpose
-  VectorTriple<__m128> vt = VectorTriple<__m128>(xyz,  xyz+21, 0, 2, 4, 6);
+  VectorTriple<__m128> vt = VectorTriple<__m128>(xyz,  xyz+21, 0, 2, 4, 6, Interleaved);
+  bool x_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.a, correct_x)));
+  bool y_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.b, correct_y)));
+  bool z_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.c, correct_z)));
+  EXPECT_TRUE(x_is_correct);
+  EXPECT_TRUE(y_is_correct);
+  EXPECT_TRUE(z_is_correct);
+}
+
+TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
+  float xyz[21] = {00.f, 01.f, 02.f, 0.0f, 0.0f, 0.0f, 10.f,
+                   11.f, 12.f, 0.0f, 0.0f, 0.0f, 20.f, 21.f,
+                   22.f, 0.0f, 0.0f, 0.0f, 30.f, 31.f, 32.f};
+
+  __m128 correct_x = _mm_setr_ps(00.f, 10.f, 20.f, 30.f);
+  __m128 correct_y = _mm_setr_ps(01.f, 11.f, 21.f, 31.f);
+  __m128 correct_z = _mm_setr_ps(02.f, 12.f, 22.f, 32.f);
+  // safeload data and transpose
+  VectorTriple<__m128> vt = VectorTriple<__m128>(xyz,  xyz+21, 0, 2, 4, 6, Deinterleaved);
   float result[vt.n_scalars];
-  vt.store(result);
-  for (std::size_t i = 0; i < vt.n_scalars; i++) {
-    std::cout << result[i] << "\n";
-  }
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.a, correct_x)));
   bool y_is_correct =
