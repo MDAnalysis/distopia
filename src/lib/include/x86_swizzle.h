@@ -10,9 +10,13 @@
 
 namespace {
 
+inline __m128 ShuntFirst2Last(const __m128 input) {
+  // shuffle first to last
+  return shuffle_p<_MM_SHUFFLE(0, 3, 2, 1)>(input, input);
+}
 
 inline void Transpose4x3(const __m128 a, const __m128 b, const __m128 c,
-                          const __m128 d, __m128 &a1, __m128 &b1, __m128 &c1) {
+                         const __m128 d, __m128 &a1, __m128 &b1, __m128 &c1) {
   // PRE: a  = x0y0z0X b = x1y1z1X c = x2y2z2X d = x3y3z3X
   __m128 t1 = shuffle_p<_MM_SHUFFLE(0, 3, 2, 1)>(b, b);
   // t1 = y1z1Xx1
@@ -24,10 +28,28 @@ inline void Transpose4x3(const __m128 a, const __m128 b, const __m128 c,
   // t2 = x2y2Xz2
   __m128 t3 = blend_p<0x8>(d, t2);
   // t3 = x3y3z3z2
-  c1 = shuffle_p<_MM_SHUFFLE(2, 1, 0, 3)>(t3,t3);
+  c1 = shuffle_p<_MM_SHUFFLE(2, 1, 0, 3)>(t3, t3);
   // c1 = z2x3y3z3
 }
 
+inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
+                            const __m128 d, __m128 &x, __m128 &y, __m128 &z) {
+  // PRE: a  = x0y0z0X b = x1y1z1X c = x2y2z2X d = x3y3z3X
+  __m128 tmp0 = _mm_unpacklo_ps(a, b);
+  // tmp0 = x0x1y0y1
+  __m128 tmp2 = _mm_unpacklo_ps(c, d);
+  // tmp2 = x2x3y2y3
+  __m128 tmp1 = _mm_unpackhi_ps(a, b);
+  // tmp1 = z0z1XX
+  __m128 tmp3 = _mm_unpackhi_ps(c, d);
+  // tmp3 = z2z3XX
+  x = _mm_movelh_ps(tmp0, tmp2);
+  // x = x0x1x2x3
+  y = _mm_movehl_ps(tmp2, tmp0);
+  // y = y0y1y2y3
+  z = _mm_movelh_ps(tmp1, tmp3);
+  // z = z0z1z2z3
+}
 
 inline void Deinterleave3(__m128 a, __m128 b, __m128 c, __m128 &x, __m128 &y,
                           __m128 &z) {
