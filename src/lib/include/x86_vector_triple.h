@@ -59,7 +59,7 @@ public:
       Deinterleave4x3(a_1, b_1, c_1, d_1, this->a, this->b, this->c);
 
     } else {
-      // deinterleaved
+      // interleaved
       Transpose4x3(a_1, b_1, c_1, d_1, this->a, this->b, this->c);
     }
   }
