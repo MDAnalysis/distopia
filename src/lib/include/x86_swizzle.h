@@ -27,10 +27,19 @@ inline __m128d ShuntFirst2Last(const __m128d input) {
 inline __m256 ShuntFirst2Last(const __m256 input) {
   // shuffle first to last
   // NOTE is it possible to do this with a lower latency by using shuffle and
-  // blend rather than the lane crossing instruction
+  // blend rather than the lane crossing instruction ?
+  // Also requires AVX2 rather than AVX
   // can mask be made constexpr?
   __m256i mask = _mm256_setr_epi32(1,2,3,4,5,6,7,0);
   return _mm256_permutevar8x32_ps(input, mask);
+}
+
+inline __m256d ShuntFirst2Last(const __m256d input) {
+  // shuffle first to last
+  // NOTE is it possible to do this with a lower latency by using shuffle and
+  // blend rather than the lane crossing instruction ?
+  // Also requires AVX2 rather than AVX
+  return _mm256_permute4x64_pd(input, _MM_SHUFFLE(0, 3, 2, 1));
 }
 
 #endif  // DISTOPIA_X86_AVX2_FMA
