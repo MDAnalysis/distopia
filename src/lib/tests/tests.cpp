@@ -332,6 +332,8 @@ TEST(TestX86SwizzleVec, Double128ShuntFirst2Last) {
   EXPECT_TRUE(x_is_correct);
 }
 
+#ifdef  DISTOPIA_X86_AVX2_FMA // this is not ideal at all
+
 TEST(TestX86SwizzleVec, Float256ShuntFirst2Last) {
   float x[8] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f, 06.f, 07.f};
   __m256 correct_x =
@@ -352,6 +354,8 @@ TEST(TestX86SwizzleVec, Double256ShuntFirst2Last) {
       _mm256_setzero_pd(), _mm256_cmp_pd(result, correct_x, _CMP_NEQ_UQ));
   EXPECT_TRUE(x_is_correct);
 }
+
+#endif  // DISTOPIA_X86_AVX2_FMA
 
 TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
   // dummy data with  4x target and 4x incorrect data mixed in
