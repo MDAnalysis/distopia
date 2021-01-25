@@ -76,6 +76,8 @@ inline void Transpose4x3(const __m128 a, const __m128 b, const __m128 c,
   // c1 = z2x3y3z3
 }
 
+#ifdef DISTOPIA_X86_AVX
+
 inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
                             const __m128 d, __m128 &x, __m128 &y, __m128 &z) {
   // PRE: a  = x0y0z0X b = x1y1z1X c = x2y2z2X d = x3y3z3X
@@ -94,6 +96,8 @@ inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
   z = _mm_movelh_ps(tmp1, tmp3);
   // z = z0z1z2z3
 }
+
+#endif //DISTOPIA_X86_AVX
 
 inline void Deinterleave8x3(const __m128 a, const __m128 b, const __m128 c,
                             const __m128 d, const __m128 e, const __m128 f,
