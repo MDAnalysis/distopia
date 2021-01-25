@@ -39,6 +39,12 @@ template <> struct IsVector<__m256d> { static constexpr bool value = true; };
 template <> struct VectorToScalarTStruct<__m256> { using type = float; };
 template <> struct VectorToScalarTStruct<__m256d> { using type = double; };
 
+// map each vector to matching  lane type
+template <typename VectorT> struct VectorToLaneTStruct;
+template <> struct VectorToLaneTStruct<__m256> { using type = __m128; };
+template <> struct VectorToLaneTStruct<__m256d> { using type = __m128d; };
+
+
 #endif // DISTOPIA_X86_AVX
 
 template <typename T>
@@ -46,6 +52,9 @@ using EnableIfVector = typename std::enable_if<IsVector<T>::value, int>::type;
 
 template <typename VectorT>
 using VectorToScalarT = typename VectorToScalarTStruct<VectorT>::type;
+
+template <typename VectorT>
+using VectorToLaneT = typename VectorToLaneTStruct<VectorT>::type;
 
 #ifdef DISTOPIA_GCC
 #pragma GCC diagnostic pop
