@@ -13,37 +13,52 @@
 
 namespace {
 
+// shuffle first element of __m128 to end and shunt everything left by one
 inline __m128 ShuntFirst2Last(const __m128 input) {
-  // shuffle first to last (latency 1)
+  // PRE: input = abcd
   return shuffle_p<_MM_SHUFFLE(0, 3, 2, 1)>(input, input);
+  // return bcda
 }
 
+// switch first and second element of __m128d
 inline __m128d ShuntFirst2Last(const __m128d input) {
-  // shuffle first to last (latency 1)
+  // PRE: input = ab
   return shuffle_p<0x1>(input, input);
+  // return ba
 }
 
 #ifdef DISTOPIA_X86_AVX2_FMA
+
+// shuffle first element of __m256 to end and shunt everything left by one
+// NOTE requires AVX2 rather than AVX
+// NOTE is it possible to do this with a lower latency by using shuffle and
+// blend rather than the lane crossing instruction ?
+// doesn't seem like mask can be made constexpr :(
+// https://stackoverflow.com/questions/51880079/constexpr-and-sse-intrinsics
 inline __m256 ShuntFirst2Last(const __m256 input) {
-  // shuffle first to last
-  // NOTE is it possible to do this with a lower latency by using shuffle and
-  // blend rather than the lane crossing instruction ?
-  // Also requires AVX2 rather than AVX
-  // can mask be made constexpr?
+  // PRE: input = abcdefgh
   __m256i mask = _mm256_setr_epi32(1, 2, 3, 4, 5, 6, 7, 0);
   return _mm256_permutevar8x32_ps(input, mask);
+  // return bcdefgha
 }
 
+// shuffle first element of __m256d to end and shunt everything left by one
+// NOTE requires AVX2 rather than AVX
+// NOTE is it possible to do this with a lower latency by using shuffle and
+// blend rather than the lane crossing instruction ?
 inline __m256d ShuntFirst2Last(const __m256d input) {
-  // shuffle first to last
-  // NOTE is it possible to do this with a lower latency by using shuffle and
-  // blend rather than the lane crossing instruction ?
-  // Also requires AVX2 rather than AVX
+  // PRE: input = abcd
   return _mm256_permute4x64_pd(input, _MM_SHUFFLE(0, 3, 2, 1));
+  // return bcda
 }
 
 #endif // DISTOPIA_X86_AVX2_FMA
 
+// safely loads from an array of ScalarT to a SIMD type of VectorT, checking
+// that we dont read off the end of ScalarT
+// CRITICAL WARNING currently not actually safe to use with __m256 as is designed for xyz
+// reads into __m128, may overhang by as much as 3 indicies
+// TODO  should compute offset and use that to guarantee __m256 works
 template <typename VectorT>
 inline VectorT SafeIdxLoad(const VectorToScalarT<VectorT> *source,
                            const int idx, const VectorToScalarT<VectorT> *end) {
@@ -59,10 +74,10 @@ inline VectorT SafeIdxLoad(const VectorToScalarT<VectorT> *source,
   return tmp;
 }
 
-#ifdef DISTOPIA_X86_AVX
-
+// transforms xyz coordinates from AOS to SOA
 inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
                             const __m128 d, __m128 &x, __m128 &y, __m128 &z) {
+  // U = undefined, X = junk
   // PRE: a  = x0y0z0X b = x1y1z1X c = x2y2z2X d = x3y3z3X
   __m128 tmp0 = _mm_unpacklo_ps(a, b);
   // tmp0 = x0x1y0y1
@@ -80,8 +95,9 @@ inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
   // z = z0z1z2z3
 }
 
-#endif //DISTOPIA_X86_AVX
+#ifdef DISTOPIA_X86_AVX
 
+// transforms xyz coordinates from AOS to SOA
 inline void Deinterleave8x3(const __m128 a, const __m128 b, const __m128 c,
                             const __m128 d, const __m128 e, const __m128 f,
                             const __m128 g, const __m128 h, __m256 &x,
@@ -109,6 +125,8 @@ inline void Deinterleave8x3(const __m128 a, const __m128 b, const __m128 c,
   z = _mm256_insertf128_ps(z, tz1, 1);
   // z = z0z1z2z3z4z5z6z7
 }
+
+#endif // DISTOPIA_X86_AVX
 
 inline void Deinterleave3(__m128 a, __m128 b, __m128 c, __m128 &x, __m128 &y,
                           __m128 &z) {
