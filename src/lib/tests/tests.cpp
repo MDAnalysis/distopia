@@ -395,12 +395,12 @@ TEST(TestX86SwizzleVec, Float256IdxLoadDeinterleaved) {
   // safeload data and transpose
   VectorTriple<__m256> vt =
       VectorTriple<__m256>(xyz, xyz + 36, 0, 2, 4, 6, 7, 8, 9, 11);
-  bool x_is_correct = _mm256_testc_pd(
-      _mm256_setzero_pd(), _mm256_cmp_pd(vt.a, correct_x, _CMP_NEQ_UQ));
-  bool y_is_correct = _mm256_testc_pd(
-      _mm256_setzero_pd(), _mm256_cmp_pd(vt.b, correct_y, _CMP_NEQ_UQ));
-  bool z_is_correct = _mm256_testc_pd(
-      _mm256_setzero_pd(), _mm256_cmp_pd(vt.c, correct_z, _CMP_NEQ_UQ));
+  bool x_is_correct = _mm256_testc_ps(
+      _mm256_setzero_ps(), _mm256_cmp_ps(vt.a, correct_x, _CMP_NEQ_UQ));
+  bool y_is_correct = _mm256_testc_ps(
+      _mm256_setzero_ps(), _mm256_cmp_ps(vt.b, correct_y, _CMP_NEQ_UQ));
+  bool z_is_correct = _mm256_testc_ps(
+      _mm256_setzero_ps(), _mm256_cmp_ps(vt.c, correct_z, _CMP_NEQ_UQ));
   EXPECT_TRUE(x_is_correct);
   EXPECT_TRUE(y_is_correct);
   EXPECT_TRUE(z_is_correct);
