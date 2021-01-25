@@ -1,8 +1,6 @@
 #ifndef DISTOPIA_X86_VECTOR_TRIPLE
 #define DISTOPIA_X86_VECTOR_TRIPLE
 
-enum VecLayout { Interleaved = 0, Deinterleaved = 1 };
-
 #include "compiler_hints.h"
 #include "distopia_type_traits.h"
 #include "x86_swizzle.h"
@@ -87,24 +85,6 @@ public:
     // deinterleave and combine lanes into full length packed structs
     Deinterleave8x3(a_1, b_1, c_1, d_1, e_1, f_1, g_1, h_1, this->a, this->b,
                     this->c);
-  }
-
-  // this is the dumb way to do it and is primarily for benchmarking
-  inline void DumbLoad4(ScalarT *source, int i, int j, int k, int l) {
-    static_assert(ValuesPerPack<VectorT> == 4,
-                  "Cannot use this constructor on a type "
-                  "that does not have a SIMD width of 4");
-
-    ScalarT a_1[ValuesPerPack<VectorT>]{source[3 * i], source[3 * i + 1],
-                                        source[3 * i + 2], source[3 * j]};
-    ScalarT b_1[ValuesPerPack<VectorT>]{source[3 * j + 1], source[3 * j + 2],
-                                        source[3 * k], source[3 * k + 1]};
-    ScalarT c_1[ValuesPerPack<VectorT>]{source[3 * k + 2], source[3 * l],
-                                        source[3 * l + 1], source[3 * l + 2]};
-
-    a = loadu_p<VectorT>(a_1);
-    b = loadu_p<VectorT>(b_1);
-    c = loadu_p<VectorT>(c_1);
   }
 
   // reload values from a array of ScalarT eg float* or double *.
