@@ -58,6 +58,37 @@ public:
     Deinterleave4x3(a_1, b_1, c_1, d_1, this->a, this->b, this->c);
   }
 
+  // construct by loading discontiguously from an array of ScalarT eg float* or
+  // double* for which the SIMD width is 8 (__m256). The access is
+  // indexed by 8 integers i,j,k,l,m,n,o,p where each index is the number
+  // of the particle. Assumes the input vector is in AOS format and returns SOA
+  inline explicit VectorTriple(ScalarT *source, ScalarT *end, int i, int j,
+                               int k, int l, int m, int n, int o, int p) {
+    static_assert(ValuesPerPack<VectorT> == 8,
+                  "Cannot use this constructor on a type "
+                  "that does not have a SIMD width of 8");
+    // load half width __m128 lanes
+    VectorToLaneT<VectorT> a_1 =
+        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * i, end);
+    VectorToLaneT<VectorT> b_1 =
+        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * j, end);
+    VectorToLaneT<VectorT> c_1 =
+        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * k, end);
+    VectorToLaneT<VectorT> d_1 =
+        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * l, end);
+    VectorToLaneT<VectorT> e_1 =
+        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * m, end);
+    VectorToLaneT<VectorT> f_1 =
+        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * n, end);
+    VectorToLaneT<VectorT> g_1 =
+        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * o, end);
+    VectorToLaneT<VectorT> h_1 =
+        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * p, end);
+    // deinterleave and combine lanes into full length packed structs
+    Deinterleave8x3(a_1, b_1, c_1, d_1, e_1, f_1, g_1, h_1, this->a, this->b,
+                    this->c);
+  }
+
   // this is the dumb way to do it and is primarily for benchmarking
   inline void DumbLoad4(ScalarT *source, int i, int j, int k, int l) {
     static_assert(ValuesPerPack<VectorT> == 4,
