@@ -30,7 +30,7 @@ inline __m256 ShuntFirst2Last(const __m256 input) {
   // blend rather than the lane crossing instruction ?
   // Also requires AVX2 rather than AVX
   // can mask be made constexpr?
-  __m256i mask = _mm256_setr_epi32(1,2,3,4,5,6,7,0);
+  __m256i mask = _mm256_setr_epi32(1, 2, 3, 4, 5, 6, 7, 0);
   return _mm256_permutevar8x32_ps(input, mask);
 }
 
@@ -42,7 +42,7 @@ inline __m256d ShuntFirst2Last(const __m256d input) {
   return _mm256_permute4x64_pd(input, _MM_SHUFFLE(0, 3, 2, 1));
 }
 
-#endif  // DISTOPIA_X86_AVX2_FMA
+#endif // DISTOPIA_X86_AVX2_FMA
 
 template <typename VectorT>
 inline VectorT SafeIdxLoad(const VectorToScalarT<VectorT> *source,
@@ -93,6 +93,34 @@ inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
   // y = y0y1y2y3
   z = _mm_movelh_ps(tmp1, tmp3);
   // z = z0z1z2z3
+}
+
+inline void Deinterleave8x3(const __m128 a, const __m128 b, const __m128 c,
+                            const __m128 d, const __m128 e, const __m128 f,
+                            const __m128 g, const __m128 h, __m256 &x,
+                            __m256 &y, __m256 &z) {
+  // U = undefined, X = junk
+  // PRE: a  = x0y0z0X b = x1y1z1X c = x2y2z2X d = x3y3z3X e  = x4y4z4X f =
+  // x5y5z5X g = x6y6z6X h = x7y7z7X
+  __m128 tx0, ty0, tz0, tx1, ty1, tz1;
+  Deinterleave4x3(a, b, c, d, tx0, ty0, tz0);
+  // tx0 = x0x1x2x3 ty0 = y0y1y2y3 tz0 = z0z1z2z3
+  Deinterleave4x3(e, f, g, h, tx1, ty1, tz1);
+  // tx1 = x4x5x6x7 ty1 = y4y5y6y7 tz1 = z4z5z6z7
+
+  // now combine
+  x = _mm256_castps128_ps256(tx0);
+  // x = x0x1x2x3UUUU
+  x = _mm256_insertf128_ps(x, tx1, 1);
+  // x = x0x1x2x3x4x5x6x7
+  y = _mm256_castps128_ps256(ty0);
+  // y = y0y1y2y3UUUU
+  y = _mm256_insertf128_ps(y, ty1, 1);
+  // y = y0y1y2y3y4y5y6y7
+  z = _mm256_castps128_ps256(tz0);
+  // z = z0z1z2z3UUUU
+  z = _mm256_insertf128_ps(z, tz1, 1);
+  // z = z0z1z2z3z4z5z6z7
 }
 
 inline void Deinterleave3(__m128 a, __m128 b, __m128 c, __m128 &x, __m128 &y,
