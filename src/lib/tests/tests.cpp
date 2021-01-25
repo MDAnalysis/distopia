@@ -340,7 +340,6 @@ TEST(TestX86SwizzleVec, Float128DumbIdxLoad) {
   EXPECT_TRUE(z_is_correct);
 }
 
-
 TEST(TestX86SwizzleVec, Float128ShuntFirst2Last) {
   float x[4] = {00.f, 01.f, 02.f, 03.f};
   __m128 correct_x = _mm_setr_ps(01.f, 02.f, 03.f, 00.f);
@@ -353,7 +352,7 @@ TEST(TestX86SwizzleVec, Float128ShuntFirst2Last) {
 
 TEST(TestX86SwizzleVec, Double128ShuntFirst2Last) {
   double x[2] = {00.0, 01.0};
-  __m128d correct_x = _mm_setr_pd(01.0,00.0);
+  __m128d correct_x = _mm_setr_pd(01.0, 00.0);
   __m128d data = _mm_loadu_pd(x);
   __m128d result = ShuntFirst2Last(data);
   bool x_is_correct =
@@ -361,22 +360,26 @@ TEST(TestX86SwizzleVec, Double128ShuntFirst2Last) {
   EXPECT_TRUE(x_is_correct);
 }
 
-
 TEST(TestX86SwizzleVec, Float256ShuntFirst2Last) {
   float x[8] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f, 06.f, 07.f};
-  float x_c[8] = {01.f, 02.f, 03.f, 04.f, 05.f, 06.f, 07.f,00.f};
-  float x_buf[8];
+  __m256 correct_x =
+      _mm256_setr_ps(01.f, 02.f, 03.f, 04.f, 05.f, 06.f, 07.f, 00.f);
   __m256 data = _mm256_loadu_ps(x);
   __m256 result = ShuntFirst2Last(data);
-  _mm256_storeu_ps(x_buf, result);
-  for( size_t i = 0; i <8; i++) {
-    std::cout << x_buf[i] << " " << x_c[i] << "\n";
-    // EXPECT_FLOAT_EQ(x_buf[i], x_c[i]);
-  }
-
+  bool x_is_correct = _mm256_testc_ps(
+      _mm256_setzero_ps(), _mm256_cmp_ps(result, correct_x, _CMP_NEQ_UQ));
+  EXPECT_TRUE(x_is_correct);
 }
 
-
+TEST(TestX86SwizzleVec, Double256ShuntFirst2Last) {
+  double x[4] = {00.0, 01.0, 02.0, 03.0};
+  __m256d correct_x = _mm256_setr_pd(01.0, 02.0, 03.0, 00.0);
+  __m256d data = _mm256_loadu_pd(x);
+  __m256d result = ShuntFirst2Last(data);
+  bool x_is_correct = _mm256_testc_pd(
+      _mm256_setzero_pd(), _mm256_cmp_pd(result, correct_x, _CMP_NEQ_UQ));
+  EXPECT_TRUE(x_is_correct);
+}
 
 TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
   float xyz[21] = {00.f, 01.f, 02.f, 0.0f, 0.0f, 0.0f, 10.f,
