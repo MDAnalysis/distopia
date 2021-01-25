@@ -59,23 +59,6 @@ inline VectorT SafeIdxLoad(const VectorToScalarT<VectorT> *source,
   return tmp;
 }
 
-inline void Transpose4x3(const __m128 a, const __m128 b, const __m128 c,
-                         const __m128 d, __m128 &a1, __m128 &b1, __m128 &c1) {
-  // PRE: a  = x0y0z0X b = x1y1z1X c = x2y2z2X d = x3y3z3X
-  __m128 t1 = shuffle_p<_MM_SHUFFLE(0, 3, 2, 1)>(b, b);
-  // t1 = y1z1Xx1
-  a1 = blend_p<0x8>(a, t1);
-  // a1 = x0y0z0x1
-  b1 = shuffle_p<_MM_SHUFFLE(1, 0, 1, 0)>(t1, c);
-  // b1 = y1z1x2y2
-  __m128 t2 = shuffle_p<_MM_SHUFFLE(2, 3, 1, 0)>(c, c);
-  // t2 = x2y2Xz2
-  __m128 t3 = blend_p<0x8>(d, t2);
-  // t3 = x3y3z3z2
-  c1 = shuffle_p<_MM_SHUFFLE(2, 1, 0, 3)>(t3, t3);
-  // c1 = z2x3y3z3
-}
-
 #ifdef DISTOPIA_X86_AVX
 
 inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
