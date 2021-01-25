@@ -328,7 +328,7 @@ TEST(TestX86SwizzleVec, Double128ShuntFirst2Last) {
   __m128d data = _mm_loadu_pd(x);
   __m128d result = ShuntFirst2Last(data);
   bool x_is_correct =
-      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_pd(result, correct_x)));
+      _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(result, correct_x)));
   EXPECT_TRUE(x_is_correct);
 }
 
