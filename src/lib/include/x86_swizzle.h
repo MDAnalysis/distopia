@@ -2,17 +2,52 @@
 #define DISTOPIA_SWIZZLE_H
 
 #include "arch_config.h"
+#include "compiler_hints.h"
+#include "distopia_type_traits.h"
 
 #ifdef DISTOPIA_X86_SSE4_1
 
 #include "x86_tgintrin.h"
+#include <emmintrin.h>
 #include <immintrin.h>
 
 namespace {
 
 inline __m128 ShuntFirst2Last(const __m128 input) {
-  // shuffle first to last
+  // shuffle first to last (latency 1)
   return shuffle_p<_MM_SHUFFLE(0, 3, 2, 1)>(input, input);
+}
+
+inline __m128d ShuntFirst2Last(const __m128d input) {
+  // shuffle first to last (latency 1)
+  return shuffle_p<0x1>(input, input);
+}
+
+#ifdef DISTOPIA_X86_AVX2_FMA
+inline __m256 ShuntFirst2Last(const __m256 input) {
+  // shuffle first to last
+  // NOTE is it possible to do this with a lower latency by using shuffle and
+  // blend rather than the lane crossing instruction
+  // can mask be made constexpr?
+  __m256i mask = _mm256_setr_epi32(1,2,3,4,5,6,7,0);
+  return _mm256_permutevar8x32_ps(input, mask);
+}
+
+#endif  // DISTOPIA_X86_AVX2_FMA
+
+template <typename VectorT>
+inline VectorT SafeIdxLoad(const VectorToScalarT<VectorT> *source,
+                           const int idx, const VectorToScalarT<VectorT> *end) {
+  VectorT tmp;
+  if (distopia_likely(source + idx + ValuesPerPack<VectorT> < end)) {
+    // load as is, no overflow, likely path
+    tmp = loadu_p<VectorT>(&source[idx]);
+  } else {
+    // load offset by one, unlikely path
+    tmp = loadu_p<VectorT>(&source[idx - 1]);
+    tmp = ShuntFirst2Last(tmp);
+  }
+  return tmp;
 }
 
 inline void Transpose4x3(const __m128 a, const __m128 b, const __m128 c,
