@@ -451,7 +451,7 @@ TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
   EXPECT_TRUE(z_is_correct);
 }
 
-
+#ifdef DISTOPIA_X86_AVX
 
 TEST(TestX86SwizzleVec, Float256IdxLoadDeinterleaved) {
   // dummy data with 8x target and 4x incorrect data mixed in
@@ -481,6 +481,9 @@ TEST(TestX86SwizzleVec, Float256IdxLoadDeinterleaved) {
   EXPECT_TRUE(z_is_correct);
 }
 
+#endif // DISTOPIA_X86_AVX
+
+#ifdef DISTOPIA_X86_AVX2_FMA
 
 TEST(TestX86SwizzleVec, Double256IdxLoadDeinterleaved) {
   // dummy data with  4x target and 4x incorrect data mixed in
@@ -505,5 +508,7 @@ TEST(TestX86SwizzleVec, Double256IdxLoadDeinterleaved) {
   EXPECT_TRUE(y_is_correct);
   EXPECT_TRUE(z_is_correct);
 }
+
+#endif // DISTOPIA_X86_AVX2_FMA
 
 #endif // DISTOPIA_X86_SSE4_1
