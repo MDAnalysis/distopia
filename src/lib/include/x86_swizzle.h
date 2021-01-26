@@ -20,27 +20,7 @@ inline __m128 ShuntFirst2Last(const __m128 input) {
   // return bcda
 }
 
-// switch first and second element of __m128d
-inline __m128d ShuntFirst2Last(const __m128d input) {
-  // PRE: input = ab
-  return shuffle_p<0x1>(input, input);
-  // return ba
-}
-
 #ifdef DISTOPIA_X86_AVX2_FMA
-
-// shuffle first element of __m256 to end and shunt everything left by one
-// NOTE requires AVX2 rather than AVX
-// NOTE is it possible to do this with a lower latency by using shuffle and
-// blend rather than the lane crossing instruction ?
-// doesn't seem like mask can be made constexpr :(
-// https://stackoverflow.com/questions/51880079/constexpr-and-sse-intrinsics
-inline __m256 ShuntFirst2Last(const __m256 input) {
-  // PRE: input = abcdefgh
-  __m256i mask = _mm256_setr_epi32(1, 2, 3, 4, 5, 6, 7, 0);
-  return _mm256_permutevar8x32_ps(input, mask);
-  // return bcdefgha
-}
 
 // shuffle first element of __m256d to end and shunt everything left by one
 // NOTE requires AVX2 rather than AVX
@@ -95,6 +75,8 @@ inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
   // z = z0z1z2z3
 }
 
+#ifdef DISTOPIA_X86_AVX
+
 // transforms xyz coordinates from AOS to SOA
 // NOTE can probably be improved
 inline void Deinterleave4x3(const __m256d a, const __m256d b, const __m256d c,
@@ -127,7 +109,6 @@ inline void Deinterleave4x3(const __m256d a, const __m256d b, const __m256d c,
   // y = y0y1y2y3
 }
 
-#ifdef DISTOPIA_X86_AVX
 
 // transforms xyz coordinates from AOS to SOA
 inline void Deinterleave8x3(const __m128 a, const __m128 b, const __m128 c,
