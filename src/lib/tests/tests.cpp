@@ -414,28 +414,7 @@ TEST(TestX86SwizzleVec, Float128ShuntFirst2Last) {
   EXPECT_TRUE(x_is_correct);
 }
 
-TEST(TestX86SwizzleVec, Double128ShuntFirst2Last) {
-  double x[2] = {00.0, 01.0};
-  __m128d correct_x = _mm_setr_pd(01.0, 00.0);
-  __m128d data = _mm_loadu_pd(x);
-  __m128d result = ShuntFirst2Last(data);
-  bool x_is_correct =
-      _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(result, correct_x)));
-  EXPECT_TRUE(x_is_correct);
-}
-
-#ifdef DISTOPIA_X86_AVX2_FMA // this is not ideal at all
-
-TEST(TestX86SwizzleVec, Float256ShuntFirst2Last) {
-  float x[8] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f, 06.f, 07.f};
-  __m256 correct_x =
-      _mm256_setr_ps(01.f, 02.f, 03.f, 04.f, 05.f, 06.f, 07.f, 00.f);
-  __m256 data = _mm256_loadu_ps(x);
-  __m256 result = ShuntFirst2Last(data);
-  bool x_is_correct = _mm256_testc_ps(
-      _mm256_setzero_ps(), _mm256_cmp_ps(result, correct_x, _CMP_NEQ_UQ));
-  EXPECT_TRUE(x_is_correct);
-}
+#ifdef DISTOPIA_X86_AVX2_FMA 
 
 TEST(TestX86SwizzleVec, Double256ShuntFirst2Last) {
   double x[4] = {00.0, 01.0, 02.0, 03.0};
@@ -472,7 +451,7 @@ TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
   EXPECT_TRUE(z_is_correct);
 }
 
-#ifdef DISTOPIA_X86_AVX2_FMA // this is not ideal at all
+
 
 TEST(TestX86SwizzleVec, Float256IdxLoadDeinterleaved) {
   // dummy data with 8x target and 4x incorrect data mixed in
@@ -502,7 +481,6 @@ TEST(TestX86SwizzleVec, Float256IdxLoadDeinterleaved) {
   EXPECT_TRUE(z_is_correct);
 }
 
-#endif //  DISTOPIA_X86_AVX2_FMA
 
 TEST(TestX86SwizzleVec, Double256IdxLoadDeinterleaved) {
   // dummy data with  4x target and 4x incorrect data mixed in
@@ -516,7 +494,7 @@ TEST(TestX86SwizzleVec, Double256IdxLoadDeinterleaved) {
   __m256d correct_z = _mm256_setr_pd(02.0, 12.0, 22.0, 32.0);
   // safeload data and transpose
   VectorTriple<__m256d> vt = VectorTriple<__m256d>(xyz, xyz + 21, 0, 2, 4, 6);
-  
+
   bool x_is_correct = _mm256_testc_pd(
       _mm256_setzero_pd(), _mm256_cmp_pd(vt.a, correct_x, _CMP_NEQ_UQ));
   bool y_is_correct = _mm256_testc_pd(
