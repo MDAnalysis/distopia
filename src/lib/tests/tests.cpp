@@ -505,4 +505,27 @@ TEST(TestX86SwizzleVec, Float256IdxLoadDeinterleaved) {
 
 #endif //  DISTOPIA_X86_AVX2_FMA
 
+TEST(TestX86SwizzleVec, Double256IdxLoadDeinterleaved) {
+  // dummy data with  4x target and 4x incorrect data mixed in
+  // idx positions for correct data 0,2,4,6
+  double xyz[21] = {00.0, 01.0, 02.0, 0.00, 0.00, 0.00, 10.0,
+                   11.0, 12.0, 0.00, 0.00, 0.00, 20.0, 21.0,
+                   22.0, 0.00, 0.00, 0.00, 30.0, 31.0, 32.0};
+
+  __m256d correct_x = _mm256_setr_pd(00.0, 10.0, 20.0, 30.0);
+  __m256d correct_y = _mm256_setr_pd(01.0, 11.0, 21.0, 31.0);
+  __m256d correct_z = _mm256_setr_pd(02.0, 12.0, 22.0, 32.0);
+  // safeload data and transpose
+  VectorTriple<__m256d> vt = VectorTriple<__m256d>(xyz, xyz + 21, 0, 2, 4, 6);
+  bool x_is_correct = _mm256_testc_pd(
+      _mm256_setzero_pd(), _mm256_cmp_pd(vt.a, correct_x, _CMP_NEQ_UQ));
+  bool y_is_correct = _mm256_testc_pd(
+      _mm256_setzero_pd(), _mm256_cmp_pd(vt.b, correct_y, _CMP_NEQ_UQ));
+  bool z_is_correct = _mm256_testc_pd(
+      _mm256_setzero_pd(), _mm256_cmp_pd(vt.c, correct_z, _CMP_NEQ_UQ));
+  EXPECT_TRUE(x_is_correct);
+  EXPECT_TRUE(y_is_correct);
+  EXPECT_TRUE(z_is_correct);
+}
+
 #endif // DISTOPIA_X86_SSE4_1
