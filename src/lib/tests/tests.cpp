@@ -3,8 +3,8 @@
 #include <iostream>
 #ifdef DISTOPIA_X86_SSE4_1
 
-#include "x86_swizzle.h"
 #include "vector_triple.h"
+#include "x86_swizzle.h"
 #include <immintrin.h>
 
 TEST(TestX86Vec, Float128LoadScalar) {
@@ -214,6 +214,99 @@ TEST(TestX86Vec, Double256LoadVectorAndStore) {
 
 #endif // DISTOPIA_X86_AVX
 
+TEST(TestX86Vec, Float128OperatorPlus) {
+  __m128 x = _mm_setr_ps(00.f, 00.f, 00.f, 00.f);
+  __m128 y = _mm_setr_ps(01.f, 01.f, 01.f, 01.f);
+  __m128 z = _mm_setr_ps(02.f, 02.f, 02.f, 02.f);
+
+    __m128 correct_x = _mm_setr_ps(00.f, 00.f, 00.f, 00.f);
+  __m128 correct_y = _mm_setr_ps(02.f, 02.f, 02.f, 02.f);
+  __m128 correct_z = _mm_setr_ps(04.f, 04.f, 04.f, 04.f);
+
+  VectorTriple<__m128> vtx = VectorTriple<__m128>(x, y, z);
+  VectorTriple<__m128> vty = VectorTriple<__m128>(x, y, z);
+  auto vt_res = vtx + vty;
+  bool x_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.a, correct_x)));
+  bool y_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.b, correct_y)));
+  bool z_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.c, correct_z)));
+  EXPECT_TRUE(x_is_correct);
+  EXPECT_TRUE(y_is_correct);
+  EXPECT_TRUE(z_is_correct);
+}
+
+TEST(TestX86Vec, Float128OperatorMinus) {
+  __m128 x = _mm_setr_ps(00.f, 00.f, 00.f, 00.f);
+  __m128 y = _mm_setr_ps(01.f, 01.f, 01.f, 01.f);
+  __m128 z = _mm_setr_ps(02.f, 02.f, 02.f, 02.f);
+
+    __m128 correct_x = _mm_setr_ps(-02.f, -02.f, -02.f, -02.f);
+  __m128 correct_y = _mm_setr_ps(00.f, 00.f, 00.f, 00.f);
+  __m128 correct_z = _mm_setr_ps(02.f, 02.f, 02.f, 02.f);
+
+  VectorTriple<__m128> vtx = VectorTriple<__m128>(x, y, z);
+  VectorTriple<__m128> vty = VectorTriple<__m128>(z, y, x);
+  auto vt_res = vtx - vty;
+  bool x_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.a, correct_x)));
+  bool y_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.b, correct_y)));
+  bool z_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.c, correct_z)));
+  EXPECT_TRUE(x_is_correct);
+  EXPECT_TRUE(y_is_correct);
+  EXPECT_TRUE(z_is_correct);
+}
+
+
+TEST(TestX86Vec, Float128OperatorMul) {
+  __m128 x = _mm_setr_ps(00.f, 00.f, 00.f, 00.f);
+  __m128 y = _mm_setr_ps(01.f, 01.f, 01.f, 01.f);
+  __m128 z = _mm_setr_ps(02.f, 02.f, 02.f, 02.f);
+
+    __m128 correct_x = _mm_setr_ps(00.f, 00.f, 00.f, 00.f);
+  __m128 correct_y = _mm_setr_ps(01.f, 01.f, 01.f, 01.f);
+  __m128 correct_z = _mm_setr_ps(00.f, 00.f, 00.f, 00.f);
+
+  VectorTriple<__m128> vtx = VectorTriple<__m128>(x, y, z);
+  VectorTriple<__m128> vty = VectorTriple<__m128>(z, y, x);
+  auto vt_res = vtx * vty;
+  bool x_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.a, correct_x)));
+  bool y_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.b, correct_y)));
+  bool z_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.c, correct_z)));
+  EXPECT_TRUE(x_is_correct);
+  EXPECT_TRUE(y_is_correct);
+  EXPECT_TRUE(z_is_correct);
+}
+
+TEST(TestX86Vec, Float128OperatorDiv) {
+  __m128 x = _mm_setr_ps(00.f, 00.f, 00.f, 00.f);
+  __m128 y = _mm_setr_ps(01.f, 01.f, 01.f, 01.f);
+  __m128 z = _mm_setr_ps(02.f, 02.f, 02.f, 02.f);
+
+    __m128 correct_x = _mm_setr_ps(00.f, 00.f, 00.f, 00.f);
+  __m128 correct_y = _mm_setr_ps(0.5f, 0.5f, 0.5f, 0.5f);
+  __m128 correct_z = _mm_setr_ps(02.f, 02.f, 02.f, 02.f);
+
+  VectorTriple<__m128> vtx = VectorTriple<__m128>(x, y, z);
+  VectorTriple<__m128> vty = VectorTriple<__m128>(z, z, y);
+  auto vt_res = vtx / vty;
+  bool x_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.a, correct_x)));
+  bool y_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.b, correct_y)));
+  bool z_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.c, correct_z)));
+  EXPECT_TRUE(x_is_correct);
+  EXPECT_TRUE(y_is_correct);
+  EXPECT_TRUE(z_is_correct);
+}
+
 TEST(TestX86SwizzleVec, Float128Deinterleave) {
   __m128 a = _mm_setr_ps(00.f, 01.f, 02.f, 10.f);
   __m128 b = _mm_setr_ps(11.f, 12.f, 20.f, 21.f);
@@ -332,7 +425,7 @@ TEST(TestX86SwizzleVec, Double128ShuntFirst2Last) {
   EXPECT_TRUE(x_is_correct);
 }
 
-#ifdef  DISTOPIA_X86_AVX2_FMA // this is not ideal at all
+#ifdef DISTOPIA_X86_AVX2_FMA // this is not ideal at all
 
 TEST(TestX86SwizzleVec, Float256ShuntFirst2Last) {
   float x[8] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f, 06.f, 07.f};
@@ -355,7 +448,7 @@ TEST(TestX86SwizzleVec, Double256ShuntFirst2Last) {
   EXPECT_TRUE(x_is_correct);
 }
 
-#endif  // DISTOPIA_X86_AVX2_FMA
+#endif // DISTOPIA_X86_AVX2_FMA
 
 TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
   // dummy data with  4x target and 4x incorrect data mixed in
@@ -380,7 +473,7 @@ TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
   EXPECT_TRUE(z_is_correct);
 }
 
-#ifdef  DISTOPIA_X86_AVX2_FMA // this is not ideal at all
+#ifdef DISTOPIA_X86_AVX2_FMA // this is not ideal at all
 
 TEST(TestX86SwizzleVec, Float256IdxLoadDeinterleaved) {
   // dummy data with 8x target and 4x incorrect data mixed in
@@ -410,6 +503,6 @@ TEST(TestX86SwizzleVec, Float256IdxLoadDeinterleaved) {
   EXPECT_TRUE(z_is_correct);
 }
 
-#endif  //  DISTOPIA_X86_AVX2_FMA
+#endif //  DISTOPIA_X86_AVX2_FMA
 
 #endif // DISTOPIA_X86_SSE4_1
