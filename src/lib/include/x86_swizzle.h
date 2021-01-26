@@ -95,6 +95,38 @@ inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
   // z = z0z1z2z3
 }
 
+// transforms xyz coordinates from AOS to SOA
+// NOTE can probably be improved
+inline void Deinterleave4x3(const __m256d a, const __m256d b, const __m256d c,
+                            const __m256d d, __m256d &x, __m256d &y,
+                            __m256d &z) {
+  // U = undefined, X = junk
+  // PRE: a  = x0y0z0X b = x1y1z1X c = x2y2z2X d = x3y3z3X
+  __m256d tmp0 = _mm256_unpacklo_pd(a, b);
+  // tmp0 = x0x1y0y1
+  __m256d tmp2 = _mm256_unpacklo_pd(c, d);
+  // tmp2 = x2x3y2y3
+  __m128d x_upper = _mm256_castpd256_pd128(tmp2);
+  // x_upper = x2x3
+  x = _mm256_insertf128_pd(tmp0, x_upper, 1);
+  // x0x1x2x3
+  __m128d y_lower = _mm256_extractf128_pd(tmp0, 1);
+  // y_lower = y0y1
+  __m128d y_upper = _mm256_extractf128_pd(tmp2, 1);
+  y = _mm256_insertf128_pd(y, y_lower, 0);
+  // y = y0y1UU
+  y = _mm256_insertf128_pd(y, y_upper, 1);
+  // y = y0y1y2y3
+  __m256d tmp1 = _mm256_unpackhi_pd(a, b);
+  // tmp1 = z0z1XX
+  __m256d tmp3 = _mm256_unpackhi_pd(c, d);
+  // tmp3 = z2z3XX
+  __m128d z_upper = _mm256_castpd256_pd128(tmp3);
+  // z_upper = z2z3
+  z = _mm256_insertf128_pd(tmp1, z_upper, 1);
+  // z = z0z1z2z3
+}
+
 #ifdef DISTOPIA_X86_AVX
 
 // transforms xyz coordinates from AOS to SOA
