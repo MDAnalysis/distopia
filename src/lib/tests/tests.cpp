@@ -4,7 +4,7 @@
 #ifdef DISTOPIA_X86_SSE4_1
 
 #include "x86_swizzle.h"
-#include "x86_vector_triple.h"
+#include "vector_triple.h"
 #include <immintrin.h>
 
 TEST(TestX86Vec, Float128LoadScalar) {
