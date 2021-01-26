@@ -7,11 +7,6 @@
 #include "x86_tgintrin.h"
 #include "x86_vectors.h"
 
-// forward declaration
-template <typename VectorT> class InterleavedVectorTriple;
-
-// forward declaration
-template <typename VectorT> class DeinterleavedVectorTriple;
 
 // VectorTriple base class packs 3xSIMD datatypes into a single class.
 // Can be constructed from 3 x VectorT.
@@ -48,10 +43,10 @@ public:
     static_assert(ValuesPerPack<VectorT> == 4,
                   "Cannot use this constructor on a type "
                   "that does not have a SIMD width of 4");
-    VectorT a_1 = SafeIdxLoad<VectorT>(source, 3 * i, end);
-    VectorT b_1 = SafeIdxLoad<VectorT>(source, 3 * j, end);
-    VectorT c_1 = SafeIdxLoad<VectorT>(source, 3 * k, end);
-    VectorT d_1 = SafeIdxLoad<VectorT>(source, 3 * l, end);
+    VectorT a_1 = SafeIdxLoad4<VectorT>(source, 3 * i, end);
+    VectorT b_1 = SafeIdxLoad4<VectorT>(source, 3 * j, end);
+    VectorT c_1 = SafeIdxLoad4<VectorT>(source, 3 * k, end);
+    VectorT d_1 = SafeIdxLoad4<VectorT>(source, 3 * l, end);
     // deinterleave
     Deinterleave4x3(a_1, b_1, c_1, d_1, this->a, this->b, this->c);
   }
@@ -67,21 +62,21 @@ public:
                   "that does not have a SIMD width of 8");
     // load half width __m128 lanes
     VectorToLaneT<VectorT> a_1 =
-        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * i, end);
+        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * i, end);
     VectorToLaneT<VectorT> b_1 =
-        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * j, end);
+        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * j, end);
     VectorToLaneT<VectorT> c_1 =
-        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * k, end);
+        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * k, end);
     VectorToLaneT<VectorT> d_1 =
-        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * l, end);
+        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * l, end);
     VectorToLaneT<VectorT> e_1 =
-        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * m, end);
+        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * m, end);
     VectorToLaneT<VectorT> f_1 =
-        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * n, end);
+        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * n, end);
     VectorToLaneT<VectorT> g_1 =
-        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * o, end);
+        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * o, end);
     VectorToLaneT<VectorT> h_1 =
-        SafeIdxLoad<VectorToLaneT<VectorT>>(source, 3 * p, end);
+        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * p, end);
     // deinterleave and combine lanes into full length packed structs
     Deinterleave8x3(a_1, b_1, c_1, d_1, e_1, f_1, g_1, h_1, this->a, this->b,
                     this->c);
