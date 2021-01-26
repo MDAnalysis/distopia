@@ -54,14 +54,14 @@ inline __m256d ShuntFirst2Last(const __m256d input) {
 
 #endif // DISTOPIA_X86_AVX2_FMA
 
-// safely loads from an array of ScalarT to a SIMD type of VectorT, checking
-// that we dont read off the end of ScalarT
-// CRITICAL WARNING currently not actually safe to use with __m256 as is designed for xyz
-// reads into __m128, may overhang by as much as 3 indicies
-// TODO  should compute offset and use that to guarantee __m256 works
+// safely loads values from an array of ScalarT to a SIMD type of VectorT with
+// width of 4, checking that we dont read off the end of ScalarT.
 template <typename VectorT>
-inline VectorT SafeIdxLoad(const VectorToScalarT<VectorT> *source,
-                           const int idx, const VectorToScalarT<VectorT> *end) {
+inline VectorT SafeIdxLoad4(const VectorToScalarT<VectorT> *source,
+                            const int idx,
+                            const VectorToScalarT<VectorT> *end) {
+  static_assert(ValuesPerPack<VectorT> == 4,
+                "can only use to load into SIMD datatype of width 4");
   VectorT tmp;
   if (distopia_likely(source + idx + ValuesPerPack<VectorT> < end)) {
     // load as is, no overflow, likely path
