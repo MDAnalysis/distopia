@@ -114,4 +114,28 @@ public:
   }
 };
 
+template <typename VectorT>
+inline VectorTriple<VectorT> operator+(VectorTriple<VectorT> x,
+                                       VectorTriple<VectorT> y) {
+  return VectorTriple<VectorT>(x.a + y.a, x.b + y.b, x.c +y.c);
+}
+
+template <typename VectorT>
+inline VectorTriple<VectorT> operator-(VectorTriple<VectorT> x,
+                                       VectorTriple<VectorT> y) {
+  return VectorTriple<VectorT>(x.a - y.a, x.b - y.b, x.c - y.c);
+}
+
+template <typename VectorT>
+inline VectorTriple<VectorT> operator*(VectorTriple<VectorT> x,
+                                       VectorTriple<VectorT> y) {
+  return VectorTriple<VectorT>(x.a * y.a, x.b * y.b, x.c * y.c);
+}
+
+template <typename VectorT>
+inline VectorTriple<VectorT> operator/(VectorTriple<VectorT> x,
+                                       VectorTriple<VectorT> y) {
+  return VectorTriple<VectorT>(x.a / y.a, x.b / y.b, x.c / y.c);
+}
+
 #endif // DISTOPIA_X86_VECTOR_TRIPLE
