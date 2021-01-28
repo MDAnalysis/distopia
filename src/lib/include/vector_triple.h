@@ -16,9 +16,9 @@ public:
   // maps to vectorT to ScalarT
   using ScalarT = VectorToScalarT<VectorT>;
   // 3x SIMD Datatypes
-  VectorT a;
-  VectorT b;
-  VectorT c;
+  VectorT x;
+  VectorT y;
+  VectorT z;
   // number of values in the packed into the whole 3 x VectorT struct.
   constexpr static std::size_t n_scalars = ValuesPerPack<VectorT> * 3;
 
@@ -27,13 +27,13 @@ public:
 
   // construct from 3 SIMD Vector datatypes eg __m128 or __m128d
   inline VectorTriple(const VectorT a, const VectorT b, const VectorT c)
-      : a(a), b(b), c(c) {}
+      : x(a), y(b), z(c) {}
 
   // construct by loading from an array of ScalarT eg float* or double *.
   inline VectorTriple(const ScalarT *source)
-      : a(loadu_p<VectorT>(source)),
-        b(loadu_p<VectorT>(&source[ValuesPerPack<VectorT>])),
-        c(loadu_p<VectorT>(&source[+2 * ValuesPerPack<VectorT>])) {}
+      : x(loadu_p<VectorT>(source)),
+        y(loadu_p<VectorT>(&source[ValuesPerPack<VectorT>])),
+        z(loadu_p<VectorT>(&source[+2 * ValuesPerPack<VectorT>])) {}
 
   // construct by loading discontiguously from an array of ScalarT eg float* or
   // double* for which the SIMD width is 4 (__m128 and __m256d). The access is
@@ -44,12 +44,12 @@ public:
     static_assert(ValuesPerPack<VectorT> == 4,
                   "Cannot use this constructor on a type "
                   "that does not have a SIMD width of 4");
-    VectorT a_1 = SafeIdxLoad4<VectorT>(source, 3 * i, end);
-    VectorT b_1 = SafeIdxLoad4<VectorT>(source, 3 * j, end);
-    VectorT c_1 = SafeIdxLoad4<VectorT>(source, 3 * k, end);
-    VectorT d_1 = SafeIdxLoad4<VectorT>(source, 3 * l, end);
+    VectorT a = SafeIdxLoad4<VectorT>(source, 3 * i, end);
+    VectorT b = SafeIdxLoad4<VectorT>(source, 3 * j, end);
+    VectorT c = SafeIdxLoad4<VectorT>(source, 3 * k, end);
+    VectorT d = SafeIdxLoad4<VectorT>(source, 3 * l, end);
     // deinterleave
-    Deinterleave4x3(a_1, b_1, c_1, d_1, this->a, this->b, this->c);
+    Deinterleave4x3(a, b, c, d, this->x, this->y, this->z);
   }
 
   // construct by loading discontiguously from an array of ScalarT eg float* or
@@ -62,75 +62,75 @@ public:
                   "Cannot use this constructor on a type "
                   "that does not have a SIMD width of 8");
     // load half width __m128 lanes
-    VectorToLaneT<VectorT> a_1 =
+    VectorToLaneT<VectorT> a =
         SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * i, end);
-    VectorToLaneT<VectorT> b_1 =
+    VectorToLaneT<VectorT> b =
         SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * j, end);
-    VectorToLaneT<VectorT> c_1 =
+    VectorToLaneT<VectorT> c =
         SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * k, end);
-    VectorToLaneT<VectorT> d_1 =
+    VectorToLaneT<VectorT> d =
         SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * l, end);
-    VectorToLaneT<VectorT> e_1 =
+    VectorToLaneT<VectorT> e =
         SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * m, end);
-    VectorToLaneT<VectorT> f_1 =
+    VectorToLaneT<VectorT> f =
         SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * n, end);
-    VectorToLaneT<VectorT> g_1 =
+    VectorToLaneT<VectorT> g =
         SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * o, end);
-    VectorToLaneT<VectorT> h_1 =
+    VectorToLaneT<VectorT> h =
         SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * p, end);
     // deinterleave and combine lanes into full length packed structs
-    Deinterleave8x3(a_1, b_1, c_1, d_1, e_1, f_1, g_1, h_1, this->a, this->b,
-                    this->c);
+    Deinterleave8x3(a, b, c, d, e, f, g, h, this->x, this->y,
+                    this->z);
   }
 
   // reload values from a array of ScalarT eg float* or double *.
   inline void load(ScalarT *source) {
-    a = loadu_p<VectorT>(source);
-    b = loadu_p<VectorT>(source + ValuesPerPack<VectorT>);
-    c = loadu_p<VectorT>(source + 2 * ValuesPerPack<VectorT>);
+    x = loadu_p<VectorT>(source);
+    y = loadu_p<VectorT>(source + ValuesPerPack<VectorT>);
+    z = loadu_p<VectorT>(source + 2 * ValuesPerPack<VectorT>);
   }
 
   // store or stream to an array of ScalarT eg float* or double *.
   template <bool streaming = false> inline void store(ScalarT *target) {
     if constexpr (streaming) {
-      stream_p(target, a);
-      stream_p(&target[ValuesPerPack<VectorT>], b);
-      stream_p(&target[2 * ValuesPerPack<VectorT>], c);
+      stream_p(target, x);
+      stream_p(&target[ValuesPerPack<VectorT>], y);
+      stream_p(&target[2 * ValuesPerPack<VectorT>], z);
     } else {
-      storeu_p(target, a);
-      storeu_p(&target[ValuesPerPack<VectorT>], b);
-      storeu_p(&target[2 * ValuesPerPack<VectorT>], c);
+      storeu_p(target, x);
+      storeu_p(&target[ValuesPerPack<VectorT>], y);
+      storeu_p(&target[2 * ValuesPerPack<VectorT>], z);
     }
   }
   inline VectorTriple<VectorT> deinterleave() {
     VectorTriple<VectorT> vt;
-    Deinterleave3(this->a, this->b, this->c, vt.a, vt.b, vt.c);
+    Deinterleave3(this->x, this->y, this->z, vt.x, vt.y, vt.z);
     return vt;
   }
 };
 
 template <typename VectorT>
-inline VectorTriple<VectorT> operator+(VectorTriple<VectorT> x,
-                                       VectorTriple<VectorT> y) {
-  return VectorTriple<VectorT>(x.a + y.a, x.b + y.b, x.c + y.c);
+inline VectorTriple<VectorT> operator+(VectorTriple<VectorT> a,
+                                       VectorTriple<VectorT> b) {
+  return VectorTriple<VectorT>(a.x + b.x, a.y + b.y, a.z + b.z);
 }
 
 template <typename VectorT>
-inline VectorTriple<VectorT> operator-(VectorTriple<VectorT> x,
-                                       VectorTriple<VectorT> y) {
-  return VectorTriple<VectorT>(x.a - y.a, x.b - y.b, x.c - y.c);
+inline VectorTriple<VectorT> operator-(VectorTriple<VectorT> a,
+                                       VectorTriple<VectorT> b) {
+  return VectorTriple<VectorT>(a.x - b.x, a.y - b.y, a.z - b.z);
 }
 
 template <typename VectorT>
-inline VectorTriple<VectorT> operator*(VectorTriple<VectorT> x,
-                                       VectorTriple<VectorT> y) {
-  return VectorTriple<VectorT>(x.a * y.a, x.b * y.b, x.c * y.c);
+inline VectorTriple<VectorT> operator*(VectorTriple<VectorT> a,
+                                       VectorTriple<VectorT> b) {
+  return VectorTriple<VectorT>(a.x * b.x, a.y * b.y, a.z * b.z);
 }
 
 template <typename VectorT>
-inline VectorTriple<VectorT> operator/(VectorTriple<VectorT> x,
-                                       VectorTriple<VectorT> y) {
-  return VectorTriple<VectorT>(x.a / y.a, x.b / y.b, x.c / y.c);
+inline VectorTriple<VectorT> operator/(VectorTriple<VectorT> a,
+                                       VectorTriple<VectorT> b) {
+  return VectorTriple<VectorT>(a.x / b.y, a.y / b.y, a.z / b.z);
 }
 
 #endif // DISTOPIA_X86_VECTOR_TRIPLE
