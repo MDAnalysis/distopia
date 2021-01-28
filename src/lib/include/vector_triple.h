@@ -7,7 +7,6 @@
 #include "x86_tgintrin.h"
 #include "x86_vectors.h"
 
-
 // VectorTriple base class packs 3xSIMD datatypes into a single class.
 // Can be constructed from 3 x VectorT.
 // Can also be constructed from a ScalarT array which loads the right number
@@ -23,13 +22,15 @@ public:
   // number of values in the packed into the whole 3 x VectorT struct.
   constexpr static std::size_t n_scalars = ValuesPerPack<VectorT> * 3;
 
+  // default construct
+  VectorTriple() = default;
+
   // construct from 3 SIMD Vector datatypes eg __m128 or __m128d
-  inline explicit VectorTriple(const VectorT a, const VectorT b,
-                               const VectorT c)
+  inline VectorTriple(const VectorT a, const VectorT b, const VectorT c)
       : a(a), b(b), c(c) {}
 
   // construct by loading from an array of ScalarT eg float* or double *.
-  inline explicit VectorTriple(const ScalarT *source)
+  inline VectorTriple(const ScalarT *source)
       : a(loadu_p<VectorT>(source)),
         b(loadu_p<VectorT>(&source[ValuesPerPack<VectorT>])),
         c(loadu_p<VectorT>(&source[+2 * ValuesPerPack<VectorT>])) {}
@@ -38,8 +39,8 @@ public:
   // double* for which the SIMD width is 4 (__m128 and __m256d). The access is
   // indexed by 4 integers i,j,k,l where each index is the number
   // of the particle. Assumes the input vector is in AOS format and returns SOA
-  inline explicit VectorTriple(ScalarT *source, ScalarT *end, int i, int j,
-                               int k, int l) {
+  inline VectorTriple(ScalarT *source, ScalarT *end, int i, int j, int k,
+                      int l) {
     static_assert(ValuesPerPack<VectorT> == 4,
                   "Cannot use this constructor on a type "
                   "that does not have a SIMD width of 4");
@@ -55,8 +56,8 @@ public:
   // double* for which the SIMD width is 8 (__m256). The access is
   // indexed by 8 integers i,j,k,l,m,n,o,p where each index is the number
   // of the particle. Assumes the input vector is in AOS format and returns SOA
-  inline explicit VectorTriple(ScalarT *source, ScalarT *end, int i, int j,
-                               int k, int l, int m, int n, int o, int p) {
+  inline VectorTriple(ScalarT *source, ScalarT *end, int i, int j, int k, int l,
+                      int m, int n, int o, int p) {
     static_assert(ValuesPerPack<VectorT> == 8,
                   "Cannot use this constructor on a type "
                   "that does not have a SIMD width of 8");
@@ -102,9 +103,8 @@ public:
     }
   }
   inline VectorTriple<VectorT> deinterleave() {
-    VectorT a1, b1, c1;
-    Deinterleave3(this->a, this->b, this->c, a1, b1, c1);
-    VectorTriple<VectorT> vt(a1, b1, c1);
+    VectorTriple<VectorT> vt;
+    Deinterleave3(this->a, this->b, this->c, vt.a, vt.b, vt.c);
     return vt;
   }
 };
@@ -112,7 +112,7 @@ public:
 template <typename VectorT>
 inline VectorTriple<VectorT> operator+(VectorTriple<VectorT> x,
                                        VectorTriple<VectorT> y) {
-  return VectorTriple<VectorT>(x.a + y.a, x.b + y.b, x.c +y.c);
+  return VectorTriple<VectorT>(x.a + y.a, x.b + y.b, x.c + y.c);
 }
 
 template <typename VectorT>
