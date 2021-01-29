@@ -74,12 +74,11 @@ using VectorToLaneT = typename VectorToLaneTStruct<VectorT>::type;
 
 template<typename T> using BigVecT = typename BigVecTStruct<T>::type;
 
+template<typename T> constexpr std::size_t ValuesPerPack = sizeof(T) / sizeof(VectorToScalarT<T>);
 
 #ifdef DISTOPIA_GCC
 #pragma GCC diagnostic pop
 #endif
-
-template<typename T> constexpr std::size_t ValuesPerPack = sizeof(T) / sizeof(VectorToScalarT<T>);
 
 
 #endif // DISTOPIA_X86_SSE4_1
