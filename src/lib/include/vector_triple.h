@@ -1,5 +1,5 @@
-#ifndef DISTOPIA_X86_VECTOR_TRIPLE
-#define DISTOPIA_X86_VECTOR_TRIPLE
+#ifndef DISTOPIA_VECTOR_TRIPLE
+#define DISTOPIA_VECTOR_TRIPLE
 
 #include "compiler_hints.h"
 #include "distopia_type_traits.h"
@@ -79,8 +79,7 @@ public:
     VectorToLaneT<VectorT> h =
         SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * p, end);
     // deinterleave and combine lanes into full length packed structs
-    Deinterleave8x3(a, b, c, d, e, f, g, h, this->x, this->y,
-                    this->z);
+    Deinterleave8x3(a, b, c, d, e, f, g, h, this->x, this->y, this->z);
   }
 
   // reload values from a array of ScalarT eg float* or double *.
@@ -133,4 +132,4 @@ inline VectorTriple<VectorT> operator/(VectorTriple<VectorT> a,
   return VectorTriple<VectorT>(a.x / b.y, a.y / b.y, a.z / b.z);
 }
 
-#endif // DISTOPIA_X86_VECTOR_TRIPLE
+#endif // DISTOPIA_VECTOR_TRIPLE
