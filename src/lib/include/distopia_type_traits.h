@@ -3,12 +3,19 @@
 #define DISTOPIA_TYPE_TRAITS_H
 
 #include "arch_config.h"
+#include <cstddef>
+#include <cstdint>
 #include <type_traits>
 
 // Ensure that only enabled for scalar types.
 template <typename T>
 using EnableIfFloating =
     typename std::enable_if<std::is_floating_point<T>::value, int>::type;
+
+// check if something is aligned
+template <typename T, typename U> constexpr bool IsAligned(const U *addr) {
+  return reinterpret_cast<std::uintptr_t>(addr) % sizeof(T) == 0;
+}
 
 #ifdef DISTOPIA_X86_SSE4_1
 
@@ -30,6 +37,12 @@ template <typename VectorT> struct VectorToScalarTStruct;
 template <> struct VectorToScalarTStruct<__m128> { using type = float; };
 template <> struct VectorToScalarTStruct<__m128d> { using type = double; };
 
+template<typename T> struct SmallVecTStruct;
+template<> struct SmallVecTStruct<float> { using type = __m128; };
+template<> struct SmallVecTStruct<double> { using type = __m128d; };
+template<typename T> using SmallVecT = typename SmallVecTStruct<T>::type;
+
+template<typename T> struct BigVecTStruct { using type = SmallVecT<T>; };
 
 #ifdef DISTOPIA_X86_AVX
 template <> struct IsVector<__m256> { static constexpr bool value = true; };
@@ -45,6 +58,9 @@ template <> struct VectorToLaneTStruct<__m256> { using type = __m128; };
 template <> struct VectorToLaneTStruct<__m256d> { using type = __m128d; };
 
 
+  template<> struct BigVecTStruct<float> { using type = __m256; };
+  template<> struct BigVecTStruct<double> { using type = __m256d; };
+
 #endif // DISTOPIA_X86_AVX
 
 template <typename T>
@@ -55,6 +71,9 @@ using VectorToScalarT = typename VectorToScalarTStruct<VectorT>::type;
 
 template <typename VectorT>
 using VectorToLaneT = typename VectorToLaneTStruct<VectorT>::type;
+
+template<typename T> using BigVecT = typename BigVecTStruct<T>::type;
+
 
 #ifdef DISTOPIA_GCC
 #pragma GCC diagnostic pop
