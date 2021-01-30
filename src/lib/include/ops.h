@@ -2,7 +2,7 @@
 #define DISTOPIA_OPS_H
 
 #include "basemath.h"
-
+#include "x86_vector_triple_basemath.h"
 #include "x86_vectors.h"
 
 namespace {

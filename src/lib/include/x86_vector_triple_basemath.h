@@ -11,6 +11,7 @@
 
 #include "compiler_hints.h"
 #include "distopia_type_traits.h"
+#include "ops.h"
 #include "vector_triple.h"
 #include "x86_basemath.h"
 #include "x86_tgintrin.h"
@@ -122,14 +123,14 @@ inline VectorTriple<VectorT> FastMin(VectorTriple<VectorT> a,
                                FastMin(a.z, b.z));
 }
 
-// template <typename VectorT>
-// inline VectorTriple<VectorT> DistanceModulo(VectorTriple<VectorT> x0,
-//                                             VectorTriple<VectorT> x1,
-//                                             VectorTriple<VectorT> y) {
-//   return VectorTriple<VectorT>(DistanceModulo(x0.x, x1.x, y.x),
-//                                DistanceModulo(x0.y, x1.y, y.y),
-//                                DistanceModulo(x0.z, x1.z, y.z));
-// }
+template <typename VectorT>
+inline VectorTriple<VectorT> DistanceModulo(VectorTriple<VectorT> x0,
+                                            VectorTriple<VectorT> x1,
+                                            VectorTriple<VectorT> y) {
+  return VectorTriple<VectorT>(DistanceModulo(x0.x, x1.x, y.x),
+                               DistanceModulo(x0.y, x1.y, y.y),
+                               DistanceModulo(x0.z, x1.z, y.z));
+}
 
 } // namespace
 
