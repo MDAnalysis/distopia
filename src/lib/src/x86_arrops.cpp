@@ -11,6 +11,7 @@
 #include "distopia_type_traits.h"
 #include "ops.h"
 #include "vector_triple.h"
+#include "x86_basemath.h"
 #include "x86_swizzle.h"
 #include "x86_tgintrin.h"
 #include "x86_vector_triple_basemath.h"
@@ -34,8 +35,10 @@ void CalcBondsOrthoX86Vec(const VectorToScalarT<VectorT> *coords0,
                           const VectorToScalarT<VectorT> *box, std::size_t n,
                           VectorToScalarT<VectorT> *out) {
   VectorToScalarT<VectorT> boxx = box[0], boxy = box[1], boxz = box[2];
-  VectorT boxa, boxb, boxc;
-  Interleave3(boxx, boxy, boxz, boxa, boxb, boxc);
+  // generate packed AOS box structs
+  auto box_packed = VectorTriple<VectorT>();
+  Interleave3(boxx, boxy, boxz, box_packed.x, box_packed.y, box_packed.z);
+  // box_packed.x = xyzx box_packed.y = yzxy box_packed.z = zxyz
 
   size_t i = 0;
   for (; distopia_unlikely(!IsAligned<VectorT>(&out[i]) && i < n); ++i) {
@@ -45,15 +48,13 @@ void CalcBondsOrthoX86Vec(const VectorToScalarT<VectorT> *coords0,
     out[i] = Distance3DWithBoundary(x0, y0, z0, x1, y1, z1, boxx, boxy, boxz);
   }
   for (; i + ValuesPerPack<VectorT> - 1 < n; i += ValuesPerPack<VectorT>) {
-
-    auto c0 = VectorTriple<VectorT>(&coords0[3*i]);
-    auto c1 = VectorTriple<VectorT>(&coords1[3*i]);
-
-    auto da = Distance1DWithBoundary(c0.x, c1.x, boxa);
-    auto db = Distance1DWithBoundary(c0.y, c1.y, boxb);
-    auto dc = Distance1DWithBoundary(c0.z, c1.z, boxc);
-
-    auto d_xyz = VectorTriple<VectorT>(da,db,dc).deinterleave();
+    // load coords in AOS
+    auto c0 = VectorTriple<VectorT>(&coords0[3 * i]);
+    auto c1 = VectorTriple<VectorT>(&coords1[3 * i]);
+    // do 1D distances in AOS, saves deinterleaving 2 position vectors in this
+    auto d_abc = Distance1DWithBoundary(c0, c1, box_packed);
+    auto d_xyz = d_abc.deinterleave();
+    // deinterleave and do hypot accumulation in SOA
     auto res = Hypot(d_xyz.x, d_xyz.y, d_xyz.z);
     if constexpr (streaming_store) {
       stream_p(&out[i], res);
