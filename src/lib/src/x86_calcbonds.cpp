@@ -30,7 +30,7 @@ constexpr std::size_t kBigVectorThreshold = 256 * 1024;
 constexpr std::size_t kStreamingThreshold = 16 * 1024 * 1024;
 
 template <bool streaming_store, typename VectorT>
-void CalcBondsOrthoX86Vec(const VectorToScalarT<VectorT> *coords0,
+void CalcBondsIdxOrthoX86Vec(const VectorToScalarT<VectorT> *coords0,
                           const VectorToScalarT<VectorT> *coords1,
                           const VectorToScalarT<VectorT> *box, std::size_t n,
                           VectorToScalarT<VectorT> *out) {
@@ -74,7 +74,7 @@ void CalcBondsOrthoX86Vec(const VectorToScalarT<VectorT> *coords0,
 }
 
 template <typename T>
-void CalcBondsOrthoDispatch(const T *coords0, const T *coords1, const T *box,
+void CalcBondsIdxOrthoDispatch(const T *coords0, const T *coords1, const T *box,
                             std::size_t n, T *out) {
   if (distopia_unlikely(!IsAligned<T>(out))) {
     // Seriously misaligned buffer. We're gonna nope out.
@@ -89,28 +89,28 @@ void CalcBondsOrthoDispatch(const T *coords0, const T *coords1, const T *box,
 
   if (use_big_vector) {
     if (use_streaming_stores)
-      CalcBondsOrthoX86Vec<true, BigVecT<T>>(coords0, coords1, box, n, out);
+      CalcBondsIdxOrthoX86Vec<true, BigVecT<T>>(coords0, coords1, box, n, out);
     else
-      CalcBondsOrthoX86Vec<false, BigVecT<T>>(coords0, coords1, box, n, out);
+      CalcBondsIdxOrthoX86Vec<false, BigVecT<T>>(coords0, coords1, box, n, out);
   } else {
     if (use_streaming_stores)
-      CalcBondsOrthoX86Vec<true, SmallVecT<T>>(coords0, coords1, box, n, out);
+      CalcBondsIdxOrthoX86Vec<true, SmallVecT<T>>(coords0, coords1, box, n, out);
     else
-      CalcBondsOrthoX86Vec<false, SmallVecT<T>>(coords0, coords1, box, n, out);
+      CalcBondsIdxOrthoX86Vec<false, SmallVecT<T>>(coords0, coords1, box, n, out);
   }
 }
 
 } // namespace
 
 template <>
-void CalcBondsOrtho(const float *coords0, const float *coords1,
+void CalcBondsIdxOrtho(const float *coords0, const float *coords1,
                     const float *box, std::size_t n, float *out) {
-  CalcBondsOrthoDispatch(coords0, coords1, box, n, out);
+  CalcBondsIdxOrthoDispatch(coords0, coords1, box, n, out);
 }
 template <>
-void CalcBondsOrtho(const double *coords0, const double *coords1,
+void CalcBondsIdxOrtho(const double *coords0, const double *coords1,
                     const double *box, std::size_t n, double *out) {
-  CalcBondsOrthoDispatch(coords0, coords1, box, n, out);
+  CalcBondsIdxOrthoDispatch(coords0, coords1, box, n, out);
 }
 
 #endif // DISTOPIA_X86_SSE4_1
