@@ -34,7 +34,29 @@ public:
       : x(loadu_p<VectorT>(source)),
         y(loadu_p<VectorT>(&source[ValuesPerPack<VectorT>])),
         z(loadu_p<VectorT>(&source[+2 * ValuesPerPack<VectorT>])) {}
+  // construct by loading discontiguously from an array of ScalarT eg float* or
+  // double*
+  inline VectorTriple(ScalarT *source, const ScalarT *end,
+                      const std::size_t *idxs) {
 
+    VectorT v_arr[ValuesPerPack<VectorT>];
+    for (std::size_t i = 0; i < ValuesPerPack<VectorT>; i++) {
+      v_arr[i] = SafeIdxLoad4<VectorT>(source, 3 * idxs[i], end);
+    }
+    // there must be some way to avoid this switch
+    switch (ValuesPerPack<VectorT>) {
+    case 4: {
+      Deinterleave4x3(v_arr[0], v_arr[1], v_arr[2], v_arr[3], this->x, this->y,
+                      this->z);
+      break;
+    }
+    case 8: {
+      Deinterleave8x3(v_arr[0], v_arr[1], v_arr[2], v_arr[3], v_arr[4],
+                      v_arr[5], v_arr[6], v_arr[7], this->x, this->y, this->z);
+      break;
+    }
+    }
+  }
   // construct by loading discontiguously from an array of ScalarT eg float* or
   // double* for which the SIMD width is 4 (__m128 and __m256d). The access is
   // indexed by 4 integers i,j,k,l where each index is the number
