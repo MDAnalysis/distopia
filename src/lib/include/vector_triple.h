@@ -39,8 +39,8 @@ public:
   // double* for which the SIMD width is 4 (__m128 and __m256d). The access is
   // indexed by 4 integers i,j,k,l where each index is the number
   // of the particle. Assumes the input vector is in AOS format and returns SOA
-  inline VectorTriple(ScalarT *source, ScalarT *end, int i, int j, int k,
-                      int l) {
+  inline VectorTriple(const ScalarT *source, const ScalarT *end, const int i,
+                      const int j, const int k, const int l) {
     static_assert(ValuesPerPack<VectorT> == 4,
                   "Cannot use this constructor on a type "
                   "that does not have a SIMD width of 4");
@@ -56,8 +56,9 @@ public:
   // double* for which the SIMD width is 8 (__m256). The access is
   // indexed by 8 integers i,j,k,l,m,n,o,p where each index is the number
   // of the particle. Assumes the input vector is in AOS format and returns SOA
-  inline VectorTriple(ScalarT *source, ScalarT *end, int i, int j, int k, int l,
-                      int m, int n, int o, int p) {
+  inline VectorTriple(const ScalarT *source, const ScalarT *end, const int i,
+                      const int j, const int k, const int l, const int m,
+                      const int n, const int o, const int p) {
     static_assert(ValuesPerPack<VectorT> == 8,
                   "Cannot use this constructor on a type "
                   "that does not have a SIMD width of 8");
@@ -105,6 +106,15 @@ public:
     VectorTriple<VectorT> vt;
     Deinterleave3(this->x, this->y, this->z, vt.x, vt.y, vt.z);
     return vt;
+  }
+  // is this better named norm or norm3d?
+  inline VectorT hypot() {
+    // FIXME: norm_sq can overflow.
+    VectorT norm_sq = x * x;
+    norm_sq = FusedMulAdd(y, y, norm_sq);
+    norm_sq = FusedMulAdd(z, z, norm_sq);
+    VectorT norm = Sqrt(norm_sq);
+    return norm;
   }
 };
 
