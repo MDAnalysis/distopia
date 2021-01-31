@@ -107,15 +107,6 @@ public:
     Deinterleave3(this->x, this->y, this->z, vt.x, vt.y, vt.z);
     return vt;
   }
-  // is this better named norm or norm3d?
-  inline VectorT hypot() {
-    // FIXME: norm_sq can overflow.
-    VectorT norm_sq = x * x;
-    norm_sq = FusedMulAdd(y, y, norm_sq);
-    norm_sq = FusedMulAdd(z, z, norm_sq);
-    VectorT norm = Sqrt(norm_sq);
-    return norm;
-  }
 };
 
 template <typename VectorT>

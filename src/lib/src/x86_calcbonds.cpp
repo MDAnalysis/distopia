@@ -55,7 +55,7 @@ void CalcBondsOrthoX86Vec(const VectorToScalarT<VectorT> *coords0,
     auto d_abc = Distance1DWithBoundary(c0, c1, box_packed);
     auto d_xyz = d_abc.deinterleave();
     // deinterleave and do hypot accumulation in SOA
-    auto res = d_xyz.hypot();
+    auto res = Hypot(d_xyz.x, d_xyz.y, d_xyz.z);
     if constexpr (streaming_store) {
       stream_p(&out[i], res);
     } else {
