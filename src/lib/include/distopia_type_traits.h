@@ -37,17 +37,21 @@ template <typename VectorT> struct VectorToScalarTStruct;
 template <> struct VectorToScalarTStruct<__m128> { using type = float; };
 template <> struct VectorToScalarTStruct<__m128d> { using type = double; };
 
-template<typename T> struct SmallVecTStruct;
-template<> struct SmallVecTStruct<float> { using type = __m128; };
-template<> struct SmallVecTStruct<double> { using type = __m128d; };
-template<typename T> using SmallVecT = typename SmallVecTStruct<T>::type;
+// map each vector to the type it is loaded in as in IDX case
+template <typename VectorT> struct VectorToLoadTStruct;
+template <> struct VectorToLoadTStruct<__m128> { using type = __m128; };
+template <> struct VectorToLoadTStruct<__m128d> { using type = __m128d; };
 
-template<typename T> struct BigVecTStruct { using type = SmallVecT<T>; };
+template <typename T> struct SmallVecTStruct;
+template <> struct SmallVecTStruct<float> { using type = __m128; };
+template <> struct SmallVecTStruct<double> { using type = __m128d; };
+template <typename T> using SmallVecT = typename SmallVecTStruct<T>::type;
+
+template <typename T> struct BigVecTStruct { using type = SmallVecT<T>; };
 
 #ifdef DISTOPIA_X86_AVX
 template <> struct IsVector<__m256> { static constexpr bool value = true; };
 template <> struct IsVector<__m256d> { static constexpr bool value = true; };
-
 
 template <> struct VectorToScalarTStruct<__m256> { using type = float; };
 template <> struct VectorToScalarTStruct<__m256d> { using type = double; };
@@ -57,9 +61,11 @@ template <typename VectorT> struct VectorToLaneTStruct;
 template <> struct VectorToLaneTStruct<__m256> { using type = __m128; };
 template <> struct VectorToLaneTStruct<__m256d> { using type = __m128d; };
 
+template <> struct VectorToLoadTStruct<__m256> { using type = __m128; };
+template <> struct VectorToLoadTStruct<__m256d> { using type = __m256d; };
 
-  template<> struct BigVecTStruct<float> { using type = __m256; };
-  template<> struct BigVecTStruct<double> { using type = __m256d; };
+template <> struct BigVecTStruct<float> { using type = __m256; };
+template <> struct BigVecTStruct<double> { using type = __m256d; };
 
 #endif // DISTOPIA_X86_AVX
 
@@ -72,14 +78,17 @@ using VectorToScalarT = typename VectorToScalarTStruct<VectorT>::type;
 template <typename VectorT>
 using VectorToLaneT = typename VectorToLaneTStruct<VectorT>::type;
 
-template<typename T> using BigVecT = typename BigVecTStruct<T>::type;
+template <typename VectorT>
+using VectorToLoadT = typename VectorToLoadTStruct<VectorT>::type;
 
-template<typename T> constexpr std::size_t ValuesPerPack = sizeof(T) / sizeof(VectorToScalarT<T>);
+template <typename T> using BigVecT = typename BigVecTStruct<T>::type;
+
+template <typename T>
+constexpr std::size_t ValuesPerPack = sizeof(T) / sizeof(VectorToScalarT<T>);
 
 #ifdef DISTOPIA_GCC
 #pragma GCC diagnostic pop
 #endif
-
 
 #endif // DISTOPIA_X86_SSE4_1
 
