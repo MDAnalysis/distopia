@@ -78,6 +78,7 @@ using VectorToScalarT = typename VectorToScalarTStruct<VectorT>::type;
 template <typename VectorT>
 using VectorToLaneT = typename VectorToLaneTStruct<VectorT>::type;
 
+<<<<<<< HEAD
 template <typename VectorT>
 using VectorToLoadT = typename VectorToLoadTStruct<VectorT>::type;
 
@@ -85,11 +86,20 @@ template <typename T> using BigVecT = typename BigVecTStruct<T>::type;
 
 template <typename T>
 constexpr std::size_t ValuesPerPack = sizeof(T) / sizeof(VectorToScalarT<T>);
+=======
+template<typename T> using BigVecT = typename BigVecTStruct<T>::type;
+
+template<typename T> constexpr std::size_t ValuesPerPack = sizeof(T) / sizeof(VectorToScalarT<T>);
+>>>>>>> upstream/master
 
 #ifdef DISTOPIA_GCC
 #pragma GCC diagnostic pop
 #endif
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/master
 #endif // DISTOPIA_X86_SSE4_1
 
 #endif // DISTOPIA_TYPE_TRAITS_H

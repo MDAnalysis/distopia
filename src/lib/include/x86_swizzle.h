@@ -109,6 +109,10 @@ inline void Deinterleave4x3(const __m256d a, const __m256d b, const __m256d c,
   // y = y0y1y2y3
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/master
 // transforms xyz coordinates from AOS to SOA
 inline void Deinterleave8x3(const __m128 a, const __m128 b, const __m128 c,
                             const __m128 d, const __m128 e, const __m128 f,
