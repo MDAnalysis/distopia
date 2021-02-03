@@ -43,19 +43,7 @@ public:
     for (std::size_t i = 0; i < ValuesPerPack<VectorT>; i++) {
       v_arr[i] = SafeIdxLoad4<VectorT>(source, 3 * idxs[i], end);
     }
-    // there must be some way to avoid this switch
-    switch (ValuesPerPack<VectorT>) {
-    case 4: {
-      Deinterleave4x3(v_arr[0], v_arr[1], v_arr[2], v_arr[3], this->x, this->y,
-                      this->z);
-      break;
-    }
-    case 8: {
-      Deinterleave8x3(v_arr[0], v_arr[1], v_arr[2], v_arr[3], v_arr[4],
-                      v_arr[5], v_arr[6], v_arr[7], this->x, this->y, this->z);
-      break;
-    }
-    }
+    DeinterleaveIdx<VectorT>(v_arr, this->x, this->y, this->z)    ;
   }
   // construct by loading discontiguously from an array of ScalarT eg float* or
   // double* for which the SIMD width is 4 (__m128 and __m256d). The access is
