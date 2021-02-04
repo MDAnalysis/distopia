@@ -42,7 +42,7 @@ jobs:
       run: cmake -E make_directory ${{runner.workspace}}/build
 
     - name: Echo
-      run: echo $(brew --prefix llvm)/bin/clang -v && echo $(brew --prefix llvm)/bin/clang++ -v && which clang
+      run: $(brew --prefix llvm)/bin/clang -v &&  $(brew --prefix llvm)/bin/clang++ -v && which clang
 
 
     - name: Configure CMake
