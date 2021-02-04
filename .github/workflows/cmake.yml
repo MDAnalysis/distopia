@@ -41,7 +41,7 @@ jobs:
         CXX: ${{ matrix.cxx_compiler }}
       run: cmake -E make_directory ${{runner.workspace}}/build
 
-    - name: Echo
+    #- name: Echo
       #run: $(brew --prefix llvm)/bin/clang -v &&  $(brew --prefix llvm)/bin/clang++ -v && which clang
 
 
