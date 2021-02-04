@@ -20,6 +20,14 @@ jobs:
         instruction_set_flag: ["SSE4_1", "AVX", "AVX2"]
         #fastest way to get gcc, clang and msvc
         os: [ubuntu-latest, macos-latest] # windows not supported yet by us
+        include:
+          - os: macos-latest
+            cxx_compiler: "$(brew --prefix llvm)/bin/clang++"
+            c_compiler: "$(brew --prefix llvm)/bin/clang++"
+          - os: ubuntu-latest
+            cxx_compiler: "g++"
+            c_compiler: "gcc"
+
 
 
     steps:
@@ -29,9 +37,7 @@ jobs:
       # Some projects don't allow in-source building, so create a separate build directory
       # We'll use this as our working directory for all subsequent commands
       run: cmake -E make_directory ${{runner.workspace}}/build
-    - name: Check For Clang Version on MacOS
-      if: startsWith(matrix.os, 'macos')
-      run: $(brew --prefix llvm)/bin/clang
+
       
 
     - name: Configure CMake
@@ -39,6 +45,9 @@ jobs:
       # access regardless of the host operating system
       shell: bash
       working-directory: ${{runner.workspace}}/build
+      env:
+        CC: ${{ matrix.c_compiler }}
+        CXX: ${{ matrix.cxx_compiler }}
       # Note the current convention is to use the -S and -B options here to specify source 
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
@@ -47,6 +56,9 @@ jobs:
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
+      env:
+        CC: ${{ matrix.c_compiler }}
+        CXX: ${{ matrix.cxx_compiler }}
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build .  --config $BUILD_TYPE  
 
