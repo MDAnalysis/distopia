@@ -23,7 +23,7 @@ jobs:
         include:
           - os: macos-latest
             cxx_compiler: "/usr/local/opt/bin/clang++"
-            c_compiler: "/usr/local/opt/clang"
+            c_compiler: "/usr/local/opt/bin/clang"
           - os: ubuntu-latest
             cxx_compiler: "g++"
             c_compiler: "gcc"
