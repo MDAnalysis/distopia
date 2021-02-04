@@ -22,8 +22,8 @@ jobs:
         os: [ubuntu-latest, macos-latest] # windows not supported yet by us
         include:
           - os: macos-latest
-            cxx_compiler: $(brew --prefix llvm)/bin/clang++
-            c_compiler: $(brew --prefix llvm)/bin/clang
+            cxx_compiler: clang++
+            c_compiler: clang
           - os: ubuntu-latest
             cxx_compiler: "g++"
             c_compiler: "gcc"
@@ -41,7 +41,7 @@ jobs:
         CXX: ${{ matrix.cxx_compiler }}
       run: cmake -E make_directory ${{runner.workspace}}/build
 
-      
+
 
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
