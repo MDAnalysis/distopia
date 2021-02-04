@@ -22,8 +22,8 @@ jobs:
         os: [ubuntu-latest, macos-latest] # windows not supported yet by us
         include:
           - os: macos-latest
-            cxx_compiler: "clang++"
-            c_compiler: "clang"
+            cxx_compiler: "$(brew --prefix llvm)/bin/clang"
+            c_compiler: "$(brew --prefix llvm)/bin/clang++"
           - os: ubuntu-latest
             cxx_compiler: "g++-9"
             c_compiler: "gcc-9"
@@ -42,7 +42,7 @@ jobs:
       run: cmake -E make_directory ${{runner.workspace}}/build
 
     - name: Echo
-      run: $(brew --prefix llvm)/bin/clang -v &&  $(brew --prefix llvm)/bin/clang++ -v && which clang
+      #run: $(brew --prefix llvm)/bin/clang -v &&  $(brew --prefix llvm)/bin/clang++ -v && which clang
 
 
     - name: Configure CMake
