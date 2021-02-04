@@ -17,20 +17,24 @@ jobs:
       max-parallel: 12
       fail-fast: false
       matrix:
-        #specific instruction sets and the fallthrough case.
-        instruction_set_flag: ["-DDISTOPIA_USE_SSE4_1=ON", "-DDISTOPIA_USE_AVX=ON", "-DDISTOPIA_USE_AVX2=ON", ""]
+        #specific instruction sets and the fallthrough case (" ").
+        instruction_set_flag: ["", "-DDISTOPIA_USE_SSE4_1=ON", "-DDISTOPIA_USE_AVX=ON", "-DDISTOPIA_USE_AVX2=ON"]
         os: [ubuntu-latest, macos-latest] # windows not supported yet by us
         include:
           - os: macos-latest
-            cxx_compiler: "$(brew --prefix llvm)/bin/clang++"
-            c_compiler: "$(brew --prefix llvm)/bin/clang"
+            cxx_compiler: "clang++"
+            c_compiler: "clang"
+            # to use clang-11
+            # cxx_compiler: "$(brew --prefix llvm)/bin/clang++"
+            # c_compiler: "$(brew --prefix llvm)/bin/clang"
           - os: ubuntu-latest
+            # use gcc 9
             cxx_compiler: "g++-9"
             c_compiler: "gcc-9"
         exclude:
         # excludes AVX2 on macOS as the VM doesn't seem to support some AVX2 instructions.
           - os: macos-latest
-            instruction_set_flag: "-DDISTOPIA_USE_AVX2"
+            instruction_set_flag: "-DDISTOPIA_USE_AVX2=ON"
 
 
     steps:
@@ -53,7 +57,7 @@ jobs:
       # Note the current convention is to use the -S and -B options here to specify source 
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: cmake $GITHUB_WORKSPACE  -DCMAKE_BUILD_TYPE=$BUILD_TYPE ${{ matrix.instruction_set_flag }}=ON -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }}
+      run: cmake $GITHUB_WORKSPACE  -DCMAKE_BUILD_TYPE=$BUILD_TYPE ${{ matrix.instruction_set_flag }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }}
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
