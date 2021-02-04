@@ -23,7 +23,7 @@ jobs:
         include:
           - os: macos-latest
             cxx_compiler: "$(brew --prefix llvm)/bin/clang++"
-            c_compiler: "$(brew --prefix llvm)/bin/clang++"
+            c_compiler: "$(brew --prefix llvm)/bin/clang"
           - os: ubuntu-latest
             cxx_compiler: "g++"
             c_compiler: "gcc"
