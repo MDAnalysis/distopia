@@ -22,8 +22,8 @@ jobs:
         os: [ubuntu-latest, macos-latest] # windows not supported yet by us
         include:
           - os: macos-latest
-            cxx_compiler: "$(brew --prefix llvm)/bin/clang++"
-            c_compiler: "$(brew --prefix llvm)/bin/clang"
+            cxx_compiler: "/usr/local/opt/bin/clang++"
+            c_compiler: "/usr/local/opt/clang"
           - os: ubuntu-latest
             cxx_compiler: "g++"
             c_compiler: "gcc"
