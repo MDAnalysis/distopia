@@ -21,6 +21,7 @@ jobs:
         instruction_set_flag: ["SSE4_1", "AVX", "AVX2"]
         #fastest way to get gcc, clang and msvc
         os: [ubuntu-latest, macos-latest] # windows not supported yet by us
+        cxxcompiler: [g++, clang++]
 
     steps:
     - uses: actions/checkout@v2
@@ -35,6 +36,8 @@ jobs:
       # access regardless of the host operating system
       shell: bash
       working-directory: ${{runner.workspace}}/build
+      env:
+        CXX: ${{ matrix.cxxcompiler }}
       # Note the current convention is to use the -S and -B options here to specify source 
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
@@ -43,6 +46,8 @@ jobs:
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
+      env:
+        CXX: ${{ matrix.cxxcompiler }}
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build .  --config $BUILD_TYPE  
 
