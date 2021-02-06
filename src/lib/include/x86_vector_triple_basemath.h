@@ -39,45 +39,45 @@ inline VectorTriple<VectorT> Sqrt(VectorTriple<VectorT> source) {
 #ifdef DISTOPIA_X86_AVX2_FMA
 // Fused version with FMA intrinsics.
 template <typename VectorT>
-inline VectorTriple<VectorT> FusedMulAdd(VectorTriple<VectorT> a,
+inline VectorTriple<VectorT> FastMulAdd(VectorTriple<VectorT> a,
                                         VectorTriple<VectorT> b,
                                         VectorTriple<VectorT> c) {
-  return VectorTriple<VectorT>(FusedMulAdd(a.x, b.x, c.x),
-                               FusedMulAdd(a.y, b.y, c.y),
-                               FusedMulAdd(a.z, b.z, c.z));
+  return VectorTriple<VectorT>(FastMulAdd(a.x, b.x, c.x),
+                               FastMulAdd(a.y, b.y, c.y),
+                               FastMulAdd(a.z, b.z, c.z));
 }
 
 template <typename VectorT>
-inline VectorTriple<VectorT> FusedMulSub(VectorTriple<VectorT> a,
+inline VectorTriple<VectorT> FastMulSub(VectorTriple<VectorT> a,
                                         VectorTriple<VectorT> b,
                                         VectorTriple<VectorT> c) {
-  return VectorTriple<VectorT>(FusedMulSub(a.x, b.x, c.x),
-                               FusedMulSub(a.y, b.y, c.y),
-                               FusedMulSub(a.z, b.z, c.z));
+  return VectorTriple<VectorT>(FastMulSub(a.x, b.x, c.x),
+                               FastMulSub(a.y, b.y, c.y),
+                               FastMulSub(a.z, b.z, c.z));
 }
 
 template <typename VectorT>
-inline VectorTriple<VectorT> FusedNegMulAdd(VectorTriple<VectorT> a,
+inline VectorTriple<VectorT> FastNegMulAdd(VectorTriple<VectorT> a,
                                            VectorTriple<VectorT> b,
                                            VectorTriple<VectorT> c) {
-  return VectorTriple<VectorT>(FusedNegMulAdd(a.x, b.x, c.x),
-                               FusedNegMulAdd(a.y, b.y, c.y),
-                               FusedNegMulAdd(a.z, b.z, c.z));
+  return VectorTriple<VectorT>(FastNegMulAdd(a.x, b.x, c.x),
+                               FastNegMulAdd(a.y, b.y, c.y),
+                               FastNegMulAdd(a.z, b.z, c.z));
 }
 
 template <typename VectorT>
-inline VectorTriple<VectorT> FusedNegMulSub(VectorTriple<VectorT> a,
+inline VectorTriple<VectorT> FastNegMulSub(VectorTriple<VectorT> a,
                                            VectorTriple<VectorT> b,
                                            VectorTriple<VectorT> c) {
-  return VectorTriple<VectorT>(FusedNegMulSub(a.x, b.x, c.x),
-                               FusedNegMulSub(a.y, b.y, c.y),
-                               FusedNegMulSub(a.z, b.z, c.z));
+  return VectorTriple<VectorT>(FastNegMulSub(a.x, b.x, c.x),
+                               FastNegMulSub(a.y, b.y, c.y),
+                               FastNegMulSub(a.z, b.z, c.z));
 }
 
 #else
 // slower and less accurate without FMA
 template <typename VectorT>
-inline VectorTriple<VectorT> FusedMulAdd(VectorTriple<VectorT> a,
+inline VectorTriple<VectorT> FastMulAdd(VectorTriple<VectorT> a,
                                         VectorTriple<VectorT> b,
                                         VectorTriple<VectorT> c) {
   VectorTriple<VectorT> result = a * b + c;
@@ -85,7 +85,7 @@ inline VectorTriple<VectorT> FusedMulAdd(VectorTriple<VectorT> a,
 }
 
 template <typename VectorT>
-inline VectorTriple<VectorT> FusedMulSub(VectorTriple<VectorT> a,
+inline VectorTriple<VectorT> FastMulSub(VectorTriple<VectorT> a,
                                         VectorTriple<VectorT> b,
                                         VectorTriple<VectorT> c) {
   VectorTriple<VectorT> result = a * b - c;
@@ -93,7 +93,7 @@ inline VectorTriple<VectorT> FusedMulSub(VectorTriple<VectorT> a,
 }
 
 template <typename VectorT>
-inline VectorTriple<VectorT> FusedNegMulAdd(VectorTriple<VectorT> a,
+inline VectorTriple<VectorT> FastNegMulAdd(VectorTriple<VectorT> a,
                                            VectorTriple<VectorT> b,
                                            VectorTriple<VectorT> c) {
   return VectorTriple<VectorT>(-(a.x * b.x) + c.x, -(a.y * b.y) + c.y,
@@ -101,7 +101,7 @@ inline VectorTriple<VectorT> FusedNegMulAdd(VectorTriple<VectorT> a,
 }
 
 template <typename VectorT>
-inline VectorTriple<VectorT> FusedNegMulSub(VectorTriple<VectorT> a,
+inline VectorTriple<VectorT> FastNegMulSub(VectorTriple<VectorT> a,
                                            VectorTriple<VectorT> b,
                                            VectorTriple<VectorT> c) {
   return VectorTriple<VectorT>(-(a.x * b.x) - c.x, -(a.y * b.y) - c.y,
@@ -117,10 +117,10 @@ inline VectorTriple<VectorT> Remainder(VectorTriple<VectorT> a,
 }
 
 template <typename VectorT>
-inline VectorTriple<VectorT> FusedMin(VectorTriple<VectorT> a,
+inline VectorTriple<VectorT> FastMin(VectorTriple<VectorT> a,
                                      VectorTriple<VectorT> b) {
-  return VectorTriple<VectorT>(FusedMin(a.x, b.x), FusedMin(a.y, b.y),
-                               FusedMin(a.z, b.z));
+  return VectorTriple<VectorT>(FastMin(a.x, b.x), FastMin(a.y, b.y),
+                               FastMin(a.z, b.z));
 }
 
 template <typename VectorT>

@@ -16,8 +16,8 @@ template<typename T>
 T Hypot(T x, T y, T z) {
   // FIXME: norm_sq can overflow.
   T norm_sq = x * x;
-  norm_sq = FusedMulAdd(y, y, norm_sq);
-  norm_sq = FusedMulAdd(z, z, norm_sq);
+  norm_sq = FastMulAdd(y, y, norm_sq);
+  norm_sq = FastMulAdd(z, z, norm_sq);
   T norm = Sqrt(norm_sq);
   return norm;
 }
