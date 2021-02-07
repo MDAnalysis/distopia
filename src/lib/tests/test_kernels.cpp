@@ -8,7 +8,7 @@
 
 // constants
 #define BOXSIZE 10
-#define NCOORDS 3000
+#define NRESULTS 30000
 #define CONST_SEED 42
 
 int32_t ulpsDistance(const float a, const float b) {
@@ -85,7 +85,9 @@ inline void EXPECT_EQ_T(double result, double ref) {
 template <typename T>
 void RandomFloatingPoint(T *target, const int nrandom, const int neglimit,
                          const int poslimit) {
-  std::mt19937 gen(CONST_SEED); // Standard mersenne_twister_engine 
+            std::random_device
+      rd;               
+  std::mt19937 gen(rd()); // Standard mersenne_twister_engine 
   std::uniform_real_distribution<T> distribution(neglimit, poslimit);
   for (size_t i = 0; i < nrandom; i++) {
     target[i] = distribution(gen);
@@ -105,10 +107,10 @@ protected:
   T box[3];
 
   // coordinates range from 0 - delta to BOXSIZE + delta
-  void InitCoords(const int n, const double boxsize, const double delta) {
-    ncoords = n;
-    assert(n % 3 == 0);
-    nresults = n / 3;
+  void InitCoords(const int n_results, const double boxsize, const double delta) {
+
+    nresults = n_results;
+    ncoords = 3 * nresults ;
 
     coords0 = new T[ncoords];
     coords1 = new T[ncoords];
@@ -146,7 +148,7 @@ TYPED_TEST_SUITE(Coordinates, FloatTypes);
 
 // coordinates in this test can overhang the edge of the box by 2 * the box size.
 TYPED_TEST(Coordinates, CalcBondsMatchesVanilla) {
-  this->InitCoords(NCOORDS, BOXSIZE, 2 * BOXSIZE);
+  this->InitCoords(NRESULTS, BOXSIZE, 2 * BOXSIZE);
   VanillaCalcBonds<TypeParam>(this->coords0, this->coords1, this->box,
                               this->nresults, this->ref);
   CalcBondsOrtho(this->coords0, this->coords1, this->box, this->nresults,
@@ -170,7 +172,7 @@ TYPED_TEST(Coordinates, CalcBondsMatchesVanilla) {
 
 // all the coordinates in this test are in the primary box
 TYPED_TEST(Coordinates, CalcBondsMatchesVanillaInBox) {
-  this->InitCoords(NCOORDS, BOXSIZE, 0);
+  this->InitCoords(NRESULTS, BOXSIZE, 0);
   VanillaCalcBonds<TypeParam>(this->coords0, this->coords1, this->box,
                               this->nresults, this->ref);
   CalcBondsOrtho(this->coords0, this->coords1, this->box, this->nresults,
