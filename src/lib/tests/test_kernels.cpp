@@ -9,6 +9,7 @@
 // constants
 #define BOXSIZE 10
 #define NCOORDS 3000
+#define CONST_SEED 42
 
 int32_t ulpsDistance(const float a, const float b) {
   // Save work if the floats are equal.
@@ -72,13 +73,11 @@ int64_t ulpsDistance(const double a, const double b) {
   return distance;
 }
 
-template <typename T> inline void EXPECT_EQ_T(T result, T ref) {}
-
-template <> inline void EXPECT_EQ_T<float>(float result, float ref) {
+ inline void EXPECT_EQ_T(float result, float ref) {
   EXPECT_FLOAT_EQ(result, ref);
 }
 
-template <> inline void EXPECT_EQ_T<double>(double result, double ref) {
+inline void EXPECT_EQ_T(double result, double ref) {
   EXPECT_DOUBLE_EQ(result, ref);
 }
 
@@ -86,9 +85,7 @@ template <> inline void EXPECT_EQ_T<double>(double result, double ref) {
 template <typename T>
 void RandomFloatingPoint(T *target, const int nrandom, const int neglimit,
                          const int poslimit) {
-  std::random_device
-      rd; // Will be used to obtain a seed for the random number engine
-  std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+  std::mt19937 gen(CONST_SEED); // Standard mersenne_twister_engine 
   std::uniform_real_distribution<T> distribution(neglimit, poslimit);
   for (size_t i = 0; i < nrandom; i++) {
     target[i] = distribution(gen);
@@ -159,7 +156,7 @@ TYPED_TEST(Coordinates, CalcBondsMatchesVanilla) {
   for (std::size_t i = 0; i < this->nresults; i++) {
     auto ulp = ulpsDistance(this->results[i], this->ref[i]);
     ulps.push_back(ulp);
-    EXPECT_EQ_T<TypeParam>(this->results[i], this->ref[i]);
+    EXPECT_EQ_T(this->results[i], this->ref[i]);
     // loss of accuracy somewhere?
   }
   auto max = *std::max_element(std::begin(ulps), std::end(ulps));
@@ -181,7 +178,7 @@ TYPED_TEST(Coordinates, CalcBondsMatchesVanillaInBox) {
   for (std::size_t i = 0; i < this->nresults; i++) {
     auto ulp = ulpsDistance(this->results[i], this->ref[i]);
     ulps.push_back(ulp);
-    EXPECT_EQ_T<TypeParam>(this->results[i], this->ref[i]);
+    EXPECT_EQ_T(this->results[i], this->ref[i]);
   }
   auto max = *std::max_element(std::begin(ulps), std::end(ulps));
   std::cout << " Max ulp deviation is " << max << " ULPS\n";
