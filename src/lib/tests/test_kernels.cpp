@@ -8,8 +8,7 @@
 
 // constants
 #define BOXSIZE 10
-#define NRESULTS 30000
-#define CONST_SEED 42
+#define NRESULTS 3000
 
 int32_t ulpsDistance(const float a, const float b) {
   // Save work if the floats are equal.
