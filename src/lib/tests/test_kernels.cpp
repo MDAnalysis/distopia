@@ -19,11 +19,11 @@ int32_t ulpsDistance(const float a, const float b) {
   const auto max = std::numeric_limits<int32_t>::max();
 
   // Max distance for NaN
-  if (isnan(a) || isnan(b))
+  if (std::isnan(a) || std::isnan(b))
     return max;
 
   // If one's infinite and they're not equal, max distance.
-  if (isinf(a) || isinf(b))
+  if (std::isinf(a) || std::isinf(b))
     return max;
 
   int32_t ia, ib;
@@ -50,11 +50,11 @@ int64_t ulpsDistance(const double a, const double b) {
   const auto max = std::numeric_limits<int64_t>::max();
 
   // Max distance for NaN
-  if (isnan(a) || isnan(b))
+  if (std::isnan(a) || std::isnan(b))
     return max;
 
   // If one's infinite and they're not equal, max distance.
-  if (isinf(a) || isinf(b))
+  if (std::isinf(a) || std::isinf(b))
     return max;
 
   int64_t ia, ib;
