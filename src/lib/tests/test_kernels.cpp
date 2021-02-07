@@ -153,16 +153,18 @@ TYPED_TEST(Coordinates, CalcBondsMatchesVanilla) {
                  this->results);
   std::vector<int> ulps;
   ulps.reserve(this->nresults);
+
   for (std::size_t i = 0; i < this->nresults; i++) {
     auto ulp = ulpsDistance(this->results[i], this->ref[i]);
     ulps.push_back(ulp);
     EXPECT_EQ_T(this->results[i], this->ref[i]);
     // loss of accuracy somewhere?
   }
+  // figure out how far away we are
   auto max = *std::max_element(std::begin(ulps), std::end(ulps));
   std::cout << " Max ulp deviation is " << max << " ULPS\n";
-  auto sum = std::accumulate(std::begin(ulps), std::end(ulps), 0.0);
-  auto mean = sum / ulps.size();
+  double sum = std::accumulate(std::begin(ulps), std::end(ulps), 0.0);
+  double mean = sum / ulps.size();
   std::cout << " Average ulp deviation is " << mean << " ULPS\n";
 }
 
@@ -175,14 +177,16 @@ TYPED_TEST(Coordinates, CalcBondsMatchesVanillaInBox) {
                  this->results);
   std::vector<int> ulps;
   ulps.reserve(this->nresults);
+
   for (std::size_t i = 0; i < this->nresults; i++) {
     auto ulp = ulpsDistance(this->results[i], this->ref[i]);
     ulps.push_back(ulp);
     EXPECT_EQ_T(this->results[i], this->ref[i]);
   }
+  // figure out how far away we are
   auto max = *std::max_element(std::begin(ulps), std::end(ulps));
   std::cout << " Max ulp deviation is " << max << " ULPS\n";
-  auto sum = std::accumulate(std::begin(ulps), std::end(ulps), 0.0);
-  auto mean = sum / ulps.size();
+  double sum = std::accumulate(std::begin(ulps), std::end(ulps), 0.0);
+  double mean = sum / ulps.size();
   std::cout << " Average ulp deviation is " << mean << " ULPS\n";
 }
