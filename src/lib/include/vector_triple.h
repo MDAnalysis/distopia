@@ -7,13 +7,6 @@
 #include "x86_tgintrin.h"
 #include "x86_vectors.h"
 
-
-#ifdef DISTOPIA_GCC
-// Silence GCC warning when explicitly specializing.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wignored-attributes"
-#endif
-
 // VectorTriple base class packs 3xSIMD datatypes into a single class.
 // Can be constructed from 3 x VectorT.
 // Can also be constructed from a ScalarT array which loads the right number
@@ -149,9 +142,5 @@ inline VectorTriple<VectorT> operator/(VectorTriple<VectorT> a,
                                        VectorTriple<VectorT> b) {
   return VectorTriple<VectorT>(a.x / b.y, a.y / b.y, a.z / b.z);
 }
-
-#ifdef DISTOPIA_GCC
-#pragma GCC diagnostic pop
-#endif
 
 #endif // DISTOPIA_VECTOR_TRIPLE
