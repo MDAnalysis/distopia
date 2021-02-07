@@ -34,23 +34,23 @@ inline T Sqrt(T x) { return sqrt_p(x); }
 #ifdef DISTOPIA_X86_AVX2_FMA
   // Fast version with FMA intrinsics.
   template<typename T, EnableIfVector<T> = 0>
-  inline T FusedMulAdd(T a, T b, T c) { return fmadd_p(a, b, c); }
+  inline T FastMulAdd(T a, T b, T c) { return fmadd_p(a, b, c); }
   template<typename T, EnableIfVector<T> = 0>
-  inline T FusedMulSub(T a, T b, T c) { return fmsub_p(a, b, c); }
+  inline T FastMulSub(T a, T b, T c) { return fmsub_p(a, b, c); }
   template<typename T, EnableIfVector<T> = 0>
-  inline T FusedNegMulAdd(T a, T b, T c) { return fnmadd_p(a, b, c); }
+  inline T FastNegMulAdd(T a, T b, T c) { return fnmadd_p(a, b, c); }
   template<typename T, EnableIfVector<T> = 0>
-  inline T FusedNegMulSub(T a, T b, T c) { return fnmsub_p(a, b, c); }
+  inline T FastNegMulSub(T a, T b, T c) { return fnmsub_p(a, b, c); }
 #else
   // Slower (and less accurate) version for CPUs without FMA.
   template<typename T, EnableIfVector<T> = 0>
-  inline T FusedMulAdd(T a, T b, T c) { return a * b + c; }
+  inline T FastMulAdd(T a, T b, T c) { return a * b + c; }
   template<typename T, EnableIfVector<T> = 0>
-  inline T FusedMulSub(T a, T b, T c) { return a * b - c; }
+  inline T FastMulSub(T a, T b, T c) { return a * b - c; }
   template<typename T, EnableIfVector<T> = 0>
-  inline T FusedNegMulAdd(T a, T b, T c) { return -(a * b) + c; }
+  inline T FastNegMulAdd(T a, T b, T c) { return -(a * b) + c; }
   template<typename T, EnableIfVector<T> = 0>
-  inline T FusedNegMulSub(T a, T b, T c) { return -(a * b) - c; }
+  inline T FastNegMulSub(T a, T b, T c) { return -(a * b) - c; }
 #endif
 
 template<typename T, EnableIfVector<T> = 0>
@@ -59,8 +59,8 @@ inline T Remainder(T x, T y) {
   // this a problem?
   T wraps_around =
     round_p<_MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC>(x / y);
-  // FIXME: FusedNegMulAdd is inexact on CPUs without FMA.
-  return FusedNegMulAdd(wraps_around, y, x);
+  // FIXME: FastNegMulAdd is inexact on CPUs without FMA.
+  return FastNegMulAdd(wraps_around, y, x);
 }
 
 template<typename T, EnableIfVector<T> = 0>

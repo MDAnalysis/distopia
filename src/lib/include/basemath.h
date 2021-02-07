@@ -24,15 +24,16 @@ inline T FastMin(T x, T y) {
   return x < y ? x : y;
 }
 
-// The compiler is allowed to contract these to fused multiply-add.
+// The compiler is allowed to contract these to fused multiply-add, but the
+// fusion is NOT guaranteed.
 template<typename T, EnableIfFloating<T> = 0>
-inline T FusedMulAdd(T a, T b, T c) { return a * b + c; }
+inline T FastMulAdd(T a, T b, T c) { return a * b + c; }
 template<typename T, EnableIfFloating<T> = 0>
-inline T FusedMulSub(T a, T b, T c) { return a * b - c; }
+inline T FastMulSub(T a, T b, T c) { return a * b - c; }
 template<typename T, EnableIfFloating<T> = 0>
-inline T FusedNegMulAdd(T a, T b, T c) { return -(a * b) + c; }
+inline T FastNegMulAdd(T a, T b, T c) { return -(a * b) + c; }
 template<typename T, EnableIfFloating<T> = 0>
-inline T FusedNegMulSub(T a, T b, T c) { return -(a * b) - c; }
+inline T FastNegMulSub(T a, T b, T c) { return -(a * b) - c; }
 
 template<typename T, EnableIfFloating<T> = 0>
 inline T Sqrt(T x) { return std::sqrt(x); }
