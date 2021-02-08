@@ -5,8 +5,23 @@
 #ifndef XDIST_VANILLA_H
 #define XDIST_VANILLA_H
 
-void VanillaCalcBonds(const float *coords1, const float *coords2,
-                      const float *box, unsigned int nvals, float *output);
+template <typename ScalarT>
+void VanillaCalcBonds(const ScalarT *coords1, const ScalarT *coords2,
+                      const ScalarT *box, unsigned int nvals, ScalarT *output) {
+  for (unsigned int i = 0; i < nvals; ++i) {
+    ScalarT r2 = 0.0;
+    for (unsigned char j = 0; j < 3; ++j) {
+      ScalarT rij = coords1[i * 3 + j] - coords2[i * 3 + j];
+      ScalarT adj = round(rij / box[j]);
+      rij -= adj * box[j];
+
+      r2 += rij * rij;
+    }
+    *output++ = sqrt(r2);
+  }
+}
+
+
 
 void VanillaCalcBondsIdx(const float *coords, const unsigned int *idx,
                          const float *box, unsigned int nvals, float *output);

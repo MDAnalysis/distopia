@@ -3,6 +3,7 @@ project(DISTOPIA LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 
 
@@ -285,7 +286,7 @@ if(DISTOPIA_BUILD_TEST)
   add_subdirectory(${DISTOPIA_TEST_DIR}/googletest)
   enable_testing()
   include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-  # add test executable
+  # add test executable for internals
   add_executable(tests ${DISTOPIA_TEST_DIR}/tests.cpp)
   target_compile_options(tests
     PRIVATE
@@ -297,6 +298,18 @@ if(DISTOPIA_BUILD_TEST)
   target_link_libraries(tests gtest gtest_main)
   # discover tests so that make test will work
   gtest_discover_tests(tests WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+  # test executable for actual distances
+  add_executable(test_kernels  ${DISTOPIA_TEST_DIR}/test_kernels.cpp)
+  target_compile_options(test_kernels
+    PRIVATE
+      ${CXX_FLAGS}
+      "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
+      "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
+    )
+  target_link_libraries(test_kernels distopia)
+  target_link_libraries(test_kernels gtest gtest_main)
+  # discover tests so that make test will work
+  gtest_discover_tests(test_kernels WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
 
 if(DISTOPIA_BUILD_TIMINGS)
