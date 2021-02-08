@@ -3,6 +3,8 @@
 
 #include <cmath>
 
+#ifdef DISTOPIA_X86_SSE4_1
+
 namespace {
 // FLOATING POINT REMAINDER
 // Given: floating point numbers p, b
@@ -68,7 +70,7 @@ namespace {
 //   p - 2^i1 * b + … + 2^in * b = p - iq * b is exactly representable as a
 //   floating-point number.
 
-// Theorem 2, overflow: (Our scaling of b does not overflow.)
+// Theorem 2, no overflow: (Our scaling of b does not overflow.)
 //     Let p, b be floating-point numbers such that ∘(p / b) = ±∞. Let t be the
 //   greatest power of 2 representable as a floating-point number. Then either
 //   p = ±∞ or t * b ≠ ±∞.
@@ -178,6 +180,69 @@ T Remainder(T p, T b) {
   return p;
 }
 
+} // namespace
+
+#endif
+
+// 80-bit extended precision handling.
+// Need to check if we're on x86 and if long double is the x87 native type.
+namespace {
+#if defined(DISTOPIA_X86) && \
+    (defined(DISTOPIA_CLANG) || defined(DISTOPIA_ICC)) && \
+    (FLT_RADIX == 2 && LDBL_MANT_DIG == 64 \
+     && LDBL_MIN_EXP == -16381 && LDBL_MAX_EXP == 16384)
+  // x86 long doubles are usually 80-bit extended-precision floats native to
+  // the legacy x87 ISA. x87 has an instruction (fprem1) that calculates their
+  // remainder. Clang and ICC refuse to emit it, so let's help them out.
+  template<> inline long double Remainder(long double x, long double y) {
+    // This function is an optimization only and not required for correctness.
+    // It may be deleted, albeit at a performance penalty. The inline assembly
+    // is unlikely to have bugs: it's exactly the instructions that GCC emits
+    // for remainderl.
+    
+    // Inline assembly looks intimidating but it's actually reasonably simple.
+    // Read the comments below and see GCC docs:
+    // https://gcc.gnu.org/onlinedocs/gcc/Using-Assembly-Language-with-C.html
+
+    // Keep status in the AX register, the only register FNSTSW can write to.
+    register short status asm("ax");
+
+    // The x87 ISA was introduced in 1980. Its register model is different from
+    // modern ISAs: the registers form a 'stack'. Like in a stack-based
+    // calculator,  many instructions can only operate on the top of the stack.
+    // ST(n) is the register at index n, so ST(0) is the top, ST(1) is second
+    // from the top, and so on.
+    do {
+      asm(// FPREM1 performs ST(0) <- remainder(ST(0), ST(1)). See
+          // https://www.felixcloutier.com/x86/fprem1
+          "fprem1 \n\t"
+          // FNSTSW copies floating-point status flags to a general purpose
+          // register. We need this for loop condition. See
+          // https://www.felixcloutier.com/x86/fstsw:fnstsw
+          "fnstsw  %1" // The compiler will substitute %1 with AX.
+          // Outputs
+          : "+t" (x) // +: we're reading from and writing to x.
+                     // t: put x at the top of the x87 stack (ST(0)).
+          , "=r" (status) // =: we're writing to status but not reading it.
+                          // r: put status in a general purpose register (we've
+                          //    already forced status to be in AX above).
+          // Inputs (registers read but not modified)
+          : "u" (y) // u: put y second from the top of the x87 stack (ST(1)).
+          );
+    // Check if the C2 status flag (1 << 10) is set. If so, the reduction was
+    // only partial and must be repeated. Agner Fog's manual 'Optimizing
+    // subroutines in assembly language' states:
+    // > Some documents say that these instructions may give incomplete
+    // > reductions and that it is therefore necessary to repeat the FPREM or
+    // > FPREM1 instruction until the reduction is complete. I have tested this
+    // > on several processors beginning with the old 8087 and I have found no
+    // > situation where a repetition of the FPREM or FPREM1 was needed.
+    // While we are unlikely to loop, the check is required for correctness.
+    } while (distopia_unlikely(status & 1 << 10));
+
+    return x; // The above asm modifies x, using it to store the result.
+  }
+#endif
 } // namespace
 
 #endif // DISTOPIA_X86_REMAINDER_H
