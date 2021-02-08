@@ -122,19 +122,21 @@ T RemainderReduction(T p, T b) {
   T q = p / b;
   // q may be +0, positive, +∞inity, or NaN
   T infinity_v = set1_p<T>(INFINITY);
-  T is_infinity_mask = _mm256_cmpeq_epi32(_mm256_castps_si256(quo), is_infinity_mask);
-  if (unlikely(!_mm256_testz_ps(is_infinity_mask, is_infinity_mask))) {
+  T is_infinity_mask = _cmpeq_epi32(_castps_si256(quo), is_infinity_mask);
+  if (distopia_unlikely(!_testz_p(is_infinity_mask, is_infinity_mask))) {
     // p / b is too big to be represented as a floating point number. Note:
     // p mod b = (p mod (b * 2^m)) mod b for integer m ≥ 0.
-    T scaled_b = b * _mm256_set1_ps(0x1.p127);
+    T scaled_b = b * _set1_p(0x1.p127);
     p = RemainderReduction(p, scaled_b);
     goto condition_check;
   }
   
   while (true) {
-    T qi = _mm256_round_ps(q, _MM_ROUND_NEAREST | _MM_FROUND_NO_EXC);
-    T gtmask = _mm256_fnmadd_ps(_mm256_set1_ps(2.0), Abs(p), b);
-    if (likely(_mm256_testz_ps(gtmask, gtmask)))
+    T qi = _round_p(q, _MM_ROUND_NEAREST | _MM_FROUND_NO_EXC);
+    p = _fnmadd_p(qi, b, p);
+  condition_check:
+    T gtmask = _fnmadd_p(_set1_p(2.0), Abs(p), b);
+    if (distopia_likely(_testz_p(gtmask, gtmask)))
       break;
     q = p / b;
   }
@@ -146,8 +148,8 @@ T Remainder(T p, T b) {
   // It is assumed that b has its sign bit cleared.
   // Only run the reduction if 2 * |p| > b. We first compute b - 2 |p|.
   // (NB: 2 * |p| > b is not equivalent to |p| > b / 2 due to subnormals.)
-  T gtmask = _mm256_fnmadd_ps(_mm256_set1_ps(2.0), Abs(p), b);
-  bool should_run_reduction = !_mm256_testz_ps(gtmask, gtmask);
+  T gtmask = _fnmadd_p(_set1_p(2.0), Abs(p), b);
+  bool should_run_reduction = !_testz_p(gtmask, gtmask);
   // should_run_reduction is true iff any sign bit in gtmask is set.
   // By cases:
   // if Abs(p) is NaN or b is NaN
