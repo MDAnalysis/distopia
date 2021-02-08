@@ -8,7 +8,7 @@
 
 // constants
 #define BOXSIZE 10
-#define NRESULTS 3000
+#define NRESULTS 10000
 
 inline void EXPECT_EQ_T(float result, float ref) {
   EXPECT_FLOAT_EQ(result, ref);
@@ -86,7 +86,7 @@ TYPED_TEST_SUITE(Coordinates, FloatTypes);
 // coordinates in this test can overhang the edge of the box by 2 * the box
 // size.
 TYPED_TEST(Coordinates, CalcBondsMatchesVanilla) {
-  this->InitCoords(NRESULTS, BOXSIZE, 2 * BOXSIZE);
+  this->InitCoords(NRESULTS, BOXSIZE, 3 * BOXSIZE);
   VanillaCalcBonds<TypeParam>(this->coords0, this->coords1, this->box,
                               this->nresults, this->ref);
   CalcBondsOrtho(this->coords0, this->coords1, this->box, this->nresults,
