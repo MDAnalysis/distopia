@@ -173,7 +173,7 @@ inline T Sqrt(T x) { return sqrt_p(x); }
     T gtmask = fnmadd_p(set1_p<T>(2.0), Abs(p), b);
     return testz_p(gtmask, gtmask);
   }
-#elif DISTOPIA_X86_AVX
+#elif defined(DISTOPIA_X86_AVX)
   template<typename T>
   bool RemainderCheckAllSolved(T p, T b) {
     T abs_p_mul_2 = set1_p<T>(2.0) * Abs(p);
