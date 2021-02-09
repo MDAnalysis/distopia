@@ -8,13 +8,13 @@
 void VanillaCalcBonds(const float *coords1, const float *coords2,
                       const float *box, unsigned int nvals, float *output) {
   for (unsigned int i = 0; i < nvals; ++i) {
-    float r2 = 0.0;
+    float r2 = 0.0f;
     for (unsigned char j = 0; j < 3; ++j) {
-      float rij = coords1[i * 3 + j] - coords2[i * 3 + j];
-      float adj = round(rij / box[j]);
-      rij -= adj * box[j];
-
-      r2 += rij * rij;
+      float pij1 = remainderf(coords1[i * 3 + j], box[j]);
+      float pij2 = remainderf(coords2[i * 3 + j], box[j]);
+      float rij = pij1 - pij2;
+      rij = remainderf(rij, box[j]);
+      r2 = fmaf(rij, rij, r2);
     }
     *output++ = sqrtf(r2);
   }
