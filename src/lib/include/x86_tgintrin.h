@@ -227,6 +227,45 @@ using ScalarTFromVecT = typename ScalarTFromVecTStruct<vectorT>::type;
     return _mm ## Fprefix ## _ ## Fname ## _p ## Fsuffix(a, b, c); \
   }
 
+// Casts to integer/bit vectors.
+// Example usage:
+//  DistopiaTGIntrinCastSi(__m256d, d, 256, 256)
+// Generates:
+//  inline __m256i cast_si(__m256d a) {
+//    return _mm256_castpd_si256(a);
+//  }
+#define DistopiaTGIntrinCastSi(Vintype, Vinsuffix, Voutlen, Fprefix) \
+  DistopiaTGIntrinAttrs __m ## Voutlen ## i cast_si(Vintype a) { \
+    return _mm ## Fprefix ## _castp ## Vinsuffix ## _si ## Voutlen(a); \
+  }
+
+// Casts to integer/bit vectors.
+// Example usage:
+//  DistopiaTGIntrinCastSi(__m256d, d, 256, 256)
+// Generates:
+//  inline __m256i cast_si(__m256d a) {
+//    return _mm256_castpd_si256(a);
+//  }
+#define DistopiaTGIntrinCastSi(Vintype, Vinsuffix, Voutlen, Fprefix) \
+  DistopiaTGIntrinAttrs __m ## Voutlen ## i cast_si(Vintype a) { \
+    return _mm ## Fprefix ## _castp ## Vinsuffix ## _si ## Voutlen(a); \
+  }
+
+// Bit/integer vector functions that take two vectors of the same type and
+// return an int.
+// Example usage:
+//  DistopiaTGIntrinBinaryToIntSi(testz, 256, 256)
+// Generates:
+//  inline int testz_si(__m256i a,
+//                      __m256i b) {
+//    return _mm256_testz_si256(a, b);
+//  }
+#define DistopiaTGIntrinBinaryToIntSi(Fname, Vlength, Fprefix) \
+  DistopiaTGIntrinAttrs int Fname ## _si(__m ## Vlength ## i a, \
+                                         __m ## Vlength ## i b) { \
+    return _mm ## Fprefix ## _ ## Fname ## _si ## Vlength(a, b); \
+  }
+
 
 // Intrinsics that are defined for all widths and precisions
 #define DistopiaTGIntrinGeneral(Vtype, Stype, Fprefix, Fsuffix) \
@@ -310,6 +349,12 @@ DistopiaTGIntrinGeneral(__m128d, double, , d)
 DistopiaTGIntrin128Only(__m128d, double, , d)
 DistopiaTGIntrinDouble128Only(__m128d, double, , d)
 
+DistopiaTGIntrinBinaryToIntSi(testc, 128, )
+DistopiaTGIntrinBinaryToIntSi(testnzc, 128, )
+DistopiaTGIntrinBinaryToIntSi(testz, 128, )
+DistopiaTGIntrinCastSi(__m128, s, 128, )
+DistopiaTGIntrinCastSi(__m128d, d, 128, )
+
 #ifdef DISTOPIA_X86_AVX
   DistopiaTGIntrinGeneral(__m256, float, 256, s)
   DistopiaTGIntrin256Only(__m256, float, 256, s)
@@ -322,6 +367,12 @@ DistopiaTGIntrinDouble128Only(__m128d, double, , d)
   DistopiaTGIntrinAVX(__m128d, double, , d)
   DistopiaTGIntrinAVX(__m256, float, 256, s)
   DistopiaTGIntrinAVX(__m256d, double, 256, d)
+
+  DistopiaTGIntrinCastSi(__m256, s, 256, 256)
+  DistopiaTGIntrinCastSi(__m256d, d, 256, 256)
+  DistopiaTGIntrinBinaryToIntSi(testc, 256, 256)
+  DistopiaTGIntrinBinaryToIntSi(testnzc, 256, 256)
+  DistopiaTGIntrinBinaryToIntSi(testz, 256, 256)
 #endif
 
 #ifdef DISTOPIA_X86_AVX2_FMA
