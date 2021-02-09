@@ -270,6 +270,7 @@ using ScalarTFromVecT = typename ScalarTFromVecTStruct<vectorT>::type;
 // Intrinsics that are defined for all widths and precisions
 #define DistopiaTGIntrinGeneral(Vtype, Stype, Fprefix, Fsuffix) \
   DistopiaTGIntrinBinary(add, Vtype, Fprefix, Fsuffix) \
+  DistopiaTGIntrinBinary(and, Vtype, Fprefix, Fsuffix) \
   DistopiaTGIntrinBinary(andnot, Vtype, Fprefix, Fsuffix) \
   DistopiaTGIntrinBinaryImm8(blend, Vtype, Fprefix, Fsuffix) \
   DistopiaTGIntrinUnaryFromScalar(load, Vtype, Fprefix, Fsuffix, const*) \
