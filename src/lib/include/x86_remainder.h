@@ -3,6 +3,8 @@
 
 #include <cmath>
 
+#include "arch_config.h"
+
 #ifdef DISTOPIA_X86_SSE4_1
 
 namespace {
@@ -56,7 +58,7 @@ namespace {
 //   remainder of floating-point division, which is exact.
 //     Let qi = round(∘(p / b))). If ∘(p / b) is not an integer, then
 //   ∘(p / b) ∈ [qi - 1/2, qi + 1/2] and p / b ∈ (qi - 1, qi + 1). Decompose qi
-//   = 2^i1 + … 2^in, where 0 < n ≤ N and i1 > … > in. Since qi is finite, 2^i1
+//   = 2^i1 + … + 2^in, where 0 < n ≤ N and i1 > … > in. Since qi is finite, 2^i1
 //   is exactly representable as a float and qi ∈ [2^i1, 2^(i1 + 1) - 1]. Then
 //   p / b ∈ (2^i1 - 1, 2^(i1 + 1)) and p / (2^i1 * b) ∈ (1 - 2^-i1, 2). If i1
 //   ≥ 1 we can immediately apply the Sterbenz lemma to p - 2^i1 * b. If i1
@@ -119,26 +121,72 @@ namespace {
 //   round(∘(p / b)) = 0, again by tiebreaking to even. Hence,
 //   ∘(p - round(∘(p / b)) * b) = ∘(p - 0 * b) = ∘(p) = p.
 
+#ifdef DISTOPIA_X86_AVX2_FMA
+  template<typename T>
+  bool RemainderCheckAllSolved(T p, T b) {
+    T gtmask = _fnmadd_p(_set1_p(2.0), Abs(p), b);
+    return _testz_p(gtmask, gtmask);
+  }
+#elif DISTOPIA_X86_AVX
+  template<typename T>
+  bool RemainderCheckAllSolved(T p, T b) {
+    T abs_p_mul_2 = _set1_p(2.0) * Abs(p);
+    T cmpmask = cmp_p(abs_p_mul_2, b, _CMP_GT_OQ);
+    return !_testz_p(cmpmask, cmpmask);
+  }
+#else
+  template<typename T>
+  bool RemainderCheckAllSolved(T p, T b) {
+    T abs_p_mul_2 = _set1_p(2.0) * Abs(p);
+    T cmpmask = cmp_p(abs_p_mul_2, b, _CMP_GT_OQ);
+    return !_movemask_p(cmpmask, cmpmask);
+  }
+#endif
+
+#ifdef DISTOPIA_X86_AVX2_FMA
+  template<typename T>
+  T RemainderPerformCancellation(T qi, T, b, T p) {
+    return _fnmadd_p(qi, b, p);
+  }
+#else
+  template<typename T>
+  T RemainderPerformCancellation(T qi, T, b, T p) {
+    T mask = set1_p<T>(-INFINITY);
+    T msb;
+    do {
+      msb = _and_p(qi, mask);
+      p -= msb * b;
+      qi -= msb;
+    } while (!_testc_si(castp_si(mask), castp_si(msb)))
+    return p;
+  }
+#endif
+
+template<typename T>
+T RemainderCheckAllFinite(T q) {
+  T infinity_bitpattern = set1_p<T>(INFINITY);
+  T is_infinity_mask = _cmpeq_epi32(_castps_si256(quo), is_infinity_mask);
+  return _testz_p(is_infinity_mask, is_infinity_mask);
+}
+
 template<typename T>
 T RemainderReduction(T p, T b) {
   T q = p / b;
-  // q may be +0, positive, +∞inity, or NaN
-  T infinity_v = set1_p<T>(INFINITY);
-  T is_infinity_mask = _cmpeq_epi32(_castps_si256(quo), is_infinity_mask);
-  if (distopia_unlikely(!_testz_p(is_infinity_mask, is_infinity_mask))) {
-    // p / b is too big to be represented as a floating point number. Note:
-    // p mod b = (p mod (b * 2^m)) mod b for integer m ≥ 0.
+  if (distopia_unlikely(!RemainderCheckAllFinite(q))) {
+    // p / b is too big to be represented as a floating point number.
+    // Trick: p mod b = (p mod (b * 2^m)) mod b for integer m ≥ 0.
     T scaled_b = b * _set1_p(0x1.p127);
     p = RemainderReduction(p, scaled_b);
+    // Recursive call may have solved it. Also, q is out of date so we can't
+    // run an iteration straight away.
     goto condition_check;
   }
   
   while (true) {
     T qi = _round_p(q, _MM_ROUND_NEAREST | _MM_FROUND_NO_EXC);
-    p = _fnmadd_p(qi, b, p);
+    p = RemainderPerformCancellation(qi, b, p);
   condition_check:
-    T gtmask = _fnmadd_p(_set1_p(2.0), Abs(p), b);
-    if (distopia_likely(_testz_p(gtmask, gtmask)))
+    if (distopia_likely(RemainderCheckAllSolved(p, b)))
       break;
     q = p / b;
   }
@@ -150,8 +198,6 @@ T Remainder(T p, T b) {
   // It is assumed that b has its sign bit cleared.
   // Only run the reduction if 2 * |p| > b. We first compute b - 2 |p|.
   // (NB: 2 * |p| > b is not equivalent to |p| > b / 2 due to subnormals.)
-  T gtmask = _fnmadd_p(_set1_p(2.0), Abs(p), b);
-  bool should_run_reduction = !_testz_p(gtmask, gtmask);
   // should_run_reduction is true iff any sign bit in gtmask is set.
   // By cases:
   // if Abs(p) is NaN or b is NaN
@@ -173,7 +219,7 @@ T Remainder(T p, T b) {
   //    not run.
   // else if 2 * Abs(p) < b
   //    gtmask > 0 and the reduction may not run.
-  if (distopia_unlikely(should_run_reduction)) {
+  if (distopia_unlikely(!RemainderCheckAllSolved(p, b))) {
     // distopia_unlikely prevents inlining. Feel free to benchmark and change.
     p = RemainderReduction(p, b);
   }
