@@ -203,7 +203,7 @@ inline T Sqrt(T x) { return sqrt_p(x); }
       msb = and_p(qi, mask);
       p -= msb * b;
       qi -= msb;
-    } while (!testc_si(cast_si(mask), cast_si(msb)))
+    } while (!testc_si(cast_si(mask), cast_si(msb)));
     return p;
   }
 #endif
