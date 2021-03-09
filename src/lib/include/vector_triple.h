@@ -7,6 +7,23 @@
 #include "x86_tgintrin.h"
 #include "x86_vectors.h"
 
+// loader function that covers overload for float and double 
+template <typename VectorT>
+inline VectorT _genericload(const VectorToScalarT<VectorT> *source) {
+    return loadu_p<VectorT>(source); 
+}
+
+template <>
+inline float _genericload(const float * source) {
+  return *source;
+}
+
+template <>
+inline double _genericload(const double * source) {
+  return *source;
+} 
+
+
 // VectorTriple base class packs 3xSIMD datatypes into a single class.
 // Can be constructed from 3 x VectorT.
 // Can also be constructed from a ScalarT array which loads the right number
