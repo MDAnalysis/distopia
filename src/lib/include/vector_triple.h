@@ -25,7 +25,8 @@ public:
   // default construct
   VectorTriple() = default;
 
-  // construct from 3 SIMD Vector datatypes eg __m128 or __m128d
+  // construct from 3 SIMD Vector datatypes eg __m128 or __m128d OR 3 scalar
+  // datatypes eg float or double
   inline VectorTriple(const VectorT a, const VectorT b, const VectorT c)
       : x(a), y(b), z(c) {}
 
@@ -33,17 +34,24 @@ public:
   inline VectorTriple(const ScalarT *source)
       : x(loadu_p<VectorT>(source)),
         y(loadu_p<VectorT>(&source[ValuesPerPack<VectorT>])),
-        z(loadu_p<VectorT>(&source[+2 * ValuesPerPack<VectorT>])) {}
+        z(loadu_p<VectorT>(&source[+2 * ValuesPerPack<VectorT>])) {
+    static_assert(ValuesPerPack<VectorT>> 1,
+                  "Cannot use this constructor on a type "
+                  "that does not have a SIMD width > 1");
+  }
+
   // construct by loading discontiguously from an array of ScalarT eg float* or
   // double*
   inline VectorTriple(ScalarT *source, const ScalarT *end,
                       const std::size_t *idxs) {
-
+    static_assert(ValuesPerPack<VectorT>> 1,
+                  "Cannot use this constructor on a type "
+                  "that does not have a SIMD width > 1");
     VectorT v_arr[ValuesPerPack<VectorT>];
     for (std::size_t i = 0; i < ValuesPerPack<VectorT>; i++) {
       v_arr[i] = SafeIdxLoad4<VectorT>(source, 3 * idxs[i], end);
     }
-    DeinterleaveIdx<VectorT>(v_arr, this->x, this->y, this->z)    ;
+    DeinterleaveIdx<VectorT>(v_arr, this->x, this->y, this->z);
   }
   // construct by loading discontiguously from an array of ScalarT eg float* or
   // double* for which the SIMD width is 4 (__m128 and __m256d). The access is
@@ -95,6 +103,9 @@ public:
 
   // reload values from a array of ScalarT eg float* or double *.
   inline void load(ScalarT *source) {
+    static_assert(ValuesPerPack<VectorT>> 1,
+                  "Cannot use this constructor on a type "
+                  "that does not have a SIMD width > 1");
     x = loadu_p<VectorT>(source);
     y = loadu_p<VectorT>(source + ValuesPerPack<VectorT>);
     z = loadu_p<VectorT>(source + 2 * ValuesPerPack<VectorT>);
@@ -102,6 +113,9 @@ public:
 
   // store or stream to an array of ScalarT eg float* or double *.
   template <bool streaming = false> inline void store(ScalarT *target) {
+    static_assert(ValuesPerPack<VectorT>> 1,
+                  "Cannot use this constructor on a type "
+                  "that does not have a SIMD width > 1");
     if constexpr (streaming) {
       stream_p(target, x);
       stream_p(&target[ValuesPerPack<VectorT>], y);
@@ -113,6 +127,9 @@ public:
     }
   }
   inline VectorTriple<VectorT> deinterleave() {
+    static_assert(ValuesPerPack<VectorT>> 1,
+                  "Cannot use this method on a type "
+                  "that does not have a SIMD width > 1");
     VectorTriple<VectorT> vt;
     Deinterleave3(this->x, this->y, this->z, vt.x, vt.y, vt.z);
     return vt;
