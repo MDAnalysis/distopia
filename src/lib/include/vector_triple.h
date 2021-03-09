@@ -13,16 +13,13 @@ inline VectorT _genericload(const VectorToScalarT<VectorT> *source) {
   return loadu_p<VectorT>(source);
 }
 
-template <> inline float _genericload(const float *source) { return *source;
-}
+template <> inline float _genericload(const float *source) { return *source; }
 
-template <> inline double _genericload(const double *source) { return
-*source; }
+template <> inline double _genericload(const double *source) { return *source; }
 
 // store function that covers overload for float and double
 template <typename VectorT>
-inline void _genericstore(VectorToScalarT<VectorT> *target, const VectorT
-val) {
+inline void _genericstore(VectorToScalarT<VectorT> *target, const VectorT val) {
   return storeu_p(target, val);
 }
 
@@ -61,9 +58,7 @@ public:
   inline VectorTriple(const ScalarT *source)
       : x(_genericload<VectorT>(source)),
         y(_genericload<VectorT>(&source[ValuesPerPack<VectorT>])),
-        z(_genericload<VectorT>(&source[+2 * ValuesPerPack<VectorT>])) {
-
-  }
+        z(_genericload<VectorT>(&source[+2 * ValuesPerPack<VectorT>])) {}
 
   // construct by loading discontiguously from an array of ScalarT eg float* or
   // double*
