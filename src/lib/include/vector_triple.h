@@ -45,53 +45,6 @@ public:
     }
     DeinterleaveIdx(v_arr, this->x, this->y, this->z);
   }
-  // construct by loading discontiguously from an array of ScalarT eg float* or
-  // double* for which the SIMD width is 4 (__m128 and __m256d). The access is
-  // indexed by 4 integers i,j,k,l where each index is the number
-  // of the particle. Assumes the input vector is in AOS format and returns SOA
-  inline VectorTriple(const ScalarT *source, const ScalarT *end, const int i,
-                      const int j, const int k, const int l) {
-    static_assert(ValuesPerPack<VectorT> == 4,
-                  "Cannot use this constructor on a type "
-                  "that does not have a SIMD width of 4");
-    VectorT a = SafeIdxLoad4<VectorT>(source, 3 * i, end);
-    VectorT b = SafeIdxLoad4<VectorT>(source, 3 * j, end);
-    VectorT c = SafeIdxLoad4<VectorT>(source, 3 * k, end);
-    VectorT d = SafeIdxLoad4<VectorT>(source, 3 * l, end);
-    // deinterleave
-    Deinterleave4x3(a, b, c, d, this->x, this->y, this->z);
-  }
-
-  // construct by loading discontiguously from an array of ScalarT eg float* or
-  // double* for which the SIMD width is 8 (__m256). The access is
-  // indexed by 8 integers i,j,k,l,m,n,o,p where each index is the number
-  // of the particle. Assumes the input vector is in AOS format and returns SOA
-  inline VectorTriple(const ScalarT *source, const ScalarT *end, const int i,
-                      const int j, const int k, const int l, const int m,
-                      const int n, const int o, const int p) {
-    static_assert(ValuesPerPack<VectorT> == 8,
-                  "Cannot use this constructor on a type "
-                  "that does not have a SIMD width of 8");
-    // load half width __m128 lanes
-    VectorToLaneT<VectorT> a =
-        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * i, end);
-    VectorToLaneT<VectorT> b =
-        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * j, end);
-    VectorToLaneT<VectorT> c =
-        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * k, end);
-    VectorToLaneT<VectorT> d =
-        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * l, end);
-    VectorToLaneT<VectorT> e =
-        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * m, end);
-    VectorToLaneT<VectorT> f =
-        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * n, end);
-    VectorToLaneT<VectorT> g =
-        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * o, end);
-    VectorToLaneT<VectorT> h =
-        SafeIdxLoad4<VectorToLaneT<VectorT>>(source, 3 * p, end);
-    // deinterleave and combine lanes into full length packed structs
-    Deinterleave8x3(a, b, c, d, e, f, g, h, this->x, this->y, this->z);
-  }
 
   // reload values from a array of ScalarT eg float* or double *.
   inline void load(ScalarT *source) {
