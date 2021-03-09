@@ -439,7 +439,14 @@ TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
   __m128 correct_y = _mm_setr_ps(01.f, 11.f, 21.f, 31.f);
   __m128 correct_z = _mm_setr_ps(02.f, 12.f, 22.f, 32.f);
   // safeload data and transpose
-  VectorTriple<__m128> vt = VectorTriple<__m128>(xyz, xyz + 21, 0, 2, 4, 6);
+  size_t ix[4] = {0, 2, 4, 6};
+
+  VectorTriple<__m128> vt = VectorTriple<__m128>(xyz, xyz + 21, ix);
+  float buf[12];
+  vt.store(buf);
+  for (int i=0; i<12; i++){
+      std::cout << buf[i] << "\n";
+  }
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.x, correct_x)));
   bool y_is_correct =
@@ -468,8 +475,8 @@ TEST(TestX86SwizzleVec, Float256IdxLoadDeinterleaved) {
   __m256 correct_z =
       _mm256_setr_ps(02.f, 12.f, 22.f, 32.f, 42.f, 52.f, 62.f, 72.f);
   // safeload data and transpose
-  VectorTriple<__m256> vt =
-      VectorTriple<__m256>(xyz, xyz + 36, 0, 2, 4, 6, 7, 8, 9, 11);
+  size_t ix[8] = {0, 2, 4, 6, 7, 8, 9, 11};
+  VectorTriple<__m256> vt = VectorTriple<__m256>(xyz, xyz + 36, ix);
   bool x_is_correct = _mm256_testc_ps(
       _mm256_setzero_ps(), _mm256_cmp_ps(vt.x, correct_x, _CMP_NEQ_UQ));
   bool y_is_correct = _mm256_testc_ps(
@@ -496,7 +503,8 @@ TEST(TestX86SwizzleVec, Double256IdxLoadDeinterleaved) {
   __m256d correct_y = _mm256_setr_pd(01.0, 11.0, 21.0, 31.0);
   __m256d correct_z = _mm256_setr_pd(02.0, 12.0, 22.0, 32.0);
   // safeload data and transpose
-  VectorTriple<__m256d> vt = VectorTriple<__m256d>(xyz, xyz + 21, 0, 2, 4, 6);
+  size_t ix[4] = {0,2,4,6};
+  VectorTriple<__m256d> vt = VectorTriple<__m256d>(xyz, xyz + 21, ix);
 
   bool x_is_correct = _mm256_testc_pd(
       _mm256_setzero_pd(), _mm256_cmp_pd(vt.x, correct_x, _CMP_NEQ_UQ));
