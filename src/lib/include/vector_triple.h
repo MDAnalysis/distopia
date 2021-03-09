@@ -7,22 +7,32 @@
 #include "x86_tgintrin.h"
 #include "x86_vectors.h"
 
-// loader function that covers overload for float and double 
+// loader function that covers overload for float and double
 template <typename VectorT>
 inline VectorT _genericload(const VectorToScalarT<VectorT> *source) {
-    return loadu_p<VectorT>(source); 
+  return loadu_p<VectorT>(source);
 }
 
-template <>
-inline float _genericload(const float * source) {
-  return *source;
+template <> inline float _genericload(const float *source) { return *source;
 }
 
-template <>
-inline double _genericload(const double * source) {
-  return *source;
-} 
+template <> inline double _genericload(const double *source) { return
+*source; }
 
+// store function that covers overload for float and double
+template <typename VectorT>
+inline void _genericstore(VectorToScalarT<VectorT> *target, const VectorT
+val) {
+  return storeu_p(target, val);
+}
+
+template <> inline void _genericstore(float *target, const float val) {
+  *target = val;
+}
+
+template <> inline void _genericstore(double *target, const double val) {
+  *target = val;
+}
 
 // VectorTriple base class packs 3xSIMD datatypes into a single class.
 // Can be constructed from 3 x VectorT.
@@ -49,12 +59,10 @@ public:
 
   // construct by loading from an array of ScalarT eg float* or double *.
   inline VectorTriple(const ScalarT *source)
-      : x(loadu_p<VectorT>(source)),
-        y(loadu_p<VectorT>(&source[ValuesPerPack<VectorT>])),
-        z(loadu_p<VectorT>(&source[+2 * ValuesPerPack<VectorT>])) {
-    static_assert(ValuesPerPack<VectorT>> 1,
-                  "Cannot use this constructor on a type "
-                  "that does not have a SIMD width > 1");
+      : x(_genericload<VectorT>(source)),
+        y(_genericload<VectorT>(&source[ValuesPerPack<VectorT>])),
+        z(_genericload<VectorT>(&source[+2 * ValuesPerPack<VectorT>])) {
+
   }
 
   // construct by loading discontiguously from an array of ScalarT eg float* or
@@ -120,27 +128,22 @@ public:
 
   // reload values from a array of ScalarT eg float* or double *.
   inline void load(ScalarT *source) {
-    static_assert(ValuesPerPack<VectorT>> 1,
-                  "Cannot use this constructor on a type "
-                  "that does not have a SIMD width > 1");
-    x = loadu_p<VectorT>(source);
-    y = loadu_p<VectorT>(source + ValuesPerPack<VectorT>);
-    z = loadu_p<VectorT>(source + 2 * ValuesPerPack<VectorT>);
+    x = _genericload<VectorT>(source);
+    y = _genericload<VectorT>(source + ValuesPerPack<VectorT>);
+    z = _genericload<VectorT>(source + 2 * ValuesPerPack<VectorT>);
   }
 
   // store or stream to an array of ScalarT eg float* or double *.
   template <bool streaming = false> inline void store(ScalarT *target) {
-    static_assert(ValuesPerPack<VectorT>> 1,
-                  "Cannot use this constructor on a type "
-                  "that does not have a SIMD width > 1");
+    // need to disable streaming if values_per_pack == 1
     if constexpr (streaming) {
       stream_p(target, x);
       stream_p(&target[ValuesPerPack<VectorT>], y);
       stream_p(&target[2 * ValuesPerPack<VectorT>], z);
     } else {
-      storeu_p(target, x);
-      storeu_p(&target[ValuesPerPack<VectorT>], y);
-      storeu_p(&target[2 * ValuesPerPack<VectorT>], z);
+      _genericstore(target, x);
+      _genericstore(&target[ValuesPerPack<VectorT>], y);
+      _genericstore(&target[2 * ValuesPerPack<VectorT>], z);
     }
   }
   inline VectorTriple<VectorT> deinterleave() {

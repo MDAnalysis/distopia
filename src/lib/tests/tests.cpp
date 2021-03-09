@@ -512,3 +512,22 @@ TEST(TestX86SwizzleVec, Double256IdxLoadDeinterleaved) {
 #endif // DISTOPIA_X86_AVX2_FMA
 
 #endif // DISTOPIA_X86_SSE4_1
+
+
+TEST(ScalarVec, ScalarVecLoad) {
+
+    VectorTriple<float> vt_f(1.0,2.0,3.0);
+    EXPECT_FLOAT_EQ(vt_f.x, 1.0);
+    EXPECT_FLOAT_EQ(vt_f.y, 2.0);
+    EXPECT_FLOAT_EQ(vt_f.z, 3.0);
+}
+
+
+
+TEST(ScalarVec, ScalarVecLoadArr) {
+    float arr[3] = {1.0,2.0,3.0};
+    VectorTriple<float> vt_f(arr);
+    EXPECT_FLOAT_EQ(vt_f.x, 1.0);
+    EXPECT_FLOAT_EQ(vt_f.y, 2.0);
+    EXPECT_FLOAT_EQ(vt_f.z, 3.0);
+}
