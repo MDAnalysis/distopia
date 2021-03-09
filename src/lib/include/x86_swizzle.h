@@ -142,29 +142,24 @@ inline void Deinterleave8x3(const __m128 a, const __m128 b, const __m128 c,
 
 // wraps the individual deinterleaves, use of VectorToLoadT is required for
 // __m256 case which takes an array of __m128, instead of the same type.
-template <typename VectorT, EnableIfVector<VectorT> = 0>
-inline void DeinterleaveIdx(const VectorToLoadT<VectorT> *vec_arr, VectorT &x,
-                            VectorT &y, VectorT &z) {}
 
-template <>
-inline void DeinterleaveIdx<__m128, 1>(const __m128 *vec_arr, __m128 &x,
+
+inline void DeinterleaveIdx(const __m128 *vec_arr, __m128 &x,
                                        __m128 &y, __m128 &z) {
   Deinterleave4x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], x, y, z);
 }
 
 #ifdef DISTOPIA_X86_AVX
 
-template <>
-inline void DeinterleaveIdx<__m256d, 1>(const __m256d *vec_arr, __m256d &x,
+inline void DeinterleaveIdx(const __m256d *vec_arr, __m256d &x,
                                         __m256d &y, __m256d &z) {
   Deinterleave4x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], x, y, z);
 }
 
-template <>
-inline void DeinterleaveIdx<__m256, 1>(const __m128 *vec_arr, __m256 &x,
+inline void DeinterleaveIdx(const __m128 *vec_arr, __m256 &x,
                                        __m256 &y, __m256 &z) {
-  Deinterleave8x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], vec_arr[4], vec_arr[5],
-                  vec_arr[6], vec_arr[7], x, y, z);
+  Deinterleave8x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], vec_arr[4],
+                  vec_arr[5], vec_arr[6], vec_arr[7], x, y, z);
 }
 
 #endif // DISTOPIA_X86_AVX

@@ -39,11 +39,11 @@ public:
   inline VectorTriple(ScalarT *source, const ScalarT *end,
                       const std::size_t *idxs) {
 
-    VectorT v_arr[ValuesPerPack<VectorT>];
+    VectorToLoadT<VectorT> v_arr[ValuesPerPack<VectorT>];
     for (std::size_t i = 0; i < ValuesPerPack<VectorT>; i++) {
-      v_arr[i] = SafeIdxLoad4<VectorT>(source, 3 * idxs[i], end);
+      v_arr[i] = SafeIdxLoad4<VectorToLoadT<VectorT>>(source, 3 * idxs[i], end);
     }
-    DeinterleaveIdx<VectorT>(v_arr, this->x, this->y, this->z)    ;
+    DeinterleaveIdx(v_arr, this->x, this->y, this->z);
   }
   // construct by loading discontiguously from an array of ScalarT eg float* or
   // double* for which the SIMD width is 4 (__m128 and __m256d). The access is
