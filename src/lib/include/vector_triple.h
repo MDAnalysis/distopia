@@ -72,6 +72,13 @@ public:
   }
 };
 
+template <> 
+void VectorTriple<float>::load(float *source) {
+    x = *source[0];
+    y = *source[1];
+    z = *source[2];
+  }
+
 template <typename VectorT>
 inline VectorTriple<VectorT> operator+(VectorTriple<VectorT> a,
                                        VectorTriple<VectorT> b) {
