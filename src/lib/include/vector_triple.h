@@ -64,14 +64,11 @@ public:
   // double*
   inline VectorTriple(ScalarT *source, const ScalarT *end,
                       const std::size_t *idxs) {
-    static_assert(ValuesPerPack<VectorT>> 1,
-                  "Cannot use this constructor on a type "
-                  "that does not have a SIMD width > 1");
     VectorToLoadT<VectorT> v_arr[ValuesPerPack<VectorT>];
     for (std::size_t i = 0; i < ValuesPerPack<VectorT>; i++) {
       v_arr[i] = SafeIdxLoad4<VectorToLoadT<VectorT>>(source, 3 * idxs[i], end);
     }
-    DeinterleaveIdx<VectorT>(v_arr, this->x, this->y, this->z);
+    DeinterleaveIdx(v_arr, this->x, this->y, this->z);
   }
 
   // reload values from a array of ScalarT eg float* or double *.
@@ -103,6 +100,13 @@ public:
     return vt;
   }
 };
+
+template <> 
+void VectorTriple<float>::load(float *source) {
+    x = *source[0];
+    y = *source[1];
+    z = *source[2];
+  }
 
 template <typename VectorT>
 inline VectorTriple<VectorT> operator+(VectorTriple<VectorT> a,
