@@ -414,7 +414,7 @@ TEST(TestX86SwizzleVec, Float128ShuntFirst2Last) {
   EXPECT_TRUE(x_is_correct);
 }
 
-#ifdef DISTOPIA_X86_AVX2_FMA 
+#ifdef DISTOPIA_X86_AVX2_FMA
 
 TEST(TestX86SwizzleVec, Double256ShuntFirst2Last) {
   double x[4] = {00.0, 01.0, 02.0, 03.0};
@@ -452,9 +452,7 @@ TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
   EXPECT_TRUE(z_is_correct);
 }
 
-
 #ifdef DISTOPIA_X86_AVX
-
 
 TEST(TestX86SwizzleVec, Float256IdxLoadDeinterleaved) {
   // dummy data with 8x target and 4x incorrect data mixed in
@@ -472,8 +470,7 @@ TEST(TestX86SwizzleVec, Float256IdxLoadDeinterleaved) {
       _mm256_setr_ps(02.f, 12.f, 22.f, 32.f, 42.f, 52.f, 62.f, 72.f);
   // safeload data and transpose
   std::size_t idx[12] = {0, 2, 4, 6, 7, 8, 9, 11};
-  VectorTriple<__m256> vt =
-      VectorTriple<__m256>(xyz, xyz + 36, idx);
+  VectorTriple<__m256> vt = VectorTriple<__m256>(xyz, xyz + 36, idx);
   bool x_is_correct = _mm256_testc_ps(
       _mm256_setzero_ps(), _mm256_cmp_ps(vt.x, correct_x, _CMP_NEQ_UQ));
   bool y_is_correct = _mm256_testc_ps(
@@ -518,55 +515,54 @@ TEST(TestX86SwizzleVec, Double256IdxLoadDeinterleaved) {
 
 #endif // DISTOPIA_X86_SSE4_1
 
-
 TEST(ScalarVec, ScalarVecLoadFloat) {
 
-    VectorTriple<float> vt_f(1.0f,2.0f,3.0f);
-    EXPECT_FLOAT_EQ(vt_f.x, 1.0f);
-    EXPECT_FLOAT_EQ(vt_f.y, 2.0f);
-    EXPECT_FLOAT_EQ(vt_f.z, 3.0f);
+  VectorTriple<float> vt_f(1.0f, 2.0f, 3.0f);
+  EXPECT_FLOAT_EQ(vt_f.x, 1.0f);
+  EXPECT_FLOAT_EQ(vt_f.y, 2.0f);
+  EXPECT_FLOAT_EQ(vt_f.z, 3.0f);
 }
 
 TEST(ScalarVec, ScalarVecLoadDouble) {
 
-    VectorTriple<double> vt_d(1.0,2.0,3.0);
-    EXPECT_DOUBLE_EQ(vt_d.x, 1.0);
-    EXPECT_DOUBLE_EQ(vt_d.y, 2.0);
-    EXPECT_DOUBLE_EQ(vt_d.z, 3.0);
+  VectorTriple<double> vt_d(1.0, 2.0, 3.0);
+  EXPECT_DOUBLE_EQ(vt_d.x, 1.0);
+  EXPECT_DOUBLE_EQ(vt_d.y, 2.0);
+  EXPECT_DOUBLE_EQ(vt_d.z, 3.0);
 }
 
 TEST(ScalarVec, ScalarVecLoadArrFloat) {
-    float arr[3] = {1.0f,2.0f,3.0f};
-    VectorTriple<float> vt_f(arr);
-    EXPECT_FLOAT_EQ(vt_f.x, 1.0f);
-    EXPECT_FLOAT_EQ(vt_f.y, 2.0f);
-    EXPECT_FLOAT_EQ(vt_f.z, 3.0f);
+  float arr[3] = {1.0f, 2.0f, 3.0f};
+  VectorTriple<float> vt_f(arr);
+  EXPECT_FLOAT_EQ(vt_f.x, 1.0f);
+  EXPECT_FLOAT_EQ(vt_f.y, 2.0f);
+  EXPECT_FLOAT_EQ(vt_f.z, 3.0f);
 }
 
 TEST(ScalarVec, ScalarVecLoadArrDouble) {
-    double arr[3] = {1.0,2.0,3.0};
-    VectorTriple<double> vt_d(arr);
-    EXPECT_DOUBLE_EQ(vt_d.x, 1.0);
-    EXPECT_DOUBLE_EQ(vt_d.y, 2.0);
-    EXPECT_DOUBLE_EQ(vt_d.z, 3.0);
+  double arr[3] = {1.0, 2.0, 3.0};
+  VectorTriple<double> vt_d(arr);
+  EXPECT_DOUBLE_EQ(vt_d.x, 1.0);
+  EXPECT_DOUBLE_EQ(vt_d.y, 2.0);
+  EXPECT_DOUBLE_EQ(vt_d.z, 3.0);
 }
 
 TEST(ScalarVec, ScalarVecStoreFloat) {
-    float arr[3] = {1.0f,2.0f,3.0f};
-    float buf[3];
-    VectorTriple<float> vt_f(arr);
-    vt_f.store(buf);
-    EXPECT_FLOAT_EQ(buf[0], 1.0f);
-    EXPECT_FLOAT_EQ(buf[1], 2.0f);
-    EXPECT_FLOAT_EQ(buf[2], 3.0f);
+  float arr[3] = {1.0f, 2.0f, 3.0f};
+  float buf[3];
+  VectorTriple<float> vt_f(arr);
+  vt_f.store(buf);
+  EXPECT_FLOAT_EQ(buf[0], 1.0f);
+  EXPECT_FLOAT_EQ(buf[1], 2.0f);
+  EXPECT_FLOAT_EQ(buf[2], 3.0f);
 }
 
 TEST(ScalarVec, ScalarVecStoreDouble) {
-    double arr[3] = {1.0,2.0,3.0};
-    double buf[3];
-    VectorTriple<double> vt_d(arr);
-    vt_d.store(buf);
-    EXPECT_DOUBLE_EQ(buf[0], 1.0);
-    EXPECT_DOUBLE_EQ(buf[1], 2.0);
-    EXPECT_DOUBLE_EQ(buf[2], 3.0);
+  double arr[3] = {1.0, 2.0, 3.0};
+  double buf[3];
+  VectorTriple<double> vt_d(arr);
+  vt_d.store(buf);
+  EXPECT_DOUBLE_EQ(buf[0], 1.0);
+  EXPECT_DOUBLE_EQ(buf[1], 2.0);
+  EXPECT_DOUBLE_EQ(buf[2], 3.0);
 }
