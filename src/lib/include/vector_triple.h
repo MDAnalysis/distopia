@@ -77,8 +77,8 @@ public:
   // reload values from an array of ScalarT eg float* or double *.
   inline void load(ScalarT *source) {
     x = _genericload<VectorT>(source);
-    y = _genericload<VectorT>(source + ValuesPerPack<VectorT>);
-    z = _genericload<VectorT>(source + 2 * ValuesPerPack<VectorT>);
+    y = _genericload<VectorT>(&source[ValuesPerPack<VectorT>]);
+    z = _genericload<VectorT>(&source[+2 * ValuesPerPack<VectorT>]);
   }
 
   // store or stream to an array of ScalarT eg float* or double *.
