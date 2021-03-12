@@ -17,6 +17,36 @@ template <> inline float _genericload(const float *source) { return *source; }
 
 template <> inline double _genericload(const double *source) { return *source; }
 
+//  idx loader function that covers overload for float and double
+template <typename VectorT>
+inline void _genericidxload(const VectorToScalarT<VectorT> *source,
+                            const VectorToScalarT<VectorT> *end,
+                            const std::size_t *idxs, VectorT &x, VectorT &y,
+                            VectorT &z) {
+  VectorToLoadT<VectorT> v_arr[ValuesPerPack<VectorT>];
+  for (std::size_t i = 0; i < ValuesPerPack<VectorT>; i++) {
+    v_arr[i] = SafeIdxLoad4<VectorToLoadT<VectorT>>(source, 3 * idxs[i], end);
+  }
+  DeinterleaveIdx(v_arr, x, y, z);
+}
+
+template <>
+inline void _genericidxload(const float *source, const float *end,
+                            const std::size_t *idxs, float &x, float &y,
+                            float &z) {
+  x = source[idxs[0]];
+  y = source[idxs[1]];
+  z = source[idxs[2]];
+}
+
+template <>
+inline void _genericidxload(const double *source, const double *end,
+                            const std::size_t *idxs, double &x, double &y,
+                            double &z) {
+  x = source[idxs[0]];
+  y = source[idxs[1]];
+  z = source[idxs[2]];
+}
 // store function that covers overload for float and double
 template <typename VectorT>
 inline void _genericstore(VectorToScalarT<VectorT> *target, const VectorT val) {
@@ -61,17 +91,10 @@ public:
         z(_genericload<VectorT>(&source[+2 * ValuesPerPack<VectorT>])) {}
 
   // construct by loading discontiguously from an array of ScalarT eg float* or
-  // double*
+  // double*. Must pass references as deinterleave must happen on x,y and z simultaneously
   inline VectorTriple(ScalarT *source, const ScalarT *end,
                       const std::size_t *idxs) {
-    static_assert(ValuesPerPack<VectorT>> 1,
-                  "Cannot use this method on a type "
-                  "that does not have a SIMD width > 1");
-    VectorToLoadT<VectorT> v_arr[ValuesPerPack<VectorT>];
-    for (std::size_t i = 0; i < ValuesPerPack<VectorT>; i++) {
-      v_arr[i] = SafeIdxLoad4<VectorToLoadT<VectorT>>(source, 3 * idxs[i], end);
-    }
-    DeinterleaveIdx(v_arr, this->x, this->y, this->z);
+                        _genericidxload<VectorT>(source, end, idxs, this->x, this->y, this->z);
   }
 
   // reload values from an array of ScalarT eg float* or double *.

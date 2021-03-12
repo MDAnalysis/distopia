@@ -566,3 +566,21 @@ TEST(ScalarVec, ScalarVecStoreDouble) {
   EXPECT_DOUBLE_EQ(buf[1], 2.0);
   EXPECT_DOUBLE_EQ(buf[2], 3.0);
 }
+
+TEST(ScalarVec, ScalarVecIdxLoadFloat) {
+  float arr[7] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f};
+  std::size_t idxs[3] = {0, 3, 5};
+  VectorTriple<float> vt_f(arr, arr + 7, idxs);
+  EXPECT_FLOAT_EQ(vt_f.x, 1.0f);
+  EXPECT_FLOAT_EQ(vt_f.y, 4.0f);
+  EXPECT_FLOAT_EQ(vt_f.z, 6.0f);
+}
+
+TEST(ScalarVec, ScalarVecIdxLoadDouble) {
+  double arr[7] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0};
+  std::size_t idxs[3] = {0, 3, 5};
+  VectorTriple<double> vt_d(arr, arr + 7, idxs);
+  EXPECT_DOUBLE_EQ(vt_d.x, 1.0);
+  EXPECT_DOUBLE_EQ(vt_d.y, 4.0);
+  EXPECT_DOUBLE_EQ(vt_d.z, 6.0);
+}
