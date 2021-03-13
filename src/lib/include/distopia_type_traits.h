@@ -17,6 +17,11 @@ template <typename T, typename U> constexpr bool IsAligned(const U *addr) {
   return reinterpret_cast<std::uintptr_t>(addr) % sizeof(T) == 0;
 }
 
+template <typename VectorT> struct VectorToScalarTStruct;
+// map each scalar to matching scalar type
+template <> struct VectorToScalarTStruct<float> { using type = float; };
+template <> struct VectorToScalarTStruct<double> { using type = double; };
+
 #ifdef DISTOPIA_X86_SSE4_1
 
 #include <immintrin.h>
@@ -33,7 +38,6 @@ template <> struct IsVector<__m128> { static constexpr bool value = true; };
 template <> struct IsVector<__m128d> { static constexpr bool value = true; };
 
 // map each vector to matching scalar type
-template <typename VectorT> struct VectorToScalarTStruct;
 template <> struct VectorToScalarTStruct<__m128> { using type = float; };
 template <> struct VectorToScalarTStruct<__m128d> { using type = double; };
 
