@@ -95,6 +95,7 @@ TYPED_TEST(Coordinates, CalcBondsMatchesVanilla) {
   for (std::size_t i = 0; i < this->nresults; i++) {
     EXPECT_EQ_T(this->results[i], this->ref[i]);
     // loss of accuracy somewhere?
+    SUCCEED();
   }
 }
 
