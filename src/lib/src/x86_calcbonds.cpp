@@ -45,7 +45,7 @@ void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
     if constexpr (streaming_store) {
       stream_p(&out[i], result);
     } else {
-      store_p(&out[i], result);
+      _genericstore(&out[i], result);
     }
 
     i += n % ValuesPerPack<VectorT>;
@@ -58,7 +58,7 @@ void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
     if constexpr (streaming_store) {
       stream_p(&out[i], result);
     } else {
-      store_p(&out[i], result);
+      _genericstore(&out[i], result);
     }
   }
 
@@ -71,16 +71,19 @@ template <typename T>
 void CalcBondsOrthoDispatch(const T *coords0, const T *coords1, const T *box,
                             std::size_t n, T *out) {
   std::size_t problem_size = n * sizeof(T);
+  bool not_a_vector = n < 8;
   bool use_big_vector = distopia_unlikely(problem_size >= kBigVectorThreshold);
   bool use_streaming_stores =
           distopia_unlikely(problem_size >= kStreamingThreshold);
 
-  if (use_big_vector) {
-    if (use_streaming_stores)
-
-      CalcBondsInner<true, BigVecT<T>, OrthogonalBox<BigVecT<T>>>(coords0, coords1, box, n, out);
-    else
+  if (not_a_vector) {
+    CalcBondsInner<false, T, OrthogonalBox<T>>(coords0, coords1, box, n, out);
+  } else if (use_big_vector) {
+    if (use_streaming_stores) {
       CalcBondsInner<false, BigVecT<T>, OrthogonalBox<BigVecT<T>>>(coords0, coords1, box, n, out);
+    } else {
+      CalcBondsInner<false, BigVecT<T>, OrthogonalBox<BigVecT<T>>>(coords0, coords1, box, n, out);
+    }
   } else {
     if (use_streaming_stores)
       CalcBondsInner<true, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(coords0, coords1, box, n, out);
@@ -99,7 +102,6 @@ void CalcBondsNoBoxDispatch(const T *coords0, const T *coords1,
 
   if (use_big_vector) {
     if (use_streaming_stores)
-
       CalcBondsInner<true, BigVecT<T>, NoBox<BigVecT<T>>>(coords0, coords1, nullptr, n, out);
     else
       CalcBondsInner<false, BigVecT<T>, NoBox<BigVecT<T>>>(coords0, coords1, nullptr, n, out);

@@ -12,15 +12,9 @@ template <typename VectorT>
 class OrthogonalBox {
 public:
   using ScalarT = VectorToScalarT<VectorT>;
-  VectorT lx;
-  VectorT ly;
-  VectorT lz;
+  VectorTriple<VectorT> boxlengths;
 
-  OrthogonalBox(const ScalarT *x) {
-    lx = set1_p<VectorT>(x[0]);
-    ly = set1_p<VectorT>(x[1]);
-    lz = set1_p<VectorT>(x[2]);
-  }
+  explicit OrthogonalBox(const ScalarT *x) : boxlengths(x) {}
 };
 
 template <typename VectorT>
@@ -28,7 +22,7 @@ class NoBox{
 public:
   using ScalarT = VectorToScalarT<VectorT>;
 
-  NoBox(const ScalarT *x) {};
+  explicit NoBox(const ScalarT *x) {};
 };
 
 template <typename VectorT>
@@ -40,7 +34,7 @@ public:
   VectorTriple<VectorT> y;
   VectorTriple<VectorT> z;
 
-  TriclinicBox(const ScalarT* v) {};
+  explicit TriclinicBox(const ScalarT* v) : x(v), y(v+3), z(v+6) {};
 };
 
 
@@ -48,9 +42,8 @@ template<typename VectorT>
 inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT>& p1,
                                          const VectorTriple<VectorT>& p2,
                                          const OrthogonalBox<VectorT>& box) {
-  return Distance3dWithBoundary(p1.x, p1.y, p1.z,
-                                p2.x, p1.y, p2.z,
-                                box.lx, box.ly, box.lz);
+  auto d = DistanceModulo(p1, p2, box.boxlengths);
+  return Hypot(d.x, d.y, d.z);
 }
 
 template<typename VectorT>
