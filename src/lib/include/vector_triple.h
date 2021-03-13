@@ -127,6 +127,7 @@ public:
   }
 };
 
+
 template <typename VectorT>
 inline VectorTriple<VectorT> operator+(VectorTriple<VectorT> a,
                                        VectorTriple<VectorT> b) {
