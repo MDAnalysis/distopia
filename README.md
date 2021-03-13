@@ -10,12 +10,23 @@ To build:
   cmake ..
   make
  ```
- 
-To generate test coordinate data:
-```python
-  python generate_coords.py 1000000
+or with Ninja:
+
 ```
-Will generate 1000000 random coordinates.
+  mkdir build 
+  cd build
+  cmake .. -GNinja
+  ninja
+```
+ 
+To run the tests:
+```
+make test
+```
+or  with Ninja:
+```
+ninja test
+```
 
 To control the instruction set use **one** the following CMake flags
 
@@ -29,8 +40,6 @@ To control the instruction set use **one** the following CMake flags
 * `-DDISTOPIA_USE_AVX2` for AVX2
 
 **Or you can let distopia choose for you (default)**
-
-
 
 
 To benchmark methods (from `./build`):
