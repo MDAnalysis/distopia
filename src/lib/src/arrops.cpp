@@ -5,12 +5,8 @@
 template<typename T>
 void CalcBondsOrthoScalar(const T* coords0, const T* coords1,
                           const T* box, std::size_t n, T* out) {
-  T bx = box[0], by = box[1], bz = box[2];
   for (std::size_t i = 0; i < n; ++i) {
-    T x0 = coords0[3 * i], x1 = coords1[3 * i];
-    T y0 = coords0[3 * i + 1], y1 = coords1[3 * i + 1];
-    T z0 = coords0[3 * i + 2], z1 = coords1[3 * i + 2];
-    out[i] = Distance3DWithBoundary(x0, y0, z0, x1, y1, z1, bx, by, bz);
+    out[i] = Distance3DWithBoundary(&coords0[i*3], &coords1[i*3], box);
   }
 }
 
