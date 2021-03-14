@@ -7,6 +7,8 @@
 
 #include "vector_triple.h"
 #include "distopia_type_traits.h"
+#include "ops.h"
+#include "basemath.h"
 
 template <typename VectorT>
 class OrthogonalBox {
@@ -14,7 +16,11 @@ public:
   using ScalarT = VectorToScalarT<VectorT>;
   VectorTriple<VectorT> boxlengths;
 
-  explicit OrthogonalBox(const ScalarT *x) : boxlengths(x) {}
+  explicit OrthogonalBox(const ScalarT *src) : boxlengths() {
+    boxlengths.x = generic_set1<VectorT>(src[0]);
+    boxlengths.y = generic_set1<VectorT>(src[1]);
+    boxlengths.z = generic_set1<VectorT>(src[2]);
+  }
 };
 
 template <typename VectorT>
@@ -22,7 +28,7 @@ class NoBox{
 public:
   using ScalarT = VectorToScalarT<VectorT>;
 
-  explicit NoBox(const ScalarT *x) {};
+  explicit NoBox(const ScalarT*) {};
 };
 
 template <typename VectorT>
@@ -37,21 +43,31 @@ public:
   explicit TriclinicBox(const ScalarT* v) : x(v), y(v+3), z(v+6) {};
 };
 
+template<typename VectorT, typename BoxType>
+inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT>& p1,
+                                         const VectorTriple<VectorT>& p2,
+                                         const BoxType& box);
 
 template<typename VectorT>
 inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT>& p1,
                                          const VectorTriple<VectorT>& p2,
                                          const OrthogonalBox<VectorT>& box) {
-  auto d = DistanceModulo(p1, p2, box.boxlengths);
-  return Hypot(d.x, d.y, d.z);
+  VectorT dx = DistanceModulo(p1.x, p2.x, box.boxlengths.x);
+  VectorT dy = DistanceModulo(p1.y, p2.y, box.boxlengths.y);
+  VectorT dz = DistanceModulo(p1.z, p2.z, box.boxlengths.z);
+
+  return Hypot(dx, dy, dz);
 }
 
 template<typename VectorT>
 inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT>& p1,
                                          const VectorTriple<VectorT>& p2,
-                                         const NoBox<VectorT>& box) {
-  auto delta = Abs(p1 - p2);
-  return Hypot(delta.x, delta.y, delta.z);
+                                         const NoBox<VectorT>&) {
+  VectorTriple<VectorT> delta = p2 - p1;
+  VectorTriple<VectorT> r2 = delta * delta;
+  VectorT r = r2.x + r2.y + r2.z;
+
+  return Sqrt(r);
 }
 
 #endif //DISTOPIA_ORTHO_BOX_H

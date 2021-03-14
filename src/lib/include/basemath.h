@@ -39,6 +39,9 @@ template<typename T, EnableIfFloating<T> = 0>
 inline T Sqrt(T x) { return std::sqrt(x); }
 
 template<typename T, EnableIfFloating<T> = 0>
+inline T Nearbyint(T x) { return round(x); }
+
+template<typename T, EnableIfFloating<T> = 0>
 inline T DistanceModulo(T x0, T x1, T y) {
   T d = Abs(x0 - x1);
   // FIXME: It should be possible to compute correctly rounded y - |x0 - x1|.

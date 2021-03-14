@@ -164,6 +164,17 @@ inline void DeinterleaveIdx(const __m128 *vec_arr, __m256 &x,
 
 #endif // DISTOPIA_X86_AVX
 
+  inline void Deinterleave3(float& a, float& b, float& c, float& x, float& y, float& z) {
+    x = a;
+    y = b;
+    z = c;
+  }
+  inline void Deinterleave3(double& a, double& b, double& c, double& x, double& y, double& z) {
+    x = a;
+    y = b;
+    z = c;
+  }
+
 inline void Deinterleave3(__m128 a, __m128 b, __m128 c, __m128 &x, __m128 &y,
                           __m128 &z) {
   // PRE: a = x0y0z0x1, b = y1z1x2y2, c = z2x3y3z3

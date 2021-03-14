@@ -5,11 +5,11 @@
 #include <cstddef>
 #include <cstdint>
 #include <immintrin.h>
+#include <iostream>
 
 #include "arrops.h"
 #include "compiler_hints.h"
 #include "distopia_type_traits.h"
-#include "ops.h"
 #include "vector_triple.h"
 
 #include "ortho_box.h"
@@ -35,26 +35,25 @@ void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
                     VectorToScalarT<VectorT> *out) {
   auto vecbox = BoxT(box);
 
-  // TODO: This fails horribly when n < ValuesPerPack
   size_t i = 0;
-  if (n % ValuesPerPack<VectorT>) {   // singleton?
-    auto c0 = VectorTriple<VectorT>(&coords0[3*i]);
-    auto c1 = VectorTriple<VectorT>(&coords1[3*i]);
+  if (n % ValuesPerPack<VectorT>) {
+    auto c0 = VectorTriple<VectorT>(coords0);
+    auto c1 = VectorTriple<VectorT>(coords1);
 
-    auto result = NewDistance3dWithBoundary(c0, c1, vecbox);
+    VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
+
     if constexpr (streaming_store) {
-      stream_p(&out[i], result);
+      stream_p(out, result);
     } else {
-      _genericstore(&out[i], result);
+      _genericstore(out, result);
     }
-
     i += n % ValuesPerPack<VectorT>;
   }
   for (;i<n;i+=ValuesPerPack<VectorT>) {
     auto c0 = VectorTriple<VectorT>(&coords0[3*i]);
     auto c1 = VectorTriple<VectorT>(&coords1[3*i]);
 
-    auto result = NewDistance3dWithBoundary(c0, c1, vecbox);
+    VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
     if constexpr (streaming_store) {
       stream_p(&out[i], result);
     } else {
@@ -73,8 +72,7 @@ void CalcBondsOrthoDispatch(const T *coords0, const T *coords1, const T *box,
   std::size_t problem_size = n * sizeof(T);
   bool not_a_vector = n < 8;
   bool use_big_vector = distopia_unlikely(problem_size >= kBigVectorThreshold);
-  bool use_streaming_stores =
-          distopia_unlikely(problem_size >= kStreamingThreshold);
+  bool use_streaming_stores = distopia_unlikely(problem_size >= kStreamingThreshold);
 
   if (not_a_vector) {
     CalcBondsInner<false, T, OrthogonalBox<T>>(coords0, coords1, box, n, out);
@@ -97,8 +95,7 @@ void CalcBondsNoBoxDispatch(const T *coords0, const T *coords1,
                             std::size_t n, T *out) {
   std::size_t problem_size = n * sizeof(T);
   bool use_big_vector = distopia_unlikely(problem_size >= kBigVectorThreshold);
-  bool use_streaming_stores =
-          distopia_unlikely(problem_size >= kStreamingThreshold);
+  bool use_streaming_stores = distopia_unlikely(problem_size >= kStreamingThreshold);
 
   if (use_big_vector) {
     if (use_streaming_stores)

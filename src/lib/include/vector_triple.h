@@ -17,6 +17,15 @@ template <> inline float _genericload(const float *source) { return *source; }
 
 template <> inline double _genericload(const double *source) { return *source; }
 
+template <typename VectorT>
+inline VectorT generic_set1(VectorToScalarT<VectorT> src) {
+  return set1_p<VectorT>(src);
+}
+template <>
+inline float generic_set1(float src) {return src;}
+template <>
+inline double generic_set1(double src) {return src;};
+
 //  idx loader function that covers overload for float and double
 template <typename VectorT>
 inline void _genericidxload(const VectorToScalarT<VectorT> *source,
@@ -31,7 +40,7 @@ inline void _genericidxload(const VectorToScalarT<VectorT> *source,
 }
 
 template <>
-inline void _genericidxload(const float *source, const float *end,
+inline void _genericidxload(const float *source, const float*,
                             const std::size_t *idxs, float &x, float &y,
                             float &z) {
   x = source[idxs[0]];
@@ -40,7 +49,7 @@ inline void _genericidxload(const float *source, const float *end,
 }
 
 template <>
-inline void _genericidxload(const double *source, const double *end,
+inline void _genericidxload(const double *source, const double*,
                             const std::size_t *idxs, double &x, double &y,
                             double &z) {
   x = source[idxs[0]];
@@ -85,10 +94,19 @@ public:
       : x(a), y(b), z(c) {}
 
   // construct by loading from an array of ScalarT eg float* or double *.
-  inline VectorTriple(const ScalarT *source)
-      : x(_genericload<VectorT>(source)),
-        y(_genericload<VectorT>(&source[ValuesPerPack<VectorT>])),
-        z(_genericload<VectorT>(&source[+2 * ValuesPerPack<VectorT>])) {}
+  inline VectorTriple(const ScalarT *source) {
+    if (ValuesPerPack<VectorT> == 1) {
+     x = _genericload<VectorT>(source);
+     y = _genericload<VectorT>(source + 1);
+     z = _genericload<VectorT>(source + 2);
+    }
+    else {
+      auto t1 = _genericload<VectorT>(source);
+      auto t2 = _genericload<VectorT>(source + ValuesPerPack<VectorT>);
+      auto t3 = _genericload<VectorT>(source + ValuesPerPack<VectorT>*2);
+      Deinterleave3(t1, t2, t3, x, y, z);
+    }
+  }
 
   // construct by loading discontiguously from an array of ScalarT eg float* or
   // double*. Must pass references as deinterleave must happen on x,y and z simultaneously
@@ -117,6 +135,7 @@ public:
       _genericstore(&target[2 * ValuesPerPack<VectorT>], z);
     }
   }
+
   inline VectorTriple<VectorT> deinterleave() {
     static_assert(ValuesPerPack<VectorT>> 1,
                   "Cannot use this method on a type "
@@ -124,6 +143,15 @@ public:
     VectorTriple<VectorT> vt;
     Deinterleave3(this->x, this->y, this->z, vt.x, vt.y, vt.z);
     return vt;
+  }
+
+  void DebugPrint(const char* nm) {
+    ScalarT debug[ValuesPerPack<VectorT> * 3];
+    this->store(debug);
+    std::cerr << nm << " ";
+    for (unsigned char i=0; i<ValuesPerPack<VectorT>*3; ++i)
+      std::cerr << debug[i] << " ";
+    std::cerr << "\n";
   }
 };
 

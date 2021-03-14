@@ -21,6 +21,18 @@ void VanillaCalcBonds(const ScalarT *coords1, const ScalarT *coords2,
   }
 }
 
+template <typename T>
+void VanillaCalcBondsNoBox(const T* c1, const T* c2, unsigned int nvals, T* out) {
+  for (unsigned int i=0; i<nvals; ++i) {
+    T r2 = 0.0;
+    for (unsigned char j=0; j<3; ++j) {
+      T rij = c1[i*3 + j] - c2[i*3 + j];
+      r2 += rij * rij;
+    }
+    *out++ = sqrt(r2);
+  }
+}
+
 
 
 void VanillaCalcBondsIdx(const float *coords, const unsigned int *idx,
