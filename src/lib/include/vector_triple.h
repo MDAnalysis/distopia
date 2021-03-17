@@ -121,13 +121,13 @@ public:
   template <bool streaming = false> inline void store(ScalarT *target) {
     // need to disable streaming if values_per_pack == 1
     if (streaming and (ValuesPerPack<VectorT>> 1)) {
-      stream_p(target, x);
-      stream_p(&target[ValuesPerPack<VectorT>], y);
-      stream_p(&target[2 * ValuesPerPack<VectorT>], z);
+      genericstream(target, x);
+      genericstream(&target[ValuesPerPack<VectorT>], y);
+      genericstream(&target[2 * ValuesPerPack<VectorT>], z);
     } else {
-      _genericstore(target, x);
-      _genericstore(&target[ValuesPerPack<VectorT>], y);
-      _genericstore(&target[2 * ValuesPerPack<VectorT>], z);
+      genericstore(target, x);
+      genericstore(&target[ValuesPerPack<VectorT>], y);
+      genericstore(&target[2 * ValuesPerPack<VectorT>], z);
     }
   }
 
