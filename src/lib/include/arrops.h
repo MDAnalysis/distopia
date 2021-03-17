@@ -9,10 +9,8 @@ template<typename T>
 void CalcBondsOrtho(const T* coords0, const T* coords1,
                     const T* box, std::size_t n, T* out);
 
-#ifdef DISTOPIA_X86_SSE4_1
-  template<typename T>
-  void CalcBondsOrthoScalar(const T* coords0, const T* coords1,
-                            const T* box, std::size_t n, T* out);
-#endif
+template<typename T>
+void CalcBondsNoBox(const T* coords0, const T* coords1,
+                    std::size_t n, T* out);
 
 #endif // DISTOPIA_ARROPS_H

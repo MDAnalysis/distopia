@@ -8,18 +8,23 @@
 #include "x86_vectors.h"
 
 // loader function that covers overload for float and double
-template <typename VectorT>
-inline VectorT _genericload(const VectorToScalarT<VectorT> *source) {
+template <typename VectorT, EnableIfVector<VectorT> = 0>
+inline VectorT genericload(const VectorToScalarT<VectorT> *source) {
   return loadu_p<VectorT>(source);
 }
+template<typename T, EnableIfFloating<T> = 0> inline T genericload(const T* source) {return *source;}
 
-template <> inline float _genericload(const float *source) { return *source; }
 
-template <> inline double _genericload(const double *source) { return *source; }
+template <typename VectorT, EnableIfVector<VectorT> = 0>
+inline VectorT generic_set1(VectorToScalarT<VectorT> src) {
+  return set1_p<VectorT>(src);
+}
+template <typename T, EnableIfFloating<T> = 0>
+inline T generic_set1(T src) {return src;}
 
 //  idx loader function that covers overload for float and double
 template <typename VectorT>
-inline void _genericidxload(const VectorToScalarT<VectorT> *source,
+inline void genericidxload(const VectorToScalarT<VectorT> *source,
                             const VectorToScalarT<VectorT> *end,
                             const std::size_t *idxs, VectorT &x, VectorT &y,
                             VectorT &z) {
@@ -31,7 +36,7 @@ inline void _genericidxload(const VectorToScalarT<VectorT> *source,
 }
 
 template <>
-inline void _genericidxload(const float *source, const float *end,
+inline void genericidxload(const float *source, const float*,
                             const std::size_t *idxs, float &x, float &y,
                             float &z) {
   x = source[idxs[0]];
@@ -40,26 +45,32 @@ inline void _genericidxload(const float *source, const float *end,
 }
 
 template <>
-inline void _genericidxload(const double *source, const double *end,
+inline void genericidxload(const double *source, const double*,
                             const std::size_t *idxs, double &x, double &y,
                             double &z) {
   x = source[idxs[0]];
   y = source[idxs[1]];
   z = source[idxs[2]];
 }
+
 // store function that covers overload for float and double
-template <typename VectorT>
-inline void _genericstore(VectorToScalarT<VectorT> *target, const VectorT val) {
+template <typename VectorT, EnableIfVector<VectorT> = 0>
+inline void genericstore(VectorToScalarT<VectorT> *target, const VectorT val) {
   return storeu_p(target, val);
 }
 
-template <> inline void _genericstore(float *target, const float val) {
-  *target = val;
+template<typename T, EnableIfFloating<T> = 0>
+inline void genericstore(T* target, const T val) {*target = val;}
+
+
+template<typename VectorT, EnableIfVector<VectorT> = 0>
+inline void genericstream(VectorToScalarT<VectorT> *target, const VectorT val) {
+  return stream_p(target, val);
 }
 
-template <> inline void _genericstore(double *target, const double val) {
-  *target = val;
-}
+template<typename T, EnableIfFloating<T> = 0>
+inline void genericstream(T* target, const T val) {*target = val;}
+
 
 // VectorTriple base class packs 3xSIMD datatypes into a single class.
 // Can be constructed from 3 x VectorT.
@@ -85,38 +96,41 @@ public:
       : x(a), y(b), z(c) {}
 
   // construct by loading from an array of ScalarT eg float* or double *.
-  inline VectorTriple(const ScalarT *source)
-      : x(_genericload<VectorT>(source)),
-        y(_genericload<VectorT>(&source[ValuesPerPack<VectorT>])),
-        z(_genericload<VectorT>(&source[+2 * ValuesPerPack<VectorT>])) {}
+  inline explicit VectorTriple(const ScalarT *source) {
+    if (ValuesPerPack<VectorT> == 1) {
+     x = genericload<VectorT>(source);
+     y = genericload<VectorT>(source + 1);
+     z = genericload<VectorT>(source + 2);
+    }
+    else {
+      auto t1 = genericload<VectorT>(source);
+      auto t2 = genericload<VectorT>(source + ValuesPerPack<VectorT>);
+      auto t3 = genericload<VectorT>(source + ValuesPerPack<VectorT>*2);
+      Deinterleave3(t1, t2, t3, x, y, z);
+    }
+  }
 
   // construct by loading discontiguously from an array of ScalarT eg float* or
   // double*. Must pass references as deinterleave must happen on x,y and z simultaneously
   inline VectorTriple(ScalarT *source, const ScalarT *end,
                       const std::size_t *idxs) {
-                        _genericidxload<VectorT>(source, end, idxs, this->x, this->y, this->z);
-  }
-
-  // reload values from an array of ScalarT eg float* or double *.
-  inline void load(ScalarT *source) {
-    x = _genericload<VectorT>(source);
-    y = _genericload<VectorT>(&source[ValuesPerPack<VectorT>]);
-    z = _genericload<VectorT>(&source[+2 * ValuesPerPack<VectorT>]);
+                        genericidxload<VectorT>(source, end, idxs, this->x, this->y, this->z);
   }
 
   // store or stream to an array of ScalarT eg float* or double *.
   template <bool streaming = false> inline void store(ScalarT *target) {
     // need to disable streaming if values_per_pack == 1
-    if constexpr ((streaming) and (ValuesPerPack<VectorT>> 1)) {
-      stream_p(target, x);
-      stream_p(&target[ValuesPerPack<VectorT>], y);
-      stream_p(&target[2 * ValuesPerPack<VectorT>], z);
+    if (streaming and (ValuesPerPack<VectorT>> 1)) {
+      genericstream(target, x);
+      genericstream(&target[ValuesPerPack<VectorT>], y);
+      genericstream(&target[2 * ValuesPerPack<VectorT>], z);
     } else {
-      _genericstore(target, x);
-      _genericstore(&target[ValuesPerPack<VectorT>], y);
-      _genericstore(&target[2 * ValuesPerPack<VectorT>], z);
+      genericstore(target, x);
+      genericstore(&target[ValuesPerPack<VectorT>], y);
+      genericstore(&target[2 * ValuesPerPack<VectorT>], z);
     }
   }
+
   inline VectorTriple<VectorT> deinterleave() {
     static_assert(ValuesPerPack<VectorT>> 1,
                   "Cannot use this method on a type "
@@ -124,6 +138,15 @@ public:
     VectorTriple<VectorT> vt;
     Deinterleave3(this->x, this->y, this->z, vt.x, vt.y, vt.z);
     return vt;
+  }
+
+  void DebugPrint(const char* nm) {
+    ScalarT debug[ValuesPerPack<VectorT> * 3];
+    this->store(debug);
+    std::cerr << nm << " ";
+    for (unsigned char i=0; i<ValuesPerPack<VectorT>*3; ++i)
+      std::cerr << debug[i] << " ";
+    std::cerr << "\n";
   }
 };
 
