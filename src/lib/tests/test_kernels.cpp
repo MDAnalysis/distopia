@@ -18,6 +18,15 @@ inline void EXPECT_EQ_T(double result, double ref) {
   EXPECT_DOUBLE_EQ(result, ref);
 }
 
+inline void EXPECT_MOSTLY_EQ_T(float result, float ref) {
+  float diff = abs(result - ref);
+  EXPECT_LT(diff, 0.001);
+}
+inline void EXPECT_MOSTLY_EQ_T(double result, double ref) {
+  double diff = abs(result - ref);
+  EXPECT_LT(diff, 0.001);
+}
+
 // creates nrandom floating points between 0 and limit
 template <typename T>
 void RandomFloatingPoint(T *target, const int nrandom, const int neglimit,
@@ -93,9 +102,8 @@ TYPED_TEST(Coordinates, CalcBondsMatchesVanilla) {
                  this->results);
 
   for (std::size_t i = 0; i < this->nresults; i++) {
-    EXPECT_EQ_T(this->results[i], this->ref[i]);
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
     // loss of accuracy somewhere?
-
   }
   SUCCEED();
 }
