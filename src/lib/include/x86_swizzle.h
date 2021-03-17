@@ -13,6 +13,15 @@
 
 namespace {
 
+// takes last element and
+inline __m128 ShuntLast2First(const __m128 input) {
+  // abcd -> dabc
+  return _mm_permute_ps(input, _MM_PERM_DABC);
+}
+inline __m256d ShuntLast2First(const __m256d input) {
+  return _mm256_permute4x64_pd(input, _MM_PERM_DABC);
+}
+
 // shuffle first element of __m128 to end and shunt everything left by one
 inline __m128 ShuntFirst2Last(const __m128 input) {
   // PRE: input = abcd
@@ -38,25 +47,25 @@ inline __m256d ShuntFirst2Last(const __m256d input) {
 // width of 4, checking that we dont read off the end of ScalarT.
 template <typename VectorT>
 inline VectorT SafeIdxLoad4(const VectorToScalarT<VectorT> *source,
-                            const int idx,
-                            const VectorToScalarT<VectorT> *end) {
+                            std::size_t idx) {
   static_assert(ValuesPerPack<VectorT> == 4,
                 "can only use to load into SIMD datatype of width 4");
   VectorT tmp;
-  if (distopia_likely(source + idx + ValuesPerPack<VectorT> < end)) {
-    // load as is, no overflow, likely path
-    tmp = loadu_p<VectorT>(&source[idx]);
-  } else {
-    // load offset by one, unlikely path
+  if (distopia_likely(idx != 0)) {
+    // not the first, so load starting from value before
     tmp = loadu_p<VectorT>(&source[idx - 1]);
-    tmp = ShuntFirst2Last(tmp);
+  } else {
+    // the first value, so can't go to previous
+    tmp = loadu_p<VectorT>(&source[idx]);
+    tmp = ShuntLast2First(tmp);
   }
   return tmp;
 }
 
 // transforms xyz coordinates from AOS to SOA
-inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
-                            const __m128 d, __m128 &x, __m128 &y, __m128 &z) {
+inline void Deinterleave4x3(__m128 a, __m128 b, __m128 c, __m128 d,
+                            __m128 &x, __m128 &y, __m128 &z) {
+  _MM_TRANSPOSE4_PS(a, b, c, d);
   // U = undefined, X = junk
   // PRE: a  = x0y0z0X b = x1y1z1X c = x2y2z2X d = x3y3z3X
   __m128 tmp0 = _mm_unpacklo_ps(a, b);
@@ -142,22 +151,20 @@ inline void Deinterleave8x3(const __m128 a, const __m128 b, const __m128 c,
 
 // wraps the individual deinterleaves, use of VectorToLoadT is required for
 // __m256 case which takes an array of __m128, instead of the same type.
-
-
-inline void DeinterleaveIdx(const __m128 *vec_arr, __m128 &x,
-                                       __m128 &y, __m128 &z) {
+inline void DeinterleaveIdx(__m128 *vec_arr,
+                            __m128 &x, __m128 &y, __m128 &z) {
   Deinterleave4x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], x, y, z);
 }
 
 #ifdef DISTOPIA_X86_AVX
 
-inline void DeinterleaveIdx(const __m256d *vec_arr, __m256d &x,
-                                        __m256d &y, __m256d &z) {
+inline void DeinterleaveIdx(__m256d *vec_arr,
+                            __m256d &x, __m256d &y, __m256d &z) {
   Deinterleave4x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], x, y, z);
 }
 
-inline void DeinterleaveIdx(const __m128 *vec_arr, __m256 &x,
-                                       __m256 &y, __m256 &z) {
+inline void DeinterleaveIdx(__m128 *vec_arr,
+                            __m256 &x, __m256 &y, __m256 &z) {
   Deinterleave8x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], vec_arr[4],
                   vec_arr[5], vec_arr[6], vec_arr[7], x, y, z);
 }

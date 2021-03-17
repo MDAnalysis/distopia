@@ -23,34 +23,30 @@ template <typename T, EnableIfFloating<T> = 0>
 inline T generic_set1(T src) {return src;}
 
 //  idx loader function that covers overload for float and double
-template <typename VectorT>
-inline void genericidxload(const VectorToScalarT<VectorT> *source,
-                            const VectorToScalarT<VectorT> *end,
-                            const std::size_t *idxs, VectorT &x, VectorT &y,
-                            VectorT &z) {
+template <typename VectorT, unsigned char step>
+inline void genericidxload(const VectorToScalarT<VectorT> *source, const std::size_t *idxs,
+                            VectorT &x, VectorT &y, VectorT &z) {
   VectorToLoadT<VectorT> v_arr[ValuesPerPack<VectorT>];
-  for (std::size_t i = 0; i < ValuesPerPack<VectorT>; i++) {
-    v_arr[i] = SafeIdxLoad4<VectorToLoadT<VectorT>>(source, 3 * idxs[i], end);
+  for (std::size_t i = 0; i < ValuesPerPack<VectorT>; i += step) {
+    v_arr[i] = SafeIdxLoad4<VectorToLoadT<VectorT>>(source, 3 * idxs[i]);
   }
   DeinterleaveIdx(v_arr, x, y, z);
 }
 
-template <>
-inline void genericidxload(const float *source, const float*,
-                            const std::size_t *idxs, float &x, float &y,
-                            float &z) {
-  x = source[idxs[0]];
-  y = source[idxs[1]];
-  z = source[idxs[2]];
+template<unsigned char>
+inline void genericidxload(const float *source, const std::size_t *idxs,
+                            float &x, float &y, float &z) {
+  x = source[3 * idxs[0]];
+  y = source[3 * idxs[0] + 1];
+  z = source[3 * idxs[0] + 2];
 }
 
-template <>
-inline void genericidxload(const double *source, const double*,
-                            const std::size_t *idxs, double &x, double &y,
-                            double &z) {
-  x = source[idxs[0]];
-  y = source[idxs[1]];
-  z = source[idxs[2]];
+template<unsigned char>
+inline void genericidxload(const double *source, const std::size_t *idxs,
+                            double &x, double &y, double &z) {
+  x = source[3 * idxs[0]];
+  y = source[3 * idxs[0] + 1];
+  z = source[3 * idxs[0] + 2];
 }
 
 // store function that covers overload for float and double
@@ -112,9 +108,9 @@ public:
 
   // construct by loading discontiguously from an array of ScalarT eg float* or
   // double*. Must pass references as deinterleave must happen on x,y and z simultaneously
-  inline VectorTriple(ScalarT *source, const ScalarT *end,
-                      const std::size_t *idxs) {
-                        genericidxload<VectorT>(source, end, idxs, this->x, this->y, this->z);
+  template<unsigned char step>
+  inline VectorTriple(const ScalarT *source, const std::size_t *idxs) {
+    genericidxload<VectorT, step>(source, idxs, this->x, this->y, this->z);
   }
 
   // store or stream to an array of ScalarT eg float* or double *.
