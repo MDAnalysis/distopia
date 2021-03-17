@@ -23,7 +23,7 @@ template <typename T, EnableIfFloating<T> = 0>
 inline T generic_set1(T src) {return src;}
 
 //  idx loader function that covers overload for float and double
-template <typename VectorT, unsigned char step>
+template <typename VectorT, unsigned char step, EnableIfVector<VectorT> = 0>
 inline void genericidxload(const VectorToScalarT<VectorT> *source, const std::size_t *idxs,
                             VectorT &x, VectorT &y, VectorT &z) {
   VectorToLoadT<VectorT> v_arr[ValuesPerPack<VectorT>];
@@ -33,17 +33,9 @@ inline void genericidxload(const VectorToScalarT<VectorT> *source, const std::si
   DeinterleaveIdx(v_arr, x, y, z);
 }
 
-template<unsigned char>
-inline void genericidxload(const float *source, const std::size_t *idxs,
-                            float &x, float &y, float &z) {
-  x = source[3 * idxs[0]];
-  y = source[3 * idxs[0] + 1];
-  z = source[3 * idxs[0] + 2];
-}
-
-template<unsigned char>
-inline void genericidxload(const double *source, const std::size_t *idxs,
-                            double &x, double &y, double &z) {
+template<typename T, unsigned char, EnableIfFloating<T> = 0>
+inline void genericidxload(const T* source, const std::size_t *idxs,
+                           T &x, T &y, T &z) {
   x = source[3 * idxs[0]];
   y = source[3 * idxs[0] + 1];
   z = source[3 * idxs[0] + 2];
