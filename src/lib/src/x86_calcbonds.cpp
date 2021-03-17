@@ -66,6 +66,45 @@ void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
   }
 }
 
+template <bool streaming_store, typename VectorT, typename BoxT>
+void CalcBondsIdxInner(const VectorToScalarT<VectorT> coords,
+                       const std::size_t* idx,
+                       const VectorToScalarT<VectorT> *box,
+                       std::size_t n,
+                       VectorToScalarT<VectorT> *out) {
+  auto vecbox = BoxT(box);
+
+  size_t i = 0;
+  if (n % ValuesPerPack<VectorT>) {
+    auto c0 = VectorTriple<VectorT>(coords, idx, 2);
+    auto c1 = VectorTriple<VectorT>(coords, idx+1, 2);
+
+    VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
+
+    if (streaming_store) {
+      genericstream(out, result);
+    } else {
+      genericstore(out, result);
+    }
+    i += n % ValuesPerPack<VectorT>;
+  }
+  for (;i<n;i+=ValuesPerPack<VectorT>) {
+    auto c0 = VectorTriple<VectorT>(coords, idx + i*2, 2);
+    auto c1 = VectorTriple<VectorT>(coords, idx + i*2 + 1, 2);
+
+    VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
+    if (streaming_store) {
+      genericstream(&out[i], result);
+    } else {
+      genericstore(&out[i], result);
+    }
+  }
+
+  if (streaming_store) {
+    _mm_mfence();
+  }
+}
+
 template <typename T>
 void CalcBondsOrthoDispatch(const T *coords0, const T *coords1, const T *box,
                             std::size_t n, T *out) {

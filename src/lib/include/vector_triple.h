@@ -100,8 +100,7 @@ public:
 
   // construct by loading discontiguously from an array of ScalarT eg float* or
   // double*. Must pass references as deinterleave must happen on x,y and z simultaneously
-  template<unsigned char step>
-  inline VectorTriple(const ScalarT *source, const std::size_t *idxs) {
+  inline VectorTriple(const ScalarT *source, const std::size_t *idxs, unsigned char step) {
     genericidxload<VectorT, step>(source, idxs, this->x, this->y, this->z);
   }
 
