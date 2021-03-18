@@ -47,4 +47,6 @@ To benchmark methods (from `./build`):
   ./timings ../data.txt 1000
 ```
 Will run through the timings of available functions (depends on the instruction set used), averaging over 1000 runs.
- 
+
+
+To assess code coverage build with `cmake -DDISTOPIA_COVERAGE=ON` and use either make or ninja to build the coverage targets `tests_coverage` or `test_kernels_coverage`.  You can then view the resulting HTML gcovr coverage reports in your favourite browser.
