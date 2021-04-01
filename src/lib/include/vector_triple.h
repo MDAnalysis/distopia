@@ -12,20 +12,24 @@ template <typename VectorT, EnableIfVector<VectorT> = 0>
 inline VectorT genericload(const VectorToScalarT<VectorT> *source) {
   return loadu_p<VectorT>(source);
 }
-template<typename T, EnableIfFloating<T> = 0> inline T genericload(const T* source) {return *source;}
-
+template <typename T, EnableIfFloating<T> = 0>
+inline T genericload(const T *source) {
+  return *source;
+}
 
 template <typename VectorT, EnableIfVector<VectorT> = 0>
 inline VectorT generic_set1(VectorToScalarT<VectorT> src) {
   return set1_p<VectorT>(src);
 }
-template <typename T, EnableIfFloating<T> = 0>
-inline T generic_set1(T src) {return src;}
+template <typename T, EnableIfFloating<T> = 0> inline T generic_set1(T src) {
+  return src;
+}
 
 //  idx loader function that covers overload for float and double
 template <typename VectorT, unsigned char step, EnableIfVector<VectorT> = 0>
-inline void genericidxload(const VectorToScalarT<VectorT> *source, const std::size_t *idxs,
-                            VectorT &x, VectorT &y, VectorT &z) {
+inline void genericidxload(const VectorToScalarT<VectorT> *source,
+                           const std::size_t *idxs, VectorT &x, VectorT &y,
+                           VectorT &z) {
   VectorToLoadT<VectorT> v_arr[ValuesPerPack<VectorT>];
   for (std::size_t i = 0; i < ValuesPerPack<VectorT>; i += step) {
     v_arr[i] = SafeIdxLoad4<VectorToLoadT<VectorT>>(source, 3 * idxs[i]);
@@ -33,9 +37,9 @@ inline void genericidxload(const VectorToScalarT<VectorT> *source, const std::si
   DeinterleaveIdx(v_arr, x, y, z);
 }
 
-template<typename T, unsigned char, EnableIfFloating<T> = 0>
-inline void genericidxload(const T* source, const std::size_t *idxs,
-                           T &x, T &y, T &z) {
+template <typename T, unsigned char, EnableIfFloating<T> = 0>
+inline void genericidxload(const T *source, const std::size_t *idxs, T &x, T &y,
+                           T &z) {
   x = source[3 * idxs[0]];
   y = source[3 * idxs[0] + 1];
   z = source[3 * idxs[0] + 2];
@@ -47,18 +51,20 @@ inline void genericstore(VectorToScalarT<VectorT> *target, const VectorT val) {
   return storeu_p(target, val);
 }
 
-template<typename T, EnableIfFloating<T> = 0>
-inline void genericstore(T* target, const T val) {*target = val;}
+template <typename T, EnableIfFloating<T> = 0>
+inline void genericstore(T *target, const T val) {
+  *target = val;
+}
 
-
-template<typename VectorT, EnableIfVector<VectorT> = 0>
+template <typename VectorT, EnableIfVector<VectorT> = 0>
 inline void genericstream(VectorToScalarT<VectorT> *target, const VectorT val) {
   return stream_p(target, val);
 }
 
-template<typename T, EnableIfFloating<T> = 0>
-inline void genericstream(T* target, const T val) {*target = val;}
-
+template <typename T, EnableIfFloating<T> = 0>
+inline void genericstream(T *target, const T val) {
+  *target = val;
+}
 
 // VectorTriple base class packs 3xSIMD datatypes into a single class.
 // Can be constructed from 3 x VectorT.
@@ -86,21 +92,22 @@ public:
   // construct by loading from an array of ScalarT eg float* or double *.
   inline explicit VectorTriple(const ScalarT *source) {
     if (ValuesPerPack<VectorT> == 1) {
-     x = genericload<VectorT>(source);
-     y = genericload<VectorT>(source + 1);
-     z = genericload<VectorT>(source + 2);
-    }
-    else {
+      x = genericload<VectorT>(source);
+      y = genericload<VectorT>(source + 1);
+      z = genericload<VectorT>(source + 2);
+    } else {
       auto t1 = genericload<VectorT>(source);
       auto t2 = genericload<VectorT>(source + ValuesPerPack<VectorT>);
-      auto t3 = genericload<VectorT>(source + ValuesPerPack<VectorT>*2);
+      auto t3 = genericload<VectorT>(source + ValuesPerPack<VectorT> * 2);
       Deinterleave3(t1, t2, t3, x, y, z);
     }
   }
 
   // construct by loading discontiguously from an array of ScalarT eg float* or
-  // double*. Must pass references as deinterleave must happen on x,y and z simultaneously
-  inline VectorTriple(const ScalarT *source, const std::size_t *idxs, unsigned char step) {
+  // double*. Must pass references as deinterleave must happen on x,y and z
+  // simultaneously
+  inline VectorTriple(const ScalarT *source, const std::size_t *idxs,
+                      unsigned char step) {
     genericidxload<VectorT, step>(source, idxs, this->x, this->y, this->z);
   }
 
@@ -127,16 +134,15 @@ public:
     return vt;
   }
 
-  void DebugPrint(const char* nm) {
+  void DebugPrint(const char *nm) {
     ScalarT debug[ValuesPerPack<VectorT> * 3];
     this->store(debug);
     std::cerr << nm << " ";
-    for (unsigned char i=0; i<ValuesPerPack<VectorT>*3; ++i)
+    for (unsigned char i = 0; i < ValuesPerPack<VectorT> * 3; ++i)
       std::cerr << debug[i] << " ";
     std::cerr << "\n";
   }
 };
-
 
 template <typename VectorT>
 inline VectorTriple<VectorT> operator+(VectorTriple<VectorT> a,

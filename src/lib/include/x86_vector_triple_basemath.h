@@ -113,7 +113,8 @@ inline VectorTriple<VectorT> FastNegMulSub(VectorTriple<VectorT> a,
 template <typename VectorT>
 inline VectorTriple<VectorT> Remainder(VectorTriple<VectorT> a,
                                        VectorTriple<VectorT> b) {
-  VectorTriple<VectorT>(Remainder(a.x, b.x), Remainder(a.y, b.y), Remainder(a.z, b.z));
+  VectorTriple<VectorT>(Remainder(a.x, b.x), Remainder(a.y, b.y),
+                        Remainder(a.z, b.z));
 }
 
 template <typename VectorT>

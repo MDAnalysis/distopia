@@ -63,8 +63,8 @@ inline VectorT SafeIdxLoad4(const VectorToScalarT<VectorT> *source,
 }
 
 // transforms xyz coordinates from AOS to SOA
-inline void Deinterleave4x3(__m128 a, __m128 b, __m128 c, __m128 d,
-                            __m128 &x, __m128 &y, __m128 &z) {
+inline void Deinterleave4x3(__m128 a, __m128 b, __m128 c, __m128 d, __m128 &x,
+                            __m128 &y, __m128 &z) {
   _MM_TRANSPOSE4_PS(a, b, c, d);
   // U = undefined, X = junk
   // PRE: a  = x0y0z0X b = x1y1z1X c = x2y2z2X d = x3y3z3X
@@ -151,36 +151,36 @@ inline void Deinterleave8x3(const __m128 a, const __m128 b, const __m128 c,
 
 // wraps the individual deinterleaves, use of VectorToLoadT is required for
 // __m256 case which takes an array of __m128, instead of the same type.
-inline void DeinterleaveIdx(__m128 *vec_arr,
-                            __m128 &x, __m128 &y, __m128 &z) {
+inline void DeinterleaveIdx(__m128 *vec_arr, __m128 &x, __m128 &y, __m128 &z) {
   Deinterleave4x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], x, y, z);
 }
 
 #ifdef DISTOPIA_X86_AVX
 
-inline void DeinterleaveIdx(__m256d *vec_arr,
-                            __m256d &x, __m256d &y, __m256d &z) {
+inline void DeinterleaveIdx(__m256d *vec_arr, __m256d &x, __m256d &y,
+                            __m256d &z) {
   Deinterleave4x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], x, y, z);
 }
 
-inline void DeinterleaveIdx(__m128 *vec_arr,
-                            __m256 &x, __m256 &y, __m256 &z) {
+inline void DeinterleaveIdx(__m128 *vec_arr, __m256 &x, __m256 &y, __m256 &z) {
   Deinterleave8x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], vec_arr[4],
                   vec_arr[5], vec_arr[6], vec_arr[7], x, y, z);
 }
 
 #endif // DISTOPIA_X86_AVX
 
-  inline void Deinterleave3(float& a, float& b, float& c, float& x, float& y, float& z) {
-    x = a;
-    y = b;
-    z = c;
-  }
-  inline void Deinterleave3(double& a, double& b, double& c, double& x, double& y, double& z) {
-    x = a;
-    y = b;
-    z = c;
-  }
+inline void Deinterleave3(float &a, float &b, float &c, float &x, float &y,
+                          float &z) {
+  x = a;
+  y = b;
+  z = c;
+}
+inline void Deinterleave3(double &a, double &b, double &c, double &x, double &y,
+                          double &z) {
+  x = a;
+  y = b;
+  z = c;
+}
 
 inline void Deinterleave3(__m128 a, __m128 b, __m128 c, __m128 &x, __m128 &y,
                           __m128 &z) {

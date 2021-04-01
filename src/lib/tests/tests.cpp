@@ -8,10 +8,8 @@
 #include <immintrin.h>
 
 TEST(TestX86Vec, Float128LoadScalar) {
-  float abc[12] = {00.f, 01.f, 02.f,
-                   03.f, 04.f, 05.f,
-                   06.f, 07.f, 08.f,
-                   09.f, 10.f, 11.f};
+  float abc[12] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f,
+                   06.f, 07.f, 08.f, 09.f, 10.f, 11.f};
 
   __m128 correct_x = _mm_setr_ps(00.f, 03.f, 06.f, 09.f);
   __m128 correct_y = _mm_setr_ps(01.f, 04.f, 07.f, 10.f);
@@ -31,8 +29,7 @@ TEST(TestX86Vec, Float128LoadScalar) {
 }
 
 TEST(TestX86Vec, Double128LoadScalar) {
-  double abc[6] = {00.0, 01.0, 02.0,
-                   03.0, 04.0, 05.0};
+  double abc[6] = {00.0, 01.0, 02.0, 03.0, 04.0, 05.0};
 
   __m128d correct_x = _mm_setr_pd(00.0, 03.0);
   __m128d correct_y = _mm_setr_pd(01.0, 04.0);
@@ -54,14 +51,9 @@ TEST(TestX86Vec, Double128LoadScalar) {
 #ifdef DISTOPIA_X86_AVX
 
 TEST(TestX86Vec, Float256LoadScalar) {
-  float abc[24] = {00.f, 01.f, 02.f,
-                   03.f, 04.f, 05.f,
-                   06.f, 07.f, 08.f,
-                   09.f, 10.f, 11.f,
-                   12.f, 13.f, 14.f,
-                   15.f, 16.f, 17.f,
-                   18.f, 19.f, 20.f,
-                   21.f, 22.f, 23.f};
+  float abc[24] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f, 06.f, 07.f,
+                   08.f, 09.f, 10.f, 11.f, 12.f, 13.f, 14.f, 15.f,
+                   16.f, 17.f, 18.f, 19.f, 20.f, 21.f, 22.f, 23.f};
 
   __m256 correct_x =
       _mm256_setr_ps(00.f, 03.f, 06.f, 09.f, 12.f, 15.f, 18.f, 21.f);
@@ -108,10 +100,8 @@ TEST(TestX86Vec, Float256LoadScalar) {
 }
 
 TEST(TestX86Vec, Double256LoadScalar) {
-  double abc[12] = {00.0, 01.0, 02.0,
-                    03.0, 04.0, 05.0,
-                    06.0, 07.0, 08.0,
-                    09.0, 10.0, 11.0};
+  double abc[12] = {00.0, 01.0, 02.0, 03.0, 04.0, 05.0,
+                    06.0, 07.0, 08.0, 09.0, 10.0, 11.0};
 
   __m256d correct_x = _mm256_setr_pd(00.0, 03.0, 06.0, 09.0);
   __m256d correct_y = _mm256_setr_pd(01.0, 04.0, 07.0, 10.0);
