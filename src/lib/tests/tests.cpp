@@ -8,10 +8,8 @@
 #include <immintrin.h>
 
 TEST(TestX86Vec, Float128LoadScalar) {
-  float abc[12] = {00.f, 01.f, 02.f,
-                   03.f, 04.f, 05.f,
-                   06.f, 07.f, 08.f,
-                   09.f, 10.f, 11.f};
+  float abc[12] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f,
+                   06.f, 07.f, 08.f, 09.f, 10.f, 11.f};
 
   __m128 correct_x = _mm_setr_ps(00.f, 03.f, 06.f, 09.f);
   __m128 correct_y = _mm_setr_ps(01.f, 04.f, 07.f, 10.f);
@@ -31,8 +29,7 @@ TEST(TestX86Vec, Float128LoadScalar) {
 }
 
 TEST(TestX86Vec, Double128LoadScalar) {
-  double abc[6] = {00.0, 01.0, 02.0,
-                   03.0, 04.0, 05.0};
+  double abc[6] = {00.0, 01.0, 02.0, 03.0, 04.0, 05.0};
 
   __m128d correct_x = _mm_setr_pd(00.0, 03.0);
   __m128d correct_y = _mm_setr_pd(01.0, 04.0);
@@ -54,14 +51,9 @@ TEST(TestX86Vec, Double128LoadScalar) {
 #ifdef DISTOPIA_X86_AVX
 
 TEST(TestX86Vec, Float256LoadScalar) {
-  float abc[24] = {00.f, 01.f, 02.f,
-                   03.f, 04.f, 05.f,
-                   06.f, 07.f, 08.f,
-                   09.f, 10.f, 11.f,
-                   12.f, 13.f, 14.f,
-                   15.f, 16.f, 17.f,
-                   18.f, 19.f, 20.f,
-                   21.f, 22.f, 23.f};
+  float abc[24] = {00.f, 01.f, 02.f, 03.f, 04.f, 05.f, 06.f, 07.f,
+                   08.f, 09.f, 10.f, 11.f, 12.f, 13.f, 14.f, 15.f,
+                   16.f, 17.f, 18.f, 19.f, 20.f, 21.f, 22.f, 23.f};
 
   __m256 correct_x =
       _mm256_setr_ps(00.f, 03.f, 06.f, 09.f, 12.f, 15.f, 18.f, 21.f);
@@ -108,10 +100,8 @@ TEST(TestX86Vec, Float256LoadScalar) {
 }
 
 TEST(TestX86Vec, Double256LoadScalar) {
-  double abc[12] = {00.0, 01.0, 02.0,
-                    03.0, 04.0, 05.0,
-                    06.0, 07.0, 08.0,
-                    09.0, 10.0, 11.0};
+  double abc[12] = {00.0, 01.0, 02.0, 03.0, 04.0, 05.0,
+                    06.0, 07.0, 08.0, 09.0, 10.0, 11.0};
 
   __m256d correct_x = _mm256_setr_pd(00.0, 03.0, 06.0, 09.0);
   __m256d correct_y = _mm256_setr_pd(01.0, 04.0, 07.0, 10.0);
@@ -578,19 +568,21 @@ TEST(ScalarVec, ScalarVecStoreDouble) {
 }
 
 TEST(ScalarVec, ScalarVecIdxLoadFloat) {
-  float arr[7] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f};
-  std::size_t idxs[3] = {0, 3, 5};
+  float arr[12] = {0.0f, 1.0f, 2.0f, 3.0f, 4.0f,  5.0f,
+                   6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f};
+  std::size_t idxs[3] = {1};
   VectorTriple<float> vt_f(arr, arr + 7, idxs);
-  EXPECT_FLOAT_EQ(vt_f.x, 1.0f);
+  EXPECT_FLOAT_EQ(vt_f.x, 3.0f);
   EXPECT_FLOAT_EQ(vt_f.y, 4.0f);
-  EXPECT_FLOAT_EQ(vt_f.z, 6.0f);
+  EXPECT_FLOAT_EQ(vt_f.z, 5.0f);
 }
 
 TEST(ScalarVec, ScalarVecIdxLoadDouble) {
-  double arr[7] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0};
-  std::size_t idxs[3] = {0, 3, 5};
+  double arr[12] = {0.0, 1.0, 2.0, 3.0, 4.0,  5.0,
+                    6.0, 7.0, 8.0, 9.0, 10.0, 11.0};
+  std::size_t idxs[1] = {1};
   VectorTriple<double> vt_d(arr, arr + 7, idxs);
-  EXPECT_DOUBLE_EQ(vt_d.x, 1.0);
+  EXPECT_DOUBLE_EQ(vt_d.x, 3.0);
   EXPECT_DOUBLE_EQ(vt_d.y, 4.0);
-  EXPECT_DOUBLE_EQ(vt_d.z, 6.0);
+  EXPECT_DOUBLE_EQ(vt_d.z, 5.0);
 }
