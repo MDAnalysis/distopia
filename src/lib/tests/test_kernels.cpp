@@ -120,15 +120,15 @@ TYPED_TEST(Coordinates, CalcBondsMatchesVanillaInBox) {
   }
 }
 
-
 TYPED_TEST(Coordinates, CalcBondsNoBox) {
   this->InitCoords(NRESULTS, BOXSIZE, 0);
 
-  VanillaCalcBondsNoBox(this->coords0, this->coords1, this->nresults, this->ref);
+  VanillaCalcBondsNoBox(this->coords0, this->coords1, this->nresults,
+                        this->ref);
 
   CalcBondsNoBox(this->coords0, this->coords1, this->nresults, this->results);
 
-  for (int i=0; i<this->nresults; ++i) {
+  for (int i = 0; i < this->nresults; ++i) {
     EXPECT_EQ_T(this->results[i], this->ref[i]);
   }
 }
@@ -139,9 +139,9 @@ TEST(KnownValues, OrthoBox) {
   float ref[3 * 7];
   float other[3 * 7];
   int nvals = 3 * 7;
-  for (unsigned char i=0; i<7; ++i) {
+  for (unsigned char i = 0; i < 7; ++i) {
     if (i < 7)
-      coords1[i*3] = i;
+      coords1[i * 3] = i;
     else if (i < 14)
       coords1[i * 3 + 1] = i;
     else
@@ -153,7 +153,7 @@ TEST(KnownValues, OrthoBox) {
 
   CalcBondsOrtho(coords1, coords2, box, nvals, other);
 
-  for (unsigned char j=0; j<7; ++j)
+  for (unsigned char j = 0; j < 7; ++j)
     EXPECT_FLOAT_EQ(ref[j], other[j]);
 }
 
@@ -161,12 +161,12 @@ TEST(KnownValues, NoBox) {
   float coords1[7 * 3] = {0};
   float coords2[7 * 3] = {0};
   float ref[7];
-  for (unsigned char i=0; i<7; ++i) {
-    coords1[i*3] = i;
+  for (unsigned char i = 0; i < 7; ++i) {
+    coords1[i * 3] = i;
   }
 
   CalcBondsNoBox(coords1, coords2, 7, ref);
 
-  for (unsigned char j=0; j<7; ++j)
+  for (unsigned char j = 0; j < 7; ++j)
     EXPECT_FLOAT_EQ(ref[j], j);
 }
