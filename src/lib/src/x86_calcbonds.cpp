@@ -68,14 +68,14 @@ void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
 
 template <bool streaming_store, typename VectorT, typename BoxT>
 void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
-                       const std::size_t *idx,
+                       const std::size_t *idxs,
                        const VectorToScalarT<VectorT> *box, std::size_t n,
                        VectorToScalarT<VectorT> *out) {
   auto vecbox = BoxT(box);
   std::size_t i = 0;
   // indicies of the bonds
-  const std::size_t* b_i = idx;
-  const std::size_t* b_j = idx + 1;
+  const std::size_t *b_i = idxs;
+  const std::size_t *b_j = idxs + 1;
 
   if (n % ValuesPerPack<VectorT>) {
     // WARNING BROKEN USE OF some big buffer
@@ -87,7 +87,7 @@ void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
   for (; i < n; i += ValuesPerPack<VectorT>) {
     // access with stride of 2
     auto c0 = VectorTriple<VectorT>(coords, coords + 1000000, b_i[i], 2);
-    auto c1 = VectorTriple<VectorT>(coords, coords + 1000000, b_j[i], 2) ;
+    auto c1 = VectorTriple<VectorT>(coords, coords + 1000000, b_j[i], 2);
 
     VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
     // TODO constexpr if with CXX17 support
@@ -156,6 +156,35 @@ void CalcBondsNoBoxDispatch(const T *coords0, const T *coords1, std::size_t n,
       CalcBondsInner<false, SmallVecT<T>, NoBox<SmallVecT<T>>>(coords0, coords1,
                                                                nullptr, n, out);
     }
+  }
+}
+
+template <typename T>
+void CalcBondsIdxOrthoDispatch(const T *coords, const std::size_t *idxs,
+                               const T *box, std::size_t n, T *out) {
+  std::size_t problem_size = n * sizeof(T);
+  bool not_a_vector = n < 8;
+  bool use_big_vector = distopia_unlikely(problem_size >= kBigVectorThreshold);
+  bool use_streaming_stores =
+      distopia_unlikely(problem_size >= kStreamingThreshold);
+  // TODO constexpr if with CXX17 support
+  if (not_a_vector) {
+    CalcBondsIdxInner<false, T, OrthogonalBox<T>>(coords, idxs, box, n, out);
+  } else if (use_big_vector) {
+    if (use_streaming_stores) {
+      CalcBondsIdxInner<true, BigVecT<T>, OrthogonalBox<BigVecT<T>>>(
+          coords, idxs, box, n, out);
+    } else {
+      CalcBondsIdxInner<false, BigVecT<T>, OrthogonalBox<BigVecT<T>>>(
+          coords, idxs, box, n, out);
+    }
+  } else {
+    if (use_streaming_stores)
+      CalcBondsIdxInner<true, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(
+          coords, idxs, box, n, out);
+    else
+      CalcBondsIdxInner<false, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(
+          coords, idxs, box, n, out);
   }
 }
 
