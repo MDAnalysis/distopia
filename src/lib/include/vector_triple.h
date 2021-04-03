@@ -92,6 +92,7 @@ public:
 
   // construct by loading from an array of ScalarT eg float* or double *.
   inline explicit VectorTriple(const ScalarT *source) {
+    // TODO constexpr if with CXX17 support
     if (ValuesPerPack<VectorT> == 1) {
       x = genericload<VectorT>(source);
       y = genericload<VectorT>(source + 1);
@@ -115,6 +116,7 @@ public:
   // store or stream to an array of ScalarT eg float* or double *.
   template <bool streaming = false> inline void store(ScalarT *target) {
     // need to disable streaming if values_per_pack == 1
+    // TODO constexpr if with CXX17 support
     if (streaming and (ValuesPerPack<VectorT>> 1)) {
       genericstream(target, x);
       genericstream(&target[ValuesPerPack<VectorT>], y);
