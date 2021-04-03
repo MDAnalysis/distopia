@@ -30,18 +30,17 @@ constexpr std::size_t kStreamingThreshold = 16 * 1024 * 1024;
 template <bool streaming_store, typename VectorT, typename BoxT>
 void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
                     const VectorToScalarT<VectorT> *coords1,
-                    const VectorToScalarT<VectorT> *box,
-                    std::size_t n,
+                    const VectorToScalarT<VectorT> *box, std::size_t n,
                     VectorToScalarT<VectorT> *out) {
   auto vecbox = BoxT(box);
 
-  size_t i = 0;
+  std::size_t i = 0;
   if (n % ValuesPerPack<VectorT>) {
     auto c0 = VectorTriple<VectorT>(coords0);
     auto c1 = VectorTriple<VectorT>(coords1);
 
     VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
-
+    // TODO constexpr if with CXX17 support
     if (streaming_store) {
       genericstream(out, result);
     } else {
@@ -49,18 +48,56 @@ void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
     }
     i += n % ValuesPerPack<VectorT>;
   }
-  for (;i<n;i+=ValuesPerPack<VectorT>) {
-    auto c0 = VectorTriple<VectorT>(&coords0[3*i]);
-    auto c1 = VectorTriple<VectorT>(&coords1[3*i]);
+  for (; i < n; i += ValuesPerPack<VectorT>) {
+    auto c0 = VectorTriple<VectorT>(&coords0[3 * i]);
+    auto c1 = VectorTriple<VectorT>(&coords1[3 * i]);
 
     VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
+    // TODO constexpr if with CXX17 support
     if (streaming_store) {
       genericstream(&out[i], result);
     } else {
       genericstore(&out[i], result);
     }
   }
+  // TODO constexpr if with CXX17 support
+  if (streaming_store) {
+    _mm_mfence();
+  }
+}
 
+template <bool streaming_store, typename VectorT, typename BoxT>
+void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
+                       const std::size_t *idx,
+                       const VectorToScalarT<VectorT> *box, std::size_t n,
+                       VectorToScalarT<VectorT> *out) {
+  auto vecbox = BoxT(box);
+  std::size_t i = 0;
+  // indicies of the bonds
+  const std::size_t* b_i = idx;
+  const std::size_t* b_j = idx + 1;
+
+  if (n % ValuesPerPack<VectorT>) {
+    // WARNING BROKEN USE OF some big buffer
+    auto c0 = VectorTriple<VectorT>(coords, coords + 1000000, b_i, 2);
+    auto c1 = VectorTriple<VectorT>(coords, coords + 1000000, b_j, 2);
+    VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
+    i += n % ValuesPerPack<VectorT>;
+  }
+  for (; i < n; i += ValuesPerPack<VectorT>) {
+    // access with stride of 2
+    auto c0 = VectorTriple<VectorT>(coords, coords + 1000000, b_i[i], 2);
+    auto c1 = VectorTriple<VectorT>(coords, coords + 1000000, b_j[i], 2) ;
+
+    VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
+    // TODO constexpr if with CXX17 support
+    if (streaming_store) {
+      genericstream(&out[i], result);
+    } else {
+      genericstore(&out[i], result);
+    }
+  }
+  // TODO constexpr if with CXX17 support
   if (streaming_store) {
     _mm_mfence();
   }
@@ -72,46 +109,55 @@ void CalcBondsOrthoDispatch(const T *coords0, const T *coords1, const T *box,
   std::size_t problem_size = n * sizeof(T);
   bool not_a_vector = n < 8;
   bool use_big_vector = distopia_unlikely(problem_size >= kBigVectorThreshold);
-  bool use_streaming_stores = distopia_unlikely(problem_size >= kStreamingThreshold);
-
+  bool use_streaming_stores =
+      distopia_unlikely(problem_size >= kStreamingThreshold);
+  // TODO constexpr if with CXX17 support
   if (not_a_vector) {
     CalcBondsInner<false, T, OrthogonalBox<T>>(coords0, coords1, box, n, out);
   } else if (use_big_vector) {
     if (use_streaming_stores) {
-      CalcBondsInner<true, BigVecT<T>, OrthogonalBox<BigVecT<T>>>(coords0, coords1, box, n, out);
+      CalcBondsInner<true, BigVecT<T>, OrthogonalBox<BigVecT<T>>>(
+          coords0, coords1, box, n, out);
     } else {
-      CalcBondsInner<false, BigVecT<T>, OrthogonalBox<BigVecT<T>>>(coords0, coords1, box, n, out);
+      CalcBondsInner<false, BigVecT<T>, OrthogonalBox<BigVecT<T>>>(
+          coords0, coords1, box, n, out);
     }
   } else {
     if (use_streaming_stores)
-      CalcBondsInner<true, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(coords0, coords1, box, n, out);
+      CalcBondsInner<true, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(
+          coords0, coords1, box, n, out);
     else
-      CalcBondsInner<false, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(coords0, coords1, box, n, out);
+      CalcBondsInner<false, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(
+          coords0, coords1, box, n, out);
   }
 }
 
-template<typename T>
-void CalcBondsNoBoxDispatch(const T *coords0, const T *coords1,
-                            std::size_t n, T *out) {
+template <typename T>
+void CalcBondsNoBoxDispatch(const T *coords0, const T *coords1, std::size_t n,
+                            T *out) {
   std::size_t problem_size = n * sizeof(T);
   bool use_big_vector = distopia_unlikely(problem_size >= kBigVectorThreshold);
-  bool use_streaming_stores = distopia_unlikely(problem_size >= kStreamingThreshold);
-
+  bool use_streaming_stores =
+      distopia_unlikely(problem_size >= kStreamingThreshold);
+  // TODO constexpr if with CXX17 support
   if (use_big_vector) {
     if (use_streaming_stores) {
-      CalcBondsInner<true, BigVecT<T>, NoBox<BigVecT<T>>>(coords0, coords1, nullptr, n, out);
+      CalcBondsInner<true, BigVecT<T>, NoBox<BigVecT<T>>>(coords0, coords1,
+                                                          nullptr, n, out);
     } else {
-      CalcBondsInner<false, BigVecT<T>, NoBox<BigVecT<T>>>(coords0, coords1, nullptr, n, out);
+      CalcBondsInner<false, BigVecT<T>, NoBox<BigVecT<T>>>(coords0, coords1,
+                                                           nullptr, n, out);
     }
   } else {
     if (use_streaming_stores) {
-      CalcBondsInner<true, SmallVecT<T>, NoBox<SmallVecT<T>>>(coords0, coords1, nullptr, n, out);
+      CalcBondsInner<true, SmallVecT<T>, NoBox<SmallVecT<T>>>(coords0, coords1,
+                                                              nullptr, n, out);
     } else {
-      CalcBondsInner<false, SmallVecT<T>, NoBox<SmallVecT<T>>>(coords0, coords1, nullptr, n, out);
+      CalcBondsInner<false, SmallVecT<T>, NoBox<SmallVecT<T>>>(coords0, coords1,
+                                                               nullptr, n, out);
     }
   }
 }
-
 
 } // namespace
 
@@ -126,17 +172,16 @@ void CalcBondsOrtho(const double *coords0, const double *coords1,
   CalcBondsOrthoDispatch(coords0, coords1, box, n, out);
 }
 
-template<>
-void CalcBondsNoBox(const float *coords0, const float* coords1,
-                    std::size_t n, float* out) {
+template <>
+void CalcBondsNoBox(const float *coords0, const float *coords1, std::size_t n,
+                    float *out) {
   CalcBondsNoBoxDispatch(coords0, coords1, n, out);
 }
 
-template<>
-void CalcBondsNoBox(const double *coords0, const double* coords1,
-                    std::size_t n, double* out) {
+template <>
+void CalcBondsNoBox(const double *coords0, const double *coords1, std::size_t n,
+                    double *out) {
   CalcBondsNoBoxDispatch(coords0, coords1, n, out);
 }
-
 
 #endif // DISTOPIA_X86_SSE4_1
