@@ -26,21 +26,23 @@ template <typename T, EnableIfFloating<T> = 0> inline T generic_set1(T src) {
 }
 
 //  idx loader function that covers overload for float and double
-template <typename VectorT>
+// step defines the load stride into the indicies
+template <typename VectorT, EnableIfVector<VectorT> = 0>
 inline void genericidxload(const VectorToScalarT<VectorT> *source,
                            const VectorToScalarT<VectorT> *end,
                            const std::size_t *idxs, VectorT &x, VectorT &y,
-                           VectorT &z) {
+                           VectorT &z, const unsigned char step) {
   VectorToLoadT<VectorT> v_arr[ValuesPerPack<VectorT>];
   for (std::size_t i = 0; i < ValuesPerPack<VectorT>; i++) {
-    v_arr[i] = SafeIdxLoad4<VectorToLoadT<VectorT>>(source, 3 * idxs[i], end);
+    v_arr[i] =
+        SafeIdxLoad4<VectorToLoadT<VectorT>>(source, 3 * idxs[i * step], end);
   }
   DeinterleaveIdx(v_arr, x, y, z);
 }
 
 template <typename T, EnableIfFloating<T> = 0>
 inline void genericidxload(const T *source, const T *, const std::size_t *idxs,
-                           T &x, T &y, T &z) {
+                           T &x, T &y, T &z, const unsigned char step) {
   x = source[3 * idxs[0]];
   y = source[3 * idxs[0] + 1];
   z = source[3 * idxs[0] + 2];
@@ -109,8 +111,8 @@ public:
   // double*. Must pass references as deinterleave must happen on x,y and z
   // simultaneously
   inline VectorTriple(ScalarT *source, const ScalarT *end,
-                      const std::size_t *idxs) {
-    genericidxload<VectorT>(source, end, idxs, this->x, this->y, this->z);
+                      const std::size_t *idxs, const unsigned char step) {
+    genericidxload<VectorT>(source, end, idxs, this->x, this->y, this->z, step);
   }
 
   // store or stream to an array of ScalarT eg float* or double *.

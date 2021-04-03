@@ -8,7 +8,7 @@
 
 // constants
 #define BOXSIZE 10
-#define NRESULTS 10000
+#define NRESULTS 10003
 
 inline void EXPECT_EQ_T(float result, float ref) {
   EXPECT_FLOAT_EQ(result, ref);
