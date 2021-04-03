@@ -18,6 +18,9 @@ namespace {
 
 // Big vector operations cause the CPU to stall while it changes voltage.
 // Small tasks should therefore use small (128-bit) vectors.
+// TODO do we think that that < this thresh is the common or less common case?
+// influences whether we choose likely or unlikely branch prediction hint.
+// OR we could remove branch prediction hints on this all together
 constexpr std::size_t kBigVectorThreshold = 256 * 1024;
 
 // Normal stores perform a read from memory, change the data in the cache, and
