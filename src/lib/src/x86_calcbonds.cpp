@@ -244,4 +244,27 @@ void CalcBondsNoBox(const double *coords0, const double *coords1, std::size_t n,
   CalcBondsNoBoxDispatch(coords0, coords1, n, out);
 }
 
+template <>
+void CalcBondsIdxOrtho(const float *coords, const std::size_t *idxs, const float* box, std::size_t n,
+                            float *out) {
+  CalcBondsIdxOrthoDispatch(coords, idxs, box, n, out);
+}
+template <>
+void CalcBondsIdxOrtho(const double *coords, const std::size_t *idxs, const double* box, std::size_t n,
+                            double *out) {
+  CalcBondsIdxOrthoDispatch(coords, idxs, box, n, out);
+}
+
+template <>
+void CalcBondsIdxNoBox(const float *coords, const std::size_t *idxs, std::size_t n,
+                            float *out) {
+  CalcBondsIdxNoBoxDispatch(coords, idxs, box, n, out);
+}
+
+template <>
+void CalcBondsNoBox(const double *coords, const std::size_t *idxs, std::size_t n,
+                            double *out) {
+  CalcBondsNoBoxDispatch(coords, idxs, box, n, out);
+}
+
 #endif // DISTOPIA_X86_SSE4_1
