@@ -143,40 +143,41 @@ inline void Deinterleave8x3(const __m128 a, const __m128 b, const __m128 c,
 // wraps the individual deinterleaves, use of VectorToLoadT is required for
 // __m256 case which takes an array of __m128, instead of the same type.
 
-
-inline void DeinterleaveIdx(const __m128 *vec_arr, __m128 &x,
-                                       __m128 &y, __m128 &z) {
+inline void DeinterleaveIdx(const __m128 *vec_arr, __m128 &x, __m128 &y,
+                            __m128 &z) {
   Deinterleave4x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], x, y, z);
 }
 
 #ifdef DISTOPIA_X86_AVX
 
-inline void DeinterleaveIdx(const __m256d *vec_arr, __m256d &x,
-                                        __m256d &y, __m256d &z) {
+inline void DeinterleaveIdx(const __m256d *vec_arr, __m256d &x, __m256d &y,
+                            __m256d &z) {
   Deinterleave4x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], x, y, z);
 }
 
-inline void DeinterleaveIdx(const __m128 *vec_arr, __m256 &x,
-                                       __m256 &y, __m256 &z) {
+inline void DeinterleaveIdx(const __m128 *vec_arr, __m256 &x, __m256 &y,
+                            __m256 &z) {
   Deinterleave8x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], vec_arr[4],
                   vec_arr[5], vec_arr[6], vec_arr[7], x, y, z);
 }
 
 #endif // DISTOPIA_X86_AVX
 
-  inline void Deinterleave3(float& a, float& b, float& c, float& x, float& y, float& z) {
-    x = a;
-    y = b;
-    z = c;
-  }
-  inline void Deinterleave3(double& a, double& b, double& c, double& x, double& y, double& z) {
-    x = a;
-    y = b;
-    z = c;
-  }
+inline void Deinterleave3(const float a, const float b, const float c, float &x,
+                          float &y, float &z) {
+  x = a;
+  y = b;
+  z = c;
+}
+inline void Deinterleave3(const double a, const double b, const double c,
+                          double &x, double &y, double &z) {
+  x = a;
+  y = b;
+  z = c;
+}
 
-inline void Deinterleave3(__m128 a, __m128 b, __m128 c, __m128 &x, __m128 &y,
-                          __m128 &z) {
+inline void Deinterleave3(const __m128 a, const __m128 b, const __m128 c,
+                          __m128 &x, __m128 &y, __m128 &z) {
   // PRE: a = x0y0z0x1, b = y1z1x2y2, c = z2x3y3z3
   __m128 t1 = shuffle_p<_MM_SHUFFLE(2, 1, 3, 2)>(b, c);
   __m128 t2 = shuffle_p<_MM_SHUFFLE(1, 0, 2, 1)>(a, b);
@@ -186,8 +187,8 @@ inline void Deinterleave3(__m128 a, __m128 b, __m128 c, __m128 &x, __m128 &y,
   z = shuffle_p<_MM_SHUFFLE(3, 0, 3, 1)>(t2, c);
   // x = x0x1x2x3, y = y0y1y2y3, z = z0z1z2z3
 }
-inline void Deinterleave3(__m128d a, __m128d b, __m128d c, __m128d &x,
-                          __m128d &y, __m128d &z) {
+inline void Deinterleave3(const __m128d a, const __m128d b, const __m128d c,
+                          __m128d &x, __m128d &y, __m128d &z) {
   // PRE: a = x0y0, b = z0x1, c = y1z1
   x = blend_p<0x2>(a, b);
   y = shuffle_p<0x1>(a, c);
@@ -195,8 +196,8 @@ inline void Deinterleave3(__m128d a, __m128d b, __m128d c, __m128d &x,
   // x = x0x1, y = y0y1, z = z0z1
 }
 #ifdef DISTOPIA_X86_AVX
-inline void Deinterleave3(__m256 a, __m256 b, __m256 c, __m256 &x, __m256 &y,
-                          __m256 &z) {
+inline void Deinterleave3(const __m256 a, const __m256 b, const __m256 c,
+                          __m256 &x, __m256 &y, __m256 &z) {
   // PRE: a = x0y0z0x1y1z1x2y2, b = z2x3y3z3x4y4z4x5, c = y6z6x7y7z7x8y8z8
   __m256 m1 = blend_p<0xf0>(a, b);
   __m256 m2 = permute2f128_p<0x21>(a, c);
@@ -210,8 +211,8 @@ inline void Deinterleave3(__m256 a, __m256 b, __m256 c, __m256 &x, __m256 &y,
   z = shuffle_p<_MM_SHUFFLE(3, 0, 3, 1)>(t2, m3);
   // x = x0x1x2x3x4x5x6x7, y = y0y1y2y3y4y5y6y7, z = z0z1z2z3z4z5z6z7
 }
-inline void Deinterleave3(__m256d a, __m256d b, __m256d c, __m256d &x,
-                          __m256d &y, __m256d &z) {
+inline void Deinterleave3(const __m256d a, const __m256d b, const __m256d c,
+                          __m256d &x, __m256d &y, __m256d &z) {
   // a = x0y0z0x1, b = y1z1x2y2, c = z2x3y3z3
   __m256d m1 = blend_p<0xc>(a, b);
   __m256d m2 = permute2f128_p<0x21>(a, c);
@@ -224,14 +225,14 @@ inline void Deinterleave3(__m256d a, __m256d b, __m256d c, __m256d &x,
 }
 #endif
 
-inline void Interleave3(float x, float y, float z, __m128 &a, __m128 &b,
-                        __m128 &c) {
+inline void Interleave3(const float x, const float y, const float z, __m128 &a,
+                        __m128 &b, __m128 &c) {
   a = set_p(x, z, y, x);
   b = set_p(y, x, z, y);
   c = set_p(z, y, x, z);
   // a = xyzx, b = yzxy, c = zxyz
 }
-inline void Interleave3(double x, double y, double z, __m128d &a, __m128d &b,
+inline void Interleave3(const double x, const double y, const double z, __m128d &a, __m128d &b,
                         __m128d &c) {
   a = set_p(y, x);
   b = set_p(x, z);
@@ -239,14 +240,14 @@ inline void Interleave3(double x, double y, double z, __m128d &a, __m128d &b,
   // a = xy, b = zx, c = yz
 }
 #ifdef DISTOPIA_X86_AVX
-inline void Interleave3(float x, float y, float z, __m256 &a, __m256 &b,
+inline void Interleave3(const float x, const float y, const float z, __m256 &a, __m256 &b,
                         __m256 &c) {
   a = set_p(y, x, z, y, x, z, y, x);
   b = set_p(x, z, y, x, z, y, x, z);
   c = set_p(z, y, x, z, y, x, z, y);
   // a = xyzxyzxy, b = zxyzxyzx, c = yzxyzxyz
 }
-inline void Interleave3(double x, double y, double z, __m256d &a, __m256d &b,
+inline void Interleave3(const double x, const double y, const double z, __m256d &a, __m256d &b,
                         __m256d &c) {
   a = set_p(x, z, y, x);
   b = set_p(y, x, z, y);
