@@ -188,6 +188,34 @@ void CalcBondsIdxOrthoDispatch(const T *coords, const std::size_t *idxs,
   }
 }
 
+
+template <typename T>
+void CalcBondsIdxNoBoxDispatch(const T *coords, const std::size_t *idxs, std::size_t n,
+                            T *out) {
+  std::size_t problem_size = n * sizeof(T);
+  bool use_big_vector = distopia_unlikely(problem_size >= kBigVectorThreshold);
+  bool use_streaming_stores =
+      distopia_unlikely(problem_size >= kStreamingThreshold);
+  // TODO constexpr if with CXX17 support
+  if (use_big_vector) {
+    if (use_streaming_stores) {
+      CalcBondsIdxInner<true, BigVecT<T>, NoBox<BigVecT<T>>>(coords, idxs,
+                                                          nullptr, n, out);
+    } else {
+      CalcBondsIdxInner<false, BigVecT<T>, NoBox<BigVecT<T>>>(coords, idxs,
+                                                           nullptr, n, out);
+    }
+  } else {
+    if (use_streaming_stores) {
+      CalcBondsInner<true, SmallVecT<T>, NoBox<SmallVecT<T>>>(coords, idxs,
+                                                              nullptr, n, out);
+    } else {
+      CalcBondsInner<false, SmallVecT<T>, NoBox<SmallVecT<T>>>(coords, idxs,
+                                                               nullptr, n, out);
+    }
+  }
+}
+
 } // namespace
 
 template <>
