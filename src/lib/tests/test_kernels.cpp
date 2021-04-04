@@ -8,7 +8,7 @@
 
 // constants
 #define BOXSIZE 10
-#define NRESULTS 10003
+#define NRESULTS 100000
 #define NINDICIES 1000
 
 inline void EXPECT_EQ_T(float result, float ref) {
@@ -20,12 +20,10 @@ inline void EXPECT_EQ_T(double result, double ref) {
 }
 
 inline void EXPECT_MOSTLY_EQ_T(float result, float ref) {
-  float diff = abs(result - ref);
-  EXPECT_LT(diff, 0.001);
+  EXPECT_NEAR(result, ref, 0.001);
 }
 inline void EXPECT_MOSTLY_EQ_T(double result, double ref) {
-  double diff = abs(result - ref);
-  EXPECT_LT(diff, 0.001);
+  EXPECT_NEAR(result, ref, 0.001);
 }
 
 // creates nrandom floating points between 0 and limit
@@ -180,17 +178,16 @@ TEST(KnownValues, NoBox) {
     EXPECT_FLOAT_EQ(ref[j], j);
 }
 
-
 // coordinates in this test can overhang the edge of the box by 2 * the box
 // size.
 TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanilla) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
-  // VanillaCalcBonds<TypeParam>(this->coords0, this->coords1, this->box,
-  //                             this->nresults, this->ref);
-  CalcBondsIdxOrtho(this->coords0, this->idxs, this->box, this->nresults,
-                 this->results);
+  VanillaCalcBondsIdx<TypeParam>(this->coords0, this->idxs, this->box,
+                                 this->nindicies/2, this->ref);
+  CalcBondsIdxOrtho(this->coords0, this->idxs, this->box, this->nindicies/2,
+                    this->results);
 
-  for (std::size_t i = 0; i < this->nresults; i++) {
+  for (std::size_t i = 0; i < this->nindicies/2; i++) {
     EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
     // loss of accuracy somewhere?
   }

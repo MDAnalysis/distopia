@@ -502,6 +502,31 @@ TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleavedStrided3) {
 
 #ifdef DISTOPIA_X86_AVX
 
+
+TEST(TestX86SwizzleVec, Double128IdxLoadDeinterleaved) {
+  // dummy data with  2x target and 4x incorrect data mixed in
+  // idx positions for correct data 0,2
+  double xyz[21] = {00.0, 01.0, 02.0, 0.00, 0.00, 0.00, 10.0,
+                   11.0, 12.0, 0.00, 0.00, 0.00, 20.0, 21.0,
+                   22.0, 0.00, 0.00, 0.00, 30.0, 31.0, 32.0};
+
+  __m128d correct_x = _mm_setr_pd(00.0, 10.0);
+  __m128d correct_y = _mm_setr_pd(01.0, 11.0);
+  __m128d correct_z = _mm_setr_pd(02.0, 12.0);
+  // safeload data and transpose
+  std::size_t idx[12] = {0,2};
+  VectorTriple<__m128d> vt = VectorTriple<__m128d>(xyz, xyz + 21, idx, 1);
+  bool x_is_correct =
+      _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(vt.x, correct_x)));
+  bool y_is_correct =
+      _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(vt.y, correct_y)));
+  bool z_is_correct =
+      _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(vt.z, correct_z)));
+  EXPECT_TRUE(x_is_correct);
+  EXPECT_TRUE(y_is_correct);
+  EXPECT_TRUE(z_is_correct);
+}
+
 TEST(TestX86SwizzleVec, Float256IdxLoadDeinterleaved) {
   // dummy data with 8x target and 4x incorrect data mixed in
   // idx positions for correct data 0,2,4,6,7,8,9,11
