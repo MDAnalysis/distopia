@@ -139,7 +139,7 @@ public:
     return vt;
   }
 
-  void DebugPrint(const char *nm) {
+  void debugprint(const char *nm) {
     ScalarT debug[ValuesPerPack<VectorT> * 3];
     this->store(debug);
     std::cerr << nm << " ";

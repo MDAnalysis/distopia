@@ -84,11 +84,11 @@ inline void Deinterleave2x3(const __m256d a, const __m256d b, __m128d &x,
   // tmp0 = x0x1y0y1
   x = _mm256_extractf128_pd(tmp0, 0);
   // x = x0x1
-  y = _mm256_extractf128_pd(tmp0, 1);
+  z = _mm256_extractf128_pd(tmp0, 1);
   // y = y0y1
   __m256d tmp1 = _mm256_unpackhi_pd(a, b);
   // tmp1 = z0z1XX
-  z  = _mm256_extractf128_pd(tmp1,0);
+  y  = _mm256_extractf128_pd(tmp1,0);
   // z = z0z1
 }
 
