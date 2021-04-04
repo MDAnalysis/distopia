@@ -100,9 +100,11 @@ void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
     // access with stride of 2
     // WARNING Abuse of big buffer  until loader can be fixed.
     auto c0 = VectorTriple<VectorT>();
-    c0.template idxload<2>(coords, coords + 1000000, b_i);
+    c0.template idxload<2>(coords, coords + 1000000,
+                           b_i + 2 * i * ValuesPerPack<VectorT>);
     auto c1 = VectorTriple<VectorT>();
-    c1.template idxload<2>(coords, coords + 1000000, b_j);
+    c1.template idxload<2>(coords, coords + 1000000,
+                           b_j + 2 * i * ValuesPerPack<VectorT>);
 
     VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
     // TODO constexpr if with CXX17 support
@@ -111,10 +113,6 @@ void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
     } else {
       genericstore(&out[i], result);
     }
-    // these overflow on last iter but we dont actually use them to access
-    // anything after so all good.
-    b_i += 2 * ValuesPerPack<VectorT>;
-    b_j += 2 * ValuesPerPack<VectorT>;
   }
   // TODO constexpr if with CXX17 support
   if (streaming_store) {
