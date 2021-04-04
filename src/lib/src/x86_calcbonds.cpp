@@ -89,8 +89,8 @@ void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
   }
   for (; i < n; i += ValuesPerPack<VectorT>) {
     // access with stride of 2
-    auto c0 = VectorTriple<VectorT>(coords, coords + 1000000, b_i[i], 2);
-    auto c1 = VectorTriple<VectorT>(coords, coords + 1000000, b_j[i], 2);
+    auto c0 = VectorTriple<VectorT>(coords, coords + 1000000, b_i + i, 2);
+    auto c1 = VectorTriple<VectorT>(coords, coords + 1000000, b_j + i, 2);
 
     VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
     // TODO constexpr if with CXX17 support
@@ -258,13 +258,13 @@ void CalcBondsIdxOrtho(const double *coords, const std::size_t *idxs, const doub
 template <>
 void CalcBondsIdxNoBox(const float *coords, const std::size_t *idxs, std::size_t n,
                             float *out) {
-  CalcBondsIdxNoBoxDispatch(coords, idxs, box, n, out);
+  CalcBondsIdxNoBoxDispatch(coords, idxs, n, out);
 }
 
 template <>
-void CalcBondsNoBox(const double *coords, const std::size_t *idxs, std::size_t n,
+void CalcBondsIdxNoBox(const double *coords, const std::size_t *idxs, std::size_t n,
                             double *out) {
-  CalcBondsNoBoxDispatch(coords, idxs, box, n, out);
+  CalcBondsIdxNoBoxDispatch(coords, idxs, n, out);
 }
 
 #endif // DISTOPIA_X86_SSE4_1

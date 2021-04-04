@@ -54,7 +54,6 @@ inline VectorT SafeIdxLoad4(const VectorToScalarT<VectorT> *source,
   return tmp;
 }
 
-// transforms xyz coordinates from AOS to SOA
 inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
                             const __m128 d, __m128 &x, __m128 &y, __m128 &z) {
   // U = undefined, X = junk
@@ -76,6 +75,22 @@ inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
 }
 
 #ifdef DISTOPIA_X86_AVX
+
+inline void Deinterleave2x3(const __m256d a, const __m256d b, __m128d &x,
+                            __m128d &y, __m128d &z) {
+  // U = undefined, X = junk
+  // PRE: a  = x0y0z0X b = x1y1z1X
+  __m256d tmp0 = _mm256_unpacklo_pd(a, b);
+  // tmp0 = x0x1y0y1
+  x = _mm256_extractf128_pd(tmp0, 0);
+  // x = x0x1
+  y = _mm256_extractf128_pd(tmp0, 1);
+  // y = y0y1
+  __m256d tmp1 = _mm256_unpackhi_pd(a, b);
+  // tmp1 = z0z1XX
+  z  = _mm256_extractf128_pd(tmp1,0);
+  // z = z0z1
+}
 
 // transforms xyz coordinates from AOS to SOA
 // NOTE can probably be improved
@@ -140,8 +155,9 @@ inline void Deinterleave8x3(const __m128 a, const __m128 b, const __m128 c,
 
 #endif // DISTOPIA_X86_AVX
 
-// wraps the individual deinterleaves, use of VectorToLoadT is required for
-// __m256 case which takes an array of __m128, instead of the same type.
+// wraps the individual deinterleaves, use of VectorToLoadT is required for:
+//  1. __m256 case which takes an array of __m128, instead of the same type.
+//  2. __m128d case which takes an array of __m256d innstead of the same type.
 
 inline void DeinterleaveIdx(const __m128 *vec_arr, __m128 &x, __m128 &y,
                             __m128 &z) {
@@ -149,6 +165,11 @@ inline void DeinterleaveIdx(const __m128 *vec_arr, __m128 &x, __m128 &y,
 }
 
 #ifdef DISTOPIA_X86_AVX
+
+inline void DeinterleaveIdx(const __m256d *vec_arr, __m128d &x, __m128d &y,
+                            __m128d &z) {
+  Deinterleave2x3(vec_arr[0], vec_arr[1], x, y, z);
+}
 
 inline void DeinterleaveIdx(const __m256d *vec_arr, __m256d &x, __m256d &y,
                             __m256d &z) {
@@ -232,23 +253,23 @@ inline void Interleave3(const float x, const float y, const float z, __m128 &a,
   c = set_p(z, y, x, z);
   // a = xyzx, b = yzxy, c = zxyz
 }
-inline void Interleave3(const double x, const double y, const double z, __m128d &a, __m128d &b,
-                        __m128d &c) {
+inline void Interleave3(const double x, const double y, const double z,
+                        __m128d &a, __m128d &b, __m128d &c) {
   a = set_p(y, x);
   b = set_p(x, z);
   c = set_p(z, y);
   // a = xy, b = zx, c = yz
 }
 #ifdef DISTOPIA_X86_AVX
-inline void Interleave3(const float x, const float y, const float z, __m256 &a, __m256 &b,
-                        __m256 &c) {
+inline void Interleave3(const float x, const float y, const float z, __m256 &a,
+                        __m256 &b, __m256 &c) {
   a = set_p(y, x, z, y, x, z, y, x);
   b = set_p(x, z, y, x, z, y, x, z);
   c = set_p(z, y, x, z, y, x, z, y);
   // a = xyzxyzxy, b = zxyzxyzx, c = yzxyzxyz
 }
-inline void Interleave3(const double x, const double y, const double z, __m256d &a, __m256d &b,
-                        __m256d &c) {
+inline void Interleave3(const double x, const double y, const double z,
+                        __m256d &a, __m256d &b, __m256d &c) {
   a = set_p(x, z, y, x);
   b = set_p(y, x, z, y);
   c = set_p(z, y, x, z);

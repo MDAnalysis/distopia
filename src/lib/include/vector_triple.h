@@ -25,7 +25,7 @@ template <typename T, EnableIfFloating<T> = 0> inline T generic_set1(T src) {
   return src;
 }
 
-//  idx loader function that covers overload for float and double
+// idx loader function that covers overload for float and double
 // step defines the load stride into the indicies
 template <typename VectorT, EnableIfVector<VectorT> = 0>
 inline void genericidxload(const VectorToScalarT<VectorT> *source,
@@ -110,7 +110,7 @@ public:
   // construct by loading discontiguously from an array of ScalarT eg float* or
   // double*. Must pass references as deinterleave must happen on x,y and z
   // simultaneously
-  inline VectorTriple(ScalarT *source, const ScalarT *end,
+  inline VectorTriple(const ScalarT *source, const ScalarT *end,
                       const std::size_t *idxs, const unsigned char step) {
     genericidxload<VectorT>(source, end, idxs, this->x, this->y, this->z, step);
   }
