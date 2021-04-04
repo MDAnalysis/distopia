@@ -92,6 +92,10 @@ protected:
     if (results) {
       delete[] results;
     }
+
+    if (idxs) {
+      delete[] idxs;
+    }
   }
 };
 
@@ -178,6 +182,8 @@ TEST(KnownValues, NoBox) {
     EXPECT_FLOAT_EQ(ref[j], j);
 }
 
+#ifdef DISTOPIA_X86_AVX2_FMA
+
 // coordinates in this test can overhang the edge of the box by 2 * the box
 // size.
 TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanilla) {
@@ -193,3 +199,5 @@ TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanilla) {
   }
   SUCCEED();
 }
+
+#endif //DISTOPIA_X86_AVX2_FMA

@@ -20,6 +20,13 @@ inline __m128 ShuntFirst2Last(const __m128 input) {
   // return bcda
 }
 
+// shuffle first element of __m128 to end and shunt everything left by one
+inline __m128 ShuntLast2First(const __m128 input) {
+  // PRE: input = abcd
+  return shuffle_p<_MM_SHUFFLE(2, 1, 0, 3)>(input, input);
+  // return dabc
+}
+
 #ifdef DISTOPIA_X86_AVX2_FMA
 
 // shuffle first element of __m256d to end and shunt everything left by one
@@ -30,6 +37,12 @@ inline __m256d ShuntFirst2Last(const __m256d input) {
   // PRE: input = abcd
   return _mm256_permute4x64_pd(input, _MM_SHUFFLE(0, 3, 2, 1));
   // return bcda
+}
+
+inline __m256d ShuntLast2First(const __m256d input) {
+  // PRE: input = abcd
+  return _mm256_permute4x64_pd(input, _MM_SHUFFLE(2, 1, 0, 3));
+  // return dabc
 }
 
 #endif // DISTOPIA_X86_AVX2_FMA
@@ -245,38 +258,6 @@ inline void Deinterleave3(const __m256d a, const __m256d b, const __m256d c,
   // x = x0x1x2x3, y = y0y1y2y3, z = z0z1z2z3
 }
 #endif
-
-inline void Interleave3(const float x, const float y, const float z, __m128 &a,
-                        __m128 &b, __m128 &c) {
-  a = set_p(x, z, y, x);
-  b = set_p(y, x, z, y);
-  c = set_p(z, y, x, z);
-  // a = xyzx, b = yzxy, c = zxyz
-}
-inline void Interleave3(const double x, const double y, const double z,
-                        __m128d &a, __m128d &b, __m128d &c) {
-  a = set_p(y, x);
-  b = set_p(x, z);
-  c = set_p(z, y);
-  // a = xy, b = zx, c = yz
-}
-#ifdef DISTOPIA_X86_AVX
-inline void Interleave3(const float x, const float y, const float z, __m256 &a,
-                        __m256 &b, __m256 &c) {
-  a = set_p(y, x, z, y, x, z, y, x);
-  b = set_p(x, z, y, x, z, y, x, z);
-  c = set_p(z, y, x, z, y, x, z, y);
-  // a = xyzxyzxy, b = zxyzxyzx, c = yzxyzxyz
-}
-inline void Interleave3(const double x, const double y, const double z,
-                        __m256d &a, __m256d &b, __m256d &c) {
-  a = set_p(x, z, y, x);
-  b = set_p(y, x, z, y);
-  c = set_p(z, y, x, z);
-  // a = xyzx, b = yzxy, c = zxyz
-}
-#endif
-
 } // namespace
 #endif // DISTOPIA_X86_SSE4_1
 
