@@ -85,12 +85,19 @@ void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
     auto c0 = VectorTriple<VectorT>(coords, coords + 1000000, b_i, 2);
     auto c1 = VectorTriple<VectorT>(coords, coords + 1000000, b_j, 2);
     VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
+    // TODO constexpr if with CXX17 support
+    if (streaming_store) {
+      genericstream(out, result);
+    } else {
+      genericstore(out, result);
+    }
     i += n % ValuesPerPack<VectorT>;
   }
   for (; i < n; i += ValuesPerPack<VectorT>) {
     // access with stride of 2
-    auto c0 = VectorTriple<VectorT>(coords, coords + 1000000, b_i + i, 2);
-    auto c1 = VectorTriple<VectorT>(coords, coords + 1000000, b_j + i, 2);
+    // WARNING Abuse of big buffer  until loader can be fixed.
+    auto c0 = VectorTriple<VectorT>(coords, coords + 1000000, b_i, 2);
+    auto c1 = VectorTriple<VectorT>(coords, coords + 1000000, b_j, 2);
 
     VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
     // TODO constexpr if with CXX17 support
@@ -99,6 +106,10 @@ void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
     } else {
       genericstore(&out[i], result);
     }
+    // these overflow on last iter but we dont actually use them to access
+    // anything after so all good.
+    b_i += 2 * ValuesPerPack<VectorT>;
+    b_j += 2 * ValuesPerPack<VectorT>;
   }
   // TODO constexpr if with CXX17 support
   if (streaming_store) {
@@ -191,10 +202,9 @@ void CalcBondsIdxOrthoDispatch(const T *coords, const std::size_t *idxs,
   }
 }
 
-
 template <typename T>
-void CalcBondsIdxNoBoxDispatch(const T *coords, const std::size_t *idxs, std::size_t n,
-                            T *out) {
+void CalcBondsIdxNoBoxDispatch(const T *coords, const std::size_t *idxs,
+                               std::size_t n, T *out) {
   std::size_t problem_size = n * sizeof(T);
   bool use_big_vector = distopia_unlikely(problem_size >= kBigVectorThreshold);
   bool use_streaming_stores =
@@ -203,18 +213,18 @@ void CalcBondsIdxNoBoxDispatch(const T *coords, const std::size_t *idxs, std::si
   if (use_big_vector) {
     if (use_streaming_stores) {
       CalcBondsIdxInner<true, BigVecT<T>, NoBox<BigVecT<T>>>(coords, idxs,
-                                                          nullptr, n, out);
+                                                             nullptr, n, out);
     } else {
       CalcBondsIdxInner<false, BigVecT<T>, NoBox<BigVecT<T>>>(coords, idxs,
-                                                           nullptr, n, out);
+                                                              nullptr, n, out);
     }
   } else {
     if (use_streaming_stores) {
-      CalcBondsIdxInner<true, SmallVecT<T>, NoBox<SmallVecT<T>>>(coords, idxs,
-                                                              nullptr, n, out);
+      CalcBondsIdxInner<true, SmallVecT<T>, NoBox<SmallVecT<T>>>(
+          coords, idxs, nullptr, n, out);
     } else {
-      CalcBondsIdxInner<false, SmallVecT<T>, NoBox<SmallVecT<T>>>(coords, idxs,
-                                                               nullptr, n, out);
+      CalcBondsIdxInner<false, SmallVecT<T>, NoBox<SmallVecT<T>>>(
+          coords, idxs, nullptr, n, out);
     }
   }
 }
@@ -245,25 +255,25 @@ void CalcBondsNoBox(const double *coords0, const double *coords1, std::size_t n,
 }
 
 template <>
-void CalcBondsIdxOrtho(const float *coords, const std::size_t *idxs, const float* box, std::size_t n,
-                            float *out) {
+void CalcBondsIdxOrtho(const float *coords, const std::size_t *idxs,
+                       const float *box, std::size_t n, float *out) {
   CalcBondsIdxOrthoDispatch(coords, idxs, box, n, out);
 }
 template <>
-void CalcBondsIdxOrtho(const double *coords, const std::size_t *idxs, const double* box, std::size_t n,
-                            double *out) {
+void CalcBondsIdxOrtho(const double *coords, const std::size_t *idxs,
+                       const double *box, std::size_t n, double *out) {
   CalcBondsIdxOrthoDispatch(coords, idxs, box, n, out);
 }
 
 template <>
-void CalcBondsIdxNoBox(const float *coords, const std::size_t *idxs, std::size_t n,
-                            float *out) {
+void CalcBondsIdxNoBox(const float *coords, const std::size_t *idxs,
+                       std::size_t n, float *out) {
   CalcBondsIdxNoBoxDispatch(coords, idxs, n, out);
 }
 
 template <>
-void CalcBondsIdxNoBox(const double *coords, const std::size_t *idxs, std::size_t n,
-                            double *out) {
+void CalcBondsIdxNoBox(const double *coords, const std::size_t *idxs,
+                       std::size_t n, double *out) {
   CalcBondsIdxNoBoxDispatch(coords, idxs, n, out);
 }
 

@@ -9,7 +9,7 @@
 // constants
 #define BOXSIZE 10
 #define NRESULTS 100000
-#define NINDICIES 1000
+#define NINDICIES 65
 
 inline void EXPECT_EQ_T(float result, float ref) {
   EXPECT_FLOAT_EQ(result, ref);
@@ -188,6 +188,7 @@ TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanilla) {
                     this->results);
 
   for (std::size_t i = 0; i < this->nindicies/2; i++) {
+    //std::cout << this->results[i] << " " << this->ref[i] << "\n";
     EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
     // loss of accuracy somewhere?
   }
