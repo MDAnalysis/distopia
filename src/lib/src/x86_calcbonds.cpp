@@ -210,10 +210,10 @@ void CalcBondsIdxNoBoxDispatch(const T *coords, const std::size_t *idxs, std::si
     }
   } else {
     if (use_streaming_stores) {
-      CalcBondsInner<true, SmallVecT<T>, NoBox<SmallVecT<T>>>(coords, idxs,
+      CalcBondsIdxInner<true, SmallVecT<T>, NoBox<SmallVecT<T>>>(coords, idxs,
                                                               nullptr, n, out);
     } else {
-      CalcBondsInner<false, SmallVecT<T>, NoBox<SmallVecT<T>>>(coords, idxs,
+      CalcBondsIdxInner<false, SmallVecT<T>, NoBox<SmallVecT<T>>>(coords, idxs,
                                                                nullptr, n, out);
     }
   }

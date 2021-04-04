@@ -185,9 +185,9 @@ TEST(KnownValues, NoBox) {
 // size.
 TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanilla) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
-  VanillaCalcBonds<TypeParam>(this->coords0, this->coords1, this->box,
-                              this->nresults, this->ref);
-  CalcBondsIdxOrtho(this->coords0, this->coords1, this->box, this->nresults,
+  // VanillaCalcBonds<TypeParam>(this->coords0, this->coords1, this->box,
+  //                             this->nresults, this->ref);
+  CalcBondsIdxOrtho(this->coords0, this->idxs, this->box, this->nresults,
                  this->results);
 
   for (std::size_t i = 0; i < this->nresults; i++) {
