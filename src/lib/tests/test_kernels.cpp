@@ -183,12 +183,11 @@ TEST(KnownValues, NoBox) {
 TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanilla) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
   VanillaCalcBondsIdx<TypeParam>(this->coords0, this->idxs, this->box,
-                                 this->nindicies/2, this->ref);
-  CalcBondsIdxOrtho(this->coords0, this->idxs, this->box, this->nindicies/2,
+                                 this->nindicies / 2, this->ref);
+  CalcBondsIdxOrtho(this->coords0, this->idxs, this->box, this->nindicies / 2,
                     this->results);
 
-  for (std::size_t i = 0; i < this->nindicies/2; i++) {
-    //std::cout << this->results[i] << " " << this->ref[i] << "\n";
+  for (std::size_t i = 0; i < this->nindicies / 2; i++) {
     EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
     // loss of accuracy somewhere?
   }
