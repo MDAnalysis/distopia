@@ -5,14 +5,16 @@
 #ifndef XDIST_VANILLA_H
 #define XDIST_VANILLA_H
 
-template <typename ScalarT>
-void VanillaCalcBonds(const ScalarT *coords1, const ScalarT *coords2,
-                      const ScalarT *box, unsigned int nvals, ScalarT *output) {
+#include <iostream>
+
+template <typename T>
+void VanillaCalcBonds(const T *coords1, const T *coords2, const T *box,
+                      unsigned int nvals, T *output) {
   for (unsigned int i = 0; i < nvals; ++i) {
-    ScalarT r2 = 0.0;
+    T r2 = 0.0;
     for (unsigned char j = 0; j < 3; ++j) {
-      ScalarT rij = coords1[i * 3 + j] - coords2[i * 3 + j];
-      ScalarT adj = round(rij / box[j]);
+      T rij = coords1[i * 3 + j] - coords2[i * 3 + j];
+      T adj = round(rij / box[j]);
       rij -= adj * box[j];
 
       r2 += rij * rij;
@@ -22,21 +24,35 @@ void VanillaCalcBonds(const ScalarT *coords1, const ScalarT *coords2,
 }
 
 template <typename T>
-void VanillaCalcBondsNoBox(const T* c1, const T* c2, unsigned int nvals, T* out) {
-  for (unsigned int i=0; i<nvals; ++i) {
+void VanillaCalcBondsNoBox(const T *c1, const T *c2, unsigned int nvals,
+                           T *out) {
+  for (unsigned int i = 0; i < nvals; ++i) {
     T r2 = 0.0;
-    for (unsigned char j=0; j<3; ++j) {
-      T rij = c1[i*3 + j] - c2[i*3 + j];
+    for (unsigned char j = 0; j < 3; ++j) {
+      T rij = c1[i * 3 + j] - c2[i * 3 + j];
       r2 += rij * rij;
     }
     *out++ = sqrt(r2);
   }
 }
+template <typename T>
+void VanillaCalcBondsIdx(const T *coords, std::size_t *idx, const T *box,
+                         unsigned int nvals, T *output) {
+  unsigned int b1, b2;
+  for (unsigned int i = 0; i < nvals; ++i) {
+    b1 = idx[2 * i];
+    b2 = idx[2 * i + 1];
+    T r2 = 0.0;
+    for (unsigned char j = 0; j < 3; ++j) {
+      T rij = coords[b1 * 3 + j] - coords[b2 * 3 + j];
+      T adj = round(rij / box[j]);
+      rij -= adj * box[j];
 
-
-
-void VanillaCalcBondsIdx(const float *coords, const unsigned int *idx,
-                         const float *box, unsigned int nvals, float *output);
+      r2 += rij * rij;
+    }
+    *output++ = sqrt(r2);
+  }
+}
 
 void VanillaCalcAngles(const float *coords1, const float *coords2,
                        const float *coords3, const float *box,
