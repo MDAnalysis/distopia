@@ -15,7 +15,7 @@ TEST(TestX86Vec, Float128LoadScalar) {
   __m128 correct_y = _mm_setr_ps(01.f, 04.f, 07.f, 10.f);
   __m128 correct_z = _mm_setr_ps(02.f, 05.f, 08.f, 11.f);
 
-  VectorTriple<__m128> vt = VectorTriple<__m128>(abc);
+  auto vt = VectorTriple<__m128>(abc);
 
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.x, correct_x)));
@@ -35,7 +35,7 @@ TEST(TestX86Vec, Double128LoadScalar) {
   __m128d correct_y = _mm_setr_pd(01.0, 04.0);
   __m128d correct_z = _mm_setr_pd(02.0, 05.0);
 
-  VectorTriple<__m128d> vt = VectorTriple<__m128d>(abc);
+  auto vt = VectorTriple<__m128d>(abc);
 
   bool x_is_correct =
       _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(vt.x, correct_x)));
@@ -69,7 +69,7 @@ TEST(TestX86Vec, Float256LoadScalar) {
   __m128 correct_y_lower = _mm256_castps256_ps128(correct_y);
   __m128 correct_z_lower = _mm256_castps256_ps128(correct_z);
 
-  VectorTriple<__m256> vt = VectorTriple<__m256>(abc);
+  auto vt = VectorTriple<__m256>(abc);
 
   __m128 a_upper = _mm256_extractf128_ps(vt.x, 1);
   __m128 b_upper = _mm256_extractf128_ps(vt.y, 1);
@@ -114,7 +114,7 @@ TEST(TestX86Vec, Double256LoadScalar) {
   __m128d correct_y_lower = _mm256_castpd256_pd128(correct_y);
   __m128d correct_z_lower = _mm256_castpd256_pd128(correct_z);
 
-  VectorTriple<__m256d> vt = VectorTriple<__m256d>(abc);
+  auto vt = VectorTriple<__m256d>(abc);
 
   __m128d a_upper = _mm256_extractf128_pd(vt.x, 1);
   __m128d b_upper = _mm256_extractf128_pd(vt.y, 1);
@@ -154,7 +154,7 @@ TEST(TestX86Vec, Float128LoadVectorAndStore) {
   __m128 y = _mm_setr_ps(04.f, 05.f, 06.f, 07.f);
   __m128 z = _mm_setr_ps(08.f, 09.f, 10.f, 11.f);
 
-  VectorTriple<__m128> vt = VectorTriple<__m128>(x, y, z);
+  auto vt = VectorTriple<__m128>(x, y, z);
   float result[vt.n_scalars];
   vt.store(result);
   for (std::size_t i = 0; i < vt.n_scalars; i++) {
@@ -169,7 +169,7 @@ TEST(TestX86Vec, Double128LoadVectorAndStore) {
   __m128d y = _mm_setr_pd(02.0, 03.0);
   __m128d z = _mm_setr_pd(04.0, 05.0);
 
-  VectorTriple<__m128d> vt = VectorTriple<__m128d>(x, y, z);
+  auto vt = VectorTriple<__m128d>(x, y, z);
   double result[vt.n_scalars];
   vt.store(result);
   for (std::size_t i = 0; i < vt.n_scalars; i++) {
@@ -188,7 +188,7 @@ TEST(TestX86Vec, Float256LoadVectorAndStore) {
   __m256 y = _mm256_setr_ps(08.f, 09.f, 10.f, 11.f, 12.f, 13.f, 14.f, 15.f);
   __m256 z = _mm256_setr_ps(16.f, 17.f, 18.f, 19.f, 20.f, 21.f, 22.f, 23.f);
 
-  VectorTriple<__m256> vt = VectorTriple<__m256>(x, y, z);
+  auto vt = VectorTriple<__m256>(x, y, z);
   float result[vt.n_scalars];
   vt.store(result);
   for (std::size_t i = 0; i < vt.n_scalars; i++) {
@@ -204,7 +204,7 @@ TEST(TestX86Vec, Double256LoadVectorAndStore) {
   __m256d y = _mm256_setr_pd(04.0, 05.0, 06.0, 07.0);
   __m256d z = _mm256_setr_pd(08.0, 09.0, 10.0, 11.0);
 
-  VectorTriple<__m256d> vt = VectorTriple<__m256d>(x, y, z);
+  auto vt = VectorTriple<__m256d>(x, y, z);
   double result[vt.n_scalars];
   vt.store(result);
   for (std::size_t i = 0; i < vt.n_scalars; i++) {
@@ -223,8 +223,8 @@ TEST(TestX86Vec, Float128OperatorPlus) {
   __m128 correct_y = _mm_setr_ps(02.f, 02.f, 02.f, 02.f);
   __m128 correct_z = _mm_setr_ps(04.f, 04.f, 04.f, 04.f);
 
-  VectorTriple<__m128> vtx = VectorTriple<__m128>(x, y, z);
-  VectorTriple<__m128> vty = VectorTriple<__m128>(x, y, z);
+  auto vtx = VectorTriple<__m128>(x, y, z);
+  auto vty = VectorTriple<__m128>(x, y, z);
   auto vt_res = vtx + vty;
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.x, correct_x)));
@@ -246,8 +246,8 @@ TEST(TestX86Vec, Float128OperatorMinus) {
   __m128 correct_y = _mm_setr_ps(00.f, 00.f, 00.f, 00.f);
   __m128 correct_z = _mm_setr_ps(02.f, 02.f, 02.f, 02.f);
 
-  VectorTriple<__m128> vtx = VectorTriple<__m128>(x, y, z);
-  VectorTriple<__m128> vty = VectorTriple<__m128>(z, y, x);
+  auto vtx = VectorTriple<__m128>(x, y, z);
+  auto vty = VectorTriple<__m128>(z, y, x);
   auto vt_res = vtx - vty;
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.x, correct_x)));
@@ -269,8 +269,8 @@ TEST(TestX86Vec, Float128OperatorMul) {
   __m128 correct_y = _mm_setr_ps(01.f, 01.f, 01.f, 01.f);
   __m128 correct_z = _mm_setr_ps(00.f, 00.f, 00.f, 00.f);
 
-  VectorTriple<__m128> vtx = VectorTriple<__m128>(x, y, z);
-  VectorTriple<__m128> vty = VectorTriple<__m128>(z, y, x);
+  auto vtx = VectorTriple<__m128>(x, y, z);
+  auto vty = VectorTriple<__m128>(z, y, x);
   auto vt_res = vtx * vty;
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.x, correct_x)));
@@ -292,8 +292,8 @@ TEST(TestX86Vec, Float128OperatorDiv) {
   __m128 correct_y = _mm_setr_ps(0.5f, 0.5f, 0.5f, 0.5f);
   __m128 correct_z = _mm_setr_ps(02.f, 02.f, 02.f, 02.f);
 
-  VectorTriple<__m128> vtx = VectorTriple<__m128>(x, y, z);
-  VectorTriple<__m128> vty = VectorTriple<__m128>(z, z, y);
+  auto vtx = VectorTriple<__m128>(x, y, z);
+  auto vty = VectorTriple<__m128>(z, z, y);
   auto vt_res = vtx / vty;
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.x, correct_x)));
@@ -315,8 +315,8 @@ TEST(TestX86SwizzleVec, Float128Deinterleave) {
   __m128 correct_y = _mm_setr_ps(01.f, 11.f, 21.f, 31.f);
   __m128 correct_z = _mm_setr_ps(02.f, 12.f, 22.f, 32.f);
 
-  VectorTriple<__m128> vt = VectorTriple<__m128>(a, b, c);
-  VectorTriple<__m128> vt_res = vt.deinterleave();
+  auto vt = VectorTriple<__m128>(a, b, c);
+  auto vt_res = vt.deinterleave();
 
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt_res.x, correct_x)));
@@ -338,8 +338,8 @@ TEST(TestX86SwizzleVec, Double128Deinterleave) {
   __m128d correct_y = _mm_setr_pd(01., 11.);
   __m128d correct_z = _mm_setr_pd(02., 12.);
 
-  VectorTriple<__m128d> vt = VectorTriple<__m128d>(a, b, c);
-  VectorTriple<__m128d> vt_res = vt.deinterleave();
+  auto vt = VectorTriple<__m128d>(a, b, c);
+  auto vt_res = vt.deinterleave();
 
   bool x_is_correct =
       _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(vt_res.x, correct_x)));
@@ -365,8 +365,8 @@ TEST(TestX86SwizzleVec, Float256Deinterleave) {
   __m256 correct_z =
       _mm256_setr_ps(02.f, 12.f, 22.f, 32.f, 42.f, 52.f, 62.f, 72.f);
 
-  VectorTriple<__m256> vt = VectorTriple<__m256>(a, b, c);
-  VectorTriple<__m256> vt_res = vt.deinterleave();
+  auto vt = VectorTriple<__m256>(a, b, c);
+  auto vt_res = vt.deinterleave();
 
   bool x_is_correct = _mm256_testc_ps(
       _mm256_setzero_ps(), _mm256_cmp_ps(vt_res.x, correct_x, _CMP_NEQ_UQ));
@@ -388,8 +388,8 @@ TEST(TestX86SwizzleVec, Double256Deinterleave) {
   __m256d correct_y = _mm256_setr_pd(01., 11., 21., 31.);
   __m256d correct_z = _mm256_setr_pd(02., 12., 22., 32.);
 
-  VectorTriple<__m256d> vt = VectorTriple<__m256d>(a, b, c);
-  VectorTriple<__m256d> vt_res = vt.deinterleave();
+  auto vt = VectorTriple<__m256d>(a, b, c);
+  auto vt_res = vt.deinterleave();
 
   bool x_is_correct = _mm256_testc_pd(
       _mm256_setzero_pd(), _mm256_cmp_pd(vt_res.x, correct_x, _CMP_NEQ_UQ));
@@ -414,6 +414,16 @@ TEST(TestX86SwizzleVec, Float128ShuntFirst2Last) {
   EXPECT_TRUE(x_is_correct);
 }
 
+TEST(TestX86SwizzleVec, Float128ShuntLast2First) {
+  float x[4] = {01.f, 02.f, 03.f, 00.f};
+  __m128 correct_x = _mm_setr_ps(00.f, 01.f, 02.f, 03.f);
+  __m128 data = _mm_loadu_ps(x);
+  __m128 result = ShuntLast2First(data);
+  bool x_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(result, correct_x)));
+  EXPECT_TRUE(x_is_correct);
+}
+
 #ifdef DISTOPIA_X86_AVX2_FMA
 
 TEST(TestX86SwizzleVec, Double256ShuntFirst2Last) {
@@ -426,14 +436,24 @@ TEST(TestX86SwizzleVec, Double256ShuntFirst2Last) {
   EXPECT_TRUE(x_is_correct);
 }
 
+TEST(TestX86SwizzleVec, Double256ShuntLast2First) {
+  double x[4] = {01.0, 02.0, 03.0, 0.0};
+  __m256d correct_x = _mm256_setr_pd(0.0, 01.0, 02.0, 03.0);
+  __m256d data = _mm256_loadu_pd(x);
+  __m256d result = ShuntLast2First(data);
+  bool x_is_correct = _mm256_testc_pd(
+      _mm256_setzero_pd(), _mm256_cmp_pd(result, correct_x, _CMP_NEQ_UQ));
+  EXPECT_TRUE(x_is_correct);
+}
+
 #endif // DISTOPIA_X86_AVX2_FMA
 
 TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
   // dummy data with  4x target and 4x incorrect data mixed in
   // idx positions for correct data 0,2,4,6
-  float xyz[21] = {00.f, 01.f, 02.f, 0.0f, 0.0f, 0.0f, 10.f,
-                   11.f, 12.f, 0.0f, 0.0f, 0.0f, 20.f, 21.f,
-                   22.f, 0.0f, 0.0f, 0.0f, 30.f, 31.f, 32.f};
+  float xyz[21] = {00.f, 01.f, 02.f, -1.0f, -1.0f, -1.0f, 10.f,
+                   11.f, 12.f, -1.0f, -1.0f, -1.0f, 20.f, 21.f,
+                   22.f, -1.0f, -1.0f, -1.0f, 30.f, 31.f, 32.f};
 
   __m128 correct_x = _mm_setr_ps(00.f, 10.f, 20.f, 30.f);
   __m128 correct_y = _mm_setr_ps(01.f, 11.f, 21.f, 31.f);
@@ -442,6 +462,7 @@ TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
   std::size_t idx[4] = {0, 2, 4, 6};
   auto vt = VectorTriple<__m128>();
   vt.template idxload<1>(xyz, xyz + 21, idx);
+  vt.debugprint("vector");
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.x, correct_x)));
   bool y_is_correct =
