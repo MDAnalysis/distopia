@@ -462,7 +462,6 @@ TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
   std::size_t idx[4] = {0, 2, 4, 6};
   auto vt = VectorTriple<__m128>();
   vt.template idxload<1>(xyz, xyz + 21, idx);
-  vt.debugprint("vector");
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.x, correct_x)));
   bool y_is_correct =

@@ -101,55 +101,42 @@ inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
 inline void Deinterleave2x3(const __m256d a, const __m256d b, __m128d &x,
                             __m128d &y, __m128d &z) {
   // U = undefined, X = junk
-  // PRE: a  = x0y0z0X b = x1y1z1X
-  __m256d tmp0 = _mm256_unpacklo_pd(a, b);
-  // tmp0 = x0x1y0y1
+  // PRE: a  = Xx0y0z0 b = Xx1y1z1
+  __m256d tmp0 = _mm256_unpackhi_pd(a, b);
+  // tmp0 = y0y1z0z1
   x = _mm256_extractf128_pd(tmp0, 0);
-  // x = x0x1
+  // y = y0y1
   z = _mm256_extractf128_pd(tmp0, 1);
   // y = y0y1
-  __m256d tmp1 = _mm256_unpackhi_pd(a, b);
-  // tmp1 = z0z1XX
-  y = _mm256_extractf128_pd(tmp1, 0);
+  __m256d tmp1 = _mm256_unpacklo_pd(a, b);
+  // tmp1 = XXx0x1
+  y = _mm256_extractf128_pd(tmp1, 1);
   // z = z0z1
 }
 
 // transforms xyz coordinates from AOS to SOA
-// [4*3] xyzX xyzX xyzX xyzX  ->
+// [4*3] Xxyz Xxyz Xxyz Xxyz  ->
 // [3*4] xxxx yyyy zzzz
 // NOTE can probably be improved
 inline void Deinterleave4x3(const __m256d a, const __m256d b, const __m256d c,
                             const __m256d d, __m256d &x, __m256d &y,
                             __m256d &z) {
   // U = undefined, X = junk
+   // U = undefined, X = junk
   // PRE: a  = Xx0y0z0 b = Xx1y1z1 c = Xx2y2z2 d = Xx3y3z3
   __m256d tmp0 = _mm256_unpacklo_pd(a, b);
-  // tmp0 = x0x1z0z1
-  __m256d tmp2 = _mm256_unpacklo_pd(c, d);
-  // tmp2 = x2x3z2z3
-  __m128d x_upper = _mm256_castpd256_pd128(tmp2);
-  // x_upper = x2x3
-  x = _mm256_insertf128_pd(tmp0, x_upper, 1);
-  // x0x1x2x3
-  __m128d z_lower = _mm256_extractf128_pd(tmp0, 1);
-  // z_lower = z0z1
-  __m128d z_upper = _mm256_extractf128_pd(tmp2, 1);
-  z = _mm256_insertf128_pd(z, z_lower, 0);
-  // z = z0z1UU
-  z = _mm256_insertf128_pd(z, z_upper, 1);
-  // z =  z0z1z2z3
-  __m256d tmp1 = _mm256_unpackhi_pd(a, b);
-  // tmp1 = y0y1XX
+  // tmp0 = XXx0x1
+  __m256d tmp1 = _mm256_unpacklo_pd(c, d);
+  // tmp1 = XXx1x2
+  __m256d tmp2 = _mm256_unpackhi_pd(a, b);
+  // tmp2 = y0y1z0z1
   __m256d tmp3 = _mm256_unpackhi_pd(c, d);
-  // tmp3 = y2y3XX
-  __m128d y_upper = _mm256_castpd256_pd128(tmp3);
-  // y_upper = y2y3
-  y = _mm256_insertf128_pd(tmp1, y_upper, 1);
-  // y = y0y1y2y3
+  // tmp3 = y2y3z2z3
+
 }
 
 // transforms xyz coordinates from AOS to SOA
-// [8*3] xyzX xyzX xyzX xyzX xyzX xyzX xyzX xyzX ->
+// [8*3] Xxyz Xxyz Xxyz Xxyz Xxyz Xxyz Xxyz Xxyz ->
 // [3*8] xxxxxxxx yyyyyyyy zzzzzzzz
 inline void Deinterleave8x3(const __m128 a, const __m128 b, const __m128 c,
                             const __m128 d, const __m128 e, const __m128 f,
