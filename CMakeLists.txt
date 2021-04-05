@@ -10,7 +10,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # options
 option(DISTOPIA_BUILD_TEST "Build distopia testing binary." on)
 option(DISTOPIA_BUILD_TIMINGS "Build distopia timings binary." on)
-
+option(DISTOPIA_COVERAGE "generate a code coverage report" off)
+if(DISTOPIA_COVERAGE)
+  set(CMAKE_BUILD_TYPE COVERAGE)
+endif()
 
 # add the directory structure 
 set(DISTOPIA_ROOT_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
@@ -22,6 +25,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
 
 # include some pretty colors
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/ColorOutput.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/CodeCoverage.cmake)
 
 
 # user options for SIMD instructions
@@ -238,29 +242,36 @@ endif()
 set(COMPILER_FLAGS)
 set(COMPILER_FLAGS_DEBUG)
 set(COMPILER_FLAGS_RELEASE)
+set(COMPILER_FLAGS_COVERAGE)
 
 # do cross platform compatibility here
 if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
   if(DISTOPIA_FALLTHROUGH)
     list(APPEND CXX_FLAGS "-march=native" "-mtune=native")
   endif()
-  list(APPEND CXX_FLAGS "-O3" "-mfma" "-fno-math-errno" "-fno-trapping-math" "-Wno-ignored-attributes" "-fdiagnostics-color=always")
+  list(APPEND CXX_FLAGS "-O3" "-mfma" "-fno-math-errno" "-fno-trapping-math" "-Wno-ignored-attributes")
   list(APPEND CXX_FLAGS_DEBUG  "-g" "-O0" "-Wall"  "-Wextra" )
   list(APPEND CXX_FLAGS_RELEASE "-Wno-unused")
+  list(APPEND CXX_FLAGS_COVERAGE "-g" "-O0" "-Wall"  "-Wextra" "--coverage")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES Clang)
   if(DISTOPIA_FALLTHROUGH)
     list(APPEND CXX_FLAGS "-march=native" "-mtune=native")
   endif()
-  list(APPEND CXX_FLAGS "-O3" "-mfma" "-fno-math-errno" "-fno-trapping-math" "-fcolor-diagnostics")
+  list(APPEND CXX_FLAGS "-O3" "-mfma" "-fno-math-errno" "-fno-trapping-math")
   list(APPEND CXX_FLAGS_DEBUG   "-g" "-O0" "-Wall"  "-Wextra")
   list(APPEND CXX_FLAGS_RELEASE "-Wno-unused")
+  list(APPEND CXX_FLAGS_COVERAGE "-g" "-O0" "-Wall"  "-Wextra" "--coverage")
 else()
   message(FATAL_ERROR "${Red}Compiler not supported${ColourReset}")
 endif()
 
+set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage")
+set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} --coverage")
+
 list(APPEND CXX_FLAGS ${DISTOPIA_SIMD_FLAGS})
 list(APPEND CXX_FLAGS_DEBUG ${DISTOPIA_SIMD_FLAGS})
 list(APPEND CXX_FLAGS_RELEASE ${DISTOPIA_SIMD_FLAGS})
+list(APPEND CXX_FLAGS_COVERAGE ${DISTOPIA_SIMD_FLAGS})
 
 
 #find all the files
@@ -278,6 +289,7 @@ target_compile_options(distopia
     ${CXX_FLAGS}
     "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
     "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
+    "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
   )
 
 if(DISTOPIA_BUILD_TEST)
@@ -293,6 +305,7 @@ if(DISTOPIA_BUILD_TEST)
       ${CXX_FLAGS}
       "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
       "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
+      "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
     )
   target_link_libraries(tests distopia)
   target_link_libraries(tests gtest gtest_main)
@@ -305,6 +318,7 @@ if(DISTOPIA_BUILD_TEST)
       ${CXX_FLAGS}
       "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
       "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
+      "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
     )
   target_link_libraries(test_kernels distopia)
   target_link_libraries(test_kernels gtest gtest_main)
@@ -325,6 +339,7 @@ if(DISTOPIA_BUILD_TIMINGS)
       ${CXX_FLAGS}
       "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
       "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
+      "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
     )
   target_link_libraries(timings distopia)
 
@@ -335,7 +350,26 @@ if(DISTOPIA_BUILD_TIMINGS)
     ${CXX_FLAGS}
     "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
     "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
+    "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
   )
   target_link_libraries(benchmarks distopia)
   target_link_libraries(benchmarks benchmark::benchmark)
+endif()
+
+if(DISTOPIA_COVERAGE) 
+  message(STATUS "excluding ${PROJECT_SOURCE_DIR}/src/lib/tests/googletest/* from coverage")
+  message(STATUS "excluding ${PROJECT_SOURCE_DIR}/src/lib/tests/googlebench/* from coverage")
+
+  setup_target_for_coverage_gcovr_html(
+    NAME tests_coverage                    
+    EXECUTABLE tests  
+    DEPENDENCIES tests
+    EXCLUDE "${PROJECT_SOURCE_DIR}/src/lib/tests/googletest/*" "${PROJECT_SOURCE_DIR}/src/lib/tests/googlebench/*")
+
+
+  setup_target_for_coverage_gcovr_html(
+    NAME test_kernels_coverage                    
+    EXECUTABLE test_kernels  
+    DEPENDENCIES test_kernels
+    EXCLUDE "${PROJECT_SOURCE_DIR}/src/lib/tests/googletest/*" "${PROJECT_SOURCE_DIR}/src/lib/tests/googlebench/*")
 endif()
