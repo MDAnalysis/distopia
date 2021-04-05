@@ -133,13 +133,12 @@ inline void Deinterleave4x3(const __m256d a, const __m256d b, const __m256d c,
   // tmp2 = x0x1z0z1
   __m256d tmp3 = _mm256_unpackhi_pd(c, d);
   // tmp3 = x2x3z2z3
-  y = _mm256_permute2f128_pd(tmp1,tmp0, 0x13);   // imm8 (1,3) = 00010011
+  y = _mm256_permute2f128_pd(tmp1, tmp0, 0x13); // imm8 (1,3) = 00010011
   // x = x0x1x1x2
-  x = _mm256_permute2f128_pd(tmp3,tmp2, 0x2);    // imm8 (0,2) = 00000010
+  x = _mm256_permute2f128_pd(tmp3, tmp2, 0x2); // imm8 (0,2) = 00000010
   // y = y0y1y2y3
-  z = _mm256_permute2f128_pd(tmp3,tmp2, 0x13);    // imm8 (1,3)
+  z = _mm256_permute2f128_pd(tmp3, tmp2, 0x13); // imm8 (1,3)
   // z = z0z1z2z3
-
 }
 
 // transforms xyz coordinates from AOS to SOA
