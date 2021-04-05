@@ -451,9 +451,9 @@ TEST(TestX86SwizzleVec, Double256ShuntLast2First) {
 TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
   // dummy data with  4x target and 4x incorrect data mixed in
   // idx positions for correct data 0,2,4,6
-  float xyz[21] = {00.f, 01.f, 02.f, -1.0f, -1.0f, -1.0f, 10.f,
-                   11.f, 12.f, -1.0f, -1.0f, -1.0f, 20.f, 21.f,
-                   22.f, -1.0f, -1.0f, -1.0f, 30.f, 31.f, 32.f};
+  float xyz[21] = {00.f, 01.f, 02.f, 0.0f, 0.0f, 0.0f, 10.f,
+                   11.f, 12.f, 0.0f, 0.0f, 0.0f, 20.f, 21.f,
+                   22.f, 0.0f, 0.0f, 0.0f, 30.f, 31.f, 32.f};
 
   __m128 correct_x = _mm_setr_ps(00.f, 10.f, 20.f, 30.f);
   __m128 correct_y = _mm_setr_ps(01.f, 11.f, 21.f, 31.f);
@@ -525,19 +525,18 @@ TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleavedStrided3) {
 
 #ifdef DISTOPIA_X86_AVX
 
-
 TEST(TestX86SwizzleVec, Double128IdxLoadDeinterleaved) {
   // dummy data with  2x target and 4x incorrect data mixed in
-  // idx positions for correct data 0,2
-  double xyz[21] = {00.0, 01.0, 02.0, 0.00, 0.00, 0.00, 10.0,
-                   11.0, 12.0, 0.00, 0.00, 0.00, 20.0, 21.0,
-                   22.0, 0.00, 0.00, 0.00, 30.0, 31.0, 32.0};
+  // idx positions for correct data 1,2
+  double xyz[21] = {0.00, 0.00, 0.00, 00.0, 01.0, 02.0, 10.0,
+                    11.0, 12.0, 0.00, 0.00, 0.00, 20.0, 21.0,
+                    22.0, 0.00, 0.00, 0.00, 30.0, 31.0, 32.0};
 
   __m128d correct_x = _mm_setr_pd(00.0, 10.0);
   __m128d correct_y = _mm_setr_pd(01.0, 11.0);
   __m128d correct_z = _mm_setr_pd(02.0, 12.0);
   // safeload data and transpose
-  std::size_t idx[12] = {0,2};
+  std::size_t idx[12] = {1, 2};
   auto vt = VectorTriple<__m128d>();
   vt.template idxload<1>(xyz, xyz + 21, idx);
   bool x_is_correct =
@@ -627,6 +626,7 @@ TEST(TestX86SwizzleVec, Double256IdxLoadDeinterleaved) {
   std::size_t idx[4] = {0, 2, 4, 6};
   auto vt = VectorTriple<__m256d>();
   vt.template idxload<1>(xyz, xyz + 21, idx);
+  vt.debugprint("vec");
   bool x_is_correct = _mm256_testc_pd(
       _mm256_setzero_pd(), _mm256_cmp_pd(vt.x, correct_x, _CMP_NEQ_UQ));
   bool y_is_correct = _mm256_testc_pd(
@@ -709,7 +709,7 @@ TEST(ScalarVec, ScalarVecIdxLoadDouble) {
   double arr[12] = {0.0, 1.0, 2.0, 3.0, 4.0,  5.0,
                     6.0, 7.0, 8.0, 9.0, 10.0, 11.0};
   std::size_t idxs[1] = {1};
-  auto  vt_d = VectorTriple<double>();
+  auto vt_d = VectorTriple<double>();
   vt_d.template idxload<1>(arr, arr + 7, idxs);
   EXPECT_DOUBLE_EQ(vt_d.x, 3.0);
   EXPECT_DOUBLE_EQ(vt_d.y, 4.0);

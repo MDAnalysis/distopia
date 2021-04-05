@@ -64,7 +64,7 @@ inline VectorT SafeIdxLoad4(const VectorToScalarT<VectorT> *source,
     tmp = ShuntLast2First(tmp);
   } else {
     // load offset by one to form Xxyz
-    tmp = loadu_p<VectorT>(&source[idx-1]);
+    tmp = loadu_p<VectorT>(&source[idx - 1]);
   }
   return tmp;
 }
@@ -98,6 +98,7 @@ inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
 // [2*3] xyzX xyzX ->
 // [3*2] xx yy zz
 // NOTE kinda pointless because uses large vectors
+// may be broken?????
 inline void Deinterleave2x3(const __m256d a, const __m256d b, __m128d &x,
                             __m128d &y, __m128d &z) {
   // U = undefined, X = junk
@@ -105,13 +106,13 @@ inline void Deinterleave2x3(const __m256d a, const __m256d b, __m128d &x,
   __m256d tmp0 = _mm256_unpackhi_pd(a, b);
   // tmp0 = y0y1z0z1
   x = _mm256_extractf128_pd(tmp0, 0);
-  // y = y0y1
+  // x = y0y1
   z = _mm256_extractf128_pd(tmp0, 1);
-  // y = y0y1
+  // z = z0z1
   __m256d tmp1 = _mm256_unpacklo_pd(a, b);
   // tmp1 = XXx0x1
   y = _mm256_extractf128_pd(tmp1, 1);
-  // z = z0z1
+  // y = y0y1
 }
 
 // transforms xyz coordinates from AOS to SOA
@@ -122,7 +123,7 @@ inline void Deinterleave4x3(const __m256d a, const __m256d b, const __m256d c,
                             const __m256d d, __m256d &x, __m256d &y,
                             __m256d &z) {
   // U = undefined, X = junk
-   // U = undefined, X = junk
+  // U = undefined, X = junk
   // PRE: a  = Xx0y0z0 b = Xx1y1z1 c = Xx2y2z2 d = Xx3y3z3
   __m256d tmp0 = _mm256_unpacklo_pd(a, b);
   // tmp0 = XXx0x1
@@ -132,6 +133,12 @@ inline void Deinterleave4x3(const __m256d a, const __m256d b, const __m256d c,
   // tmp2 = y0y1z0z1
   __m256d tmp3 = _mm256_unpackhi_pd(c, d);
   // tmp3 = y2y3z2z3
+
+  x = _mm256_permute2f128_pd(tmp1,tmp0, 0x13);   // imm8 (1,3) = 00010011
+  // x = x0x1x1x2
+  y = _mm256_permute2f128_pd(tmp3,tmp2, 0x2);    // imm8 (0,2) = 00000010
+  // y = y0y1y2y3
+  z = _mm256_permute2f128_pd(tmp3,tmp2, 0x13);    // imm8 (1,3)
 
 }
 
