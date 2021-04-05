@@ -4,6 +4,7 @@
 #include "arch_config.h"
 #include "compiler_hints.h"
 #include "distopia_type_traits.h"
+#include <iostream>
 
 #ifdef DISTOPIA_X86_SSE4_1
 
@@ -56,95 +57,94 @@ inline VectorT SafeIdxLoad4(const VectorToScalarT<VectorT> *source,
   static_assert(ValuesPerPack<VectorT> == 4,
                 "can only use to load into SIMD datatype of width 4");
   VectorT tmp;
-  if (distopia_likely(source + idx + ValuesPerPack<VectorT> < end)) {
-    // load as is, no overflow, likely path
+  if (distopia_unlikely(idx == 0)) {
+    // load as current xyzX
     tmp = loadu_p<VectorT>(&source[idx]);
+    // shuf rubbish value to front to form Xxyz
+    tmp = ShuntLast2First(tmp);
   } else {
-    // load offset by one, unlikely path
-    tmp = loadu_p<VectorT>(&source[idx - 1]);
-    tmp = ShuntFirst2Last(tmp);
+    // load offset by one to form Xxyz
+    tmp = loadu_p<VectorT>(&source[idx-1]);
   }
   return tmp;
 }
 
+// transforms xyz coordinates from AOS to SOA
+// [4*3] xyzX xyzX xyzX xyzX  ->
+// [3*4] xxxx yyyy zzzz
 inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
                             const __m128 d, __m128 &x, __m128 &y, __m128 &z) {
   // U = undefined, X = junk
-  // PRE: a  = x0y0z0X b = x1y1z1X c = x2y2z2X d = x3y3z3X
+  // PRE: a  = Xx0y0z0 b = Xx1y1z1 c = Xx2y2z2 d = Xx3y3z3
   __m128 tmp0 = _mm_unpacklo_ps(a, b);
-  // tmp0 = x0x1y0y1
-  __m128 tmp2 = _mm_unpacklo_ps(c, d);
-  // tmp2 = x2x3y2y3
-  __m128 tmp1 = _mm_unpackhi_ps(a, b);
-  // tmp1 = z0z1XX
+  // tmp0 = XXx0x1
+  __m128 tmp1 = _mm_unpacklo_ps(c, d);
+  // tmp1 = XXx1x2
+  __m128 tmp2 = _mm_unpackhi_ps(a, b);
+  // tmp2 = y0y1z0z1
   __m128 tmp3 = _mm_unpackhi_ps(c, d);
-  // tmp3 = z2z3XX
-  x = _mm_movelh_ps(tmp0, tmp2);
+  // tmp3 = y2y3z2z3
+  x = _mm_movehl_ps(tmp1, tmp0);
   // x = x0x1x2x3
-  y = _mm_movehl_ps(tmp2, tmp0);
+  y = _mm_movelh_ps(tmp2, tmp3);
   // y = y0y1y2y3
-  z = _mm_movelh_ps(tmp1, tmp3);
+  z = _mm_movehl_ps(tmp3, tmp2);
   // z = z0z1z2z3
 }
 
 #ifdef DISTOPIA_X86_AVX
 
+// transforms xyz coordinates from AOS to SOA
+// [2*3] xyzX xyzX ->
+// [3*2] xx yy zz
+// NOTE kinda pointless because uses large vectors
 inline void Deinterleave2x3(const __m256d a, const __m256d b, __m128d &x,
                             __m128d &y, __m128d &z) {
   // U = undefined, X = junk
-  // PRE: a  = x0y0z0X b = x1y1z1X
-  __m256d tmp0 = _mm256_unpacklo_pd(a, b);
-  // tmp0 = x0x1y0y1
+  // PRE: a  = Xx0y0z0 b = Xx1y1z1
+  __m256d tmp0 = _mm256_unpackhi_pd(a, b);
+  // tmp0 = y0y1z0z1
   x = _mm256_extractf128_pd(tmp0, 0);
-  // x = x0x1
+  // y = y0y1
   z = _mm256_extractf128_pd(tmp0, 1);
   // y = y0y1
-  __m256d tmp1 = _mm256_unpackhi_pd(a, b);
-  // tmp1 = z0z1XX
-  y  = _mm256_extractf128_pd(tmp1,0);
+  __m256d tmp1 = _mm256_unpacklo_pd(a, b);
+  // tmp1 = XXx0x1
+  y = _mm256_extractf128_pd(tmp1, 1);
   // z = z0z1
 }
 
 // transforms xyz coordinates from AOS to SOA
+// [4*3] Xxyz Xxyz Xxyz Xxyz  ->
+// [3*4] xxxx yyyy zzzz
 // NOTE can probably be improved
 inline void Deinterleave4x3(const __m256d a, const __m256d b, const __m256d c,
                             const __m256d d, __m256d &x, __m256d &y,
                             __m256d &z) {
   // U = undefined, X = junk
-  // PRE: a  = x0y0z0X b = x1y1z1X c = x2y2z2X d = x3y3z3X
+   // U = undefined, X = junk
+  // PRE: a  = Xx0y0z0 b = Xx1y1z1 c = Xx2y2z2 d = Xx3y3z3
   __m256d tmp0 = _mm256_unpacklo_pd(a, b);
-  // tmp0 = x0x1z0z1
-  __m256d tmp2 = _mm256_unpacklo_pd(c, d);
-  // tmp2 = x2x3z2z3
-  __m128d x_upper = _mm256_castpd256_pd128(tmp2);
-  // x_upper = x2x3
-  x = _mm256_insertf128_pd(tmp0, x_upper, 1);
-  // x0x1x2x3
-  __m128d z_lower = _mm256_extractf128_pd(tmp0, 1);
-  // z_lower = z0z1
-  __m128d z_upper = _mm256_extractf128_pd(tmp2, 1);
-  z = _mm256_insertf128_pd(z, z_lower, 0);
-  // z = z0z1UU
-  z = _mm256_insertf128_pd(z, z_upper, 1);
-  // z =  z0z1z2z3
-  __m256d tmp1 = _mm256_unpackhi_pd(a, b);
-  // tmp1 = y0y1XX
+  // tmp0 = XXx0x1
+  __m256d tmp1 = _mm256_unpacklo_pd(c, d);
+  // tmp1 = XXx1x2
+  __m256d tmp2 = _mm256_unpackhi_pd(a, b);
+  // tmp2 = y0y1z0z1
   __m256d tmp3 = _mm256_unpackhi_pd(c, d);
-  // tmp3 = y2y3XX
-  __m128d y_upper = _mm256_castpd256_pd128(tmp3);
-  // y_upper = y2y3
-  y = _mm256_insertf128_pd(tmp1, y_upper, 1);
-  // y = y0y1y2y3
+  // tmp3 = y2y3z2z3
+
 }
 
 // transforms xyz coordinates from AOS to SOA
+// [8*3] Xxyz Xxyz Xxyz Xxyz Xxyz Xxyz Xxyz Xxyz ->
+// [3*8] xxxxxxxx yyyyyyyy zzzzzzzz
 inline void Deinterleave8x3(const __m128 a, const __m128 b, const __m128 c,
                             const __m128 d, const __m128 e, const __m128 f,
                             const __m128 g, const __m128 h, __m256 &x,
                             __m256 &y, __m256 &z) {
   // U = undefined, X = junk
-  // PRE: a  = x0y0z0X b = x1y1z1X c = x2y2z2X d = x3y3z3X e  = x4y4z4X f =
-  // x5y5z5X g = x6y6z6X h = x7y7z7X
+  // PRE: a  = Xx0y0z0 b = Xx1y1z1 c = Xx2y2z2 d = Xx3y3z3 e  = Xx4y4z4 f =
+  // Xx5y5z5 g = Xx6y6z6 h = Xx7y7z7
   __m128 tx0, ty0, tz0, tx1, ty1, tz1;
   Deinterleave4x3(a, b, c, d, tx0, ty0, tz0);
   // tx0 = x0x1x2x3 ty0 = y0y1y2y3 tz0 = z0z1z2z3
