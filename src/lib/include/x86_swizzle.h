@@ -104,13 +104,13 @@ inline void Deinterleave2x3(const __m256d a, const __m256d b, __m128d &x,
   // U = undefined, X = junk
   // PRE: a  = Xx0y0z0 b = Xx1y1z1
   __m256d tmp0 = _mm256_unpackhi_pd(a, b);
-  // tmp0 = y0y1z0z1
+  // tmp0 = x0x1yz0z1
   x = _mm256_extractf128_pd(tmp0, 0);
-  // x = y0y1
+  // x = x0x1
   z = _mm256_extractf128_pd(tmp0, 1);
   // z = z0z1
   __m256d tmp1 = _mm256_unpacklo_pd(a, b);
-  // tmp1 = XXx0x1
+  // tmp1 = XXy0y1
   y = _mm256_extractf128_pd(tmp1, 1);
   // y = y0y1
 }
@@ -126,19 +126,19 @@ inline void Deinterleave4x3(const __m256d a, const __m256d b, const __m256d c,
   // U = undefined, X = junk
   // PRE: a  = Xx0y0z0 b = Xx1y1z1 c = Xx2y2z2 d = Xx3y3z3
   __m256d tmp0 = _mm256_unpacklo_pd(a, b);
-  // tmp0 = XXx0x1
+  // tmp0 = XXy0y1
   __m256d tmp1 = _mm256_unpacklo_pd(c, d);
-  // tmp1 = XXx1x2
+  // tmp1 = XXy2y3
   __m256d tmp2 = _mm256_unpackhi_pd(a, b);
-  // tmp2 = y0y1z0z1
+  // tmp2 = x0x1z0z1
   __m256d tmp3 = _mm256_unpackhi_pd(c, d);
-  // tmp3 = y2y3z2z3
-
-  x = _mm256_permute2f128_pd(tmp1,tmp0, 0x13);   // imm8 (1,3) = 00010011
+  // tmp3 = x2x3z2z3
+  y = _mm256_permute2f128_pd(tmp1,tmp0, 0x13);   // imm8 (1,3) = 00010011
   // x = x0x1x1x2
-  y = _mm256_permute2f128_pd(tmp3,tmp2, 0x2);    // imm8 (0,2) = 00000010
+  x = _mm256_permute2f128_pd(tmp3,tmp2, 0x2);    // imm8 (0,2) = 00000010
   // y = y0y1y2y3
   z = _mm256_permute2f128_pd(tmp3,tmp2, 0x13);    // imm8 (1,3)
+  // z = z0z1z2z3
 
 }
 

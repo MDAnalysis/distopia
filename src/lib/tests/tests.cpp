@@ -626,7 +626,6 @@ TEST(TestX86SwizzleVec, Double256IdxLoadDeinterleaved) {
   std::size_t idx[4] = {0, 2, 4, 6};
   auto vt = VectorTriple<__m256d>();
   vt.template idxload<1>(xyz, xyz + 21, idx);
-  vt.debugprint("vec");
   bool x_is_correct = _mm256_testc_pd(
       _mm256_setzero_pd(), _mm256_cmp_pd(vt.x, correct_x, _CMP_NEQ_UQ));
   bool y_is_correct = _mm256_testc_pd(
