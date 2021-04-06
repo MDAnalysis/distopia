@@ -424,7 +424,6 @@ TEST(TestX86SwizzleVec, Float128ShuntLast2First) {
   EXPECT_TRUE(x_is_correct);
 }
 
-#ifdef DISTOPIA_X86_AVX2_FMA
 
 TEST(TestX86SwizzleVec, Double256ShuntFirst2Last) {
   double x[4] = {00.0, 01.0, 02.0, 03.0};
@@ -435,6 +434,9 @@ TEST(TestX86SwizzleVec, Double256ShuntFirst2Last) {
       _mm256_setzero_pd(), _mm256_cmp_pd(result, correct_x, _CMP_NEQ_UQ));
   EXPECT_TRUE(x_is_correct);
 }
+
+#ifdef DISTOPIA_X86_AVX2_FMA
+
 
 TEST(TestX86SwizzleVec, Double256ShuntLast2First) {
   double x[4] = {01.0, 02.0, 03.0, 0.0};

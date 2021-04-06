@@ -14,18 +14,61 @@
 
 namespace {
 
-// shuffle first element of __m128 to end and shunt everything left by one
-inline __m128 ShuntFirst2Last(const __m128 input) {
+template<typename VectorT>
+ VectorT  ShuntFirst2Last(const VectorT input) {
   // PRE: input = abcd
   return shuffle_p<_MM_SHUFFLE(0, 3, 2, 1)>(input, input);
   // return bcda
 }
 
-// shuffle first element of __m128 to end and shunt everything left by one
-inline __m128 ShuntLast2First(const __m128 input) {
+
+template<typename VectorT>
+ VectorT ShuntLast2First(const VectorT input) {
   // PRE: input = abcd
   return shuffle_p<_MM_SHUFFLE(2, 1, 0, 3)>(input, input);
   // return dabc
+}
+
+
+// shuffle first element of __m256d to end and shunt everything left by one
+template<>
+ __m256d ShuntFirst2Last<__m256d>(const __m256d input) {
+  // PRE: input = abcd
+  // must form    badc
+  // and          dcba 
+  //              
+  //              ----
+  //              dabc
+  std::cout << "AVX1 CALLED\n";
+  __m256d tmp0 = _mm256_shuffle_pd(input,input, 0b1010);              
+  // form badc with in lane
+  __m256d tmp1 = _mm256_permute2f128_pd(tmp0, tmp0, 0b00010000);
+  // form dcba with cross lane
+  __m256d tmp2 =  _mm256_blend_pd(tmp0,tmp1,0b1010);
+  return tmp2;
+  // return dabc
+
+}
+
+
+// shuffle first element of __m256d to end and shunt everything left by one
+template<>
+ __m256d ShuntLast2First<__m256d>(const __m256d input) {
+  // PRE: input = abcd
+  // must form    badc
+  // and          dcba 
+  //              
+  //              ----
+  //              dabc
+  std::cout << "AVX1 CALLED\n";
+  __m256d tmp0 = _mm256_shuffle_pd(input,input, 0b1010);              
+  // form badc with in lane
+  __m256d tmp1 = _mm256_permute2f128_pd(tmp0, tmp0, 0b00010000);
+  // form dcba with cross lane
+  __m256d tmp2 =  _mm256_blend_pd(tmp0,tmp1,0b1010);
+  return tmp2;
+  // return dabc
+
 }
 
 #ifdef DISTOPIA_X86_AVX2_FMA
@@ -34,13 +77,16 @@ inline __m128 ShuntLast2First(const __m128 input) {
 // NOTE requires AVX2 rather than AVX
 // NOTE is it possible to do this with a lower latency by using shuffle and
 // blend rather than the lane crossing instruction ?
-inline __m256d ShuntFirst2Last(const __m256d input) {
+template<>
+ __m256d ShuntFirst2Last<__m256d>(const __m256d input) {
   // PRE: input = abcd
+  std::cout << "AVX2 CALLED\n";
   return _mm256_permute4x64_pd(input, _MM_SHUFFLE(0, 3, 2, 1));
   // return bcda
 }
 
-inline __m256d ShuntLast2First(const __m256d input) {
+template<>
+ __m256d ShuntLast2First<__m256d>(const __m256d input) {
   // PRE: input = abcd
   return _mm256_permute4x64_pd(input, _MM_SHUFFLE(2, 1, 0, 3));
   // return dabc
@@ -104,7 +150,7 @@ inline void Deinterleave2x3(const __m256d a, const __m256d b, __m128d &x,
   // U = undefined, X = junk
   // PRE: a  = Xx0y0z0 b = Xx1y1z1
   __m256d tmp0 = _mm256_unpackhi_pd(a, b);
-  // tmp0 = x0x1yz0z1
+  // tmp0 = x0x1z0z1
   x = _mm256_extractf128_pd(tmp0, 0);
   // x = x0x1
   z = _mm256_extractf128_pd(tmp0, 1);
