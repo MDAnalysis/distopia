@@ -14,37 +14,25 @@
 
 namespace {
 
-// template<typename VectorT>
-//  VectorT  ShuntFirst2Last(const VectorT input) {
-//   // PRE: input = abcd
-//   return shuffle_p<_MM_SHUFFLE(0, 3, 2, 1)>(input, input);
-//   // return bcda
-// }
-
-
-template<typename VectorT>
- VectorT ShuntLast2First(const VectorT input) {
+template <typename VectorT> VectorT ShuntLast2First(const VectorT input) {
   // PRE: input = abcd
   return shuffle_p<_MM_SHUFFLE(2, 1, 0, 3)>(input, input);
   // return dabc
 }
 
-
 #if defined(DISTOPIA_X86_AVX) && !defined(DISTOPIA_X86_AVX2_FMA)
-// we have AVX1 and not AVX2 so no lane crossing shuffles available, permute 
+// we have AVX1 and not AVX2 so no lane crossing shuffles available, permute
 // and blend instead
 
 // shuffle first element of __m256d to end and shunt everything left by one
-template<>
- __m256d ShuntLast2First<__m256d>(const __m256d input) {
+template <> __m256d ShuntLast2First<__m256d>(const __m256d input) {
   // PRE: input = abcd
   std::cout << "AVX1 CALLED\n";
   __m256d tmp0 = _mm256_shuffle_pd(input, input, 0b0101);
   // form badc with in lane
   __m256d tmp1 = _mm256_permute2f128_pd(tmp0, tmp0, 0b0101);
-   return _mm256_blend_pd(tmp1,tmp0,0b1010);  
+  return _mm256_blend_pd(tmp1, tmp0, 0b1010);
   // return dabc
-
 }
 
 #endif // defined(DISTOPIA_X86_AVX) && !defined(DISTOPIA_X86_AVX2_FMA)
@@ -52,8 +40,7 @@ template<>
 #ifdef DISTOPIA_X86_AVX2_FMA
 // we have AVX2 so we can use the more powerful lane crossing instruction
 
-template<>
- __m256d ShuntLast2First<__m256d>(const __m256d input) {
+template <> __m256d ShuntLast2First<__m256d>(const __m256d input) {
   // PRE: input = abcd
   return _mm256_permute4x64_pd(input, _MM_SHUFFLE(2, 1, 0, 3));
   // return dabc
@@ -65,8 +52,7 @@ template<>
 // width of 4, checking that we dont read off the end of ScalarT.
 template <typename VectorT>
 inline VectorT SafeIdxLoad4(const VectorToScalarT<VectorT> *source,
-                            const int idx,
-                            const VectorToScalarT<VectorT> *end) {
+                            const int idx) {
   static_assert(ValuesPerPack<VectorT> == 4,
                 "can only use to load into SIMD datatype of width 4");
   VectorT tmp;

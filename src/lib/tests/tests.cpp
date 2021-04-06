@@ -404,7 +404,6 @@ TEST(TestX86SwizzleVec, Double256Deinterleave) {
 
 #endif // DISTOPIA_X86_AVX
 
-
 TEST(TestX86SwizzleVec, Float128ShuntLast2First) {
   float x[4] = {01.f, 02.f, 03.f, 00.f};
   __m128 correct_x = _mm_setr_ps(00.f, 01.f, 02.f, 03.f);
@@ -414,7 +413,6 @@ TEST(TestX86SwizzleVec, Float128ShuntLast2First) {
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(result, correct_x)));
   EXPECT_TRUE(x_is_correct);
 }
-
 
 #ifdef DISTOPIA_X86_AVX
 TEST(TestX86SwizzleVec, Double256ShuntLast2First) {
@@ -442,7 +440,7 @@ TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
   // safeload data and transpose
   std::size_t idx[4] = {0, 2, 4, 6};
   auto vt = VectorTriple<__m128>();
-  vt.template idxload<1>(xyz, xyz + 21, idx);
+  vt.template idxload<1>(xyz, idx);
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.x, correct_x)));
   bool y_is_correct =
@@ -467,7 +465,7 @@ TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleavedStrided2) {
   // safeload data and transpose
   std::size_t idx[8] = {0, 0, 2, 0, 4, 0, 6};
   auto vt = VectorTriple<__m128>();
-  vt.template idxload<2>(xyz, xyz + 21, idx);
+  vt.template idxload<2>(xyz, idx);
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.x, correct_x)));
   bool y_is_correct =
@@ -492,7 +490,7 @@ TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleavedStrided3) {
   // safeload data and transpose
   std::size_t idx[12] = {0, 0, 0, 2, 0, 0, 4, 0, 0, 6, 0, 0};
   auto vt = VectorTriple<__m128>();
-  vt.template idxload<3>(xyz, xyz + 21, idx);
+  vt.template idxload<3>(xyz, idx);
   bool x_is_correct =
       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(vt.x, correct_x)));
   bool y_is_correct =
@@ -519,7 +517,7 @@ TEST(TestX86SwizzleVec, Double128IdxLoadDeinterleaved) {
   // safeload data and transpose
   std::size_t idx[12] = {1, 2};
   auto vt = VectorTriple<__m128d>();
-  vt.template idxload<1>(xyz, xyz + 21, idx);
+  vt.template idxload<1>(xyz, idx);
   bool x_is_correct =
       _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(vt.x, correct_x)));
   bool y_is_correct =
@@ -548,7 +546,7 @@ TEST(TestX86SwizzleVec, Float256IdxLoadDeinterleaved) {
   // safeload data and transpose
   std::size_t idx[12] = {0, 2, 4, 6, 7, 8, 9, 11};
   auto vt = VectorTriple<__m256>();
-  vt.template idxload<1>(xyz, xyz + 36, idx);
+  vt.template idxload<1>(xyz, idx);
   bool x_is_correct = _mm256_testc_ps(
       _mm256_setzero_ps(), _mm256_cmp_ps(vt.x, correct_x, _CMP_NEQ_UQ));
   bool y_is_correct = _mm256_testc_ps(
@@ -577,7 +575,7 @@ TEST(TestX86SwizzleVec, Float256IdxLoadDeinterleavedStrided2) {
   // safeload data and transpose
   std::size_t idx[24] = {0, 0, 2, 0, 4, 0, 6, 0, 7, 0, 8, 0, 9, 0, 11};
   auto vt = VectorTriple<__m256>();
-  vt.template idxload<2>(xyz, xyz + 36, idx);
+  vt.template idxload<2>(xyz, idx);
   bool x_is_correct = _mm256_testc_ps(
       _mm256_setzero_ps(), _mm256_cmp_ps(vt.x, correct_x, _CMP_NEQ_UQ));
   bool y_is_correct = _mm256_testc_ps(
@@ -606,7 +604,7 @@ TEST(TestX86SwizzleVec, Double256IdxLoadDeinterleaved) {
   // safeload data and transpose
   std::size_t idx[4] = {0, 2, 4, 6};
   auto vt = VectorTriple<__m256d>();
-  vt.template idxload<1>(xyz, xyz + 21, idx);
+  vt.template idxload<1>(xyz, idx);
   bool x_is_correct = _mm256_testc_pd(
       _mm256_setzero_pd(), _mm256_cmp_pd(vt.x, correct_x, _CMP_NEQ_UQ));
   bool y_is_correct = _mm256_testc_pd(
@@ -679,7 +677,7 @@ TEST(ScalarVec, ScalarVecIdxLoadFloat) {
                    6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f};
   std::size_t idxs[3] = {1};
   auto vt_f = VectorTriple<float>();
-  vt_f.template idxload<1>(arr, arr + 7, idxs);
+  vt_f.template idxload<1>(arr, idxs);
   EXPECT_FLOAT_EQ(vt_f.x, 3.0f);
   EXPECT_FLOAT_EQ(vt_f.y, 4.0f);
   EXPECT_FLOAT_EQ(vt_f.z, 5.0f);
@@ -690,7 +688,7 @@ TEST(ScalarVec, ScalarVecIdxLoadDouble) {
                     6.0, 7.0, 8.0, 9.0, 10.0, 11.0};
   std::size_t idxs[1] = {1};
   auto vt_d = VectorTriple<double>();
-  vt_d.template idxload<1>(arr, arr + 7, idxs);
+  vt_d.template idxload<1>(arr, idxs);
   EXPECT_DOUBLE_EQ(vt_d.x, 3.0);
   EXPECT_DOUBLE_EQ(vt_d.y, 4.0);
   EXPECT_DOUBLE_EQ(vt_d.z, 5.0);

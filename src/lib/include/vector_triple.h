@@ -29,19 +29,18 @@ template <typename T, EnableIfFloating<T> = 0> inline T generic_set1(T src) {
 // step defines the load stride into the indicies
 template <typename VectorT, unsigned char stride, EnableIfVector<VectorT> = 0>
 inline void genericidxload(const VectorToScalarT<VectorT> *source,
-                           const VectorToScalarT<VectorT> *end,
                            const std::size_t *idxs, VectorT &x, VectorT &y,
                            VectorT &z) {
   VectorToLoadT<VectorT> v_arr[ValuesPerPack<VectorT>];
   for (std::size_t i = 0; i < ValuesPerPack<VectorT>; i++) {
     v_arr[i] =
-        SafeIdxLoad4<VectorToLoadT<VectorT>>(source, 3 * idxs[i * stride], end);
+        SafeIdxLoad4<VectorToLoadT<VectorT>>(source, 3 * idxs[i * stride]);
   }
   DeinterleaveIdx(v_arr, x, y, z);
 }
 
 template <typename T, unsigned char stride, EnableIfFloating<T> = 0>
-inline void genericidxload(const T *source, const T *, const std::size_t *idxs,
+inline void genericidxload(const T *source, const std::size_t *idxs,
                            T &x, T &y, T &z) {
   x = source[3 * idxs[0]];
   y = source[3 * idxs[0] + 1];
@@ -117,9 +116,9 @@ public:
   // }
 
   template <unsigned char stride = 1>
-  inline void idxload(const ScalarT *source, const ScalarT *end,
+  inline void idxload(const ScalarT *source,
                       const std::size_t *idxs) {
-    genericidxload<VectorT, stride>(source, end, idxs, this->x, this->y,
+    genericidxload<VectorT, stride>(source, idxs, this->x, this->y,
                                     this->z);
   }
   // store or stream to an array of ScalarT eg float* or double *.
