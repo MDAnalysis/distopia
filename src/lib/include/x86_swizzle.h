@@ -29,11 +29,11 @@ template <typename VectorT> VectorT ShuntLast2First(const VectorT input) {
 // shuffle first element of __m256d to end and shunt everything left by one
 template <> __m256d ShuntLast2First<__m256d>(const __m256d input) {
   // PRE: input = abcd
-  __m256d tmp0 = _mm256_shuffle_pd(input, input, 0b0101);
+  __m256d tmp0 = _mm256_shuffle_pd(input, input, 0x5);
   // form badc with in lane
-  __m256d tmp1 = _mm256_permute2f128_pd(tmp0, tmp0, 0b0101);
+  __m256d tmp1 = _mm256_permute2f128_pd(tmp0, tmp0, 0x5);
   // form dcab with permute
-  return _mm256_blend_pd(tmp1, tmp0, 0b1010);
+  return _mm256_blend_pd(tmp1, tmp0, 0xa);
   // return dabc
 }
 
