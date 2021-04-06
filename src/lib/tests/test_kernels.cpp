@@ -8,8 +8,8 @@
 
 // constants
 #define BOXSIZE 10
-#define NRESULTS 100000
-#define NINDICIES 65
+#define NRESULTS 1000000
+#define NINDICIES 10000
 
 inline void EXPECT_EQ_T(float result, float ref) {
   EXPECT_FLOAT_EQ(result, ref);
