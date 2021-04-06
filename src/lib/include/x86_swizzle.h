@@ -16,6 +16,8 @@ namespace {
 
 template <typename VectorT> VectorT ShuntLast2First(const VectorT input) {
   // PRE: input = abcd
+  static_assert(ValuesPerPack<VectorT> == 4,
+                "can only use to load into SIMD datatype of width 4");
   return shuffle_p<_MM_SHUFFLE(2, 1, 0, 3)>(input, input);
   // return dabc
 }
@@ -27,10 +29,10 @@ template <typename VectorT> VectorT ShuntLast2First(const VectorT input) {
 // shuffle first element of __m256d to end and shunt everything left by one
 template <> __m256d ShuntLast2First<__m256d>(const __m256d input) {
   // PRE: input = abcd
-  std::cout << "AVX1 CALLED\n";
   __m256d tmp0 = _mm256_shuffle_pd(input, input, 0b0101);
   // form badc with in lane
   __m256d tmp1 = _mm256_permute2f128_pd(tmp0, tmp0, 0b0101);
+  // form dcab with permute
   return _mm256_blend_pd(tmp1, tmp0, 0b1010);
   // return dabc
 }
@@ -49,7 +51,8 @@ template <> __m256d ShuntLast2First<__m256d>(const __m256d input) {
 #endif // DISTOPIA_X86_AVX2_FMA
 
 // safely loads values from an array of ScalarT to a SIMD type of VectorT with
-// width of 4, checking that we dont read off the end of ScalarT.
+// width of 4, checking that we dont read before the start of ScalarT for the 
+// idx = 0 case.
 template <typename VectorT>
 inline VectorT SafeIdxLoad4(const VectorToScalarT<VectorT> *source,
                             const int idx) {
@@ -96,8 +99,7 @@ inline void Deinterleave4x3(const __m128 a, const __m128 b, const __m128 c,
 // transforms xyz coordinates from AOS to SOA
 // [2*3] xyzX xyzX ->
 // [3*2] xx yy zz
-// NOTE kinda pointless because uses large vectors
-// may be broken?????
+// NOTE kinda pointless because uses large vectors as input 
 inline void Deinterleave2x3(const __m256d a, const __m256d b, __m128d &x,
                             __m128d &y, __m128d &z) {
   // U = undefined, X = junk
@@ -117,7 +119,6 @@ inline void Deinterleave2x3(const __m256d a, const __m256d b, __m128d &x,
 // transforms xyz coordinates from AOS to SOA
 // [4*3] Xxyz Xxyz Xxyz Xxyz  ->
 // [3*4] xxxx yyyy zzzz
-// NOTE can probably be improved
 inline void Deinterleave4x3(const __m256d a, const __m256d b, const __m256d c,
                             const __m256d d, __m256d &x, __m256d &y,
                             __m256d &z) {
