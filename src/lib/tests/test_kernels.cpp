@@ -8,7 +8,8 @@
 
 // constants
 #define BOXSIZE 10
-#define NRESULTS 10000
+#define NRESULTS 1000000
+#define NINDICIES 10000
 
 inline void EXPECT_EQ_T(float result, float ref) {
   EXPECT_FLOAT_EQ(result, ref);
@@ -19,12 +20,10 @@ inline void EXPECT_EQ_T(double result, double ref) {
 }
 
 inline void EXPECT_MOSTLY_EQ_T(float result, float ref) {
-  float diff = abs(result - ref);
-  EXPECT_LT(diff, 0.001);
+  EXPECT_NEAR(result, ref, 0.001);
 }
 inline void EXPECT_MOSTLY_EQ_T(double result, double ref) {
-  double diff = abs(result - ref);
-  EXPECT_LT(diff, 0.001);
+  EXPECT_NEAR(result, ref, 0.001);
 }
 
 // creates nrandom floating points between 0 and limit
@@ -45,23 +44,27 @@ protected:
   // members
   int ncoords;
   int nresults;
+  int nindicies;
   T *coords0 = nullptr;
   T *coords1 = nullptr;
   T *ref = nullptr;
   T *results = nullptr;
   T box[3];
+  std::size_t *idxs = nullptr;
 
   // coordinates range from 0 - delta to BOXSIZE + delta
-  void InitCoords(const int n_results, const double boxsize,
-                  const double delta) {
+  void InitCoords(const int n_results, const int n_indicies,
+                  const double boxsize, const double delta) {
 
     nresults = n_results;
     ncoords = 3 * nresults;
+    nindicies = n_indicies;
 
     coords0 = new T[ncoords];
     coords1 = new T[ncoords];
     ref = new T[nresults];
     results = new T[nresults];
+    idxs = new std::size_t[nindicies];
 
     RandomFloatingPoint<T>(coords0, ncoords, 0 - delta, boxsize + delta);
     RandomFloatingPoint<T>(coords1, ncoords, 0 - delta, boxsize + delta);
@@ -69,6 +72,10 @@ protected:
     box[0] = boxsize;
     box[1] = boxsize;
     box[2] = boxsize;
+
+    for (size_t i = 0; i < nindicies; i++) {
+      idxs[i] = i;
+    }
   }
 
   void TearDown() override {
@@ -85,6 +92,10 @@ protected:
     if (results) {
       delete[] results;
     }
+
+    if (idxs) {
+      delete[] idxs;
+    }
   }
 };
 
@@ -95,7 +106,7 @@ TYPED_TEST_SUITE(Coordinates, FloatTypes);
 // coordinates in this test can overhang the edge of the box by 2 * the box
 // size.
 TYPED_TEST(Coordinates, CalcBondsMatchesVanilla) {
-  this->InitCoords(NRESULTS, BOXSIZE, 3 * BOXSIZE);
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
   VanillaCalcBonds<TypeParam>(this->coords0, this->coords1, this->box,
                               this->nresults, this->ref);
   CalcBondsOrtho(this->coords0, this->coords1, this->box, this->nresults,
@@ -110,7 +121,7 @@ TYPED_TEST(Coordinates, CalcBondsMatchesVanilla) {
 
 // all the coordinates in this test are in the primary box
 TYPED_TEST(Coordinates, CalcBondsMatchesVanillaInBox) {
-  this->InitCoords(NRESULTS, BOXSIZE, 0);
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 0);
   VanillaCalcBonds<TypeParam>(this->coords0, this->coords1, this->box,
                               this->nresults, this->ref);
   CalcBondsOrtho(this->coords0, this->coords1, this->box, this->nresults,
@@ -120,15 +131,15 @@ TYPED_TEST(Coordinates, CalcBondsMatchesVanillaInBox) {
   }
 }
 
-
 TYPED_TEST(Coordinates, CalcBondsNoBox) {
-  this->InitCoords(NRESULTS, BOXSIZE, 0);
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 0);
 
-  VanillaCalcBondsNoBox(this->coords0, this->coords1, this->nresults, this->ref);
+  VanillaCalcBondsNoBox(this->coords0, this->coords1, this->nresults,
+                        this->ref);
 
   CalcBondsNoBox(this->coords0, this->coords1, this->nresults, this->results);
 
-  for (int i=0; i<this->nresults; ++i) {
+  for (int i = 0; i < this->nresults; ++i) {
     EXPECT_EQ_T(this->results[i], this->ref[i]);
   }
 }
@@ -139,9 +150,9 @@ TEST(KnownValues, OrthoBox) {
   float ref[3 * 7];
   float other[3 * 7];
   int nvals = 3 * 7;
-  for (unsigned char i=0; i<7; ++i) {
+  for (unsigned char i = 0; i < 7; ++i) {
     if (i < 7)
-      coords1[i*3] = i;
+      coords1[i * 3] = i;
     else if (i < 14)
       coords1[i * 3 + 1] = i;
     else
@@ -153,7 +164,7 @@ TEST(KnownValues, OrthoBox) {
 
   CalcBondsOrtho(coords1, coords2, box, nvals, other);
 
-  for (unsigned char j=0; j<7; ++j)
+  for (unsigned char j = 0; j < 7; ++j)
     EXPECT_FLOAT_EQ(ref[j], other[j]);
 }
 
@@ -161,12 +172,32 @@ TEST(KnownValues, NoBox) {
   float coords1[7 * 3] = {0};
   float coords2[7 * 3] = {0};
   float ref[7];
-  for (unsigned char i=0; i<7; ++i) {
-    coords1[i*3] = i;
+  for (unsigned char i = 0; i < 7; ++i) {
+    coords1[i * 3] = i;
   }
 
   CalcBondsNoBox(coords1, coords2, 7, ref);
 
-  for (unsigned char j=0; j<7; ++j)
+  for (unsigned char j = 0; j < 7; ++j)
     EXPECT_FLOAT_EQ(ref[j], j);
 }
+
+#ifdef DISTOPIA_X86_AVX2_FMA
+
+// coordinates in this test can overhang the edge of the box by 2 * the box
+// size.
+TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanilla) {
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
+  VanillaCalcBondsIdx<TypeParam>(this->coords0, this->idxs, this->box,
+                                 this->nindicies / 2, this->ref);
+  CalcBondsIdxOrtho(this->coords0, this->idxs, this->box, this->nindicies / 2,
+                    this->results);
+
+  for (std::size_t i = 0; i < this->nindicies / 2; i++) {
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+    // loss of accuracy somewhere?
+  }
+  SUCCEED();
+}
+
+#endif //DISTOPIA_X86_AVX2_FMA

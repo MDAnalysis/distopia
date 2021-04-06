@@ -44,7 +44,7 @@ template <> struct VectorToScalarTStruct<__m128d> { using type = double; };
 // map each vector to the type it is loaded in as in IDX case
 template <typename VectorT> struct VectorToLoadTStruct;
 template <> struct VectorToLoadTStruct<__m128> { using type = __m128; };
-template <> struct VectorToLoadTStruct<__m128d> { using type = __m128d; };
+template <> struct VectorToLoadTStruct<__m128d> { using type = __m256d; };
 
 template <typename T> struct SmallVecTStruct;
 template <> struct SmallVecTStruct<float> { using type = __m128; };
