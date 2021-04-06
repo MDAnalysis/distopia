@@ -404,15 +404,6 @@ TEST(TestX86SwizzleVec, Double256Deinterleave) {
 
 #endif // DISTOPIA_X86_AVX
 
-// TEST(TestX86SwizzleVec, Float128ShuntFirst2Last) {
-//   float x[4] = {00.f, 01.f, 02.f, 03.f};
-//   __m128 correct_x = _mm_setr_ps(01.f, 02.f, 03.f, 00.f);
-//   __m128 data = _mm_loadu_ps(x);
-//   __m128 result = ShuntFirst2Last(data);
-//   bool x_is_correct =
-//       _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(result, correct_x)));
-//   EXPECT_TRUE(x_is_correct);
-// }
 
 TEST(TestX86SwizzleVec, Float128ShuntLast2First) {
   float x[4] = {01.f, 02.f, 03.f, 00.f};
@@ -425,17 +416,7 @@ TEST(TestX86SwizzleVec, Float128ShuntLast2First) {
 }
 
 
-// TEST(TestX86SwizzleVec, Double256ShuntFirst2Last) {
-//   double x[4] = {00.0, 01.0, 02.0, 03.0};
-//   __m256d correct_x = _mm256_setr_pd(01.0, 02.0, 03.0, 00.0);
-//   __m256d data = _mm256_loadu_pd(x);
-//   __m256d result = ShuntFirst2Last(data);
-//   bool x_is_correct = _mm256_testc_pd(
-//       _mm256_setzero_pd(), _mm256_cmp_pd(result, correct_x, _CMP_NEQ_UQ));
-//   EXPECT_TRUE(x_is_correct);
-// }
-
-
+#ifdef DISTOPIA_X86_AVX
 TEST(TestX86SwizzleVec, Double256ShuntLast2First) {
   double x[4] = {01.0, 02.0, 03.0, 0.0};
   __m256d correct_x = _mm256_setr_pd(0.0, 01.0, 02.0, 03.0);
@@ -446,7 +427,7 @@ TEST(TestX86SwizzleVec, Double256ShuntLast2First) {
       _mm256_setzero_pd(), _mm256_cmp_pd(result, correct_x, _CMP_NEQ_UQ));
   EXPECT_TRUE(x_is_correct);
 }
-
+#endif // DISTOPIA_X86_AVX
 
 TEST(TestX86SwizzleVec, Float128IdxLoadDeinterleaved) {
   // dummy data with  4x target and 4x incorrect data mixed in
