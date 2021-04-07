@@ -36,12 +36,12 @@ void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
                     const VectorToScalarT<VectorT> *box, std::size_t n,
                     VectorToScalarT<VectorT> *out) {
   auto vecbox = BoxT(box);
-  auto c0 = VectorTriple<VectorT>();
-  auto c1 = VectorTriple<VectorT>();
+
   std::size_t i = 0;
   if (n % ValuesPerPack<VectorT>) {
-    c0.load(coords0);
-    c1.load(coords1);
+    auto c0 = VectorTriple<VectorT>(coords0);
+    auto c1 = VectorTriple<VectorT>(coords1);
+
     VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
     // TODO constexpr if with CXX17 support
     if (streaming_store) {
@@ -52,8 +52,8 @@ void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
     i += n % ValuesPerPack<VectorT>;
   }
   for (; i < n; i += ValuesPerPack<VectorT>) {
-    c0.load(&coords0[3 * i]);
-    c1.load(&coords1[3 * i]);
+    auto c0 = VectorTriple<VectorT>(&coords0[3 * i]);
+    auto c1 = VectorTriple<VectorT>(&coords1[3 * i]);
 
     VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
     // TODO constexpr if with CXX17 support
