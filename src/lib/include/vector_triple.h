@@ -106,6 +106,20 @@ public:
     }
   }
 
+    inline void load(const ScalarT *source) {
+    // TODO constexpr if with CXX17 support
+    if (ValuesPerPack<VectorT> == 1) {
+      x = genericload<VectorT>(source);
+      y = genericload<VectorT>(source + 1);
+      z = genericload<VectorT>(source + 2);
+    } else {
+      auto t1 = genericload<VectorT>(source);
+      auto t2 = genericload<VectorT>(source + ValuesPerPack<VectorT>);
+      auto t3 = genericload<VectorT>(source + ValuesPerPack<VectorT> * 2);
+      Deinterleave3(t1, t2, t3, x, y, z);
+    }
+  }
+
   // construct by loading discontiguously from an array of ScalarT eg float* or
   // double*. Must pass references as deinterleave must happen on x,y and z
   // simultaneously

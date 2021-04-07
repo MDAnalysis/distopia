@@ -1,5 +1,7 @@
 #include <cmath>
 #include <immintrin.h>
+#include "arch_config.h"
+
 
 // Jakub's NearbyINT based function
 void CalcBondsNINT(const float *coords1, const float *coords2, const float *box,
@@ -33,7 +35,7 @@ void CalcBondsFMA(const float *coords1, const float *coords2, const float *box,
   }
 }
 
-#if DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
+#ifdef DISTOPIA_X86_AVX 
 
 typedef struct {
     __m256 a;
@@ -132,4 +134,4 @@ void CalcBonds256(
     }
 }
 
-#endif //  DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
+#endif //

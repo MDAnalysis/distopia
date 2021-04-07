@@ -1,6 +1,8 @@
 #ifndef XDIST_BETTER_DISTOPIA_H
 #define XDIST_BETTER_DISTOPIA_H
 
+#include "arch_config.h"
+
 /*
  * calculates *nvals* pairwise distances between *coords1* and *coords2*
  * *box* is an orthogonal box
@@ -26,7 +28,7 @@ void CalcBondsFMA(const float* coords1,
                     float* output);
 
 
-#if DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
+#ifdef DISTOPIA_X86_AVX 
 /*
  * calculates *nvals* pairwise distances between *coords1* and *coords2*
  * *box* is an orthogonal box
@@ -41,8 +43,7 @@ void CalcBonds256(
     size_t n,
     float *out
 );
-#endif //DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
-
+#endif //
 
 
 #endif //XDIST_BETTER_DISTOPIA_H
