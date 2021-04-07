@@ -142,6 +142,7 @@ int main(int argc, char *argv[]) {
   std::vector<std::chrono::duration<double>> nint_calc_bonds;
   std::vector<std::chrono::duration<double>> fma_calc_bonds;
   std::vector<std::chrono::duration<double>> ymm_calc_bonds;
+  std::vector<std::chrono::duration<double>> cb_calc_bonds;
 
   for (size_t i = 0; i < niters; i++) {
 
@@ -209,6 +210,17 @@ int main(int argc, char *argv[]) {
     ymm_calc_bonds.push_back(dt);
     if (!verify(ref_results, results, nresults_bonds))
       printf("YMM result wrong!\n");
+
+    
+    // YMM based function
+    t1 = std::chrono::steady_clock::now();
+    CalcBondsOrtho(coords1, coords2, box, nresults_bonds, results);
+    t2 = std::chrono::steady_clock::now();
+    dt = (t2 - t1);
+    cb_calc_bonds.push_back(dt);
+    if (!verify(ref_results, results, nresults_bonds))
+      printf("CB result wrong!\n");
+
 #endif // #if DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2 
 
     // ANGLES
@@ -310,8 +322,11 @@ int main(int argc, char *argv[]) {
   auto nint =
       timings(nint_calc_bonds, niters, nresults_bonds, "NINT", timings_f);
   auto fma = timings(fma_calc_bonds, niters, nresults_bonds, "FMA", timings_f);
+  
 #if DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
   auto ymm = timings(ymm_calc_bonds, niters, nresults_bonds, "YMM", timings_f);
+  auto cb = timings(cb_calc_bonds, niters, nresults_bonds, "CB", timings_f);
+
 #endif
   timings_f.close();
 
@@ -329,6 +344,8 @@ int main(int argc, char *argv[]) {
 #if DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
   float ymm_scaled = std::get<0>(vanilla) / std::get<0>(ymm);
   printf("YMM speedup relative to vanilla    %f \n", ymm_scaled);
+  float cb_scaled = std::get<0>(vanilla) / std::get<0>(cb);
+  printf("CB speedup relative to vanilla    %f \n", cb_scaled);
 #endif
 
   return 0;
