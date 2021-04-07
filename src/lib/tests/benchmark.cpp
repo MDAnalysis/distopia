@@ -109,7 +109,6 @@ public:
     for (auto _ : state) {
       CalcBonds256(coords0, coords1, box, nresults, results);
     }
-
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
         nresults * state.iterations(),
@@ -157,11 +156,11 @@ BENCHMARK_REGISTER_F(CoordinatesDynamicMem, ModifyDouble)
 
 BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem,
                             VanillaCalcBondsOrthoInBoxFloat, float)
-(benchmark::State &state) { BM_CalcBondsOrtho(state); }
+(benchmark::State &state) { BM_VanillaCalcBondsOrtho(state); }
 
 BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem,
                             VanillaCalcBondsOrthoInBoxDouble, double)
-(benchmark::State &state) { BM_CalcBondsOrtho(state); }
+(benchmark::State &state) { BM_VanillaCalcBondsOrtho(state); }
 
 BENCHMARK_REGISTER_F(CoordinatesDynamicMem, VanillaCalcBondsOrthoInBoxFloat)
     ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
@@ -224,11 +223,11 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsIdxOrthoInBoxDouble,
 (benchmark::State &state) { BM_CalcBondsOrtho(state); }
 
 BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsIdxOrthoInBoxFloat)
-    ->Ranges({{16, 16 << 12}, {16, 16 << 12}, {0, 0}})
+    ->Ranges({{128, 16 << 12}, {16, 16 << 4}, {0, 0}})
     ->RangeMultiplier(4);
 
 BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsIdxOrthoInBoxDouble)
-    ->Ranges({{16, 16 << 12}, {16, 16 << 12}, {0, 0}})
+    ->Ranges({{128, 16 << 12}, {16, 16 << 4}, {0, 0}})
     ->RangeMultiplier(4);
 
 BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsIdxOrthoOutBoxFloat,
@@ -241,12 +240,12 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem,
 
 // coords can be +- 5 over boxlength
 BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsIdxOrthoOutBoxFloat)
-    ->Ranges({{16, 16 << 12}, {16, 16 << 12}, {5, 5}})
+    ->Ranges({{128, 16 << 12}, {16, 16 << 4}, {5, 5}})
     ->RangeMultiplier(4);
 
 // coords can be +- 5 over boxlength
 BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsIdxOrthoOutBoxDouble)
-    ->Ranges({{16, 16 << 12}, {16, 16 << 12}, {5, 5}})
+    ->Ranges({{128, 16 << 12}, {16, 16 << 4}, {5, 5}})
     ->RangeMultiplier(4);
 
 BENCHMARK_MAIN();
