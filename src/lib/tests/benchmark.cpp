@@ -20,6 +20,16 @@ void RandomFloatingPoint(T *target, const int nrandom, const int neglimit,
   }
 }
 
+void RandomInt(std::size_t *target, const int nrandom, const int neglimit,
+               const int poslimit) {
+  std::random_device rd;
+  std::mt19937 gen(rd()); // Standard mersenne_twister_engine
+  std::uniform_int_distribution<std::size_t> distribution(neglimit, poslimit);
+  for (size_t i = 0; i < nrandom; i++) {
+    target[i] = distribution(gen);
+  }
+}
+
 template <typename T> class CoordinatesDynamicMem : public benchmark::Fixture {
 public:
   void SetUp(benchmark::State &state) override {
@@ -34,6 +44,7 @@ public:
     nresults = n_results;
     ncoords = 3 * nresults;
     nindicies = n_indicies;
+    nidx_results = n_indicies / 2;
 
     coords0 = new T[ncoords];
     coords1 = new T[ncoords];
@@ -48,9 +59,7 @@ public:
     box[1] = boxsize;
     box[2] = boxsize;
 
-    for (size_t i = 0; i < nindicies; i++) {
-      idxs[i] = i;
-    }
+    RandomInt(idxs, nindicies, 0, nindicies - 1);
   }
 
   void TearDown(const ::benchmark::State &state) override {
@@ -77,6 +86,8 @@ public:
   int ncoords;
   int nresults;
   int nindicies;
+  int nidx_results;
+
   T *coords0 = nullptr;
   T *coords1 = nullptr;
   T *ref = nullptr;
@@ -98,7 +109,6 @@ public:
     for (auto _ : state) {
       VanillaCalcBonds(coords0, coords1, box, nresults, results);
     }
-
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
         nresults * state.iterations(),
@@ -117,12 +127,21 @@ public:
 
   void BM_CalcBondsIdxOrtho(benchmark::State &state) {
     for (auto _ : state) {
-      CalcBondsIdxOrtho(coords0, idxs, box, nindicies, results);
+      CalcBondsIdxOrtho(coords0, idxs, box, nidx_results, results);
     }
-
     state.SetItemsProcessed(nindicies * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
-        nindicies * state.iterations(),
+        nidx_results * state.iterations(),
+        benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+  }
+
+  void BM_VanillaCalcBondsIdxOrtho(benchmark::State &state) {
+    for (auto _ : state) {
+      VanillaCalcBondsIdx<T>(coords0, idxs, box, nidx_results, results);
+    }
+    state.SetItemsProcessed(nindicies * state.iterations());
+    state.counters["Per Result"] = benchmark::Counter(
+        nidx_results * state.iterations(),
         benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
   }
 
@@ -223,11 +242,11 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsIdxOrthoInBoxDouble,
 (benchmark::State &state) { BM_CalcBondsOrtho(state); }
 
 BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsIdxOrthoInBoxFloat)
-    ->Ranges({{128, 16 << 12}, {16, 16 << 4}, {0, 0}})
+    ->Ranges({{256, 16 << 12}, {16, 16 << 4}, {0, 0}})
     ->RangeMultiplier(4);
 
 BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsIdxOrthoInBoxDouble)
-    ->Ranges({{128, 16 << 12}, {16, 16 << 4}, {0, 0}})
+    ->Ranges({{256, 16 << 12}, {16, 16 << 4}, {0, 0}})
     ->RangeMultiplier(4);
 
 BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsIdxOrthoOutBoxFloat,
@@ -240,12 +259,28 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem,
 
 // coords can be +- 5 over boxlength
 BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsIdxOrthoOutBoxFloat)
-    ->Ranges({{128, 16 << 12}, {16, 16 << 4}, {5, 5}})
+    ->Ranges({{256, 16 << 12}, {16, 16 << 4}, {0, 0}})
     ->RangeMultiplier(4);
 
 // coords can be +- 5 over boxlength
 BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsIdxOrthoOutBoxDouble)
-    ->Ranges({{128, 16 << 12}, {16, 16 << 4}, {5, 5}})
+    ->Ranges({{256, 16 << 12}, {16, 16 << 4}, {0, 0}})
+    ->RangeMultiplier(4);
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem,
+                            VanillaCalcBondsIdxInBoxFloat, float)
+(benchmark::State &state) { BM_VanillaCalcBondsIdxOrtho(state); }
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem,
+                            VanillaCalcBondsIdxInBoxDouble, double)
+(benchmark::State &state) { BM_VanillaCalcBondsIdxOrtho(state); }
+
+BENCHMARK_REGISTER_F(CoordinatesDynamicMem, VanillaCalcBondsIdxInBoxFloat)
+    ->Ranges({{256, 16 << 12}, {16, 16 << 4}, {0, 0}})
+    ->RangeMultiplier(4);
+
+BENCHMARK_REGISTER_F(CoordinatesDynamicMem, VanillaCalcBondsIdxInBoxDouble)
+    ->Ranges({{256, 16 << 12}, {16, 16 << 4}, {0, 0}})
     ->RangeMultiplier(4);
 
 BENCHMARK_MAIN();
