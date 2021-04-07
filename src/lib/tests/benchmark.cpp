@@ -1,6 +1,6 @@
+#include "arch_config.h"
 #include "arrops.h"
 #include "distopia_better_distances.h"
-#include "arch_config.h"
 #include "vanilla.h"
 #include <benchmark/benchmark.h>
 #include <iostream>
@@ -86,9 +86,7 @@ public:
 
   void BM_CalcBondsOrtho(benchmark::State &state) {
     for (auto _ : state) {
-      for (std::size_t i = 0; i < nresults; i++) {
-        CalcBondsOrtho(coords0, coords1, box, nresults, results);
-      }
+      CalcBondsOrtho(coords0, coords1, box, nresults, results);
     }
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
@@ -98,10 +96,9 @@ public:
 
   void BM_VanillaCalcBondsOrtho(benchmark::State &state) {
     for (auto _ : state) {
-      for (std::size_t i = 0; i < nresults; i++) {
-        VanillaCalcBonds(coords0, coords1, box, nresults, results);
-      }
+      VanillaCalcBonds(coords0, coords1, box, nresults, results);
     }
+
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
         nresults * state.iterations(),
@@ -110,10 +107,9 @@ public:
 
   void BM_CalcBonds256Ortho(benchmark::State &state) {
     for (auto _ : state) {
-      for (std::size_t i = 0; i < nresults; i++) {
-        CalcBonds256(coords0, coords1, box, nresults, results);
-      }
+      CalcBonds256(coords0, coords1, box, nresults, results);
     }
+
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
         nresults * state.iterations(),
@@ -122,10 +118,9 @@ public:
 
   void BM_CalcBondsIdxOrtho(benchmark::State &state) {
     for (auto _ : state) {
-      for (std::size_t i = 0; i < nresults; i++) {
-        CalcBondsIdxOrtho(coords0, idxs, box, nindicies, results);
-      }
+      CalcBondsIdxOrtho(coords0, idxs, box, nindicies, results);
     }
+
     state.SetItemsProcessed(nindicies * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
         nindicies * state.iterations(),
@@ -176,7 +171,7 @@ BENCHMARK_REGISTER_F(CoordinatesDynamicMem, VanillaCalcBondsOrthoInBoxDouble)
     ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
-#ifdef DISTOPIA_X86_AVX 
+#ifdef DISTOPIA_X86_AVX
 BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBonds256OrthoInBoxFloat,
                             float)
 (benchmark::State &state) { BM_CalcBonds256Ortho(state); }
