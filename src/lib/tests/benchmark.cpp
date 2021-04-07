@@ -129,7 +129,7 @@ public:
     for (auto _ : state) {
       CalcBondsIdxOrtho(coords0, idxs, box, nidx_results, results);
     }
-    state.SetItemsProcessed(nindicies * state.iterations());
+    state.SetItemsProcessed(nidx_results * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
         nidx_results * state.iterations(),
         benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
@@ -139,7 +139,7 @@ public:
     for (auto _ : state) {
       VanillaCalcBondsIdx<T>(coords0, idxs, box, nidx_results, results);
     }
-    state.SetItemsProcessed(nindicies * state.iterations());
+    state.SetItemsProcessed(nidx_results * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
         nidx_results * state.iterations(),
         benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
