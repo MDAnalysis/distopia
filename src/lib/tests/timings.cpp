@@ -14,6 +14,8 @@
 #include "distopia.h"                  // a fancy approach
 #include "distopia_better_distances.h" // Jakub's fancy approach
 #include "vanilla.h"                   // a naive approach
+#include "arch_config.h"
+
 
 bool loadHeader(FILE *fp, int *Ncoords, float *box) {
   // header format:
@@ -201,7 +203,7 @@ int main(int argc, char *argv[]) {
     if (!verify(ref_results, results, nresults_bonds))
       printf("FMA result wrong!\n");
 
-#if DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
+#ifdef DISTOPIA_X86_AVX 
     // YMM based function
     t1 = std::chrono::steady_clock::now();
     CalcBonds256(coords1, coords2, box, nresults_bonds, results);
@@ -323,7 +325,7 @@ int main(int argc, char *argv[]) {
       timings(nint_calc_bonds, niters, nresults_bonds, "NINT", timings_f);
   auto fma = timings(fma_calc_bonds, niters, nresults_bonds, "FMA", timings_f);
   
-#if DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
+#ifdef DISTOPIA_X86_AVX 
   auto ymm = timings(ymm_calc_bonds, niters, nresults_bonds, "YMM", timings_f);
   auto cb = timings(cb_calc_bonds, niters, nresults_bonds, "CB", timings_f);
 
@@ -341,7 +343,7 @@ int main(int argc, char *argv[]) {
   printf("Nint speedup relative to vanilla   %f \n", nint_scaled);
   float fma_scaled = std::get<0>(vanilla) / std::get<0>(fma);
   printf("FMA speedup relative to vanilla    %f \n", fma_scaled);
-#if DISTOPIA_USE_AVX || DISTOPIA_USE_AVX2
+#ifdef DISTOPIA_X86_AVX 
   float ymm_scaled = std::get<0>(vanilla) / std::get<0>(ymm);
   printf("YMM speedup relative to vanilla    %f \n", ymm_scaled);
   float cb_scaled = std::get<0>(vanilla) / std::get<0>(cb);
