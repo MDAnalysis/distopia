@@ -5,13 +5,12 @@
 #ifndef DISTOPIA_ORTHO_BOX_H
 #define DISTOPIA_ORTHO_BOX_H
 
-#include "vector_triple.h"
+#include "basemath.h"
 #include "distopia_type_traits.h"
 #include "ops.h"
-#include "basemath.h"
+#include "vector_triple.h"
 
-template <typename VectorT>
-class OrthogonalBox {
+template <typename VectorT> class OrthogonalBox {
 public:
   using ScalarT = VectorToScalarT<VectorT>;
   VectorTriple<VectorT> boxlengths;
@@ -23,16 +22,14 @@ public:
   }
 };
 
-template <typename VectorT>
-class NoBox{
+template <typename VectorT> class NoBox {
 public:
   using ScalarT = VectorToScalarT<VectorT>;
 
-  explicit NoBox(const ScalarT*) {};
+  explicit NoBox(const ScalarT *){};
 };
 
-template <typename VectorT>
-class TriclinicBox{
+template <typename VectorT> class TriclinicBox {
 public:
   using ScalarT = VectorToScalarT<VectorT>;
 
@@ -40,18 +37,18 @@ public:
   VectorTriple<VectorT> y;
   VectorTriple<VectorT> z;
 
-  explicit TriclinicBox(const ScalarT* v) : x(v), y(v+3), z(v+6) {};
+  explicit TriclinicBox(const ScalarT *v) : x(v), y(v + 3), z(v + 6){};
 };
 
-template<typename VectorT, typename BoxType>
-inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT>& p1,
-                                         const VectorTriple<VectorT>& p2,
-                                         const BoxType& box);
+template <typename VectorT, typename BoxType>
+inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT> &p1,
+                                         const VectorTriple<VectorT> &p2,
+                                         const BoxType &box);
 
-template<typename VectorT>
-inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT>& p1,
-                                         const VectorTriple<VectorT>& p2,
-                                         const OrthogonalBox<VectorT>& box) {
+template <typename VectorT>
+inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT> &p1,
+                                         const VectorTriple<VectorT> &p2,
+                                         const OrthogonalBox<VectorT> &box) {
   VectorT dx = DistanceModulo(p1.x, p2.x, box.boxlengths.x);
   VectorT dy = DistanceModulo(p1.y, p2.y, box.boxlengths.y);
   VectorT dz = DistanceModulo(p1.z, p2.z, box.boxlengths.z);
@@ -59,10 +56,10 @@ inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT>& p1,
   return Hypot(dx, dy, dz);
 }
 
-template<typename VectorT>
-inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT>& p1,
-                                         const VectorTriple<VectorT>& p2,
-                                         const NoBox<VectorT>&) {
+template <typename VectorT>
+inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT> &p1,
+                                         const VectorTriple<VectorT> &p2,
+                                         const NoBox<VectorT> &) {
   VectorTriple<VectorT> delta = p2 - p1;
   VectorTriple<VectorT> r2 = delta * delta;
   VectorT r = r2.x + r2.y + r2.z;
@@ -70,4 +67,34 @@ inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT>& p1,
   return Sqrt(r);
 }
 
-#endif //DISTOPIA_ORTHO_BOX_H
+template <typename VectorT, typename BoxType>
+inline VectorT Angle3DWithBoundary(const VectorTriple<VectorT> &p1,
+                                   const VectorTriple<VectorT> &p2,
+                                   const VectorTriple<VectorT> &p3,
+                                   const BoxType &box);
+
+template <typename VectorT>
+inline VectorT Angle3DWithBoundary(const VectorTriple<VectorT> &p1,
+                                   const VectorTriple<VectorT> &p2,
+                                   const VectorTriple<VectorT> &p3,
+                                   const OrthogonalBox<VectorT> &box) {
+  VectorT dx = DistanceModulo(p1.x, p2.x, box.boxlengths.x);
+  VectorT dy = DistanceModulo(p1.y, p2.y, box.boxlengths.y);
+  VectorT dz = DistanceModulo(p1.z, p2.z, box.boxlengths.z);
+
+  return Hypot(dx, dy, dz);
+}
+
+template <typename VectorT>
+inline VectorT Angle3DWithBoundary(const VectorTriple<VectorT> &p1,
+                                   const VectorTriple<VectorT> &p2,
+                                   const VectorTriple<VectorT> &p3,
+                                   const NoBox<VectorT> &) {
+  VectorTriple<VectorT> delta = p2 - p1;
+  VectorTriple<VectorT> r2 = delta * delta;
+  VectorT r = r2.x + r2.y + r2.z;
+
+  return Sqrt(r);
+}
+
+#endif // DISTOPIA_ORTHO_BOX_H
