@@ -81,7 +81,6 @@ void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
   const std::size_t *b_j = idxs + 1;
 
   if (n % ValuesPerPack<VectorT>) {
-    // WARNING BROKEN USE OF some big buffer
     auto c0 = VectorTriple<VectorT>();
     c0.template idxload<2>(coords, b_i);
     auto c1 = VectorTriple<VectorT>();
@@ -98,7 +97,6 @@ void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
 
   for (; i < n; i += ValuesPerPack<VectorT>) {
     // access with stride of 2
-    // WARNING Abuse of big buffer  until loader can be fixed.
     auto c0 = VectorTriple<VectorT>();
     c0.template idxload<2>(coords, b_i);
     auto c1 = VectorTriple<VectorT>();
