@@ -105,7 +105,7 @@ TYPED_TEST_SUITE(Coordinates, FloatTypes);
 
 // coordinates in this test can overhang the edge of the box by 2 * the box
 // size.
-TYPED_TEST(Coordinates, CalcBondsMatchesVanilla) {
+TYPED_TEST(Coordinates, CalcBondsMatchesVanillaOutBox) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
   VanillaCalcBonds<TypeParam>(this->coords0, this->coords1, this->box,
                               this->nresults, this->ref);
@@ -131,7 +131,7 @@ TYPED_TEST(Coordinates, CalcBondsMatchesVanillaInBox) {
   }
 }
 
-TYPED_TEST(Coordinates, CalcBondsNoBox) {
+TYPED_TEST(Coordinates, CalcBondsNoBoxMatchesVanilla) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 0);
 
   VanillaCalcBondsNoBox(this->coords0, this->coords1, this->nresults,
@@ -144,42 +144,42 @@ TYPED_TEST(Coordinates, CalcBondsNoBox) {
   }
 }
 
-TEST(KnownValues, OrthoBox) {
-  float coords1[3 * 7 * 3] = {0};
-  float coords2[3 * 7 * 3] = {0};
-  float ref[3 * 7];
-  float other[3 * 7];
-  int nvals = 3 * 7;
-  for (unsigned char i = 0; i < 7; ++i) {
-    if (i < 7)
-      coords1[i * 3] = i;
-    else if (i < 14)
-      coords1[i * 3 + 1] = i;
-    else
-      coords1[i * 3 + 2] = i;
+
+TEST(KnownValues, CalcBondsOrthoBox) {
+  constexpr int nvals = 10;
+  float coords1[3 * nvals] = {0};
+  float coords2[3 * nvals] = {0};
+  float result[nvals]; 
+  // values strung out on x axis {0,0,0} {1,0,0}, {2,0,0}
+  for (unsigned char i = 0; i < 10; i++) {
+    coords1[3 * i] = i;
   }
-  float box[3] = {10, 10, 10};
+  float box[3] = {8, 8, 8};
+  float ref[10] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
 
-  VanillaCalcBonds(coords1, coords2, box, nvals, ref);
+  CalcBondsOrtho(coords1, coords2, box, nvals, result);
 
-  CalcBondsOrtho(coords1, coords2, box, nvals, other);
-
-  for (unsigned char j = 0; j < 7; ++j)
-    EXPECT_FLOAT_EQ(ref[j], other[j]);
+  for (unsigned char j = 0; j < nvals; j++) {
+    EXPECT_FLOAT_EQ(ref[j], result[j]);
+  }
 }
 
-TEST(KnownValues, NoBox) {
-  float coords1[7 * 3] = {0};
-  float coords2[7 * 3] = {0};
-  float ref[7];
-  for (unsigned char i = 0; i < 7; ++i) {
-    coords1[i * 3] = i;
+TEST(KnownValues, CalcBondsNoBox) {
+  constexpr int nvals = 10;
+  float coords1[3 * nvals] = {0};
+  float coords2[3 * nvals] = {0};
+  float ref[nvals];
+  float result[nvals];
+  for (unsigned char i = 0; i < nvals; i++) {
+    coords1[3 * i] = i;
+    ref[i] = i;
   }
 
-  CalcBondsNoBox(coords1, coords2, 7, ref);
+  CalcBondsNoBox(coords1, coords2, nvals, result);
 
-  for (unsigned char j = 0; j < 7; ++j)
-    EXPECT_FLOAT_EQ(ref[j], j);
+  for (unsigned char j = 0; j < nvals; j++) {
+    EXPECT_FLOAT_EQ(ref[j], result[j]);
+  }
 }
 
 #ifdef DISTOPIA_X86_AVX2_FMA
@@ -200,4 +200,4 @@ TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanilla) {
   SUCCEED();
 }
 
-#endif //DISTOPIA_X86_AVX2_FMA
+#endif // DISTOPIA_X86_AVX2_FMA
