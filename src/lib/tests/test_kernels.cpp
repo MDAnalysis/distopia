@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
-#include <cassert>
 #include <iostream>
 #include <random>
+#include <cmath>
 
 #include "arrops.h"  //  fancy approaches
 #include "vanilla.h" // a naive approach
@@ -214,6 +214,21 @@ TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanillaInBox) {
     // loss of accuracy somewhere?
   }
   SUCCEED();
+}
+
+TEST(KnownValues, CalcAnglesNoBox) {
+  constexpr int nvals = 3;
+  float coords1[3 * nvals] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0};
+  float coords2[3 * nvals] = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0};
+  float coords3[3 * nvals] = {1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f, 0.0, 0.0, 0.0};
+  float ref[nvals] = {M_PI_2, M_PI, 0};
+  float result[nvals];
+
+  CalcAnglesNoBox(coords1, coords2, coords3, nvals, result);
+
+  for (unsigned char j = 0; j < nvals; j++) {
+    EXPECT_FLOAT_EQ(ref[j], result[j]);
+  }
 }
 
 #endif // DISTOPIA_X86_AVX2_FMA
