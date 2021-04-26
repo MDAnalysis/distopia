@@ -47,6 +47,7 @@ protected:
   int nindicies;
   T *coords0 = nullptr;
   T *coords1 = nullptr;
+  T *coords2 = nullptr;
   T *ref = nullptr;
   T *results = nullptr;
   T box[3];
@@ -62,12 +63,14 @@ protected:
 
     coords0 = new T[ncoords];
     coords1 = new T[ncoords];
+    coords2 = new T[ncoords];
     ref = new T[nresults];
     results = new T[nresults];
     idxs = new std::size_t[nindicies];
 
     RandomFloatingPoint<T>(coords0, ncoords, 0 - delta, boxsize + delta);
     RandomFloatingPoint<T>(coords1, ncoords, 0 - delta, boxsize + delta);
+    RandomFloatingPoint<T>(coords2, ncoords, 0 - delta, boxsize + delta);
 
     box[0] = boxsize;
     box[1] = boxsize;
@@ -84,6 +87,9 @@ protected:
     }
     if (coords1) {
       delete[] coords1;
+    }
+    if (coords2) {
+      delete[] coords2;
     }
     if (ref) {
       delete[] ref;
@@ -216,8 +222,25 @@ TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanillaInBox) {
   SUCCEED();
 }
 
+// coordinates in this test can overhang the edge of the box by 2 * the box
+// size.
+TYPED_TEST(Coordinates, CalcAnglesMatchesVanillaOutBox) {
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
+  VanillaCalcAngles(this->coords0, this->coords1, this->coords2, this->box,
+                              this->nresults, this->ref);
+  CalcAnglesOrtho(this->coords0, this->coords1, this->coords2, this->box, this->nresults,
+                 this->results);
+
+  for (std::size_t i = 0; i < this->nresults; i++) {
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+    // loss of accuracy somewhere?
+  }
+  SUCCEED();
+}
+
+
 TEST(KnownValues, CalcAnglesNoBox) {
-  constexpr int nvals = 3;
+  constexpr int nvals = 4;
   float coords1[3 * nvals] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0};
   float coords2[3 * nvals] = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0};
   float coords3[3 * nvals] = {1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f, 0.0, 0.0, 0.0};
@@ -230,5 +253,7 @@ TEST(KnownValues, CalcAnglesNoBox) {
     EXPECT_FLOAT_EQ(ref[j], result[j]);
   }
 }
+
+
 
 #endif // DISTOPIA_X86_AVX2_FMA
