@@ -224,19 +224,19 @@ TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanillaInBox) {
 
 // coordinates in this test can overhang the edge of the box by 2 * the box
 // size.
-TYPED_TEST(Coordinates, CalcAnglesMatchesVanillaOutBox) {
-  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
-  VanillaCalcAngles(this->coords0, this->coords1, this->coords2, this->box,
-                              this->nresults, this->ref);
-  CalcAnglesOrtho(this->coords0, this->coords1, this->coords2, this->box, this->nresults,
-                 this->results);
+// TYPED_TEST(Coordinates, CalcAnglesMatchesVanillaOutBox) {
+//   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
+//   VanillaCalcAngles(this->coords0, this->coords1, this->coords2, this->box,
+//                               this->nresults, this->ref);
+//   CalcAnglesOrtho(this->coords0, this->coords1, this->coords2, this->box, this->nresults,
+//                  this->results);
 
-  for (std::size_t i = 0; i < this->nresults; i++) {
-    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
-    // loss of accuracy somewhere?
-  }
-  SUCCEED();
-}
+//   for (std::size_t i = 0; i < this->nresults; i++) {
+//     EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+//     // loss of accuracy somewhere?
+//   }
+//   SUCCEED();
+// }
 
 
 TEST(KnownValues, CalcAnglesNoBox) {
