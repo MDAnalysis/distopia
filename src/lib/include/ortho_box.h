@@ -36,7 +36,7 @@ template <typename VectorT>
 inline VectorTriple<VectorT> CrossProduct(VectorTriple<VectorT> v0,
                                           VectorTriple<VectorT> v1) {
   VectorT r0 = v0.y * v1.z - v0.z * v1.y;
-  VectorT r1 = -v0.x * v1.z + v0.z * v1.x;
+  VectorT r1 = v0.z * v1.x - v0.x * v1.z;
   VectorT r2 = v0.x * v1.y - v0.y * v1.x;
   auto result = VectorTriple<VectorT>(r0, r1, r2);
   return result;
