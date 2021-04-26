@@ -222,6 +222,8 @@ TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanillaInBox) {
   SUCCEED();
 }
 
+#endif // DISTOPIA_X86_AVX2_FMA
+
 // coordinates in this test can overhang the edge of the box by 2 * the box
 // size.
 // TYPED_TEST(Coordinates, CalcAnglesMatchesVanillaOutBox) {
@@ -256,4 +258,3 @@ TEST(KnownValues, CalcAnglesNoBox) {
 
 
 
-#endif // DISTOPIA_X86_AVX2_FMA
