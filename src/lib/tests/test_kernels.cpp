@@ -200,4 +200,20 @@ TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanilla) {
   SUCCEED();
 }
 
+// coordinates in this test can overhang the edge of the box by 2 * the box
+// size.
+TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanillaInBox) {
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 0);
+  VanillaCalcBondsIdx<TypeParam>(this->coords0, this->idxs, this->box,
+                                 this->nindicies / 2, this->ref);
+  CalcBondsIdxOrtho(this->coords0, this->idxs, this->box, this->nindicies / 2,
+                    this->results);
+
+  for (std::size_t i = 0; i < this->nindicies / 2; i++) {
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+    // loss of accuracy somewhere?
+  }
+  SUCCEED();
+}
+
 #endif // DISTOPIA_X86_AVX2_FMA
