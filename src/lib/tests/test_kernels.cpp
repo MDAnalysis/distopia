@@ -241,6 +241,21 @@ TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanillaInBox) {
 // }
 
 
+TYPED_TEST(Coordinates, CalcAnglesNoBoxMatchesVanilla) {
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 0);
+
+  VanillaCalcAnglesNoBox(this->coords0, this->coords1, this->coords2, this->nresults,
+                        this->ref);
+
+  CalcAnglesNoBox(this->coords0, this->coords1, this->coords2, this->nresults, this->results);
+
+  for (int i = 0; i < this->nresults; ++i) {
+    EXPECT_EQ_T(this->results[i], this->ref[i]);
+  }
+}
+
+
+
 TEST(KnownValues, CalcAnglesNoBox) {
   constexpr int nvals = 4;
   float coords1[3 * nvals] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0};
@@ -255,6 +270,8 @@ TEST(KnownValues, CalcAnglesNoBox) {
     EXPECT_FLOAT_EQ(ref[j], result[j]);
   }
 }
+
+
 
 
 
