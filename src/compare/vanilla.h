@@ -5,8 +5,8 @@
 #ifndef XDIST_VANILLA_H
 #define XDIST_VANILLA_H
 
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
 template <typename T>
 void VanillaCalcBonds(const T *coords1, const T *coords2, const T *box,
@@ -55,9 +55,56 @@ void VanillaCalcBondsIdx(const T *coords, std::size_t *idx, const T *box,
   }
 }
 
-void VanillaCalcAngles(const float *coords1, const float *coords2,
-                       const float *coords3, const float *box,
-                       unsigned int nvals, float *output);
+template <typename T>
+void VanillaCalcAngles(const T *coords1, const T *coords2, const T *coords3,
+                       const T *box, unsigned int nvals, T *output) {
+  T rji[3];
+  T rjk[3];
+  T xp[3];
+  for (unsigned int i = 0; i < nvals; ++i) {
+    for (unsigned char j = 0; j < 3; ++j) {
+      T temp = coords1[i * 3 + j] - coords2[i * 3 + j];
+      T adj = std::round(temp / box[j]);
+      rji[j] -= adj * box[j];
+      temp = coords3[i * 3 + j] - coords2[i * 3 + j];
+      adj = std::round(temp / box[j]);
+      rjk[j] -= adj * box[j];
+    }
+    T x = rji[0] * rjk[0] + rji[1] * rjk[1] + rji[2] * rjk[2];
+
+    xp[0] = rji[1] * rjk[2] - rji[2] * rjk[1];
+    xp[1] = -rji[0] * rjk[2] + rji[2] * rjk[0];
+    xp[2] = rji[0] * rjk[1] - rji[1] * rjk[0];
+
+    T y = sqrt(xp[0] * xp[0] + xp[1] * xp[1] + xp[2] * xp[2]);
+
+    *output++ = atan2(y, x);
+  }
+}
+
+template <typename T>
+void VanillaCalcAnglesNoBox(const T *coords1, const T *coords2,
+                            const T *coords3, unsigned int nvals,
+                            T *output) {
+  T rji[3];
+  T rjk[3];
+  T xp[3];
+  for (unsigned int i = 0; i < nvals; ++i) {
+    for (unsigned char j = 0; j < 3; ++j) {
+      rji[j] = coords1[i * 3 + j] - coords2[i * 3 + j];
+      rjk[j] = coords3[i * 3 + j] - coords2[i * 3 + j];
+    }
+    T x = rji[0] * rjk[0] + rji[1] * rjk[1] + rji[2] * rjk[2];
+
+    xp[0] = rji[1] * rjk[2] - rji[2] * rjk[1];
+    xp[1] = -rji[0] * rjk[2] + rji[2] * rjk[0];
+    xp[2] = rji[0] * rjk[1] - rji[1] * rjk[0];
+
+    T y = sqrt(xp[0] * xp[0] + xp[1] * xp[1] + xp[2] * xp[2]);
+
+    *output++ = atan2(y, x);
+  }
+}
 
 void VanillaCalcDihedrals(const float *coords1, const float *coords2,
                           const float *coords3, const float *coords4,
