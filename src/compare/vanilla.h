@@ -78,6 +78,7 @@ void VanillaCalcAngles(const T *coords1, const T *coords2, const T *coords3,
   T rjk[3];
   T xp[3];
   T inverse_box[3];
+  T adj;
 
   inverse_box[0] = 1.0 / box[0];
   inverse_box[1] = 1.0 / box[1];
@@ -86,10 +87,13 @@ void VanillaCalcAngles(const T *coords1, const T *coords2, const T *coords3,
   for (unsigned int i = 0; i < nvals; ++i) {
     for (unsigned char j = 0; j < 3; ++j) {
       rji[j] = coords1[i * 3 + j] - coords2[i * 3 + j];
+      adj = std::round(rji[j] / box[j]);
+      rji[j] -= adj * box[j];
       rjk[j] = coords3[i * 3 + j] - coords2[i * 3 + j];
+      adj = std::round(rjk[j] / box[j]);
+      rjk[j] -= adj * box[j];
+
     }
-    minimum_image(rji, box, inverse_box);
-    minimum_image(rjk, box, inverse_box);
 
     T x = rji[0] * rjk[0] + rji[1] * rjk[1] + rji[2] * rjk[2];
 

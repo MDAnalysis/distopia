@@ -322,6 +322,8 @@ if(DISTOPIA_BUILD_TEST)
     )
   target_link_libraries(test_kernels distopia)
   target_link_libraries(test_kernels gtest gtest_main)
+  gtest_discover_tests(test_kernels WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
 
   add_executable(test_mda_match  ${DISTOPIA_TEST_DIR}/test_mda_match.cpp)
   target_compile_options(test_mda_match
