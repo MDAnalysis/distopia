@@ -322,8 +322,19 @@ if(DISTOPIA_BUILD_TEST)
     )
   target_link_libraries(test_kernels distopia)
   target_link_libraries(test_kernels gtest gtest_main)
+
+  add_executable(test_mda_match  ${DISTOPIA_TEST_DIR}/test_mda_match.cpp)
+  target_compile_options(test_mda_match
+    PRIVATE
+      ${CXX_FLAGS}
+      "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
+      "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
+      "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
+    )
+  target_link_libraries(test_mda_match distopia)
+  target_link_libraries(test_mda_match gtest gtest_main)
   # discover tests so that make test will work
-  gtest_discover_tests(test_kernels WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+  gtest_discover_tests(test_mda_match WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
 
 if(DISTOPIA_BUILD_TIMINGS)
