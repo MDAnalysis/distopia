@@ -150,21 +150,21 @@ TEST_F(CoordinatesMDA, VanillaCalcBondsNoBoxMatchesMDA) {
   }
 }
 
-// TEST_F(CoordinatesMDA, CalcAnglesMatchesMDA) {
-//   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
+TEST_F(CoordinatesMDA, CalcAnglesMatchesMDA) {
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
 
-//   _calc_angle_ortho((coordinate *)this->coords0, (coordinate *)
-//   this->coords1,  (coordinate *) this->coords2,
-//                               this->nresults, this->box, this->ref);
-//   CalcAnglesOrtho(this->coords0, this->coords1,  this->coords2, this->box,
-//   this->nresults,
-//                  this->results);
+  _calc_angle_ortho((coordinate *)this->coords0, (coordinate *)
+  this->coords1,  (coordinate *) this->coords2,
+                              this->nresults, this->box, this->ref);
+  CalcAnglesOrtho(this->coords0, this->coords1,  this->coords2, this->box,
+  this->nresults,
+                 this->results);
 
-//   for (std::size_t i = 0; i < this->nresults; i++) {
-//     EXPECT_NEAR(this->results[i], this->ref[i], 0.00001);
-//     // loss of accuracy somewhere?
-//   }
-// }
+  for (std::size_t i = 0; i < this->nresults; i++) {
+    EXPECT_NEAR(this->results[i], this->ref[i], 0.00001);
+    // loss of accuracy somewhere?
+  }
+}
 
 TEST_F(CoordinatesMDA, CalcAnglesNoBoxMatchesMDA) {
   this->InitCoords(NRESULTS, NINDICIES, 0, 3 * BOXSIZE);

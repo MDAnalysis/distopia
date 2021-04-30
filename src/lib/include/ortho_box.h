@@ -110,11 +110,22 @@ inline VectorT Angle3DWithBoundary(const VectorTriple<VectorT> &p1,
                                    const VectorTriple<VectorT> &p2,
                                    const VectorTriple<VectorT> &p3,
                                    const OrthogonalBox<VectorT> &box) {
-  VectorT dx = DistanceModulo(p1.x, p2.x, box.boxlengths.x);
-  VectorT dy = DistanceModulo(p1.y, p2.y, box.boxlengths.y);
-  VectorT dz = DistanceModulo(p1.z, p2.z, box.boxlengths.z);
+  VectorT rjix = DistanceModulo(p1.x, p2.x, box.boxlengths.x);
+  VectorT rjiy = DistanceModulo(p1.y, p2.y, box.boxlengths.y);
+  VectorT rjiz = DistanceModulo(p1.z, p2.z, box.boxlengths.z);
+  VectorTriple<VectorT> rji = VectorTriple<VectorT>(rjix, rjiy, rjiz);
+  VectorT rjkx = DistanceModulo(p2.x, p3.x, box.boxlengths.x);
+  VectorT rjky = DistanceModulo(p2.y, p3.y, box.boxlengths.y);
+  VectorT rjkz = DistanceModulo(p2.z, p3.z, box.boxlengths.z);
+  VectorTriple<VectorT> rjk = VectorTriple<VectorT>(rjkx, rjky, rjkz);
+  VectorTriple<VectorT> x_acc = rji * rjk;
+  VectorT x = x_acc.x + x_acc.y + x_acc.z;
+  VectorTriple<VectorT> xp = CrossProduct<VectorT>(rji, rjk);
+  xp = xp * xp;
+  VectorT y_acc = xp.x + xp.y + xp.z;
+  VectorT y = Sqrt(y_acc);
+  return Atan2Shim(y, x);
 
-  return Hypot(dx, dy, dz);
 }
 
 template <typename VectorT>
