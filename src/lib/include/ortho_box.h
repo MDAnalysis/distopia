@@ -114,9 +114,9 @@ inline VectorT Angle3DWithBoundary(const VectorTriple<VectorT> &p1,
   VectorT rjiy = DistanceModulo(p1.y, p2.y, box.boxlengths.y);
   VectorT rjiz = DistanceModulo(p1.z, p2.z, box.boxlengths.z);
   VectorTriple<VectorT> rji = VectorTriple<VectorT>(rjix, rjiy, rjiz);
-  VectorT rjkx = DistanceModulo(p2.x, p3.x, box.boxlengths.x);
-  VectorT rjky = DistanceModulo(p2.y, p3.y, box.boxlengths.y);
-  VectorT rjkz = DistanceModulo(p2.z, p3.z, box.boxlengths.z);
+  VectorT rjkx = DistanceModulo(p3.x, p2.x, box.boxlengths.x);
+  VectorT rjky = DistanceModulo(p3.y, p2.y, box.boxlengths.y);
+  VectorT rjkz = DistanceModulo(p3.z, p2.z, box.boxlengths.z);
   VectorTriple<VectorT> rjk = VectorTriple<VectorT>(rjkx, rjky, rjkz);
   VectorTriple<VectorT> x_acc = rji * rjk;
   VectorT x = x_acc.x + x_acc.y + x_acc.z;
