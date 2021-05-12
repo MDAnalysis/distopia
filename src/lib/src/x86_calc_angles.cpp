@@ -128,8 +128,9 @@ void CalcAnglesIdxInner(const VectorToScalarT<VectorT> *coords,
 }
 
 template <typename T>
-void CalcAnglesOrthoDispatch(const T *coords0, const T *coords1, const T *coords2,
-                             const T *box, std::size_t n, T *out) {
+void CalcAnglesOrthoDispatch(const T *coords0, const T *coords1,
+                             const T *coords2, const T *box, std::size_t n,
+                             T *out) {
   std::size_t problem_size = n * sizeof(T);
   bool not_a_vector = n < 8;
   bool use_big_vector = distopia_unlikely(problem_size >= kBigVectorThreshold);
@@ -148,12 +149,13 @@ void CalcAnglesOrthoDispatch(const T *coords0, const T *coords1, const T *coords
           coords0, coords1, coords2, box, n, out);
     }
   } else {
-    if (use_streaming_stores)
+    if (use_streaming_stores) {
       CalcAnglesInner<true, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(
           coords0, coords1, coords2, box, n, out);
-    else
+    } else {
       CalcAnglesInner<false, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(
           coords0, coords1, coords2, box, n, out);
+    }
   }
 }
 
@@ -167,16 +169,16 @@ void CalcAnglesNoBoxDispatch(const T *coords0, const T *coords1,
   // TODO constexpr if with CXX17 support
   if (use_big_vector) {
     if (use_streaming_stores) {
-      CalcAnglesInner<true, BigVecT<T>, NoBox<BigVecT<T>>>(coords0, coords1, coords2,
-                                                           nullptr, n, out);
+      CalcAnglesInner<true, BigVecT<T>, NoBox<BigVecT<T>>>(
+          coords0, coords1, coords2, nullptr, n, out);
     } else {
-      CalcAnglesInner<false, BigVecT<T>, NoBox<BigVecT<T>>>(coords0, coords1, coords2,
-                                                            nullptr, n, out);
+      CalcAnglesInner<false, BigVecT<T>, NoBox<BigVecT<T>>>(
+          coords0, coords1, coords2, nullptr, n, out);
     }
   } else {
     if (use_streaming_stores) {
-      CalcAnglesInner<true, SmallVecT<T>, NoBox<SmallVecT<T>>>(coords0, coords1, coords2,
-                                                               nullptr, n, out);
+      CalcAnglesInner<true, SmallVecT<T>, NoBox<SmallVecT<T>>>(
+          coords0, coords1, coords2, nullptr, n, out);
     } else {
       CalcAnglesInner<false, SmallVecT<T>, NoBox<SmallVecT<T>>>(
           coords0, coords1, coords2, nullptr, n, out);
@@ -204,12 +206,13 @@ void CalcAnglesIdxOrthoDispatch(const T *coords, const std::size_t *idxs,
           coords, idxs, box, n, out);
     }
   } else {
-    if (use_streaming_stores)
+    if (use_streaming_stores) {
       CalcAnglesIdxInner<true, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(
           coords, idxs, box, n, out);
-    else
+    } else {
       CalcAnglesIdxInner<false, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(
           coords, idxs, box, n, out);
+    }
   }
 }
 
