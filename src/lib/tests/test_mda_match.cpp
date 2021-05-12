@@ -9,8 +9,8 @@
 
 // constants
 #define BOXSIZE 10
-#define NRESULTS 1000000
-#define NINDICIES 10000
+#define NRESULTS 10000
+#define NINDICIES 1000
 
 // creates nrandom floating points between 0 and limit
 template <typename T>

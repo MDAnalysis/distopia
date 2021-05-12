@@ -8,8 +8,8 @@
 
 // constants
 #define BOXSIZE 10
-#define NRESULTS 1000000
-#define NINDICIES 10000
+#define NRESULTS 10000
+#define NINDICIES 1000
 
 inline void EXPECT_EQ_T(float result, float ref) {
   EXPECT_FLOAT_EQ(result, ref);
@@ -258,10 +258,10 @@ TYPED_TEST(Coordinates, CalcAnglesNoBoxMatchesVanilla) {
 
 TEST(KnownValues, CalcAnglesNoBox) {
   constexpr int nvals = 4;
-  float coords1[3 * nvals] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0};
-  float coords2[3 * nvals] = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0};
-  float coords3[3 * nvals] = {1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f, 0.0, 0.0, 0.0};
-  float ref[nvals] = {M_PI_2, M_PI, 0};
+  float coords1[3 * nvals] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  float coords2[3 * nvals] = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  float coords3[3 * nvals] = {1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  float ref[nvals] = {M_PI_2, M_PI, 0, 0};
   float result[nvals];
 
   CalcAnglesNoBox(coords1, coords2, coords3, nvals, result);
