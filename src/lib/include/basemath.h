@@ -55,6 +55,22 @@ inline T DistanceModulo(T x0, T x1, T y) {
   return FastMin(d, y_sub_d);
 }
 
+template<typename T, EnableIfFloating<T> = 0>
+inline T SignedDistanceModulo(T x0, T x1, T y) {
+  T d_signed = x0 - x1;
+  T d = Abs(d);
+  // FIXME: It should be possible to compute correctly rounded y - |x0 - x1|.
+  T y_sub_d = y - d;
+  if (distopia_unlikely(y_sub_d < 0)) {
+    x0 = Remainder(x0, y);
+    x1 = Remainder(x1, y);
+    d_signed = x0 - x1;
+    d = Abs(d_signed);
+    return std::copysign(FastMin(d, y - d), d_signed);
+  }
+  return std::copysign(FastMin(d, y_sub_d), d_signed);
+}
+
 } // namespace
 
 #include "x86_basemath.h"

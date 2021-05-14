@@ -63,6 +63,35 @@ inline T Remainder(T x, T y) {
   return FastNegMulAdd(wraps_around, y, x);
 }
 
+__m128 vector_copysign(__m128 to, __m128 from) {
+    constexpr float signbit = -0.f;
+    auto const simd_signbit = _mm_broadcast_ss(&signbit);
+    return _mm_or_ps(_mm_and_ps(simd_signbit, from), _mm_andnot_ps(simd_signbit, to)); // (simd_signbit & from) | (~simd_signbit & to)
+}
+
+__m128d vector_copysign(__m128d to, __m128d from) {
+    constexpr double signbit = -0.;
+    auto const simd_signbit = _mm_set1_pd(signbit);
+    return _mm_or_pd(_mm_and_pd(simd_signbit, from), _mm_andnot_pd(simd_signbit, to)); // (simd_signbit & from) | (~simd_signbit & to)
+}
+
+#ifdef DISTOPIA_X86_AVX
+
+__m256 vector_copysign(__m256 to, __m256 from) {
+    constexpr float signbit = -0.f;
+    auto const simd_signbit = _mm256_broadcast_ss(&signbit);
+    return _mm256_or_ps(_mm256_and_ps(simd_signbit, from), _mm256_andnot_ps(simd_signbit, to)); // (simd_signbit & from) | (~simd_signbit & to)
+}
+
+__m256d vector_copysign(__m256d to, __m256d from) {
+    constexpr double signbit = -0.;
+    auto const simd_signbit = _mm256_broadcast_sd(&signbit);
+    return _mm256_or_pd(_mm256_and_pd(simd_signbit, from), _mm256_andnot_pd(simd_signbit, to)); // (simd_signbit & from) | (~simd_signbit & to)
+}
+
+#endif //DISTOPIA_X86_AVX
+
+
 template<typename T, EnableIfVector<T> = 0>
 inline T FastMin(T x, T y) { return min_p(x, y); }
 
@@ -84,6 +113,31 @@ inline T DistanceModulo(T x0, T x1, T y) {
   x1 = Remainder(x1, y);
   d = Abs(x0 - x1);
   return FastMin(d, y - d);
+}
+
+
+template<typename T, EnableIfVector<T> = 0>
+inline T SignedDistanceModulo(T x0, T x1, T y) {
+  T d_signed = x0 - x1;
+  T d = Abs(d_signed);
+  T y_sub_d = y - d;
+  #ifdef DISTOPIA_X86_AVX
+    bool msb_all_zero = testz_p(y_sub_d, y_sub_d);
+  #else
+    // movemask_p(y_sub_d) is a bitfield of sign bits. It is 0 iff all the sign
+    // bits are 0.
+    bool msb_all_zero = !movemask_p(y_sub_d);
+  #endif
+  if (distopia_likely(msb_all_zero)) {
+    //return FastMin(d, y_sub_d);
+    return vector_copysign(FastMin(d, y_sub_d), d_signed);
+  }
+  x0 = Remainder(x0, y);
+  x1 = Remainder(x1, y);
+  d_signed = x0 - x1;
+  d = Abs(d_signed);
+  //return FastMin(d, y-d );
+  return vector_copysign(FastMin(d, y - d), d_signed);
 }
 
 } // namespace
