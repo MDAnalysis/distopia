@@ -224,7 +224,7 @@ TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanillaInBox) {
 
 #endif // DISTOPIA_X86_AVX2_FMA
 
-// coordinates in this test can overhang the edge of the box by 2 * the box
+// coordinates in this test can overhang the edge of the box by 0 * the box
 // size.
 TYPED_TEST(Coordinates, CalcAnglesMatchesVanillaOutBox) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
@@ -257,14 +257,47 @@ TYPED_TEST(Coordinates, CalcAnglesNoBoxMatchesVanilla) {
 
 
 TEST(KnownValues, CalcAnglesNoBox) {
-  constexpr int nvals = 4;
-  float coords1[3 * nvals] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  float coords2[3 * nvals] = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  float coords3[3 * nvals] = {1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  float ref[nvals] = {M_PI_2, M_PI, 0, 0};
+  constexpr int nvals = 8;
+  float coords1[3 * nvals] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0, 2.0, 3.0, 4.0};
+  float coords2[3 * nvals] = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0};
+  float coords3[3 * nvals] = {1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f, 0.0, 0.0, 0.0, 3.0, 1.0, 3.0 };
+  float ref[nvals] = {M_PI_2, M_PI, 0, 0, M_PI_2, M_PI, 0, 1.0471976};
   float result[nvals];
 
   CalcAnglesNoBox(coords1, coords2, coords3, nvals, result);
+
+  for (unsigned char j = 0; j < nvals; j++) {
+    EXPECT_FLOAT_EQ(ref[j], result[j]);
+  }
+}
+
+
+TEST(KnownValues, CalcAnglesOrthoInBox) {
+  constexpr int nvals = 8;
+  float coords1[3 * nvals] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0, 2.0, 3.0, 4.0};
+  float coords2[3 * nvals] = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0};
+  float coords3[3 * nvals] = {1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f, 0.0, 0.0, 0.0, 3.0, 1.0, 3.0};
+  float ref[nvals] = {M_PI_2, M_PI, 0, 0, M_PI_2, M_PI, 0, M_PI/3.0f};
+  float result[nvals];
+  float box[3] = {10,10,10};
+  CalcAnglesOrtho(coords1, coords2, coords3, box, nvals, result);
+
+  for (unsigned char j = 0; j < nvals; j++) {
+    EXPECT_FLOAT_EQ(ref[j], result[j]);
+  }
+}
+
+
+TEST(KnownValues, CalcAnglesOrthoOutBox) {
+  constexpr int nvals = 8;
+  // like above but + 10
+  float coords1[3 * nvals] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0, 12.0, 13.0, 14.0};
+  float coords2[3 * nvals] = {0.0f, 0.0f, 11.0f, 0.0f, 0.0f, 11.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0f, 0.0f, 11.0f, 0.0f, 0.0f, 11.0f, 0.0, 0.0, 0.0, 11.0, 12.0, 12.0};
+  float coords3[3 * nvals] = {11.0f, 11.0f, 11.0f, 0.0f, 0.0f, 12.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 11.0f, 11.0f, 11.0f, 0.0f, 0.0f, 12.0f, 0.0, 0.0, 0.0, 13.0, 11.0, 13.0};
+  float ref[nvals] = {M_PI_2, M_PI, 0, 0, M_PI_2, M_PI, 0, M_PI/3.0f};
+  float result[nvals];
+  float box[3] = {10,10,10};
+  CalcAnglesOrtho(coords1, coords2, coords3, box, nvals, result);
 
   for (unsigned char j = 0; j < nvals; j++) {
     EXPECT_FLOAT_EQ(ref[j], result[j]);
