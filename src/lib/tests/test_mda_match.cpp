@@ -161,7 +161,7 @@ TEST_F(CoordinatesMDA, CalcAnglesMatchesMDA) {
                  this->results);
 
   for (std::size_t i = 0; i < this->nresults; i++) {
-    EXPECT_NEAR(this->results[i], this->ref[i], 0.00001);
+    EXPECT_NEAR(this->results[i], this->ref[i], 0.001);
     // loss of accuracy somewhere?
   }
 }
@@ -177,7 +177,7 @@ TEST_F(CoordinatesMDA, CalcAnglesNoBoxMatchesMDA) {
 
   for (std::size_t i = 0; i < this->nresults; i++) {
     EXPECT_NEAR(this->results[i], this->ref[i],
-                0.0001); // 0.00572957795 deg tol
+                0.001); // 0.00572957795 deg tol
     // loss of accuracy somewhere?
   }
 }
@@ -193,7 +193,7 @@ TEST_F(CoordinatesMDA, VanillaCalcAnglesMatchesMDA) {
 
   for (std::size_t i = 0; i < this->nresults; i++) {
     EXPECT_NEAR(this->results[i], this->ref[i],
-                0.0001); // 0.00572957795 deg tol
+                0.001); // 0.00572957795 deg tol
     // loss of accuracy somewhere?
   }
 }
@@ -209,7 +209,7 @@ TEST_F(CoordinatesMDA, VanillaCalcAnglesNoBoxMatchesMDA) {
 
   for (std::size_t i = 0; i < this->nresults; i++) {
     EXPECT_NEAR(this->results[i], this->ref[i],
-                0.0001); // 0.00572957795 deg tol
+                0.001); // 0.00572957795 deg tol
     // loss of accuracy somewhere?
   }
 }
