@@ -1,15 +1,16 @@
 #include "gtest/gtest.h"
+#include <cmath>
 #include <iostream>
 #include <random>
-#include <cmath>
 
 #include "arrops.h"  //  fancy approaches
 #include "vanilla.h" // a naive approach
 
 // constants
+// NRESULTS and NINDICIES must be divisible by 2, 3 and 4
 #define BOXSIZE 10
-#define NRESULTS 10000
-#define NINDICIES 1000
+#define NRESULTS 2400
+#define NINDICIES 240
 
 inline void EXPECT_EQ_T(float result, float ref) {
   EXPECT_FLOAT_EQ(result, ref);
@@ -56,7 +57,6 @@ protected:
   // coordinates range from 0 - delta to BOXSIZE + delta
   void InitCoords(const int n_results, const int n_indicies,
                   const double boxsize, const double delta) {
-
     nresults = n_results;
     ncoords = 3 * nresults;
     nindicies = n_indicies;
@@ -150,12 +150,11 @@ TYPED_TEST(Coordinates, CalcBondsNoBoxMatchesVanilla) {
   }
 }
 
-
 TEST(KnownValues, CalcBondsOrthoBox) {
   constexpr int nvals = 10;
   float coords1[3 * nvals] = {0};
   float coords2[3 * nvals] = {0};
-  float result[nvals]; 
+  float result[nvals];
   // values strung out on x axis {0,0,0} {1,0,0}, {2,0,0}
   for (unsigned char i = 0; i < 10; i++) {
     coords1[3 * i] = i;
@@ -187,7 +186,6 @@ TEST(KnownValues, CalcBondsNoBox) {
     EXPECT_FLOAT_EQ(ref[j], result[j]);
   }
 }
-
 
 // coordinates in this test can overhang the edge of the box by 2 * the box
 // size.
@@ -221,13 +219,12 @@ TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanillaInBox) {
   SUCCEED();
 }
 
-
 TYPED_TEST(Coordinates, CalcAnglesMatchesVanillaInBox) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 0);
   VanillaCalcAngles(this->coords0, this->coords1, this->coords2, this->box,
-                              this->nresults, this->ref);
-  CalcAnglesOrtho(this->coords0, this->coords1, this->coords2, this->box, this->nresults,
-                 this->results);
+                    this->nresults, this->ref);
+  CalcAnglesOrtho(this->coords0, this->coords1, this->coords2, this->box,
+                  this->nresults, this->results);
 
   for (std::size_t i = 0; i < this->nresults; i++) {
     EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
@@ -241,9 +238,9 @@ TYPED_TEST(Coordinates, CalcAnglesMatchesVanillaInBox) {
 TYPED_TEST(Coordinates, CalcAnglesMatchesVanillaOutBox) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
   VanillaCalcAngles(this->coords0, this->coords1, this->coords2, this->box,
-                              this->nresults, this->ref);
-  CalcAnglesOrtho(this->coords0, this->coords1, this->coords2, this->box, this->nresults,
-                 this->results);
+                    this->nresults, this->ref);
+  CalcAnglesOrtho(this->coords0, this->coords1, this->coords2, this->box,
+                  this->nresults, this->results);
 
   for (std::size_t i = 0; i < this->nresults; i++) {
     EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
@@ -252,28 +249,56 @@ TYPED_TEST(Coordinates, CalcAnglesMatchesVanillaOutBox) {
   SUCCEED();
 }
 
-
 TYPED_TEST(Coordinates, CalcAnglesNoBoxMatchesVanilla) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 0);
 
-  VanillaCalcAnglesNoBox(this->coords0, this->coords1, this->coords2, this->nresults,
-                        this->ref);
+  VanillaCalcAnglesNoBox(this->coords0, this->coords1, this->coords2,
+                         this->nresults, this->ref);
 
-  CalcAnglesNoBox(this->coords0, this->coords1, this->coords2, this->nresults, this->results);
+  CalcAnglesNoBox(this->coords0, this->coords1, this->coords2, this->nresults,
+                  this->results);
 
   for (int i = 0; i < this->nresults; ++i) {
     EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
   }
 }
 
+TYPED_TEST(Coordinates, CalcAnglesIdxMatchesVanillaOutBox) {
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
+  VanillaCalcAnglesIdx(this->coords0, this->idxs, this->box,
+                       this->nindicies / 3, this->ref);
+  CalcAnglesIdxOrtho(this->coords0, this->idxs, this->box, this->nindicies / 3,
+                     this->results);
 
+  for (std::size_t i = 0; i < this->nindicies / 3; i++) {
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+    // loss of accuracy somewhere?
+  }
+  SUCCEED();
+}
+
+TYPED_TEST(Coordinates, CalcAnglesIdxMatchesVanillaInBox) {
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 0);
+  VanillaCalcAnglesIdx(this->coords0, this->idxs, this->box,
+                       this->nindicies / 3, this->ref);
+  CalcAnglesIdxOrtho(this->coords0, this->idxs, this->box, this->nindicies / 3,
+                     this->results);
+
+  for (std::size_t i = 0; i < this->nindicies / 3; i++) {
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+    // loss of accuracy somewhere?
+  }
+  SUCCEED();
+}
 
 TEST(KnownValues, CalcAnglesNoBox) {
   constexpr int nvals = 8;
+  // clang-format off
   float coords1[3 * nvals] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0, 2.0, 3.0, 4.0};
   float coords2[3 * nvals] = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0};
   float coords3[3 * nvals] = {1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f, 0.0, 0.0, 0.0, 3.0, 1.0, 3.0 };
   float ref[nvals] = {M_PI_2, M_PI, 0, 0, M_PI_2, M_PI, 0, 1.0471976};
+  // clang-format on
   float result[nvals];
 
   CalcAnglesNoBox(coords1, coords2, coords3, nvals, result);
@@ -283,15 +308,16 @@ TEST(KnownValues, CalcAnglesNoBox) {
   }
 }
 
-
 TEST(KnownValues, CalcAnglesOrthoInBox) {
   constexpr int nvals = 8;
+  // clang-format off
   float coords1[3 * nvals] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0, 2.0, 3.0, 4.0};
   float coords2[3 * nvals] = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0};
   float coords3[3 * nvals] = {1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f, 0.0, 0.0, 0.0, 3.0, 1.0, 3.0};
   float ref[nvals] = {M_PI_2, M_PI, 0, 0, M_PI_2, M_PI, 0, M_PI/3.0f};
+  // clang-format on
   float result[nvals];
-  float box[3] = {10,10,10};
+  float box[3] = {10, 10, 10};
   CalcAnglesOrtho(coords1, coords2, coords3, box, nvals, result);
 
   for (unsigned char j = 0; j < nvals; j++) {
@@ -299,24 +325,20 @@ TEST(KnownValues, CalcAnglesOrthoInBox) {
   }
 }
 
-
 TEST(KnownValues, CalcAnglesOrthoOutBox) {
   constexpr int nvals = 8;
+  // clang-format off
   // like above but + 10
   float coords1[3 * nvals] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0, 0.0, 0.0, 12.0, 13.0, 14.0};
   float coords2[3 * nvals] = {0.0f, 0.0f, 11.0f, 0.0f, 0.0f, 11.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0f, 0.0f, 11.0f, 0.0f, 0.0f, 11.0f, 0.0, 0.0, 0.0, 11.0, 12.0, 12.0};
   float coords3[3 * nvals] = {11.0f, 11.0f, 11.0f, 0.0f, 0.0f, 12.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 11.0f, 11.0f, 11.0f, 0.0f, 0.0f, 12.0f, 0.0, 0.0, 0.0, 13.0, 11.0, 13.0};
   float ref[nvals] = {M_PI_2, M_PI, 0, 0, M_PI_2, M_PI, 0, M_PI/3.0f};
+  // clang-format on
   float result[nvals];
-  float box[3] = {10,10,10};
+  float box[3] = {10, 10, 10};
   CalcAnglesOrtho(coords1, coords2, coords3, box, nvals, result);
 
   for (unsigned char j = 0; j < nvals; j++) {
     EXPECT_FLOAT_EQ(ref[j], result[j]);
   }
 }
-
-
-
-
-
