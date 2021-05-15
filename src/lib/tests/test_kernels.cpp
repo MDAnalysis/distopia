@@ -192,7 +192,7 @@ TEST(KnownValues, CalcBondsNoBox) {
 
 // coordinates in this test can overhang the edge of the box by 2 * the box
 // size.
-TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanilla) {
+TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanillaOutBox) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
   VanillaCalcBondsIdx<TypeParam>(this->coords0, this->idxs, this->box,
                                  this->nindicies / 2, this->ref);
@@ -224,7 +224,21 @@ TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanillaInBox) {
 
 #endif // DISTOPIA_X86_AVX2_FMA
 
-// coordinates in this test can overhang the edge of the box by 0 * the box
+TYPED_TEST(Coordinates, CalcAnglesMatchesVanillaInBox) {
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 0);
+  VanillaCalcAngles(this->coords0, this->coords1, this->coords2, this->box,
+                              this->nresults, this->ref);
+  CalcAnglesOrtho(this->coords0, this->coords1, this->coords2, this->box, this->nresults,
+                 this->results);
+
+  for (std::size_t i = 0; i < this->nresults; i++) {
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+    // loss of accuracy somewhere?
+  }
+  SUCCEED();
+}
+
+// coordinates in this test can overhang the edge of the box by 3 * the box
 // size.
 TYPED_TEST(Coordinates, CalcAnglesMatchesVanillaOutBox) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
