@@ -111,14 +111,14 @@ inline VectorT Angle3DWithBoundary(const VectorTriple<VectorT> &p1,
                                    const VectorTriple<VectorT> &p3,
                                    const OrthogonalBox<VectorT> &box) {
   auto  rji = VectorTriple<VectorT>();
-  rji.x = SignedDistanceModulo(p1.x, p2.x, box.boxlengths.x);
-  rji.y = SignedDistanceModulo(p1.y, p2.y, box.boxlengths.y);
-  rji.z = SignedDistanceModulo(p1.z, p2.z, box.boxlengths.z);
+  rji.x = DisplacementModulo(p1.x, p2.x, box.boxlengths.x);
+  rji.y = DisplacementModulo(p1.y, p2.y, box.boxlengths.y);
+  rji.z = DisplacementModulo(p1.z, p2.z, box.boxlengths.z);
 
   auto rjk = VectorTriple<VectorT>();
-  rjk.x = SignedDistanceModulo(p3.x, p2.x, box.boxlengths.x);
-  rjk.y = SignedDistanceModulo(p3.y, p2.y, box.boxlengths.y);
-  rjk.z = SignedDistanceModulo(p3.z, p2.z, box.boxlengths.z);
+  rjk.x = DisplacementModulo(p3.x, p2.x, box.boxlengths.x);
+  rjk.y = DisplacementModulo(p3.y, p2.y, box.boxlengths.y);
+  rjk.z = DisplacementModulo(p3.z, p2.z, box.boxlengths.z);
 
   VectorTriple<VectorT> x_acc = rji * rjk;
   VectorT x = x_acc.x + x_acc.y + x_acc.z;

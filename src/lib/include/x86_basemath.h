@@ -117,27 +117,9 @@ inline T DistanceModulo(T x0, T x1, T y) {
 
 
 template<typename T, EnableIfVector<T> = 0>
-inline T SignedDistanceModulo(T x0, T x1, T y) {
-  T d_signed = x0 - x1;
-  T d = Abs(d_signed);
-  T y_sub_d = y - d;
-  #ifdef DISTOPIA_X86_AVX
-    bool msb_all_zero = testz_p(y_sub_d, y_sub_d);
-  #else
-    // movemask_p(y_sub_d) is a bitfield of sign bits. It is 0 iff all the sign
-    // bits are 0.
-    bool msb_all_zero = !movemask_p(y_sub_d);
-  #endif
-  if (distopia_likely(msb_all_zero)) {
-    //return FastMin(d, y_sub_d);
-    return vector_copysign(FastMin(d, y_sub_d), d_signed);
-  }
-  x0 = Remainder(x0, y);
-  x1 = Remainder(x1, y);
-  d_signed = x0 - x1;
-  d = Abs(d_signed);
-  //return FastMin(d, y-d );
-  return vector_copysign(FastMin(d, y - d), d_signed);
+inline T DisplacementModulo(T x0, T x1, T y) {
+  T displacement = x0 - x1;
+  return Remainder(displacement, y);
 }
 
 } // namespace
