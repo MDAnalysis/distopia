@@ -647,45 +647,6 @@ TEST(CrossProduct, Float128) {
   EXPECT_TRUE(z_is_correct);
 }
 
-TEST(CopySign, Float128) {
-  __m128 signs = _mm_setr_ps(-00.f, -01.f, 00.f, 01.f);
-  __m128 vals = _mm_setr_ps(5.f, 6.f, 7.f, 8.f);
-  __m128 ref = _mm_setr_ps(-5.f, -6.f, 7.f, 8.f);
-  __m128 res = vector_copysign(vals, signs);
-  bool is_correct = _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(res, ref)));
-  EXPECT_TRUE(is_correct);
-}
-
-TEST(CopySign, Double128) {
-  __m128d signs = _mm_setr_pd(-0.0, 0.0);
-  __m128d vals = _mm_setr_pd(5.0, 6.0);
-  __m128d ref = _mm_setr_pd(-5.0, 6.0);
-  __m128d res = vector_copysign(vals, signs);
-  bool is_correct = _mm_test_all_ones(_mm_castpd_si128(_mm_cmpeq_pd(res, ref)));
-  EXPECT_TRUE(is_correct);
-}
-
-TEST(CopySign, Float256) {
-  __m256 signs = _mm256_setr_ps(-0.0, -0.1, 0.0, 0.1, -0.0, -0.1, 0.0, 0.1);
-  __m256 vals = _mm256_setr_ps(5.0, 6.0, 7.0, 8.0, 5.0, 6.0, 7.0, 8.0);
-  __m256 ref = _mm256_setr_ps(-5.0, -6.0, 7.0, 8.0, -5.0, -6.0, 7.0, 8.0);
-  __m256 res = vector_copysign(vals, signs);
-
-  bool is_correct = _mm256_testc_ps(_mm256_setzero_ps(),
-                                    _mm256_cmp_ps(res, ref, _CMP_NEQ_UQ));
-  EXPECT_TRUE(is_correct);
-}
-
-TEST(CopySign, Double256) {
-  __m256d signs = _mm256_setr_pd(-0.0, -0.1, 0.0, 0.1);
-  __m256d vals = _mm256_setr_pd(5.0, 6.0, 7.0, 8.0);
-  __m256d ref = _mm256_setr_pd(-5.0, -6.0, 7.0, 8.0);
-  __m256d res = vector_copysign(vals, signs);
-  bool is_correct = _mm256_testc_pd(_mm256_setzero_pd(),
-                                    _mm256_cmp_pd(res, ref, _CMP_NEQ_UQ));
-  EXPECT_TRUE(is_correct);
-}
-
 #endif // DISTOPIA_X86_SSE4_1
 
 TEST(ScalarVec, ScalarVecLoadFloat) {
