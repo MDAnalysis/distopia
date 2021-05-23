@@ -3,6 +3,7 @@
 #include <iostream>
 #ifdef DISTOPIA_X86_SSE4_1
 
+#include "ortho_box.h"
 #include "vector_triple.h"
 #include "x86_swizzle.h"
 #include <immintrin.h>
@@ -618,6 +619,34 @@ TEST(TestX86SwizzleVec, Double256IdxLoadDeinterleaved) {
 
 #endif // DISTOPIA_X86_AVX2_FMA
 
+TEST(CrossProduct, Float128) {
+  __m128 a1 = _mm_setr_ps(00.f, 01.f, 01.f, 00.f);
+  __m128 a2 = _mm_setr_ps(01.f, 02.f, 02.f, 01.f);
+  __m128 a3 = _mm_setr_ps(02.f, 03.f, -1.f, 02.f);
+
+  __m128 b1 = _mm_setr_ps(03.f, 01.f, 03.f, 03.f);
+  __m128 b2 = _mm_setr_ps(04.f, 04.f, 04.f, 04.f);
+  __m128 b3 = _mm_setr_ps(05.f, 09.f, -1.f, 05.f);
+
+  __m128 correct_x = _mm_setr_ps(-3.0f, 06.0f, 02.0f, -3.0f);
+  __m128 correct_y = _mm_setr_ps(06.0f, -6.0f, -2.0f, 06.0f);
+  __m128 correct_z = _mm_setr_ps(-3.0f, 02.0f, -2.0f, -3.0f);
+
+  auto v0 = VectorTriple<__m128>(a1, a2, a3);
+  auto v1 = VectorTriple<__m128>(b1, b2, b3);
+
+  auto result = CrossProduct(v0, v1);
+  bool x_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(result.x, correct_x)));
+  bool y_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(result.y, correct_y)));
+  bool z_is_correct =
+      _mm_test_all_ones(_mm_castps_si128(_mm_cmpeq_ps(result.z, correct_z)));
+  EXPECT_TRUE(x_is_correct);
+  EXPECT_TRUE(y_is_correct);
+  EXPECT_TRUE(z_is_correct);
+}
+
 #endif // DISTOPIA_X86_SSE4_1
 
 TEST(ScalarVec, ScalarVecLoadFloat) {
@@ -692,4 +721,30 @@ TEST(ScalarVec, ScalarVecIdxLoadDouble) {
   EXPECT_DOUBLE_EQ(vt_d.x, 3.0);
   EXPECT_DOUBLE_EQ(vt_d.y, 4.0);
   EXPECT_DOUBLE_EQ(vt_d.z, 5.0);
+}
+
+TEST(CrossProduct, Float) {
+  float a1 = 0;
+  float a2 = 1;
+  float a3 = 2;
+
+  float b1 = 3;
+  float b2 = 4;
+  float b3 = 5;
+
+  // results should be
+  // x = a2b3 - a3b2
+  // x = 1*5 - 2*4 = -3
+  // y = a3b1 - a1b3
+  // y = 2*3 - 0*5 = 6
+  // z = a1b2 - a2b1
+  // z = 0*4 - 1*3 = -3
+
+  auto v0 = VectorTriple<float>(a1, a2, a3);
+  auto v1 = VectorTriple<float>(b1, b2, b3);
+
+  auto result = CrossProduct(v0, v1);
+  EXPECT_EQ(result.x, -3);
+  EXPECT_EQ(result.y, 6);
+  EXPECT_EQ(result.z, -3);
 }

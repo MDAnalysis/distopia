@@ -86,6 +86,13 @@ inline T DistanceModulo(T x0, T x1, T y) {
   return FastMin(d, y - d);
 }
 
+
+template<typename T, EnableIfVector<T> = 0>
+inline T DisplacementModulo(T x0, T x1, T y) {
+  T displacement = x0 - x1;
+  return Remainder(displacement, y);
+}
+
 } // namespace
 
 #endif // DISTOPIA_X86_SSE4_1
