@@ -36,8 +36,7 @@ void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
                     const VectorToScalarT<VectorT> *box, std::size_t n,
                     VectorToScalarT<VectorT> *out) {
   auto vecbox = BoxT(box);
-  auto c0 = VectorTriple<VectorT>();
-  auto c1 = VectorTriple<VectorT>();
+  VectorTriple<VectorT> c0, c1;
   std::size_t i = 0;
   if (n % ValuesPerPack<VectorT>) {
     c0.load(coords0);
