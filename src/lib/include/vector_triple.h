@@ -94,16 +94,10 @@ public:
   // construct by loading from an array of ScalarT eg float* or double *.
   inline explicit VectorTriple(const ScalarT *source) {
     // TODO constexpr if with CXX17 support
-    if (ValuesPerPack<VectorT> == 1) {
-      x = genericload<VectorT>(source);
-      y = genericload<VectorT>(source + 1);
-      z = genericload<VectorT>(source + 2);
-    } else {
-      auto t1 = genericload<VectorT>(source);
-      auto t2 = genericload<VectorT>(source + ValuesPerPack<VectorT>);
-      auto t3 = genericload<VectorT>(source + ValuesPerPack<VectorT> * 2);
-      Deinterleave3(t1, t2, t3, x, y, z);
-    }
+    auto t1 = genericload<VectorT>(source);
+    auto t2 = genericload<VectorT>(source + ValuesPerPack<VectorT>);
+    auto t3 = genericload<VectorT>(source + ValuesPerPack<VectorT> * 2);
+    Deinterleave3(t1, t2, t3, x, y, z);
   }
 
   inline void load(const ScalarT *source) {
