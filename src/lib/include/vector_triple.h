@@ -40,8 +40,8 @@ inline void genericidxload(const VectorToScalarT<VectorT> *source,
 }
 
 template <typename T, unsigned char stride, EnableIfFloating<T> = 0>
-inline void genericidxload(const T *source, const std::size_t *idxs,
-                           T &x, T &y, T &z) {
+inline void genericidxload(const T *source, const std::size_t *idxs, T &x, T &y,
+                           T &z) {
   x = source[3 * idxs[0]];
   y = source[3 * idxs[0] + 1];
   z = source[3 * idxs[0] + 2];
@@ -106,18 +106,11 @@ public:
     }
   }
 
-    inline void load(const ScalarT *source) {
-    // TODO constexpr if with CXX17 support
-    if (ValuesPerPack<VectorT> == 1) {
-      x = genericload<VectorT>(source);
-      y = genericload<VectorT>(source + 1);
-      z = genericload<VectorT>(source + 2);
-    } else {
-      auto t1 = genericload<VectorT>(source);
-      auto t2 = genericload<VectorT>(source + ValuesPerPack<VectorT>);
-      auto t3 = genericload<VectorT>(source + ValuesPerPack<VectorT> * 2);
-      Deinterleave3(t1, t2, t3, x, y, z);
-    }
+  inline void load(const ScalarT *source) {
+    auto t1 = genericload<VectorT>(source);
+    auto t2 = genericload<VectorT>(source + ValuesPerPack<VectorT>);
+    auto t3 = genericload<VectorT>(source + ValuesPerPack<VectorT> * 2);
+    Deinterleave3(t1, t2, t3, x, y, z);
   }
 
   // construct by loading discontiguously from an array of ScalarT eg float* or
@@ -130,10 +123,8 @@ public:
   // }
 
   template <unsigned char stride = 1>
-  inline void idxload(const ScalarT *source,
-                      const std::size_t *idxs) {
-    genericidxload<VectorT, stride>(source, idxs, this->x, this->y,
-                                    this->z);
+  inline void idxload(const ScalarT *source, const std::size_t *idxs) {
+    genericidxload<VectorT, stride>(source, idxs, this->x, this->y, this->z);
   }
   // store or stream to an array of ScalarT eg float* or double *.
   template <bool streaming = false> inline void store(ScalarT *target) {
