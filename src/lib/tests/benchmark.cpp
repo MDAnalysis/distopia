@@ -2,6 +2,7 @@
 #include "arrops.h"
 #include "distopia_better_distances.h"
 #include "vanilla.h"
+#include "distancekernels.h"
 #include <benchmark/benchmark.h>
 #include <iostream>
 #include <random>
@@ -115,6 +116,16 @@ public:
         benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
   }
 
+  void BM_MDTrajOrtho(benchmark::State &state) {
+    for (auto _ : state) {
+      dist_mic(coords0, coords1, box, results, nresults);
+    }
+    state.SetItemsProcessed(nresults * state.iterations());
+    state.counters["Per Result"] = benchmark::Counter(
+        nresults * state.iterations(),
+        benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+  }
+
   void BM_CalcBonds256Ortho(benchmark::State &state) {
     for (auto _ : state) {
       CalcBonds256(coords0, coords1, box, nresults, results);
@@ -178,10 +189,18 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem,
 (benchmark::State &state) { BM_VanillaCalcBondsOrtho(state); }
 
 BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem,
+                            MDTrajInBoxFloat, float)
+(benchmark::State &state) { BM_MDTrajOrtho(state); }
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem,
                             VanillaCalcBondsOrthoInBoxDouble, double)
 (benchmark::State &state) { BM_VanillaCalcBondsOrtho(state); }
 
 BENCHMARK_REGISTER_F(CoordinatesDynamicMem, VanillaCalcBondsOrthoInBoxFloat)
+    ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
+    ->RangeMultiplier(4);
+
+BENCHMARK_REGISTER_F(CoordinatesDynamicMem, MDTrajInBoxFloat)
     ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
