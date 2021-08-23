@@ -1,6 +1,5 @@
 #include "arch_config.h"
 #include "arrops.h"
-#include "distopia_better_distances.h"
 #include "vanilla.h"
 #include "distancekernels.h"
 #include <benchmark/benchmark.h>
@@ -207,16 +206,6 @@ BENCHMARK_REGISTER_F(CoordinatesDynamicMem, MDTrajInBoxFloat)
 BENCHMARK_REGISTER_F(CoordinatesDynamicMem, VanillaCalcBondsOrthoInBoxDouble)
     ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
-
-#ifdef DISTOPIA_X86_AVX
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBonds256OrthoInBoxFloat,
-                            float)
-(benchmark::State &state) { BM_CalcBonds256Ortho(state); }
-
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBonds256OrthoInBoxFloat)
-    ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
-    ->RangeMultiplier(4);
-#endif
 
 BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxFloat,
                             float)
