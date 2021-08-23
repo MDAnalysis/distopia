@@ -7,7 +7,7 @@
 #include <immintrin.h>
 #include <iostream>
 
-#include "arrops.h"
+#include "distopia.h"
 #include "compiler_hints.h"
 #include "distopia_type_traits.h"
 #include "vector_triple.h"

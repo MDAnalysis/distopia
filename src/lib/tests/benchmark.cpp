@@ -1,5 +1,5 @@
 #include "arch_config.h"
-#include "arrops.h"
+#include "distopia.h"
 #include "vanilla.h"
 #include "distancekernels.h"
 #include <benchmark/benchmark.h>
