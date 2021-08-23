@@ -42,11 +42,9 @@ To control the instruction set use **one** the following CMake flags
 **Or you can let distopia choose for you (default)**
 
 
-To benchmark methods (from `./build`):
+To benchmark methods (from `./build`) run the benchmarks binary:
 ```
-  ./timings ../data.txt 1000
+  ./benchmarks
 ```
-Will run through the timings of available functions (depends on the instruction set used), averaging over 1000 runs.
-
 
 To assess code coverage build with `cmake -DDISTOPIA_COVERAGE=ON` and use either make or ninja to build the coverage targets `tests_coverage` or `test_kernels_coverage`.  You can then view the resulting HTML gcovr coverage reports in your favourite browser.
