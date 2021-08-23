@@ -36,12 +36,11 @@ void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
                     const VectorToScalarT<VectorT> *box, std::size_t n,
                     VectorToScalarT<VectorT> *out) {
   auto vecbox = BoxT(box);
-
+  VectorTriple<VectorT> c0, c1;
   std::size_t i = 0;
   if (n % ValuesPerPack<VectorT>) {
-    auto c0 = VectorTriple<VectorT>(coords0);
-    auto c1 = VectorTriple<VectorT>(coords1);
-
+    c0.load(coords0);
+    c1.load(coords1);
     VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
     // TODO constexpr if with CXX17 support
     if (streaming_store) {
@@ -52,8 +51,8 @@ void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
     i += n % ValuesPerPack<VectorT>;
   }
   for (; i < n; i += ValuesPerPack<VectorT>) {
-    auto c0 = VectorTriple<VectorT>(&coords0[3 * i]);
-    auto c1 = VectorTriple<VectorT>(&coords1[3 * i]);
+    c0.load(&coords0[3 * i]);
+    c1.load(&coords1[3 * i]);
 
     VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
     // TODO constexpr if with CXX17 support
@@ -81,7 +80,6 @@ void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
   const std::size_t *b_j = idxs + 1;
 
   if (n % ValuesPerPack<VectorT>) {
-    // WARNING BROKEN USE OF some big buffer
     auto c0 = VectorTriple<VectorT>();
     c0.template idxload<2>(coords, b_i);
     auto c1 = VectorTriple<VectorT>();
@@ -98,11 +96,10 @@ void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
 
   for (; i < n; i += ValuesPerPack<VectorT>) {
     // access with stride of 2
-    // WARNING Abuse of big buffer  until loader can be fixed.
     auto c0 = VectorTriple<VectorT>();
     c0.template idxload<2>(coords, b_i);
     auto c1 = VectorTriple<VectorT>();
-    c1.template idxload<2>(coords,  b_j);
+    c1.template idxload<2>(coords, b_j);
 
     VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
     // TODO constexpr if with CXX17 support
@@ -140,12 +137,13 @@ void CalcBondsOrthoDispatch(const T *coords0, const T *coords1, const T *box,
           coords0, coords1, box, n, out);
     }
   } else {
-    if (use_streaming_stores)
+    if (use_streaming_stores) {
       CalcBondsInner<true, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(
           coords0, coords1, box, n, out);
-    else
+    } else {
       CalcBondsInner<false, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(
           coords0, coords1, box, n, out);
+    }
   }
 }
 
@@ -196,12 +194,13 @@ void CalcBondsIdxOrthoDispatch(const T *coords, const std::size_t *idxs,
           coords, idxs, box, n, out);
     }
   } else {
-    if (use_streaming_stores)
+    if (use_streaming_stores) {
       CalcBondsIdxInner<true, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(
           coords, idxs, box, n, out);
-    else
+    } else {
       CalcBondsIdxInner<false, SmallVecT<T>, OrthogonalBox<SmallVecT<T>>>(
           coords, idxs, box, n, out);
+    }
   }
 }
 
