@@ -13,9 +13,10 @@
 #include "distopia_type_traits.h"
 #include "ops.h"
 #include "vector_triple.h"
-#include "x86_basemath.h"
-#include "x86_tgintrin.h"
-#include "x86_vectors.h"
+#include "x86/x86_basemath.h"
+#include "x86/x86_tgintrin.h"
+#include "x86/x86_vector_operators.h"
+#include "x86/x86_swizzle.h"
 
 namespace {
 

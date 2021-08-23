@@ -2,8 +2,9 @@
 #define DISTOPIA_OPS_H
 
 #include "basemath.h"
-#include "vector_triple_basemath.h"
-#include "x86_vectors.h"
+#include "x86/x86_basemath.h"
+#include "x86/x86_tgintrin.h"
+#include "x86/x86_vector_operators.h"
 
 
 

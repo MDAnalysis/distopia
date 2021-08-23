@@ -9,6 +9,10 @@
 #include "distopia_type_traits.h"
 #include "ops.h"
 #include "vector_triple.h"
+#include "vector_triple_basemath.h"
+#include "x86/x86_basemath.h"
+#include "x86/x86_tgintrin.h"
+#include "x86/x86_vector_operators.h"
 
 template <typename VectorT> class OrthogonalBox {
 public:

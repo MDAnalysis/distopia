@@ -5,7 +5,7 @@
 
 #include "ortho_box.h"
 #include "vector_triple.h"
-#include "x86_swizzle.h"
+#include "x86/x86_swizzle.h"
 #include <immintrin.h>
 
 TEST(TestX86Vec, Float128LoadScalar) {
