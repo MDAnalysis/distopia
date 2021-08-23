@@ -3,7 +3,7 @@
 #include <iostream>
 #include <random>
 
-#include "arrops.h"  //  fancy approaches
+#include "distopia.h"  //  fancy approaches
 #include "vanilla.h" // a naive approach
 
 // constants

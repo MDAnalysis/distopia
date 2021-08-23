@@ -344,17 +344,9 @@ if(DISTOPIA_BUILD_TIMINGS)
     message(FATAL_ERROR "Building googlebench timings requires building googletest also")
   endif()
 
-  # old timings executable
+  # google bench
   add_subdirectory(${DISTOPIA_TEST_DIR}/googlebench)
-  add_executable(timings ${DISTOPIA_TEST_DIR}/timings.cpp)
-  target_compile_options(timings
-    PRIVATE
-      ${CXX_FLAGS}
-      "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
-      "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
-      "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
-    )
-  target_link_libraries(timings distopia)
+
 
   # googlebench executable
   add_executable(benchmarks ${DISTOPIA_TEST_DIR}/benchmark.cpp)

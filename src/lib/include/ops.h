@@ -2,15 +2,11 @@
 #define DISTOPIA_OPS_H
 
 #include "basemath.h"
-#include "x86_vector_triple_basemath.h"
-#include "x86_vectors.h"
+#include "x86/x86_basemath.h"
+#include "x86/x86_tgintrin.h"
+#include "x86/x86_vector_operators.h"
 
-namespace {
 
-template<typename T>
-T Distance1DWithBoundary(T p0, T p1, T b) {
-  return DistanceModulo(p0, p1, b);
-}
 
 template<typename T>
 T Hypot(T x, T y, T z) {
@@ -22,15 +18,26 @@ T Hypot(T x, T y, T z) {
   return norm;
 }
 
-template<typename T>
-T Distance3DWithBoundary(T x0, T y0, T z0, T x1, T y1, T z1,
-                         T bx, T by, T bz) {
-  T dx = Distance1DWithBoundary(x0, x1, bx);
-  T dy = Distance1DWithBoundary(y0, y1, by);
-  T dz = Distance1DWithBoundary(z0, z1, bz);
-  return Hypot(dx, dy, dz);
+// TODO remove this ugly shim when we have an atan2 vectorized implementation
+template <typename VectorT, EnableIfVector<VectorT> = 0>
+inline VectorT Atan2Shim(VectorT y, VectorT x) {
+  // unpack
+  VectorToScalarT<VectorT> y_buf[ValuesPerPack<VectorT>];
+  VectorToScalarT<VectorT> x_buf[ValuesPerPack<VectorT>];
+  VectorToScalarT<VectorT> res_buf[ValuesPerPack<VectorT>];
+  storeu_p(y_buf, y);
+  storeu_p(x_buf, x);
+  for (std::size_t i = 0; i < ValuesPerPack<VectorT>; i++) {
+    res_buf[i] = atan2(y_buf[i], x_buf[i]);
+  }
+  // re pack
+  VectorT result = loadu_p<VectorT>(res_buf);
+  return result;
 }
 
-} // namespace
+template <typename VectorT, EnableIfFloating<VectorT> = 0>
+inline VectorT Atan2Shim(VectorT y, VectorT x) {
+  return atan2(y, x);
+}
 
-#endif
+#endif // DISTOPIA_OPS_H

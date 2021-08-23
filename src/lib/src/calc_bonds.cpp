@@ -7,12 +7,12 @@
 #include <immintrin.h>
 #include <iostream>
 
-#include "arrops.h"
+#include "distopia.h"
 #include "compiler_hints.h"
 #include "distopia_type_traits.h"
 #include "vector_triple.h"
-
-#include "ortho_box.h"
+#include "box.h"
+#include "kernels.h"
 
 namespace {
 
@@ -41,7 +41,7 @@ void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
   if (n % ValuesPerPack<VectorT>) {
     c0.load(coords0);
     c1.load(coords1);
-    VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
+    VectorT result = Distance3DWithBoundary(c0, c1, vecbox);
     // TODO constexpr if with CXX17 support
     if (streaming_store) {
       genericstream(out, result);
@@ -54,7 +54,7 @@ void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
     c0.load(&coords0[3 * i]);
     c1.load(&coords1[3 * i]);
 
-    VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
+    VectorT result = Distance3DWithBoundary(c0, c1, vecbox);
     // TODO constexpr if with CXX17 support
     if (streaming_store) {
       genericstream(&out[i], result);
@@ -84,7 +84,7 @@ void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
     c0.template idxload<2>(coords, b_i);
     auto c1 = VectorTriple<VectorT>();
     c1.template idxload<2>(coords, b_j);
-    VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
+    VectorT result = Distance3DWithBoundary(c0, c1, vecbox);
     // TODO constexpr if with CXX17 support
     if (streaming_store) {
       genericstream(out, result);
@@ -101,7 +101,7 @@ void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
     auto c1 = VectorTriple<VectorT>();
     c1.template idxload<2>(coords, b_j);
 
-    VectorT result = NewDistance3dWithBoundary(c0, c1, vecbox);
+    VectorT result = Distance3DWithBoundary(c0, c1, vecbox);
     // TODO constexpr if with CXX17 support
     if (streaming_store) {
       genericstream(&out[i], result);

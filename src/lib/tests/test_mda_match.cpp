@@ -3,7 +3,7 @@
 #include <iostream>
 #include <random>
 
-#include "arrops.h"         //  fancy approaches
+#include "distopia.h"        //  fancy approaches
 #include "calc_distances.h" // MDA
 #include "vanilla.h"        // simple approaches
 

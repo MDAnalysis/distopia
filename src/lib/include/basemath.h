@@ -5,7 +5,6 @@
 #include <type_traits>
 
 #include "compiler_hints.h"
-#include "x86_vectors.h"
 #include "distopia_type_traits.h"
 
 namespace {
@@ -65,6 +64,5 @@ inline T DisplacementModulo(T x0, T x1, T y) {
 
 } // namespace
 
-#include "x86_basemath.h"
 
 #endif

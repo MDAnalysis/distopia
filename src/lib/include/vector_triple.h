@@ -1,11 +1,13 @@
-#ifndef DISTOPIA_VECTOR_TRIPLE
-#define DISTOPIA_VECTOR_TRIPLE
+#ifndef DISTOPIA_VECTOR_TRIPLE_H
+#define DISTOPIA_VECTOR_TRIPLE_H
 
 #include "compiler_hints.h"
 #include "distopia_type_traits.h"
-#include "x86_swizzle.h"
-#include "x86_tgintrin.h"
-#include "x86_vectors.h"
+#include "ops.h"
+#include "x86/x86_basemath.h"
+#include "x86/x86_tgintrin.h"
+#include "x86/x86_vector_operators.h"
+#include "x86/x86_swizzle.h"
 
 // loader function that covers overload for float and double
 template <typename VectorT, EnableIfVector<VectorT> = 0>
@@ -177,4 +179,4 @@ inline VectorTriple<VectorT> operator/(VectorTriple<VectorT> a,
   return VectorTriple<VectorT>(a.x / b.y, a.y / b.y, a.z / b.z);
 }
 
-#endif // DISTOPIA_VECTOR_TRIPLE
+#endif // DISTOPIA_VECTOR_TRIPLE_H
