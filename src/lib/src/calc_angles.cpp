@@ -11,7 +11,7 @@
 #include "compiler_hints.h"
 #include "distopia_type_traits.h"
 #include "vector_triple.h"
-#include "ortho_box.h"
+#include "box.h"
 #include "kernels.h"
 
 namespace {
