@@ -41,12 +41,12 @@ public:
 };
 
 template <typename VectorT, typename BoxType>
-inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT> &p1,
+inline VectorT Distance3DWithBoundary(const VectorTriple<VectorT> &p1,
                                          const VectorTriple<VectorT> &p2,
                                          const BoxType &box);
 
 template <typename VectorT>
-inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT> &p1,
+inline VectorT Distance3DWithBoundary(const VectorTriple<VectorT> &p1,
                                          const VectorTriple<VectorT> &p2,
                                          const OrthogonalBox<VectorT> &box) {
   VectorT dx = DistanceModulo(p1.x, p2.x, box.boxlengths.x);
@@ -57,7 +57,7 @@ inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT> &p1,
 }
 
 template <typename VectorT>
-inline VectorT NewDistance3dWithBoundary(const VectorTriple<VectorT> &p1,
+inline VectorT Distance3DWithBoundary(const VectorTriple<VectorT> &p1,
                                          const VectorTriple<VectorT> &p2,
                                          const NoBox<VectorT> &) {
   VectorTriple<VectorT> delta = p2 - p1;
