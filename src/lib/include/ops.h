@@ -2,7 +2,7 @@
 #define DISTOPIA_OPS_H
 
 #include "basemath.h"
-#include "x86_vector_triple_basemath.h"
+#include "vector_triple_basemath.h"
 #include "x86_vectors.h"
 
 namespace {
@@ -33,4 +33,4 @@ T Distance3DWithBoundary(T x0, T y0, T z0, T x1, T y1, T z1,
 
 } // namespace
 
-#endif
+#endif // DISTOPIA_OPS_H

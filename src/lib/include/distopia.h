@@ -2,8 +2,8 @@
 // Created by Richard Gowers on 8/13/20.
 //
 
-#ifndef XDIST_DISTOPIA_H
-#define XDIST_DISTOPIA_H
+#ifndef DISTOPIA_H
+#define DISTOPIA_H
 
 /*
  * similar to calcbonds but..
@@ -64,4 +64,4 @@ void CalcAnglesOrtho(const float* coords1,
                     unsigned int nvals,
                     float* output);
 
-#endif //XDIST_DISTOPIA_H
+#endif //DISTOPIA_H

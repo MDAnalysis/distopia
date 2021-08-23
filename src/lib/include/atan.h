@@ -1,13 +1,13 @@
-#ifndef ATAN_DISTOPIA_H
-#define ATAN_DISTOPIA_H
+#ifndef DISTOPIA_ATAN_H
+#define DISTOPIA_ATAN_H
 
 #include <immintrin.h>
 
-#ifdef __AVX2__
+#ifdef DISTOPIA_X86_AVX
 
 __m128 _mm_atan_ps(__m128 a);
 __m256 _mm256_atan_ps(__m256 a);
 
-#endif /* __AVX2__ */
+#endif // DISTOPIA_X86_AVX
 
-#endif //ATAN_DISTOPIA_H
+#endif // DISTOPIA_ATAN_H

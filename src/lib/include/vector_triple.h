@@ -1,5 +1,5 @@
-#ifndef DISTOPIA_VECTOR_TRIPLE
-#define DISTOPIA_VECTOR_TRIPLE
+#ifndef DISTOPIA_VECTOR_TRIPLE_H
+#define DISTOPIA_VECTOR_TRIPLE_H
 
 #include "compiler_hints.h"
 #include "distopia_type_traits.h"
@@ -177,4 +177,4 @@ inline VectorTriple<VectorT> operator/(VectorTriple<VectorT> a,
   return VectorTriple<VectorT>(a.x / b.y, a.y / b.y, a.z / b.z);
 }
 
-#endif // DISTOPIA_VECTOR_TRIPLE
+#endif // DISTOPIA_VECTOR_TRIPLE_H
