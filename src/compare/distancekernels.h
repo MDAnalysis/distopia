@@ -35,6 +35,7 @@
 
 #define COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
 
+#include <math.h>
 
 #ifdef COMPILE_WITH_PERIODIC_BOUNDARY_CONDITIONS
 void dist_mic(const float *xyz1, const float *xyz2, const float *box_matrix,
