@@ -3,9 +3,6 @@
 
 #include <cstddef>
 
-#include "arch_config.h"
-#include "simd_config.h"
-
 template <typename T>
 void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
                     std::size_t n, T *out);
