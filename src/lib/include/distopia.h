@@ -9,7 +9,8 @@
 /*! \file 
     \brief Main public header for distopia
     
-    Details
+    Contains functions to calculate distances, angles and dihedrals that
+    efficently leverage SIMD 
 */
 
 
