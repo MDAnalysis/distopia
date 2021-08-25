@@ -6,9 +6,17 @@
 Welcome to distopia's documentation!
 ====================================
 
+:Release: |release|
+:Date: |today|
+
+**distopia** is a package to rapidly calculate distances, angles and dihedrals
+under periodic boundary conditions.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+   ./api/distopia.rst
 
 
 
@@ -18,8 +26,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-
-Docs
-====
-.. doxygenclass:: VectorTriple
