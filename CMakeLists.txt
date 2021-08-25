@@ -378,3 +378,10 @@ if(DISTOPIA_COVERAGE)
     DEPENDENCIES test_kernels
     EXCLUDE "${PROJECT_SOURCE_DIR}/src/lib/tests/googletest/*" "${PROJECT_SOURCE_DIR}/src/lib/tests/googlebench/*")
 endif()
+
+set_target_properties(distopia
+        PROPERTIES PUBLIC_HEADER ${PROJECT_SOURCE_DIR}/src/lib/include/distopia.h)
+
+install(TARGETS distopia
+        DESTINATION lib
+        PUBLIC_HEADER DESTINATION include)
