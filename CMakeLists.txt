@@ -300,7 +300,7 @@ if(DISTOPIA_BUILD_TEST)
   include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
   # add test executable for internals
   add_executable(tests ${DISTOPIA_TEST_DIR}/tests.cpp)
-  target_include_directories(tests PUBLIC ${DISTOPIA_SOURCE_DIR})
+  target_include_directories(tests PRIVATE ${DISTOPIA_SOURCE_DIR})
   target_compile_options(tests
     PRIVATE
       ${CXX_FLAGS}
@@ -309,7 +309,7 @@ if(DISTOPIA_BUILD_TEST)
       "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
     )
   target_link_libraries(tests distopia)
-  target_link_libraries(tests gtest gtest_main)
+  target_link_libraries(tests gtest gtest_main rt)
   # discover tests so that make test will work
   gtest_discover_tests(tests WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
   # test executable for actual distances
@@ -359,7 +359,7 @@ if(DISTOPIA_BUILD_TIMINGS)
     "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
   )
   target_link_libraries(benchmarks distopia)
-  target_link_libraries(benchmarks benchmark::benchmark)
+  target_link_libraries(benchmarks benchmark::benchmark rt)
 endif()
 
 if(DISTOPIA_COVERAGE) 
