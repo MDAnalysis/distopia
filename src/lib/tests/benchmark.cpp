@@ -1,7 +1,6 @@
-#include "arch_config.h"
+#include "distancekernels.h"
 #include "distopia.h"
 #include "vanilla.h"
-#include "distancekernels.h"
 #include <benchmark/benchmark.h>
 #include <iostream>
 #include <random>

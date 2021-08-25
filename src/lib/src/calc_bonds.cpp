@@ -7,12 +7,12 @@
 #include <immintrin.h>
 #include <iostream>
 
-#include "distopia.h"
-#include "compiler_hints.h"
-#include "distopia_type_traits.h"
-#include "vector_triple.h"
 #include "box.h"
+#include "compiler_hints.h"
+#include "distopia.h"
+#include "distopia_type_traits.h"
 #include "kernels.h"
+#include "vector_triple.h"
 
 namespace {
 
@@ -36,7 +36,7 @@ void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
                     const VectorToScalarT<VectorT> *box, std::size_t n,
                     VectorToScalarT<VectorT> *out) {
   auto vecbox = BoxT(box);
-  VectorTriple<VectorT> c0, c1;
+  VectorTriple<VectorT> c0{}, c1{};
   std::size_t i = 0;
   if (n % ValuesPerPack<VectorT>) {
     c0.load(coords0);
