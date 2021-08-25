@@ -1,0 +1,30 @@
+\hypertarget{ops_8h}{}\doxysection{/\+Users/hugo/\+Desktop/dev/distopia/src/lib/include/ops.h File Reference}
+\label{ops_8h}\index{/Users/hugo/Desktop/dev/distopia/src/lib/include/ops.h@{/Users/hugo/Desktop/dev/distopia/src/lib/include/ops.h}}
+{\ttfamily \#include \char`\"{}basemath.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}x86/x86\+\_\+basemath.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}x86/x86\+\_\+tgintrin.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}x86/x86\+\_\+vector\+\_\+operators.\+h\char`\"{}}\newline
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T $>$ }\\T \mbox{\hyperlink{ops_8h_a6417fc2ef2af418229cb29832db04b2e}{Hypot}} (T x, T y, T z)
+\item 
+{\footnotesize template$<$typename VectorT , Enable\+If\+Vector$<$ Vector\+T $>$  = 0$>$ }\\VectorT \mbox{\hyperlink{ops_8h_a425de321ff8de6cdc07e6626361d3aea}{Atan2\+Shim}} (VectorT y, VectorT x)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{ops_8h_a425de321ff8de6cdc07e6626361d3aea}\label{ops_8h_a425de321ff8de6cdc07e6626361d3aea}} 
+\index{ops.h@{ops.h}!Atan2Shim@{Atan2Shim}}
+\index{Atan2Shim@{Atan2Shim}!ops.h@{ops.h}}
+\doxysubsubsection{\texorpdfstring{Atan2Shim()}{Atan2Shim()}}
+{\footnotesize\ttfamily template$<$typename VectorT , Enable\+If\+Vector$<$ Vector\+T $>$  = 0$>$ \\
+VectorT Atan2\+Shim (\begin{DoxyParamCaption}\item[{VectorT}]{y,  }\item[{VectorT}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{ops_8h_a6417fc2ef2af418229cb29832db04b2e}\label{ops_8h_a6417fc2ef2af418229cb29832db04b2e}} 
+\index{ops.h@{ops.h}!Hypot@{Hypot}}
+\index{Hypot@{Hypot}!ops.h@{ops.h}}
+\doxysubsubsection{\texorpdfstring{Hypot()}{Hypot()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+T Hypot (\begin{DoxyParamCaption}\item[{T}]{x,  }\item[{T}]{y,  }\item[{T}]{z }\end{DoxyParamCaption})}
+

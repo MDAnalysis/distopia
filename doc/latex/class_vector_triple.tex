@@ -1,0 +1,55 @@
+\hypertarget{class_vector_triple}{}\doxysection{Vector\+Triple$<$ VectorT $>$ Class Template Reference}
+\label{class_vector_triple}\index{VectorTriple$<$ VectorT $>$@{VectorTriple$<$ VectorT $>$}}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_vector_triple_a20a7d7669a3ad791535695ca0eb40423}\label{class_vector_triple_a20a7d7669a3ad791535695ca0eb40423}} 
+using {\bfseries ScalarT} = Vector\+To\+ScalarT$<$ VectorT $>$
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_vector_triple_adb60d98042a839af5969c0b6606aef9f}\label{class_vector_triple_adb60d98042a839af5969c0b6606aef9f}} 
+{\bfseries Vector\+Triple} (const VectorT a, const VectorT b, const VectorT c)
+\item 
+\mbox{\Hypertarget{class_vector_triple_a9a0208fd842ce212509df40a3325f93d}\label{class_vector_triple_a9a0208fd842ce212509df40a3325f93d}} 
+{\bfseries Vector\+Triple} (const ScalarT $\ast$source)
+\item 
+\mbox{\Hypertarget{class_vector_triple_ab322cbe10680e4b16fed3745a89076d1}\label{class_vector_triple_ab322cbe10680e4b16fed3745a89076d1}} 
+void {\bfseries load} (const ScalarT $\ast$source)
+\item 
+\mbox{\Hypertarget{class_vector_triple_aa21d0bd0440453eaec3f38f68e7019c7}\label{class_vector_triple_aa21d0bd0440453eaec3f38f68e7019c7}} 
+{\footnotesize template$<$unsigned char stride = 1$>$ }\\void {\bfseries idxload} (const ScalarT $\ast$source, const std\+::size\+\_\+t $\ast$idxs)
+\item 
+\mbox{\Hypertarget{class_vector_triple_a6cd5719a62037d9681a17a764816003d}\label{class_vector_triple_a6cd5719a62037d9681a17a764816003d}} 
+{\footnotesize template$<$bool streaming = false$>$ }\\void {\bfseries store} (ScalarT $\ast$target)
+\item 
+\mbox{\Hypertarget{class_vector_triple_a4ab19d7cdef2b6283e46ff8cb9b78426}\label{class_vector_triple_a4ab19d7cdef2b6283e46ff8cb9b78426}} 
+\mbox{\hyperlink{class_vector_triple}{Vector\+Triple}}$<$ VectorT $>$ {\bfseries deinterleave} ()
+\item 
+\mbox{\Hypertarget{class_vector_triple_a8c340235d315464cf95a4e3965e5093a}\label{class_vector_triple_a8c340235d315464cf95a4e3965e5093a}} 
+void {\bfseries debugprint} (const char $\ast$nm)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_vector_triple_a5e11be21725f0cfcb83134e541e13cf4}\label{class_vector_triple_a5e11be21725f0cfcb83134e541e13cf4}} 
+VectorT {\bfseries x}
+\item 
+\mbox{\Hypertarget{class_vector_triple_a21d4397c4a2a86ba639fae5ccca049ea}\label{class_vector_triple_a21d4397c4a2a86ba639fae5ccca049ea}} 
+VectorT {\bfseries y}
+\item 
+\mbox{\Hypertarget{class_vector_triple_a256d1f6fc454de8d6af0152241b5cf84}\label{class_vector_triple_a256d1f6fc454de8d6af0152241b5cf84}} 
+VectorT {\bfseries z}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_vector_triple_a38765c9e4b2d698aa374a355d580180d}\label{class_vector_triple_a38765c9e4b2d698aa374a355d580180d}} 
+constexpr static std\+::size\+\_\+t {\bfseries n\+\_\+scalars} = Values\+Per\+Pack$<$VectorT$>$ $\ast$ 3
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/hugo/\+Desktop/dev/distopia/src/lib/include/vector\+\_\+triple.\+h\end{DoxyCompactItemize}
