@@ -12,7 +12,7 @@
 #ifndef DISTOPIA_X86_TGINTRIN_H
 #define DISTOPIA_X86_TGINTRIN_H
 
-#include "arch_config.h"
+#include "../arch_config.h"
 #ifdef DISTOPIA_X86_SSE4_1
 
 #include <immintrin.h>

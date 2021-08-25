@@ -1,9 +1,9 @@
 #ifndef DISTOPIA_SWIZZLE_H
 #define DISTOPIA_SWIZZLE_H
 
-#include "arch_config.h"
-#include "compiler_hints.h"
-#include "distopia_type_traits.h"
+#include "../arch_config.h"
+#include "../compiler_hints.h"
+#include "../distopia_type_traits.h"
 #include <iostream>
 
 #ifdef DISTOPIA_X86_SSE4_1

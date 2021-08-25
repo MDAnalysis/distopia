@@ -1,7 +1,7 @@
 #ifndef DISTOPIA_X86_BASEMATH_H
 #define DISTOPIA_X86_BASEMATH_H
 
-#include "arch_config.h"
+#include "../arch_config.h"
 
 #ifdef DISTOPIA_X86_SSE4_1
 
@@ -9,10 +9,10 @@
 #include <immintrin.h>
 #include <type_traits>
 
-#include "compiler_hints.h"
-#include "distopia_type_traits.h"
-#include "x86/x86_tgintrin.h"
-#include "x86/x86_vector_operators.h"
+#include "../compiler_hints.h"
+#include "../distopia_type_traits.h"
+#include "x86_tgintrin.h"
+#include "x86_vector_operators.h"
 
 namespace {
 

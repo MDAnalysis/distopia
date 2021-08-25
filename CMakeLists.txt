@@ -300,6 +300,7 @@ if(DISTOPIA_BUILD_TEST)
   include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
   # add test executable for internals
   add_executable(tests ${DISTOPIA_TEST_DIR}/tests.cpp)
+  target_include_directories(tests PUBLIC ${DISTOPIA_SOURCE_DIR})
   target_compile_options(tests
     PRIVATE
       ${CXX_FLAGS}
