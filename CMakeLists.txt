@@ -309,7 +309,8 @@ if(DISTOPIA_BUILD_TEST)
       "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
     )
   target_link_libraries(tests distopia)
-  target_link_libraries(tests gtest gtest_main rt)
+  target_link_libraries(tests gtest gtest_main)
+
   # discover tests so that make test will work
   gtest_discover_tests(tests WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
   # test executable for actual distances
@@ -359,7 +360,7 @@ if(DISTOPIA_BUILD_TIMINGS)
     "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
   )
   target_link_libraries(benchmarks distopia)
-  target_link_libraries(benchmarks benchmark::benchmark rt)
+  target_link_libraries(benchmarks benchmark::benchmark)
 endif()
 
 if(DISTOPIA_COVERAGE) 
