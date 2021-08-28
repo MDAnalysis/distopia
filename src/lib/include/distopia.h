@@ -121,7 +121,6 @@ void CalcAnglesIdxOrtho(const T *coords, const std::size_t *idxs, const T *box,
     \tparam    T the type of the coordinates (float or double)
     \param     coords array of coordinates
     \param     idxs the indicies of the angles to calculate
-    \param     box the bounding box of the simulation
     \param     n the number of angles to calculate
     \param     out result array into which the angles are returned
 */
