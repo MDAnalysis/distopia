@@ -1,5 +1,5 @@
 
-Core distopia functions
+Core Distopia Functions
 ***********************
 
 .. doxygenfunction:: CalcBondsOrtho

@@ -171,7 +171,7 @@ public:
   /** SIMD or scalar type that contains z coordinates */
   VectorT z;
   /** number of scalar values in the packed into the whole 3 x VectorT class */
-  constexpr static std::size_t n_scalars = ValuesPerPack<VectorT> * 3;
+  constexpr std::size_t n_scalars = ValuesPerPack<VectorT> * 3;
 
   /** we allow a default constructor */
   VectorTriple() = default;

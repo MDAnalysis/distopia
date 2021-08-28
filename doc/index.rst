@@ -17,6 +17,9 @@ under periodic boundary conditions.
    :caption: Contents:
 
    ./api/distopia.rst
+   ./api/vector_triple.rst
+   ./api/helper_functions.rst
+
 
 
 
