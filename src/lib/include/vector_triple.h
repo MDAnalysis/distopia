@@ -45,7 +45,7 @@ inline T genericload(const T *source) {
 */
 template <typename VectorT, EnableIfVector<VectorT> = 0>
 inline VectorT generic_set1(VectorToScalarT<VectorT> source) {
-  return set1_p<VectorT>(src);
+  return set1_p<VectorT>(source);
 }
 
 /*!
@@ -57,7 +57,7 @@ inline VectorT generic_set1(VectorToScalarT<VectorT> source) {
 */
 template <typename T, EnableIfFloating<T> = 0>
 inline T generic_set1(T source) {
-  return src;
+  return source;
 }
 
 /*!
