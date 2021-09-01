@@ -9,26 +9,68 @@
 #include "x86/x86_vector_operators.h"
 #include "x86/x86_swizzle.h"
 
-// loader function that covers overload for float and double
+/*! \file 
+    \brief VectorTriple and friends
+    
+    Contains the VectorTriple class which packs values into a 3 x simd_width
+    struct and allows packed operations on them.
+*/
+
+/*!
+    \brief     Function that allows VectorTriple to load a SIMD register
+    \tparam    VectorT the SIMD type to be loaded
+    \param     source scalar array to be loaded from
+    \returns   SIMD datatype
+*/
 template <typename VectorT, EnableIfVector<VectorT> = 0>
 inline VectorT genericload(const VectorToScalarT<VectorT> *source) {
   return loadu_p<VectorT>(source);
 }
+/*!
+    \brief     Function that allows VectorTriple to load a scalar coordinate
+    \tparam    T the type to be loaded (float or double)
+    \param     source scalar array to be loaded from
+    \returns   scalar value
+*/
 template <typename T, EnableIfFloating<T> = 0>
 inline T genericload(const T *source) {
   return *source;
 }
-
+/*!
+    \brief     Function that allows VectorTriple to set a SIMD register to a 
+               single  value
+    \tparam    VectorT the SIMD type to be loaded
+    \param     source scalar that the register should be set to
+    \returns   SIMD datatype
+*/
 template <typename VectorT, EnableIfVector<VectorT> = 0>
-inline VectorT generic_set1(VectorToScalarT<VectorT> src) {
-  return set1_p<VectorT>(src);
-}
-template <typename T, EnableIfFloating<T> = 0> inline T generic_set1(T src) {
-  return src;
+inline VectorT generic_set1(VectorToScalarT<VectorT> source) {
+  return set1_p<VectorT>(source);
 }
 
-// idx loader function that covers overload for float and double
-// step defines the load stride into the indicies
+/*!
+    \brief     Function that allows VectorTriple to set a scalar register to a 
+               single value
+    \tparam    T the type to be loaded (float or double)
+    \param     source scalar that the register should be set to
+    \returns   scalar value
+*/
+template <typename T, EnableIfFloating<T> = 0>
+inline T generic_set1(T source) {
+  return source;
+}
+
+/*!
+    \brief     Function that allows VectorTriple to load into a SIMD datatype
+               from a coordinate array by index before deinterleaving 
+    \tparam    VectorT the SIMD type to be loaded
+    \tparam    stride a step into the idxs array, load every n'th index
+    \param     source scalar coordinate array to load from
+    \param     idxs indices for the coordinate array
+    \param     x x coordinates are returned deinterleaved in this register
+    \param     y y coordinates are returned deinterleaved in this register
+    \param     z z coordinates are returned deinterleaved in this register
+*/
 template <typename VectorT, unsigned char stride, EnableIfVector<VectorT> = 0>
 inline void genericidxload(const VectorToScalarT<VectorT> *source,
                            const std::size_t *idxs, VectorT &x, VectorT &y,
@@ -41,6 +83,17 @@ inline void genericidxload(const VectorToScalarT<VectorT> *source,
   DeinterleaveIdx(v_arr, x, y, z);
 }
 
+/*!
+    \brief     Function that allows VectorTriple to load into a scalar datatype
+               from a coordinate array by index before deinterleaving 
+    \tparam    VectorT the SIMD type to be loaded
+    \tparam    stride a step into the idxs array, load every n'th index
+    \param     source scalar coordinate array to load from
+    \param     idxs indices for the coordinate array
+    \param     x x coordinates are returned in this scalar
+    \param     y y coordinates are returned in this scalar
+    \param     z z coordinates are returned in this scalar
+*/
 template <typename T, unsigned char stride, EnableIfFloating<T> = 0>
 inline void genericidxload(const T *source, const std::size_t *idxs, T &x, T &y,
                            T &z) {
@@ -49,58 +102,104 @@ inline void genericidxload(const T *source, const std::size_t *idxs, T &x, T &y,
   z = source[3 * idxs[0] + 2];
 }
 
-// store function that covers overload for float and double
+/*!
+    \brief     Function that allows VectorTriple to store a SIMD datatype into
+               an array
+    \tparam    VectorT the SIMD type to be stored
+    \param     target scalar coordinate array to store to
+    \param     val  SIMD datatype to store
+*/
 template <typename VectorT, EnableIfVector<VectorT> = 0>
 inline void genericstore(VectorToScalarT<VectorT> *target, const VectorT val) {
   return storeu_p(target, val);
 }
 
+/*!
+    \brief     Function that allows VectorTriple to store a scalar datatype
+               into an array
+    \tparam    T the scalar type to be stored
+    \param     target scalar coordinate array to store to
+    \param     val  SIMD datatype to store
+*/
 template <typename T, EnableIfFloating<T> = 0>
 inline void genericstore(T *target, const T val) {
   *target = val;
 }
 
+/*!
+    \brief     Function that allows VectorTriple to stream a SIMD datatype into
+               an array
+    \tparam    VectorT the SIMD type to be stored
+    \param     target scalar coordinate array to stream to
+    \param     val  SIMD datatype to stream
+*/
 template <typename VectorT, EnableIfVector<VectorT> = 0>
 inline void genericstream(VectorToScalarT<VectorT> *target, const VectorT val) {
   return stream_p(target, val);
 }
-
+/*!
+    \brief     Function that allows VectorTriple to stream a scalar datatype
+               into an array
+    \tparam    T the scalar type to be stored
+    \param     target scalar coordinate array to stream to
+    \param     val  SIMD datatype to stream
+*/
 template <typename T, EnableIfFloating<T> = 0>
 inline void genericstream(T *target, const T val) {
   *target = val;
 }
 
-// VectorTriple base class packs 3xSIMD datatypes into a single class.
-// Can be constructed from 3 x VectorT.
-// Can also be constructed from a ScalarT array which loads the right number
-// of values into the 3 x VectorT.
+/*!
+    \brief     Class that packs sets of 3 coordinates into a single unit for
+               operations on interleaved or deinterleaved data. The number of 
+               coordinates held is determined by the SIMD width. If
+               constructing a SIMD typed VectorTriple from a scalar array, the
+               requisite deinterleave operations are performed in the
+               constructor.
+    \tparam   VectorT (SIMD datatype) or scalar (float or double) type
+*/
 template <typename VectorT> class VectorTriple {
 public:
-  // maps to vectorT to ScalarT
+  /** Maps the input SIMD or scalar datatype onto its corresponding scalar 
+  *  type. For  example `__mm256` maps to `float` and `double` maps to `double`
+  */
   using ScalarT = VectorToScalarT<VectorT>;
-  // 3x SIMD Datatypes
+  /** SIMD or scalar type that contains x coordinates */
   VectorT x;
+  /** SIMD or scalar type that contains y coordinates */
   VectorT y;
+  /** SIMD or scalar type that contains z coordinates */
   VectorT z;
-  // number of values in the packed into the whole 3 x VectorT struct.
-  constexpr static std::size_t n_scalars = ValuesPerPack<VectorT> * 3;
+  /** number of scalar values in the packed into the whole 3 x VectorT class */
+  static constexpr std::size_t n_scalars = ValuesPerPack<VectorT> * 3;
 
-  // default construct
+  /** we allow a default constructor */
   VectorTriple() = default;
 
-  // construct from 3 SIMD Vector datatypes eg __m128 or __m128d OR 3 scalar
-  // datatypes eg float or double
+  /** \brief Construct from three pre-existing VectorT vector types
+   *  \param a data to load into the x SIMD or scalar register
+   *  \param b data to load into the y SIMD or scalar register
+   *  \param c data to load into the z SIMD or scalar register
+   */
   inline VectorTriple(const VectorT a, const VectorT b, const VectorT c)
       : x(a), y(b), z(c) {}
 
-  // construct by loading from an array of ScalarT eg float* or double *.
+  /** \brief construct by loading from an array of ScalarT eg float* or double *
+   *  with an automatic deinterleave being applied.
+   *  \param source scalar array to load from
+   */
   inline explicit VectorTriple(const ScalarT *source) {
     auto t1 = genericload<VectorT>(source);
     auto t2 = genericload<VectorT>(source + ValuesPerPack<VectorT>);
     auto t3 = genericload<VectorT>(source + ValuesPerPack<VectorT> * 2);
     Deinterleave3(t1, t2, t3, x, y, z);
   }
-
+  
+  /** \brief refresh the VectorTriple by loading from an array of ScalarT eg float*
+   *  or double * with an automatic deinterleave being applied. Equivalent
+   *  operations to the scalar constructor are performed.
+   *  \param source scalar array to load from
+   */
   inline void load(const ScalarT *source) {
     auto t1 = genericload<VectorT>(source);
     auto t2 = genericload<VectorT>(source + ValuesPerPack<VectorT>);
@@ -108,21 +207,23 @@ public:
     Deinterleave3(t1, t2, t3, x, y, z);
   }
 
-  // construct by loading discontiguously from an array of ScalarT eg float* or
-  // double*. Must pass references as deinterleave must happen on x,y and z
-  // simultaneously
-  // inline VectorTriple(const ScalarT *source, const ScalarT *end,
-  //                     const std::size_t *idxs, const unsigned char stride) {
-  //   genericidxload<VectorT, stride>(source, end, idxs, this->x, this->y,
-  //                                   this->z);
-  // }
-
+  /** \brief construct by loading discontiguously from an array of ScalarT eg float* or
+   *  double* using the indices in idxs
+   *  \tparam stride the stride at which to use the indices, take every nth index
+   *  \param source scalar array to load from
+   *  \param idxs indices to the coordinate array
+   */
   template <unsigned char stride = 1>
   inline void idxload(const ScalarT *source, const std::size_t *idxs) {
     genericidxload<VectorT, stride>(source, idxs, this->x, this->y, this->z);
   }
-  // store or stream to an array of ScalarT eg float* or double *.
-  template <bool streaming = false> inline void store(ScalarT *target) {
+
+  /** \brief construct by loading discontiguously from an array of ScalarT eg float* or
+   *  double* using the indices in idxs
+   *  \tparam allow streaming if true, otherwise use store instructions
+   *  \param target scalar array to store/stream to
+   */ 
+    template <bool streaming = false> inline void store(ScalarT *target) {
     // need to disable streaming if values_per_pack == 1
     // TODO constexpr if with CXX17 support
     if (streaming and (ValuesPerPack<VectorT>> 1)) {
@@ -136,6 +237,10 @@ public:
     }
   }
 
+   /** \brief deinterleave the values in the x, y and z SIMD or scalar registers.
+    *  **WARNING** this should only be used if you know the that x, y and z are
+    * in deinterleaved form, ie x=`xyzxyzxyz...`
+   */ 
   inline VectorTriple<VectorT> deinterleave() {
     static_assert(ValuesPerPack<VectorT>> 1,
                   "Cannot use this method on a type "
@@ -145,6 +250,8 @@ public:
     return vt;
   }
 
+   /** \brief print the values in SIMD or scalar register x, y and z.
+   */ 
   void debugprint(const char *nm) {
     ScalarT debug[ValuesPerPack<VectorT> * 3];
     this->store(debug);

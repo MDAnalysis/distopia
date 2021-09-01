@@ -46,5 +46,13 @@ To benchmark methods (from `./build`) run the benchmarks binary:
 ```
   ./benchmarks
 ```
+Distopia's documentation is made with breathe using a combination of Doxygen and Sphinx
+To build the docs, go to the doc directory and:
+
+```
+doxygen
+make html
+```
+then point your browser to the generated documentation.
 
 To assess code coverage build with `cmake -DDISTOPIA_COVERAGE=ON` and use either make or ninja to build the coverage targets `tests_coverage` or `test_kernels_coverage`.  You can then view the resulting HTML gcovr coverage reports in your favourite browser.
