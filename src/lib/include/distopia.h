@@ -3,6 +3,7 @@
 
 #include <cstddef>
 
+<<<<<<< HEAD
 #include "arch_config.h"
 #include "simd_config.h"
 
@@ -25,6 +26,8 @@
     \param     n the number of distances to calculate
     \param     out result array into which the distances are returned
 */
+=======
+>>>>>>> upstream/master
 template <typename T>
 void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
                     std::size_t n, T *out);

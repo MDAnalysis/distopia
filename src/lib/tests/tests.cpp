@@ -1,15 +1,15 @@
-#include "arch_config.h"
+#include "../src/arch_config.h"
 #include "gtest/gtest.h"
 #include <iostream>
 #ifdef DISTOPIA_X86_SSE4_1
 
-#include "box.h"
-#include "vector_triple.h"
-#include "vector_triple_basemath.h"
-#include "x86/x86_basemath.h"
-#include "x86/x86_tgintrin.h"
-#include "x86/x86_vector_operators.h"
-#include "x86/x86_swizzle.h"
+#include "../src/box.h"
+#include "../src/vector_triple.h"
+#include "../src/vector_triple_basemath.h"
+#include "../src/x86/x86_basemath.h"
+#include "../src/x86/x86_tgintrin.h"
+#include "../src/x86/x86_vector_operators.h"
+#include "../src/x86/x86_swizzle.h"
 #include <immintrin.h>
 
 TEST(TestX86Vec, Float128LoadScalar) {
