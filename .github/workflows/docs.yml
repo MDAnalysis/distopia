@@ -22,7 +22,7 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
         
-    - name: Doxygen Action
+    - name: Doxygen
       uses: mattnotmitt/doxygen-action@v1.1.0
       with:
         # Path to Doxyfile
@@ -30,8 +30,16 @@ jobs:
         # Working directory
         working-directory: "./doc" # default is .
     
-    - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
+
+    - name:  Build Sphinx 🔧 # This is built with makefile
+      run: |
+        cd doc
+        make html
+      
+    - name: Deploy 🚀
+      if: github.event_name != 'pull_request'
+      uses: JamesIves/github-pages-deploy-action@3.7.1
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./html
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages # The branch the action should deploy to.
+        FOLDER: doc/_build/html # The folder the action should deploy.
