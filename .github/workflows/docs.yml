@@ -28,13 +28,13 @@ jobs:
         # Path to Doxyfile
         doxyfile-path: "./Doxyfile" # default is ./Doxyfile
         # Working directory
-        working-directory: "./doc" # default is .
+        working-directory: "./docs" # default is .
     
 
     - name:  Build Sphinx 🔧 # This is built with makefile
       run: |
         pip install sphinx sphinx-sitemap sphinx_rtd_theme breathe
-        cd doc
+        cd docs
         make html
       
     - name: Deploy 🚀
@@ -43,4 +43,4 @@ jobs:
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: gh-pages # The branch the action should deploy to.
-        FOLDER: doc/_build/html # The folder the action should deploy.
+        FOLDER: docs/_build/html # The folder the action should deploy.
