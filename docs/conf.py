@@ -16,6 +16,7 @@
 
 
 # -- Project information -----------------------------------------------------
+import sphinx_rtd_theme
 
 project = 'distopia'
 copyright = '2021, Hugo MacDermott-Opeskin Jakub Nabaglo Richard Gowers'
@@ -27,8 +28,9 @@ author = 'Hugo MacDermott-Opeskin Jakub Nabaglo Richard Gowers'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [ 'breathe', 'sphinx.ext.autosectionlabel'
-]
+extensions = [ 'breathe', 'sphinx.ext.autosectionlabel',
+            'sphinx_sitemap',
+            'sphinx_rtd_theme']
 breathe_projects = { "distopia": "./doxygen_build/xml" }
 breathe_default_project = "distopia"
 # Add any paths that contain templates here, relative to this directory.
