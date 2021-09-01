@@ -3,9 +3,6 @@
 
 #include <cstddef>
 
-#include "arch_config.h"
-#include "simd_config.h"
-
 /*! \file 
     \brief Main public header for distopia
     
