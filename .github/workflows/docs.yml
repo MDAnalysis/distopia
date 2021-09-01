@@ -1,0 +1,5 @@
+- name: Doxygen Action
+  uses: mattnotmitt/doxygen-action@v1.3.1
+  with:
+    working-directory: 'docs/'
+  on: [push,pull_request]
