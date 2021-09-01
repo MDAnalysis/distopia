@@ -1,4 +1,4 @@
-name: Doxygen Action
+name: Docs
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -28,7 +28,7 @@ jobs:
         # Path to Doxyfile
         doxyfile-path: "./Doxyfile" # default is ./Doxyfile
         # Working directory
-        working-directory: "./docs" # default is .
+        working-directory: "./doc" # default is .
     
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
