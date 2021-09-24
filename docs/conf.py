@@ -29,7 +29,7 @@ author = 'Hugo MacDermott-Opeskin Jakub Nabaglo Richard Gowers'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['breathe', 'sphinx.ext.autosectionlabel',
-              'sphinx_rtd_theme','sphinx.ext.napoleon',
+              'sphinx_rtd_theme', 'sphinx.ext.napoleon',
               'sphinx.ext.githubpages',
               'sphinx.ext.autosummary',
               'sphinx_sitemap']
@@ -87,5 +87,3 @@ html_theme_options = {
 html_static_path = ['_static']
 html_css_files = ['custom.css']
 html_logo = "_static/logos/mdanalysis-logo-thin.png"
-
-
