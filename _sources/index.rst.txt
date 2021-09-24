@@ -39,11 +39,12 @@ featureset and is also on the TODO list.
 Ask questions on the mdnalysis-discussion mailing list and be part of the
 conversation. You can also join the MDAnalysis Discord Server to talk with
 other users and developers. (In order to join our Discord server, use the
-invitation link https://discord.gg/fXTSfDJyxE.) Please report bugs or
+following invitation_. Please report bugs or
 enhancement requests through the Issue Tracker. Distopia is open source and
 welcomes your contributions. Fork the repository on GitHub and submit a pull
 request!
 
+.. _invitation: https://discord.gg/fXTSfDJyxE
 
 
 .. toctree::
