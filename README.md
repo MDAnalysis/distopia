@@ -59,7 +59,3 @@ then point your browser to the generated documentation.
 
 To assess code coverage build with `cmake -DDISTOPIA_COVERAGE=ON` and use either make or ninja to build the coverage targets `tests_coverage` or `test_kernels_coverage`.  You can then view the resulting HTML gcovr coverage reports in your favourite browser.
 
-
-.. |docs| image:: https://img.shields.io/badge/docs-latest-brightgreen.svg
-   :alt: Documentation (latest release)
-   :target: https://docs.mdanalysis.org
