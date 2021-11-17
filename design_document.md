@@ -15,7 +15,7 @@ The operations for these key parts are then defined in terms of a series of requ
 Other files are mostly for detecting the compiled-upon architecture and providing compiler hints and are hopefully self explanatory. 
 
 
-File by file
+file by file
 ------------
 
 * **src/**
