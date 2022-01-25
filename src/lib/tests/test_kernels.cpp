@@ -3,7 +3,8 @@
 #include <iostream>
 #include <random>
 
-#include "distopia.h"  //  fancy approaches
+#include "distopia.h" //  fancy approaches
+#include "test_utils.h"
 #include "vanilla.h" // a naive approach
 
 // constants
@@ -11,33 +12,6 @@
 #define BOXSIZE 10
 #define NRESULTS 2400
 #define NINDICIES 240
-
-inline void EXPECT_EQ_T(float result, float ref) {
-  EXPECT_FLOAT_EQ(result, ref);
-}
-
-inline void EXPECT_EQ_T(double result, double ref) {
-  EXPECT_DOUBLE_EQ(result, ref);
-}
-
-inline void EXPECT_MOSTLY_EQ_T(float result, float ref) {
-  EXPECT_NEAR(result, ref, 0.001);
-}
-inline void EXPECT_MOSTLY_EQ_T(double result, double ref) {
-  EXPECT_NEAR(result, ref, 0.001);
-}
-
-// creates nrandom floating points between 0 and limit
-template <typename T>
-void RandomFloatingPoint(T *target, const int nrandom, const int neglimit,
-                         const int poslimit) {
-  std::random_device rd;
-  std::mt19937 gen(rd()); // Standard mersenne_twister_engine
-  std::uniform_real_distribution<T> distribution(neglimit, poslimit);
-  for (size_t i = 0; i < nrandom; i++) {
-    target[i] = distribution(gen);
-  }
-}
 
 // coordinates class that is templated
 template <typename T> class Coordinates : public ::testing::Test {
@@ -119,7 +93,7 @@ TYPED_TEST(Coordinates, CalcBondsMatchesVanillaOutBox) {
                  this->results);
 
   for (std::size_t i = 0; i < this->nresults; i++) {
-    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i], 0.001);
     // loss of accuracy somewhere?
   }
   SUCCEED();
@@ -197,7 +171,7 @@ TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanillaOutBox) {
                     this->results);
 
   for (std::size_t i = 0; i < this->nindicies / 2; i++) {
-    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i], 0.001);
     // loss of accuracy somewhere?
   }
   SUCCEED();
@@ -213,7 +187,7 @@ TYPED_TEST(Coordinates, CalcBondsIdxMatchesVanillaInBox) {
                     this->results);
 
   for (std::size_t i = 0; i < this->nindicies / 2; i++) {
-    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i], 0.001);
     // loss of accuracy somewhere?
   }
   SUCCEED();
@@ -227,7 +201,7 @@ TYPED_TEST(Coordinates, CalcAnglesMatchesVanillaInBox) {
                   this->nresults, this->results);
 
   for (std::size_t i = 0; i < this->nresults; i++) {
-    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i], 0.001);
     // loss of accuracy somewhere?
   }
   SUCCEED();
@@ -243,7 +217,7 @@ TYPED_TEST(Coordinates, CalcAnglesMatchesVanillaOutBox) {
                   this->nresults, this->results);
 
   for (std::size_t i = 0; i < this->nresults; i++) {
-    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i], 0.001);
     // loss of accuracy somewhere?
   }
   SUCCEED();
@@ -259,7 +233,7 @@ TYPED_TEST(Coordinates, CalcAnglesNoBoxMatchesVanilla) {
                   this->results);
 
   for (int i = 0; i < this->nresults; ++i) {
-    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i], 0.001);
   }
 }
 
@@ -271,7 +245,7 @@ TYPED_TEST(Coordinates, CalcAnglesIdxMatchesVanillaOutBox) {
                      this->results);
 
   for (std::size_t i = 0; i < this->nindicies / 3; i++) {
-    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i], 0.001);
     // loss of accuracy somewhere?
   }
   SUCCEED();
@@ -285,7 +259,7 @@ TYPED_TEST(Coordinates, CalcAnglesIdxMatchesVanillaInBox) {
                      this->results);
 
   for (std::size_t i = 0; i < this->nindicies / 3; i++) {
-    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i]);
+    EXPECT_MOSTLY_EQ_T(this->results[i], this->ref[i], 0.001);
     // loss of accuracy somewhere?
   }
   SUCCEED();

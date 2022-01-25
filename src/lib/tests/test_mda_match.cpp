@@ -6,23 +6,14 @@
 #include "distopia.h"        //  fancy approaches
 #include "calc_distances.h" // MDA
 #include "vanilla.h"        // simple approaches
+#include "test_utils.h"
 
 // constants
 #define BOXSIZE 10
 #define NRESULTS 10000
 #define NINDICIES 1000
 
-// creates nrandom floating points between 0 and limit
-template <typename T>
-void RandomFloatingPoint(T *target, const int nrandom, const int neglimit,
-                         const int poslimit) {
-  std::random_device rd;
-  std::mt19937 gen(rd()); // Standard mersenne_twister_engine
-  std::uniform_real_distribution<T> distribution(neglimit, poslimit);
-  for (size_t i = 0; i < nrandom; i++) {
-    target[i] = distribution(gen);
-  }
-}
+
 
 // coordinates class that is templated
 class CoordinatesMDA : public ::testing::Test {
