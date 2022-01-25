@@ -1,7 +1,8 @@
-#ifndef DISTOPIA_ARROPS_H
-#define DISTOPIA_ARROPS_H
+#ifndef DISTOPIA_H
+#define DISTOPIA_H
 
-#include <cstddef>
+#include "gtest/gtest.h"
+
 
 /*! \file 
     \brief Main public header for distopia
@@ -125,4 +126,4 @@ template <typename T>
 void CalcAnglesIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
                        T *out);
 
-#endif // DISTOPIA_ARROPS_H
+#endif // DISTOPIA_H
