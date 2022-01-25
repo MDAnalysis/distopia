@@ -3,7 +3,6 @@
 
 #include <gtest/gtest.h>
 
-
 // creates nrandom floating points between pos and neg limit
 template <typename T>
 void RandomFloatingPoint(T *target, const int nrandom, const int neglimit,
@@ -26,7 +25,6 @@ void RandomInt(std::size_t *target, const int nrandom, const int neglimit,
     target[i] = distribution(gen);
   }
 }
-
 
 inline void EXPECT_EQ_T(float result, float ref) {
   EXPECT_FLOAT_EQ(result, ref);
