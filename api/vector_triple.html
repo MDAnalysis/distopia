@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vector Triple &mdash; distopia  documentation</title>
@@ -15,6 +15,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -72,17 +73,16 @@
            <div itemprop="articleBody">
              
   <section id="vector-triple">
-<h1>Vector Triple<a class="headerlink" href="#vector-triple" title="Permalink to this headline"></a></h1>
+<h1>Vector Triple<a class="headerlink" href="#vector-triple" title="Permalink to this heading"></a></h1>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4I0E12VectorTriple">
 <span id="_CPPv3I0E12VectorTriple"></span><span id="_CPPv2I0E12VectorTriple"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VectorT</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_vector_triple"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VectorTriple</span></span></span><a class="headerlink" href="#_CPPv4I0E12VectorTriple" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Class that packs sets of 3 coordinates into a single unit for operations on interleaved or deinterleaved data. The number of coordinates held is determined by the SIMD width. If constructing a SIMD typed <a class="reference internal" href="#class_vector_triple"><span class="std std-ref">VectorTriple</span></a> from a scalar array, the requisite deinterleave operations are performed in the constructor. </p>
-<p><dl class="field-list simple">
-<dt class="field-odd">tparam VectorT</dt>
-<dd class="field-odd"><p>(SIMD datatype) or scalar (float or double) type </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>VectorT</strong> – (SIMD datatype) or scalar (float or double) type </p>
 </dd>
 </dl>
-</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -105,7 +105,7 @@
 <span id="_CPPv3N12VectorTriple12VectorTripleEK7VectorTK7VectorTK7VectorT"></span><span id="_CPPv2N12VectorTriple12VectorTripleEK7VectorTK7VectorTK7VectorT"></span><span id="VectorTriple::VectorTriple__VectorTC.VectorTC.VectorTC"></span><span class="target" id="class_vector_triple_1adb60d98042a839af5969c0b6606aef9f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VectorTriple</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E12VectorTriple" title="VectorTriple::VectorT"><span class="n"><span class="pre">VectorT</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E12VectorTriple" title="VectorTriple::VectorT"><span class="n"><span class="pre">VectorT</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E12VectorTriple" title="VectorTriple::VectorT"><span class="n"><span class="pre">VectorT</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">c</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12VectorTriple12VectorTripleEK7VectorTK7VectorTK7VectorT" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Construct from three pre-existing VectorT vector types. </p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> – data to load into the x SIMD or scalar register </p></li>
 <li><p><strong>b</strong> – data to load into the y SIMD or scalar register </p></li>
@@ -120,7 +120,7 @@
 <span id="_CPPv3N12VectorTriple12VectorTripleEPK7ScalarT"></span><span id="_CPPv2N12VectorTriple12VectorTripleEPK7ScalarT"></span><span id="VectorTriple::VectorTriple__ScalarTCP"></span><span class="target" id="class_vector_triple_1a9a0208fd842ce212509df40a3325f93d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VectorTriple</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N12VectorTriple7ScalarTE" title="VectorTriple::ScalarT"><span class="n"><span class="pre">ScalarT</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12VectorTriple12VectorTripleEPK7ScalarT" title="Permalink to this definition"></a><br /></dt>
 <dd><p>construct by loading from an array of ScalarT eg float* or double * with an automatic deinterleave being applied. </p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>source</strong> – scalar array to load from </p>
 </dd>
 </dl>
@@ -131,7 +131,7 @@
 <span id="_CPPv3N12VectorTriple4loadEPK7ScalarT"></span><span id="_CPPv2N12VectorTriple4loadEPK7ScalarT"></span><span id="VectorTriple::load__ScalarTCP"></span><span class="target" id="class_vector_triple_1ab322cbe10680e4b16fed3745a89076d1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N12VectorTriple7ScalarTE" title="VectorTriple::ScalarT"><span class="n"><span class="pre">ScalarT</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12VectorTriple4loadEPK7ScalarT" title="Permalink to this definition"></a><br /></dt>
 <dd><p>refresh the <a class="reference internal" href="#class_vector_triple"><span class="std std-ref">VectorTriple</span></a> by loading from an array of ScalarT eg float* or double * with an automatic deinterleave being applied. Equivalent operations to the scalar constructor are performed. </p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>source</strong> – scalar array to load from </p>
 </dd>
 </dl>
@@ -142,10 +142,10 @@
 <span id="_CPPv3I_hEN12VectorTriple7idxloadEPK7ScalarTPKNSt6size_tE"></span><span id="_CPPv2I_hEN12VectorTriple7idxloadEPK7ScalarTPKNSt6size_tE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_vector_triple_1aa21d0bd0440453eaec3f38f68e7019c7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">idxload</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N12VectorTriple7ScalarTE" title="VectorTriple::ScalarT"><span class="n"><span class="pre">ScalarT</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">idxs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_hEN12VectorTriple7idxloadEvPK7ScalarTPKNSt6size_tE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>construct by loading discontiguously from an array of ScalarT eg float* or double* using the indices in idxs </p>
 <dl class="field-list simple">
-<dt class="field-odd">Template Parameters</dt>
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>stride</strong> – the stride at which to use the indices, take every nth index </p>
 </dd>
-<dt class="field-even">Parameters</dt>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>source</strong> – scalar array to load from </p></li>
 <li><p><strong>idxs</strong> – indices to the coordinate array </p></li>
@@ -159,10 +159,10 @@
 <span id="_CPPv3I_bEN12VectorTriple5storeEP7ScalarT"></span><span id="_CPPv2I_bEN12VectorTriple5storeEP7ScalarT"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">streaming</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_vector_triple_1a6cd5719a62037d9681a17a764816003d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">store</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N12VectorTriple7ScalarTE" title="VectorTriple::ScalarT"><span class="n"><span class="pre">ScalarT</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">target</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_bEN12VectorTriple5storeEvP7ScalarT" title="Permalink to this definition"></a><br /></dt>
 <dd><p>construct by loading discontiguously from an array of ScalarT eg float* or double* using the indices in idxs </p>
 <dl class="field-list simple">
-<dt class="field-odd">Template Parameters</dt>
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>allow</strong> – streaming if true, otherwise use store instructions </p>
 </dd>
-<dt class="field-even">Parameters</dt>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>target</strong> – scalar array to store/stream to </p>
 </dd>
 </dl>
