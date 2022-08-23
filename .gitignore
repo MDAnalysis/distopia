@@ -2,3 +2,4 @@ build/
 docs/doxygen_build
 docs/_build
 .idea/
+.vscode/
