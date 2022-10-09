@@ -48,21 +48,20 @@ jobs:
     #- name: Echo
       #run: $(brew --prefix llvm)/bin/clang -v &&  $(brew --prefix llvm)/bin/clang++ -v && which clang
 
-    - name: Configure CMake
-      # Use a bash shell so we can use the same syntax for environment variable
-      # access regardless of the host operating system
-      shell: bash
-      working-directory: ${{runner.workspace}}/build
-      # Note the current convention is to use the -S and -B options here to specify source 
-      # and build directories, but this is only available with CMake 3.13 and higher.  
-      # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: cmake $GITHUB_WORKSPACE  -DCMAKE_BUILD_TYPE=$BUILD_TYPE ${{ matrix.instruction_set_flag }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }}
+    # - name: Configure CMake
+    #   # Use a bash shell so we can use the same syntax for environment variable
+    #   # access regardless of the host operating system
+    #   shell: bash
+    #   working-directory: ${{runner.workspace}}/build
+    #   # Note the current convention is to use the -S and -B options here to specify source 
+    #   # and build directories, but this is only available with CMake 3.13 and higher.  
+    #   # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
+    #   run: cmake $GITHUB_WORKSPACE  -DCMAKE_BUILD_TYPE=$BUILD_TYPE ${{ matrix.instruction_set_flag }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }}
 
     - name: Build
-      working-directory: ${{runner.workspace}}/build
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: cmake --build .  --config $BUILD_TYPE  
+      run: python3 setup.py build
 
     - name: Test
       working-directory: ${{runner.workspace}}/build
