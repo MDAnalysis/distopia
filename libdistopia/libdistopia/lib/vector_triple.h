@@ -5,6 +5,7 @@
 #include "simd_swizzles.h"
 #include "vectorclass.h"
 
+#include <cstddef>
 #include <iostream>
 
 

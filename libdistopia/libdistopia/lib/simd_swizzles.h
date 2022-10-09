@@ -1,11 +1,13 @@
 #ifndef DISTOPIA_SIMD_SWIZZLE_H
 #define DISTOPIA_SIMD_SWIZZLE_H
 
+// contiguous AOS->SOA deinterleaves
+
+#include <cstddef>
+
 #include "distopia_type_traits.h"
 #include "vectorclass.h"
 #include "compiler_hints.h"
-
-// contiguous AOS->SOA deinterleaves
 
 template <typename VectorT>
 inline void Deinterleave2(const VectorT a, const VectorT b, const VectorT c,
