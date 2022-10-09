@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         #specific instruction sets and the fallthrough case (" ").
-        instruction_set_flag: ["","-DDISTOPIA_AUTO_SELECT_SIMD=ON", "-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_SSE4_1=ON", "-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_AVX=ON", "-DDISTOPIA_MANUAL_SELECT_SIMD=ON-DDISTOPIA_USE_AVX2=ON", "-DDISTOPIA_DISPATCH=ON"]
+        instruction_set_flag: ["","-DDISTOPIA_AUTO_SELECT_SIMD=ON", "-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_SSE4_1=ON", "-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_AVX=ON", "-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_AVX2=ON", "-DDISTOPIA_DISPATCH=ON"]
         os: [ubuntu-latest, macos-latest] # windows not supported yet by us
         include:
           - os: macos-latest
