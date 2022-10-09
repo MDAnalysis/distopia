@@ -53,4 +53,4 @@ jobs:
       shell: bash
       # Execute tests defined by the CMake configuration.  
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ls 
+      run:  ctest --test-dir _skbuild/*/cmake-build/libdistopia
