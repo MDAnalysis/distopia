@@ -1,5 +1,8 @@
 build/
 docs/doxygen_build
 docs/_build
+_skbuild/
+dist/
+distopia.egg-info/
 .idea/
 .vscode/
