@@ -1,6 +1,8 @@
 #ifndef DISTOPIA_TYPE_TRAITS_H
 #define DISTOPIA_TYPE_TRAITS_H
 
+#include <cstddef>
+
 #include "vectorclass.h"
 
 template <typename VectorT>

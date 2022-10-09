@@ -1,6 +1,8 @@
 #ifndef DISTOPIA_DISTANCES_H
 #define DISTOPIA_DISTANCES_H
 
+#include <cstddef>
+
 #include "box.h"
 #include "compiler_hints.h"
 #include "distopia_type_traits.h"

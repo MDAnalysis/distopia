@@ -1,6 +1,7 @@
 #ifndef DISTOPIA_CALC_BONDS_DISPATCH_H
 #define DISTOPIA_CALC_BONDS_DISPATCH_H
 
+#include <cstddef>
 #include <cstdio>
 #include "distopia_type_traits.h"
 
