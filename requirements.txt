@@ -1,4 +1,5 @@
 cmake 
 cython
-scikit-build
 numpy
+ninja
+scikit-build
