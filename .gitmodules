@@ -1,5 +1,5 @@
 [submodule "libdistopia/version2"]
-	path = libdistopia/version2
+	path = libdistopia/vcl2
 	url = git@github.com:vectorclass/version2.git
 [submodule "libdistopia/tests/googletest"]
 	path = libdistopia/tests/googletest
