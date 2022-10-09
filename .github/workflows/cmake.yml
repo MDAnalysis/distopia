@@ -49,9 +49,8 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: python3 setup.py build -- ${{ matrix.instruction_set_flag }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }}
 
-    # - name: Test
-    #   working-directory: ${{runner.workspace}}/_skbuild/
-    #   shell: bash
-    #   # Execute tests defined by the CMake configuration.  
-    #   # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-    #   run: ctest -C $BUILD_TYPE
+    - name: Test
+      shell: bash
+      # Execute tests defined by the CMake configuration.  
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ls 
