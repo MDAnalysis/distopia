@@ -1,6 +1,6 @@
 
-Core Distopia Functions
-***********************
+libdistopia C++ functions
+*************************
 
 .. doxygenfunction:: CalcBondsOrtho
 .. doxygenfunction:: CalcBondsNoBox

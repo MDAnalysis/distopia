@@ -9,17 +9,14 @@ Welcome to distopia's documentation!
 :Release: |release|
 :Date: |today|
 
-**Distopia** is a package to rapidly calculate distances, angles and dihedrals
+**Distopia** is a package to rapidly calculate distances
 under periodic boundary conditions. Explicit SIMD vectorisation allows awesome
-speedups over autovectorised code (up to 10x).
+speedups over autovectorised code (up to 10x). The distopia package consists of
+consists of the python layer (**distopia**) and a C++ library (**libdistopia**)
+that does the heavy lifting. 
 
 Distopia can be used out of the box by building the library using the
-instructions in :ref:`Building and testing distopia`,
-importing the `distopia.h` header into your awesome code and linking your
-program to the `libdistopia` static object.
-
-The core distopia functions and how to use them is described in
-:ref:`Core Distopia Functions` . 
+instructions in :ref:`Building and testing distopia`.
 
 **Current Status:**
 
@@ -30,9 +27,7 @@ Distopia is currently under active development and should be considered
 
 We currently support x86 linux and mac-os machines, and the Clang and GCC
 family of compilers. Windows and MSVC support along with explicitly vectorised
-ARM code is on the TODO list. x86 SIMD widths up to AVX2 are supported. AVX512
-and related extension support is more complicated due to a heterogenous
-featureset and is also on the TODO list.
+ARM code is on the TODO list. x86_64 SIMD widths up to AVX512 are supported.
 
 **Participating:**
 
