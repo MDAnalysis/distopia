@@ -18,12 +18,9 @@ jobs:
       fail-fast: false
       matrix:
         #specific instruction sets and the fallthrough case (" ").
-        instruction_set_flag: ["",
-                              "-DDISTOPIA_AUTO_SELECT_SIMD=ON -DDISTOPIA_BUILD_TEST=ON",
-                              "-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_SSE4_1=ON -DDISTOPIA_BUILD_TEST=ON",
+        instruction_set_flag: ["-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_SSE4_1=ON -DDISTOPIA_BUILD_TEST=ON",
                               "-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_AVX=ON -DDISTOPIA_BUILD_TEST=ON",
                               "-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_AVX2=ON -DDISTOPIA_BUILD_TEST=ON",
-                              "-DDISTOPIA_DISPATCH=ON -DDISTOPIA_BUILD_TEST=ON", # built but not tested as runners don't have AVX512
                               "-DDISTOPIA_DISPATCH=ON -DDISTOPIA_DISPATCH_MANUAL=ON -DDISTOPIA_USE_SSE4_1=ON -DDISTOPIA_USE_AVX=ON -DDISTOPIA_BUILD_TEST=ON"]
         os: [ubuntu-latest, macos-latest] # windows not supported yet by us
         include:
@@ -36,8 +33,7 @@ jobs:
         exclude:
         # excludes AVX2 on macOS as the VM doesn't seem to support some AVX2 instructions.
           - os: macos-latest
-            instruction_set_flag: ["-DDISTOPIA_AUTO_SELECT_SIMD=ON -DDISTOPIA_BUILD_TEST=ON",
-                                  "-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_AVX2=ON -DDISTOPIA_BUILD_TEST=ON"]
+            instruction_set_flag: "-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_AVX2=ON -DDISTOPIA_BUILD_TEST=ON"
 
     steps:
     - uses: actions/checkout@v3
