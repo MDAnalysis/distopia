@@ -48,7 +48,7 @@ request!
    
    ./building_distopia.rst
    ./api/distopia.rst
-   ./api/vector_triple.rst
+   ./api/libdistopia.rst
    
 
 

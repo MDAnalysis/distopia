@@ -1,11 +1,7 @@
+Distopia
+********
 
-libdistopia C++ functions
-*************************
-
-.. doxygenfunction:: CalcBondsOrtho
-.. doxygenfunction:: CalcBondsNoBox
-.. doxygenfunction:: CalcBondsIdxOrtho
-.. doxygenfunction:: CalcBondsIdxNoBox
-
+.. automodule:: distopia
+    :members:
 
 
