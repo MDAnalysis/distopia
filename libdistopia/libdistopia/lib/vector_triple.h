@@ -8,7 +8,12 @@
 #include <cstddef>
 #include <iostream>
 
-
+/*!
+    \brief     Class that packs sets of 3 coordinates into a single unit for
+               operations on interleaved or deinterleaved data. The number of
+               coordinates held is determined by the SIMD width.
+    \tparam   VectorT (SIMD datatype)
+*/
 template <typename VectorT>
 class VectorTriple
 {
@@ -19,13 +24,13 @@ public:
     // when loading by index we only ever load with width 4 for x,y,z,?
     using IdxLoadT = VectorToIdxLoadT<VectorT>;
 
-    // SIMD type that contains x coordinates
+    /** SIMD type that contains x coordinates */
     VectorT x;
-    // SIMD type that contains y coordinates
+    /** SIMD type that contains y coordinates */
     VectorT y;
-    // SIMD type that contains z coordinates
+    /** SIMD type that contains z coordinates */
     VectorT z;
-    // number of values per vector
+    /**  number of values per vector */
     static constexpr std::size_t size = ValuesPerPack<VectorT>;
 
     // allow a default constructor
@@ -34,6 +39,10 @@ public:
     inline VectorTriple(const VectorT a, const VectorT b, const VectorT c)
         : x(a), y(b), z(c) {}
 
+    /** \brief load into the VectorTriple by loading from an array of ScalarT
+     *  eg float* or double *.
+     *  \param source scalar array to load from
+     */
     void load(const ScalarT *source)
     {
         x.load(source);
@@ -41,6 +50,10 @@ public:
         z.load(source + 2 * size);
     }
 
+    /** \brief load into the VectorTriple by loading from an array of ScalarT
+     *  eg float* or double * with a deinterleave being applied.
+     *  \param source scalar array to load from
+     */
     void load_and_deinterleave(const ScalarT *source)
     {
         VectorT t1, t2, t3;
@@ -52,6 +65,12 @@ public:
         Deinterleave(t1, t2, t3, x, y, z);
     }
 
+    /** \brief construct by loading discontiguously from an array of ScalarT
+     *  eg float* or double* using the indices in idxs with a deinterleave applied.
+     *  \tparam stride the stride at which to use the indices, take every nth index
+     *  \param source scalar array to load from
+     *  \param idxs indices to the coordinate array
+     */
     template <int stride>
     void idxload_and_deinterleave(const ScalarT *source, const std::size_t *idxs)
     {
@@ -63,6 +82,8 @@ public:
         DeinterleaveIdx(v_arr, x, y, z);
     }
 
+    /** \brief print the contents of the vector
+     */
     void debug_print(const char *nm)
     {
         ScalarT debug[size * 3];
