@@ -20,14 +20,14 @@ Or to install
 Make sure that the resulting shared library is in your LD_LIBRARY_PATH for the library to
 work correctly. 
 
-Distopia
---------
+Building distopia
+-----------------
 
 The distopia python layer will be built and bind to the shared library regardless
 of the options specified for its compilation. See below. 
 
-Libdistopia
------------
+Building libdistopia
+--------------------
 
 The C++ library component (**libdistopia**) can be built using several possible configurations
 using various CMake flags.  There are two main modes, building distopia for use with

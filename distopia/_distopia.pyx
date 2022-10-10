@@ -1,4 +1,14 @@
 # distutils: language = c++
+# cython: embedsignature = True
+
+"""
+Distopia Python functions
+=========================
+
+The python functions for distopia
+
+"""
+
 
 import numpy as np
 cimport cython
