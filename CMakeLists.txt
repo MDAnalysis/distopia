@@ -14,9 +14,15 @@ include_directories(${PROJECT_SOURCE_DIR}/libdistopia/libdistopia/include)
 include_directories(${PROJECT_SOURCE_DIR}/libdistopia/libdistopia/lib)
 include_directories(${PROJECT_SOURCE_DIR}/libdistopia/vcl2)
 
+# use, i.e. don't skip the full RPATH for the build tree
+set(CMAKE_SKIP_BUILD_RPATH FALSE)
 
-set(CMAKE_MACOSX_RPATH 1)
+# when building, don't use the install RPATH already
+# (but later on when installing)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+set(CMAKE_MACOSX_RPATH 1)
 
 # distopia c++ library
 add_subdirectory(libdistopia)
