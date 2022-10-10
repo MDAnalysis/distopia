@@ -19,9 +19,21 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-        
+    - uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - uses: BSFishy/pip-action@v1
+      with:
+        requirements: requirements.txt
+
+    - name: Build
+      shell: bash
+      # Execute build 
+      run: python3 setup.py install 
+
     - name: Doxygen
       uses: mattnotmitt/doxygen-action@v1.1.0
       with:
