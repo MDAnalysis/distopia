@@ -12,9 +12,7 @@
 #
 import os
 import sys
-import distopia
-# sys.path.insert(0, os.path.abspath('../_skbuild/linux-x86_64-3.9/cmake-build/distopia'))
-
+# sys.path.insert(0, os.path.abspath('../')
 
 # -- Project information -----------------------------------------------------
 import sphinx_rtd_theme
