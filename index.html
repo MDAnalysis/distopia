@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to distopia’s documentation! &mdash; distopia  documentation</title>
@@ -17,6 +17,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -42,9 +43,8 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="building_distopia.html">Building and testing distopia</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/distopia.html">Core Distopia Functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/vector_triple.html">Vector Triple</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/helper_functions.html">Helper Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/distopia.html">Distopia</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/libdistopia.html">libdistopia C++ layer</a></li>
 </ul>
 
         </div>
@@ -74,31 +74,27 @@
   <section id="welcome-to-distopia-s-documentation">
 <h1>Welcome to distopia’s documentation!<a class="headerlink" href="#welcome-to-distopia-s-documentation" title="Permalink to this heading"></a></h1>
 <dl class="field-list simple">
-<dt class="field-odd">Release<span class="colon">:</span></dt>
+<dt class="field-odd">Release</dt>
 <dd class="field-odd"><p></p>
 </dd>
-<dt class="field-even">Date<span class="colon">:</span></dt>
-<dd class="field-even"><p>Aug 23, 2022</p>
+<dt class="field-even">Date</dt>
+<dd class="field-even"><p>Oct 11, 2022</p>
 </dd>
 </dl>
-<p><strong>Distopia</strong> is a package to rapidly calculate distances, angles and dihedrals
+<p><strong>Distopia</strong> is a package to rapidly calculate distances
 under periodic boundary conditions. Explicit SIMD vectorisation allows awesome
-speedups over autovectorised code (up to 10x).</p>
+speedups over autovectorised code (up to 10x). The distopia package consists of
+consists of the python layer (<strong>distopia</strong>) and a C++ library (<strong>libdistopia</strong>)
+that does the heavy lifting.</p>
 <p>Distopia can be used out of the box by building the library using the
-instructions in <a class="reference internal" href="building_distopia.html#building-and-testing-distopia"><span class="std std-ref">Building and testing distopia</span></a>,
-importing the <cite>distopia.h</cite> header into your awesome code and linking your
-program to the <cite>libdistopia</cite> static object.</p>
-<p>The core distopia functions and how to use them is described in
-<a class="reference internal" href="api/distopia.html#core-distopia-functions"><span class="std std-ref">Core Distopia Functions</span></a> .</p>
+instructions in <a class="reference internal" href="building_distopia.html#building-and-testing-distopia"><span class="std std-ref">Building and testing distopia</span></a>.</p>
 <p><strong>Current Status:</strong></p>
 <p>Distopia is currently under active development and should be considered
 <strong>pre 0.1.0</strong>. This means the API is liable to change rapidly without warning.</p>
 <p><strong>OS and compiler support:</strong></p>
 <p>We currently support x86 linux and mac-os machines, and the Clang and GCC
 family of compilers. Windows and MSVC support along with explicitly vectorised
-ARM code is on the TODO list. x86 SIMD widths up to AVX2 are supported. AVX512
-and related extension support is more complicated due to a heterogenous
-featureset and is also on the TODO list.</p>
+ARM code is on the TODO list. x86_64 SIMD widths up to AVX512 are supported.</p>
 <p><strong>Participating:</strong></p>
 <p>Ask questions on the mdnalysis-discussion mailing list and be part of the
 conversation. You can also join the MDAnalysis Discord Server to talk with
@@ -110,10 +106,27 @@ request!</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="building_distopia.html">Building and testing distopia</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/distopia.html">Core Distopia Functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/vector_triple.html">Vector Triple</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/helper_functions.html">Helper Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="building_distopia.html">Building and testing distopia</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="building_distopia.html#building-distopia">Building distopia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="building_distopia.html#building-libdistopia">Building libdistopia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="building_distopia.html#single-instruction-set-builds">Single instruction set builds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="building_distopia.html#tests-and-benchmarks">Tests and benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="building_distopia.html#dispatch-builds">Dispatch builds</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/distopia.html">Distopia</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/distopia.html#distopia-python-functions">Distopia Python functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/distopia.html#distopia._distopia.calc_bonds_idx_no_box_double"><code class="docutils literal notranslate"><span class="pre">calc_bonds_idx_no_box_double()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/distopia.html#distopia._distopia.calc_bonds_idx_no_box_float"><code class="docutils literal notranslate"><span class="pre">calc_bonds_idx_no_box_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/distopia.html#distopia._distopia.calc_bonds_idx_ortho_double"><code class="docutils literal notranslate"><span class="pre">calc_bonds_idx_ortho_double()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/distopia.html#distopia._distopia.calc_bonds_idx_ortho_float"><code class="docutils literal notranslate"><span class="pre">calc_bonds_idx_ortho_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/distopia.html#distopia._distopia.calc_bonds_no_box_double"><code class="docutils literal notranslate"><span class="pre">calc_bonds_no_box_double()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/distopia.html#distopia._distopia.calc_bonds_no_box_float"><code class="docutils literal notranslate"><span class="pre">calc_bonds_no_box_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/distopia.html#distopia._distopia.calc_bonds_ortho_double"><code class="docutils literal notranslate"><span class="pre">calc_bonds_ortho_double()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/distopia.html#distopia._distopia.calc_bonds_ortho_float"><code class="docutils literal notranslate"><span class="pre">calc_bonds_ortho_float()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/libdistopia.html">libdistopia C++ layer</a></li>
 </ul>
 </div>
 </section>
@@ -136,7 +149,7 @@ request!</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Hugo MacDermott-Opeskin Jakub Nabaglo Richard Gowers.</p>
+    <p>&#169; Copyright 2022, Hugo MacDermott-Opeskin Jakub Nabaglo Richard Gowers.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

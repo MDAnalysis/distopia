@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Building and testing distopia &mdash; distopia  documentation</title>
@@ -17,10 +17,11 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Core Distopia Functions" href="api/distopia.html" />
+    <link rel="next" title="Distopia" href="api/distopia.html" />
     <link rel="prev" title="Welcome to distopia’s documentation!" href="index.html" /> 
 </head>
 
@@ -42,10 +43,16 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Building and testing distopia</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/distopia.html">Core Distopia Functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/vector_triple.html">Vector Triple</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/helper_functions.html">Helper Functions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Building and testing distopia</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#building-distopia">Building distopia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-libdistopia">Building libdistopia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#single-instruction-set-builds">Single instruction set builds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tests-and-benchmarks">Tests and benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dispatch-builds">Dispatch builds</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/distopia.html">Distopia</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/libdistopia.html">libdistopia C++ layer</a></li>
 </ul>
 
         </div>
@@ -74,25 +81,38 @@
              
   <section id="building-and-testing-distopia">
 <h1>Building and testing distopia<a class="headerlink" href="#building-and-testing-distopia" title="Permalink to this heading"></a></h1>
-<p>Building distopia requires CMake and a modern C++ compiler
-(preferably GCC or Clang). Optionally Ninja can be used to build distopia much
-faster than with <cite>make</cite></p>
-<p>To build:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir build
-<span class="nb">cd</span> build
-cmake ..
-make
+<p>Building distopia requires scikit-build, CMake, numpy and a modern C++ compiler
+(preferably GCC or Clang).</p>
+<p>the most basic build options is to the scikit-build setup as follows</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py build
 </pre></div>
 </div>
-<p>or with Ninja:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir build
-<span class="nb">cd</span> build
-cmake .. -GNinja
-ninja
+<p>Or to install</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py install
 </pre></div>
 </div>
-<p>To run the tests use <cite>make test</cite> or <cite>ninja test</cite>.</p>
-<p>To control the instruction set use <strong>one</strong> the following CMake flags</p>
+<p>Make sure that the resulting shared library is in your LD_LIBRARY_PATH for the library to
+work correctly.</p>
+<section id="building-distopia">
+<h2>Building distopia<a class="headerlink" href="#building-distopia" title="Permalink to this heading"></a></h2>
+<p>The distopia python layer will be built and bind to the shared library regardless
+of the options specified for its compilation. See below.</p>
+</section>
+<section id="building-libdistopia">
+<h2>Building libdistopia<a class="headerlink" href="#building-libdistopia" title="Permalink to this heading"></a></h2>
+<p>The C++ library component (<strong>libdistopia</strong>) can be built using several possible configurations
+using various CMake flags.  There are two main modes, building distopia for use with
+a <strong>single instruction set</strong>, or for <strong>dispatch</strong>.</p>
+</section>
+<section id="single-instruction-set-builds">
+<h2>Single instruction set builds<a class="headerlink" href="#single-instruction-set-builds" title="Permalink to this heading"></a></h2>
+<p>This is the default mode for distopia, in which a single version of the distopia
+functions are built for a single set of SIMD flags. Distopia can attempt to select
+the highest level of SIMD supported on the current computer by setting
+<cite>DISTOPIA_AUTO_SELECT_SIMD=ON</cite>.</p>
+<p>Otherwise you can manually select a single instruction set by setting
+<cite>DISTOPIA_MANUAL_SELECT_SIMD=ON</cite> and specifying ONE of the following
+instruction set flags</p>
 <ul class="simple">
 <li><p><cite>-DDISTOPIA_USE_SSE1</cite> for SSE</p></li>
 <li><p><cite>-DDISTOPIA_USE_SSE2</cite> for SSE2</p></li>
@@ -102,14 +122,49 @@ ninja
 <li><p><cite>-DDISTOPIA_USE_SSE4_2</cite> for SSE4.2</p></li>
 <li><p><cite>-DDISTOPIA_USE_AVX</cite> for AVX</p></li>
 <li><p><cite>-DDISTOPIA_USE_AVX2</cite> for AVX2</p></li>
+<li><p><cite>-DDISTOPIA_USE_AVX512</cite> for AVX512</p></li>
 </ul>
-<p><strong>Or you can let distopia choose for you (default)</strong></p>
-<p>To benchmark methods (from <cite>./build</cite>) run the benchmarks binary using
-<cite>./benchmarks</cite></p>
-<p>To assess code coverage build with <cite>cmake -DDISTOPIA_COVERAGE=ON</cite> and use
-either make or ninja to build the coverage targets <cite>tests_coverage</cite> or
-<cite>test_kernels_coverage</cite>.  You can then view the resulting HTML gcovr coverage
-reports in your favourite browser.</p>
+<p>Additionally you can enable aggressive optimisations for the current CPU
+(march=native, mtune=native) by specifying <cite>DISTOPIA_AGGRESSIVE_MARCH=ON</cite>.</p>
+<p>An example of an automatically selected single instruction set build is</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py install -- -DDISTOPIA_AUTO_SELECT_SIMD<span class="o">=</span>ON -DISTOPIA_AGGRESSIVE_MARCH<span class="o">=</span>ON
+</pre></div>
+</div>
+<p>An example of a manually selected single instruction set build is</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py install -- -DDISTOPIA_MANUAL_SELECT_SIMD<span class="o">=</span>ON -DDISTOPIA_USE_AVX2<span class="o">=</span>ON
+</pre></div>
+</div>
+</section>
+<section id="tests-and-benchmarks">
+<h2>Tests and benchmarks<a class="headerlink" href="#tests-and-benchmarks" title="Permalink to this heading"></a></h2>
+<p><strong>libdistopia</strong> comes with a set of tests and benchmarks that can be enabled with
+<cite>DISTOPIA_BUILD_TEST=ON</cite> and <cite>DISTOPIA_BUILD_TIMINGS=ON</cite>.</p>
+</section>
+<section id="dispatch-builds">
+<h2>Dispatch builds<a class="headerlink" href="#dispatch-builds" title="Permalink to this heading"></a></h2>
+<p><strong>libdistopia</strong> can also be built for <strong>dispatch</strong>. This means that the distopia functions
+are compiled multiple times for different instruction sets and packaged into one
+shared library. A version of the function is then selected at runtime using runtime
+dispatch on available CPU features.</p>
+<p>This is an advanced option if you are cloning the repo and building yourself
+but the default version if you download a precompiled binary from conda.
+Building for dispatch is incompatible with using <cite>DISTOPIA_AUTO_SELECT_SIMD</cite> or
+<cite>DISTOPIA_MANUAL_SELECT_SIMD</cite> or <cite>DISTOPIA_AGGRESSIVE_MARCH=ON</cite>.</p>
+<p>Libdistopia can be built for dispatch either by building using
+<cite>-DDISTOPIA_DISPATCH_MAX=ON</cite> which builds for <strong>every instruction set</strong> or by
+using <cite>-DDISTOPIA_DISPATCH_MANUAL=ON</cite> and then specifying instruction sets
+using something like <cite>-DDISTOPIA_USE_AVX=ON -DDISTOPIA_USE_AVX2=ON</cite>.</p>
+<p>Note that if building using manual dispatch, building for the SSE1 instruction
+set is mandatory and is enabled automatically.</p>
+<p>An example of building for maximum dispatch</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py install -- -DDISTOPIA_DISPATCH_MAX<span class="o">=</span>ON
+</pre></div>
+</div>
+<p>An example of selecting specific instruction sets for dispatch is</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py install -- -DDISTOPIA_DISPATCH_MANUAL<span class="o">=</span>ON -DDISTOPIA_USE_AVX<span class="o">=</span>ON -DDISTOPIA_USE_AVX2<span class="o">=</span>ON
+</pre></div>
+</div>
+</section>
 </section>
 
 
@@ -117,13 +172,13 @@ reports in your favourite browser.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Welcome to distopia’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="api/distopia.html" class="btn btn-neutral float-right" title="Core Distopia Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api/distopia.html" class="btn btn-neutral float-right" title="Distopia" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Hugo MacDermott-Opeskin Jakub Nabaglo Richard Gowers.</p>
+    <p>&#169; Copyright 2022, Hugo MacDermott-Opeskin Jakub Nabaglo Richard Gowers.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

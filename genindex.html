@@ -16,6 +16,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -40,9 +41,8 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="building_distopia.html">Building and testing distopia</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/distopia.html">Core Distopia Functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/vector_triple.html">Vector Triple</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/helper_functions.html">Helper Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/distopia.html">Distopia</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/libdistopia.html">libdistopia C++ layer</a></li>
 </ul>
 
         </div>
@@ -73,78 +73,91 @@
 
 <div class="genindex-jumpbox">
  <a href="#C"><strong>C</strong></a>
- | <a href="#G"><strong>G</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#M"><strong>M</strong></a>
  | <a href="#V"><strong>V</strong></a>
  
 </div>
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/distopia.html#_CPPv4I0E18CalcAnglesIdxNoBoxvPK1TPKNSt6size_tENSt6size_tEP1T">CalcAnglesIdxNoBox (C++ function)</a>
+      <li><a href="api/distopia.html#distopia._distopia.calc_bonds_idx_no_box_double">calc_bonds_idx_no_box_double() (in module distopia._distopia)</a>
 </li>
-      <li><a href="api/distopia.html#_CPPv4I0E18CalcAnglesIdxOrthovPK1TPKNSt6size_tEPK1TNSt6size_tEP1T">CalcAnglesIdxOrtho (C++ function)</a>
+      <li><a href="api/distopia.html#distopia._distopia.calc_bonds_idx_no_box_float">calc_bonds_idx_no_box_float() (in module distopia._distopia)</a>
 </li>
-      <li><a href="api/distopia.html#_CPPv4I0E15CalcAnglesNoBoxvPK1TPK1TPK1TNSt6size_tEP1T">CalcAnglesNoBox (C++ function)</a>
+      <li><a href="api/distopia.html#distopia._distopia.calc_bonds_idx_ortho_double">calc_bonds_idx_ortho_double() (in module distopia._distopia)</a>
 </li>
-      <li><a href="api/distopia.html#_CPPv4I0E15CalcAnglesOrthovPK1TPK1TPK1TPK1TNSt6size_tEP1T">CalcAnglesOrtho (C++ function)</a>
+      <li><a href="api/distopia.html#distopia._distopia.calc_bonds_idx_ortho_float">calc_bonds_idx_ortho_float() (in module distopia._distopia)</a>
+</li>
+      <li><a href="api/distopia.html#distopia._distopia.calc_bonds_no_box_double">calc_bonds_no_box_double() (in module distopia._distopia)</a>
+</li>
+      <li><a href="api/distopia.html#distopia._distopia.calc_bonds_no_box_float">calc_bonds_no_box_float() (in module distopia._distopia)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/distopia.html#_CPPv4I0E17CalcBondsIdxNoBoxvPK1TPKNSt6size_tENSt6size_tEP1T">CalcBondsIdxNoBox (C++ function)</a>
+      <li><a href="api/distopia.html#distopia._distopia.calc_bonds_ortho_double">calc_bonds_ortho_double() (in module distopia._distopia)</a>
 </li>
-      <li><a href="api/distopia.html#_CPPv4I0E17CalcBondsIdxOrthovPK1TPKNSt6size_tEPK1TNSt6size_tEP1T">CalcBondsIdxOrtho (C++ function)</a>
+      <li><a href="api/distopia.html#distopia._distopia.calc_bonds_ortho_float">calc_bonds_ortho_float() (in module distopia._distopia)</a>
 </li>
-      <li><a href="api/distopia.html#_CPPv4I0E14CalcBondsNoBoxvPK1TPK1TNSt6size_tEP1T">CalcBondsNoBox (C++ function)</a>
+      <li><a href="api/libdistopia.html#_CPPv4I0E17CalcBondsIdxNoBoxvPK1TPKNSt6size_tENSt6size_tEP1T">CalcBondsIdxNoBox (C++ function)</a>
 </li>
-      <li><a href="api/distopia.html#_CPPv4I0E14CalcBondsOrthovPK1TPK1TPK1TNSt6size_tEP1T">CalcBondsOrtho (C++ function)</a>
+      <li><a href="api/libdistopia.html#_CPPv4I0E17CalcBondsIdxOrthovPK1TPKNSt6size_tEPK1TNSt6size_tEP1T">CalcBondsIdxOrtho (C++ function)</a>
+</li>
+      <li><a href="api/libdistopia.html#_CPPv4I0E14CalcBondsNoBoxvPK1TPK1TNSt6size_tEP1T">CalcBondsNoBox (C++ function)</a>
+</li>
+      <li><a href="api/libdistopia.html#_CPPv4I0E14CalcBondsOrthovPK1TPK1TPK1TNSt6size_tEP1T">CalcBondsOrtho (C++ function)</a>
 </li>
   </ul></td>
 </tr></table>
 
-<h2 id="G">G</h2>
+<h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/helper_functions.html#_CPPv4I0_h_14EnableIfVectorI7VectorTEE14genericidxloadvPK15VectorToScalarTI7VectorTEPKNSt6size_tER7VectorTR7VectorTR7VectorT">genericidxload (C++ function)</a>, <a href="api/helper_functions.html#_CPPv4I0_h_16EnableIfFloatingI1TEE14genericidxloadvPK1TPKNSt6size_tER1TR1TR1T">[1]</a>
+      <li>
+    distopia._distopia
+
+      <ul>
+        <li><a href="api/distopia.html#module-distopia._distopia">module</a>
 </li>
-      <li><a href="api/helper_functions.html#_CPPv4I0_14EnableIfVectorI7VectorTEE11genericload7VectorTPK15VectorToScalarTI7VectorTE">genericload (C++ function)</a>, <a href="api/helper_functions.html#_CPPv4I0_16EnableIfFloatingI1TEE11genericload1TPK1T">[1]</a>
-</li>
+      </ul></li>
   </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/helper_functions.html#_CPPv4I0_14EnableIfVectorI7VectorTEE12genericstorevP15VectorToScalarTI7VectorTEK7VectorT">genericstore (C++ function)</a>, <a href="api/helper_functions.html#_CPPv4I0_16EnableIfFloatingI1TEE12genericstorevP1TK1T">[1]</a>
+      <li>
+    module
+
+      <ul>
+        <li><a href="api/distopia.html#module-distopia._distopia">distopia._distopia</a>
 </li>
-      <li><a href="api/helper_functions.html#_CPPv4I0_14EnableIfVectorI7VectorTEE13genericstreamvP15VectorToScalarTI7VectorTEK7VectorT">genericstream (C++ function)</a>, <a href="api/helper_functions.html#_CPPv4I0_16EnableIfFloatingI1TEE13genericstreamvP1TK1T">[1]</a>
-</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/vector_triple.html#_CPPv4I0E12VectorTriple">VectorTriple (C++ class)</a>
+      <li><a href="api/libdistopia.html#_CPPv4I0E12VectorTriple">VectorTriple (C++ class)</a>
 </li>
-      <li><a href="api/vector_triple.html#_CPPv4N12VectorTriple10debugprintEPKc">VectorTriple::debugprint (C++ function)</a>
+      <li><a href="api/libdistopia.html#_CPPv4N12VectorTriple11debug_printEPKc">VectorTriple::debug_print (C++ function)</a>
 </li>
-      <li><a href="api/vector_triple.html#_CPPv4N12VectorTriple12deinterleaveEv">VectorTriple::deinterleave (C++ function)</a>
+      <li><a href="api/libdistopia.html#_CPPv4I_iEN12VectorTriple24idxload_and_deinterleaveEvPK7ScalarTPKNSt6size_tE">VectorTriple::idxload_and_deinterleave (C++ function)</a>
 </li>
-      <li><a href="api/vector_triple.html#_CPPv4I_hEN12VectorTriple7idxloadEvPK7ScalarTPKNSt6size_tE">VectorTriple::idxload (C++ function)</a>
-</li>
-      <li><a href="api/vector_triple.html#_CPPv4N12VectorTriple4loadEPK7ScalarT">VectorTriple::load (C++ function)</a>
-</li>
-      <li><a href="api/vector_triple.html#_CPPv4N12VectorTriple9n_scalarsE">VectorTriple::n_scalars (C++ member)</a>
+      <li><a href="api/libdistopia.html#_CPPv4N12VectorTriple4loadEPK7ScalarT">VectorTriple::load (C++ function)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/vector_triple.html#_CPPv4N12VectorTriple7ScalarTE">VectorTriple::ScalarT (C++ type)</a>
+      <li><a href="api/libdistopia.html#_CPPv4N12VectorTriple21load_and_deinterleaveEPK7ScalarT">VectorTriple::load_and_deinterleave (C++ function)</a>
 </li>
-      <li><a href="api/vector_triple.html#_CPPv4I_bEN12VectorTriple5storeEvP7ScalarT">VectorTriple::store (C++ function)</a>
+      <li><a href="api/libdistopia.html#_CPPv4N12VectorTriple4sizeE">VectorTriple::size (C++ member)</a>
 </li>
-      <li><a href="api/vector_triple.html#_CPPv4N12VectorTriple12VectorTripleEK7VectorTK7VectorTK7VectorT">VectorTriple::VectorTriple (C++ function)</a>, <a href="api/vector_triple.html#_CPPv4N12VectorTriple12VectorTripleEPK7ScalarT">[1]</a>, <a href="api/vector_triple.html#_CPPv4N12VectorTriple12VectorTripleEv">[2]</a>
+      <li><a href="api/libdistopia.html#_CPPv4N12VectorTriple1xE">VectorTriple::x (C++ member)</a>
 </li>
-      <li><a href="api/vector_triple.html#_CPPv4N12VectorTriple1xE">VectorTriple::x (C++ member)</a>
+      <li><a href="api/libdistopia.html#_CPPv4N12VectorTriple1yE">VectorTriple::y (C++ member)</a>
 </li>
-      <li><a href="api/vector_triple.html#_CPPv4N12VectorTriple1yE">VectorTriple::y (C++ member)</a>
-</li>
-      <li><a href="api/vector_triple.html#_CPPv4N12VectorTriple1zE">VectorTriple::z (C++ member)</a>
+      <li><a href="api/libdistopia.html#_CPPv4N12VectorTriple1zE">VectorTriple::z (C++ member)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -158,7 +171,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Hugo MacDermott-Opeskin Jakub Nabaglo Richard Gowers.</p>
+    <p>&#169; Copyright 2022, Hugo MacDermott-Opeskin Jakub Nabaglo Richard Gowers.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
