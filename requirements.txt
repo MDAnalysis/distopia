@@ -1,0 +1,5 @@
+cmake 
+cython
+numpy
+ninja
+scikit-build

@@ -10,16 +10,16 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
-
+import os
+import sys
+import distopia
+# sys.path.insert(0, os.path.abspath('../')
 
 # -- Project information -----------------------------------------------------
 import sphinx_rtd_theme
 
 project = 'distopia'
-copyright = '2021, Hugo MacDermott-Opeskin Jakub Nabaglo Richard Gowers'
+copyright = '2022, Hugo MacDermott-Opeskin Jakub Nabaglo Richard Gowers'
 author = 'Hugo MacDermott-Opeskin Jakub Nabaglo Richard Gowers'
 
 
