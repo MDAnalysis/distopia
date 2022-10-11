@@ -45,15 +45,14 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../building_distopia.html">Building and testing distopia</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Distopia</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#distopia-python-functions">Distopia Python functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#distopia._distopia.calc_bonds_idx_no_box_double"><code class="docutils literal notranslate"><span class="pre">calc_bonds_idx_no_box_double()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#distopia._distopia.calc_bonds_idx_no_box_float"><code class="docutils literal notranslate"><span class="pre">calc_bonds_idx_no_box_float()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#distopia._distopia.calc_bonds_idx_ortho_double"><code class="docutils literal notranslate"><span class="pre">calc_bonds_idx_ortho_double()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#distopia._distopia.calc_bonds_idx_ortho_float"><code class="docutils literal notranslate"><span class="pre">calc_bonds_idx_ortho_float()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#distopia._distopia.calc_bonds_no_box_double"><code class="docutils literal notranslate"><span class="pre">calc_bonds_no_box_double()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#distopia._distopia.calc_bonds_no_box_float"><code class="docutils literal notranslate"><span class="pre">calc_bonds_no_box_float()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#distopia._distopia.calc_bonds_ortho_double"><code class="docutils literal notranslate"><span class="pre">calc_bonds_ortho_double()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#distopia._distopia.calc_bonds_ortho_float"><code class="docutils literal notranslate"><span class="pre">calc_bonds_ortho_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#distopia.calc_bonds_idx_no_box_double"><code class="docutils literal notranslate"><span class="pre">calc_bonds_idx_no_box_double()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#distopia.calc_bonds_idx_no_box_float"><code class="docutils literal notranslate"><span class="pre">calc_bonds_idx_no_box_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#distopia.calc_bonds_idx_ortho_double"><code class="docutils literal notranslate"><span class="pre">calc_bonds_idx_ortho_double()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#distopia.calc_bonds_idx_ortho_float"><code class="docutils literal notranslate"><span class="pre">calc_bonds_idx_ortho_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#distopia.calc_bonds_no_box_double"><code class="docutils literal notranslate"><span class="pre">calc_bonds_no_box_double()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#distopia.calc_bonds_no_box_float"><code class="docutils literal notranslate"><span class="pre">calc_bonds_no_box_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#distopia.calc_bonds_ortho_double"><code class="docutils literal notranslate"><span class="pre">calc_bonds_ortho_double()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#distopia.calc_bonds_ortho_float"><code class="docutils literal notranslate"><span class="pre">calc_bonds_ortho_float()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="libdistopia.html">libdistopia C++ layer</a></li>
@@ -83,15 +82,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-distopia._distopia">
-<span id="distopia"></span><h1>Distopia<a class="headerlink" href="#module-distopia._distopia" title="Permalink to this heading"></a></h1>
-<section id="distopia-python-functions">
-<h2>Distopia Python functions<a class="headerlink" href="#distopia-python-functions" title="Permalink to this heading"></a></h2>
-<p>The python functions for distopia</p>
-</section>
+  <section id="module-distopia">
+<span id="distopia"></span><h1>Distopia<a class="headerlink" href="#module-distopia" title="Permalink to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="distopia._distopia.calc_bonds_idx_no_box_double">
-<span class="sig-prename descclassname"><span class="pre">distopia._distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_idx_no_box_double</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">double[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_t[::1]</span> <span class="pre">idx</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia._distopia.calc_bonds_idx_no_box_double" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="distopia.calc_bonds_idx_no_box_double">
+<span class="sig-prename descclassname"><span class="pre">distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_idx_no_box_double</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">double[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_t[::1]</span> <span class="pre">idx</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia.calc_bonds_idx_no_box_double" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate distances between pairs of coordinates by index</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -110,8 +105,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="distopia._distopia.calc_bonds_idx_no_box_float">
-<span class="sig-prename descclassname"><span class="pre">distopia._distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_idx_no_box_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">float[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_t[::1]</span> <span class="pre">idx</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia._distopia.calc_bonds_idx_no_box_float" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="distopia.calc_bonds_idx_no_box_float">
+<span class="sig-prename descclassname"><span class="pre">distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_idx_no_box_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">float[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_t[::1]</span> <span class="pre">idx</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia.calc_bonds_idx_no_box_float" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate distances between pairs of coordinates by index</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -130,8 +125,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="distopia._distopia.calc_bonds_idx_ortho_double">
-<span class="sig-prename descclassname"><span class="pre">distopia._distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_idx_ortho_double</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">double[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_t[::1]</span> <span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double[::1]</span> <span class="pre">box</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia._distopia.calc_bonds_idx_ortho_double" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="distopia.calc_bonds_idx_ortho_double">
+<span class="sig-prename descclassname"><span class="pre">distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_idx_ortho_double</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">double[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_t[::1]</span> <span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double[::1]</span> <span class="pre">box</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia.calc_bonds_idx_ortho_double" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate distances between pairs of coordinates by index</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -151,8 +146,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="distopia._distopia.calc_bonds_idx_ortho_float">
-<span class="sig-prename descclassname"><span class="pre">distopia._distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_idx_ortho_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">float[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_t[::1]</span> <span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">float[::1]</span> <span class="pre">box</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia._distopia.calc_bonds_idx_ortho_float" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="distopia.calc_bonds_idx_ortho_float">
+<span class="sig-prename descclassname"><span class="pre">distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_idx_ortho_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">float[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_t[::1]</span> <span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">float[::1]</span> <span class="pre">box</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia.calc_bonds_idx_ortho_float" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate distances between pairs of coordinates by index</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -172,8 +167,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="distopia._distopia.calc_bonds_no_box_double">
-<span class="sig-prename descclassname"><span class="pre">distopia._distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_no_box_double</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">double[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia._distopia.calc_bonds_no_box_double" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="distopia.calc_bonds_no_box_double">
+<span class="sig-prename descclassname"><span class="pre">distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_no_box_double</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">double[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia.calc_bonds_no_box_double" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate pairwise distances between coords0 and coords1</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -193,8 +188,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="distopia._distopia.calc_bonds_no_box_float">
-<span class="sig-prename descclassname"><span class="pre">distopia._distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_no_box_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">float[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">float[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia._distopia.calc_bonds_no_box_float" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="distopia.calc_bonds_no_box_float">
+<span class="sig-prename descclassname"><span class="pre">distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_no_box_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">float[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">float[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia.calc_bonds_no_box_float" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate pairwise distances between coords0 and coords1</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -213,8 +208,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="distopia._distopia.calc_bonds_ortho_double">
-<span class="sig-prename descclassname"><span class="pre">distopia._distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_ortho_double</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">double[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double[::1]</span> <span class="pre">box</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia._distopia.calc_bonds_ortho_double" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="distopia.calc_bonds_ortho_double">
+<span class="sig-prename descclassname"><span class="pre">distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_ortho_double</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">double[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double[::1]</span> <span class="pre">box</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia.calc_bonds_ortho_double" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate pairwise distances between coords0 and coords1</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -234,8 +229,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="distopia._distopia.calc_bonds_ortho_float">
-<span class="sig-prename descclassname"><span class="pre">distopia._distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_ortho_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">float[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">float[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">float[::1]</span> <span class="pre">box</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia._distopia.calc_bonds_ortho_float" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="distopia.calc_bonds_ortho_float">
+<span class="sig-prename descclassname"><span class="pre">distopia.</span></span><span class="sig-name descname"><span class="pre">calc_bonds_ortho_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">float[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">float[:</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">::1]</span> <span class="pre">coords1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">float[::1]</span> <span class="pre">box</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#distopia.calc_bonds_ortho_float" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate pairwise distances between coords0 and coords1</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

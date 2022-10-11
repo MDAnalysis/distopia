@@ -1,6 +1,6 @@
 Distopia
 ********
 
-.. automodule:: distopia._distopia
+.. automodule:: distopia
     :members:
     :undoc-members:
