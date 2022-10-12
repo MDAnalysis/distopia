@@ -1,9 +1,9 @@
 [submodule "libdistopia/version2"]
 	path = libdistopia/vcl2
-	url = git@github.com:vectorclass/version2.git
+	url = https://github.com/vectorclass/version2.git
 [submodule "libdistopia/tests/googletest"]
 	path = libdistopia/tests/googletest
-	url = git@github.com:google/googletest.git
+	url = https://github.com/google/googletest.git
 [submodule "libdistopia/tests/benchmark"]
 	path = libdistopia/tests/googlebench
-	url = git@github.com:google/benchmark.git
+	url = https://github.com/google/benchmark.git
