@@ -22,7 +22,8 @@ TYPED_TEST_SUITE(Coordinates, FloatOnly);
 
 // coordinates in this test can overhang the edge of the box by 3 * the box
 // size.
-TYPED_TEST(Coordinates, CalcBondsOrthoMatchesMDA) {
+TYPED_TEST(Coordinates, CalcBondsOrthoMatchesMDA)
+{
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
 
   _calc_bond_distance_ortho((coordinate *)this->coords0,
@@ -31,24 +32,28 @@ TYPED_TEST(Coordinates, CalcBondsOrthoMatchesMDA) {
   CalcBondsOrtho(this->coords0, this->coords1, this->box, this->nresults,
                  this->results);
 
-  for (std::size_t i = 0; i < this->nresults; i++) {
+  for (std::size_t i = 0; i < this->nresults; i++)
+  {
     EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
   }
 }
 
-TYPED_TEST(Coordinates, CalcBondsNoBoxMatchesMDA) {
+TYPED_TEST(Coordinates, CalcBondsNoBoxMatchesMDA)
+{
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
 
   _calc_bond_distance((coordinate *)this->coords0, (coordinate *)this->coords1,
                       this->nresults, this->ref);
   CalcBondsNoBox(this->coords0, this->coords1, this->nresults, this->results);
 
-  for (std::size_t i = 0; i < this->nresults; i++) {
+  for (std::size_t i = 0; i < this->nresults; i++)
+  {
     EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
   }
 }
 
-TYPED_TEST(Coordinates, VanillaCalcBondsOrthoMatchesMDA) {
+TYPED_TEST(Coordinates, VanillaCalcBondsOrthoMatchesMDA)
+{
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
 
   _calc_bond_distance_ortho((coordinate *)this->coords0,
@@ -57,12 +62,14 @@ TYPED_TEST(Coordinates, VanillaCalcBondsOrthoMatchesMDA) {
   VanillaCalcBonds(this->coords0, this->coords1, this->box, this->nresults,
                    this->results);
 
-  for (std::size_t i = 0; i < this->nresults; i++) {
+  for (std::size_t i = 0; i < this->nresults; i++)
+  {
     EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
   }
 }
 
-TYPED_TEST(Coordinates, VanillaCalcBondsNoBoxMatchesMDA) {
+TYPED_TEST(Coordinates, VanillaCalcBondsNoBoxMatchesMDA)
+{
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
 
   _calc_bond_distance((coordinate *)this->coords0, (coordinate *)this->coords1,
@@ -70,12 +77,14 @@ TYPED_TEST(Coordinates, VanillaCalcBondsNoBoxMatchesMDA) {
   VanillaCalcBondsNoBox(this->coords0, this->coords1, this->nresults,
                         this->results);
 
-  for (std::size_t i = 0; i < this->nresults; i++) {
+  for (std::size_t i = 0; i < this->nresults; i++)
+  {
     EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
   }
 }
 
-TYPED_TEST(Coordinates, CalcBondsOrthoMatchesVanilla) {
+TYPED_TEST(Coordinates, CalcBondsOrthoMatchesVanilla)
+{
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
 
   CalcBondsOrtho(this->coords0, this->coords1, this->box, this->nresults,
@@ -83,19 +92,50 @@ TYPED_TEST(Coordinates, CalcBondsOrthoMatchesVanilla) {
   VanillaCalcBonds(this->coords0, this->coords1, this->box, this->nresults,
                    this->results);
 
-  for (std::size_t i = 0; i < this->nresults; i++) {
+  for (std::size_t i = 0; i < this->nresults; i++)
+  {
     EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
   }
 }
 
-TYPED_TEST(Coordinates, CalcBondsNoBoxMatchesVanilla) {
+TYPED_TEST(Coordinates, CalcBondsNoBoxMatchesVanilla)
+{
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
 
   CalcBondsNoBox(this->coords0, this->coords1, this->nresults, this->ref);
   VanillaCalcBondsNoBox(this->coords0, this->coords1, this->nresults,
                         this->results);
 
-  for (std::size_t i = 0; i < this->nresults; i++) {
+  for (std::size_t i = 0; i < this->nresults; i++)
+  {
+    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+  }
+}
+
+TYPED_TEST(Coordinates, CalcBondsIdxOrthoMatchesVanilla)
+{
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
+  VanillaCalcBondsIdx<TypeParam>(this->coords0, this->idxs, this->box,
+                                 this->nindicies / 2, this->ref);
+  CalcBondsIdxOrtho(this->coords0, this->idxs, this->box, this->nindicies / 2,
+                    this->results);
+
+  for (std::size_t i = 0; i < this->nindicies / 2; i++)
+  {
+    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+  }
+}
+
+TYPED_TEST(Coordinates, CalcBondsNoBoxIdxMatchesVanilla)
+{
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
+  VanillaCalcBondsNoBoxIdx<TypeParam>(this->coords0, this->idxs,
+                                      this->nindicies / 2, this->ref);
+  CalcBondsIdxNoBox(this->coords0, this->idxs, this->nindicies / 2,
+                    this->results);
+
+  for (std::size_t i = 0; i < this->nindicies / 2; i++)
+  {
     EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
   }
 }
