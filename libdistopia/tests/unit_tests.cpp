@@ -348,6 +348,9 @@ TYPED_TEST(VectorTripleIdxLoadTest, DeinterleaveAllIdxPlusOne)
     }
 }
 
+// for distance and idx based tests make sure the number of tested indices is >= 16
+// to allow for widest SIMD width
+
 template <typename T>
 class DistancesTest : public ::testing::Test
 {
@@ -408,7 +411,7 @@ TYPED_TEST(DistancesTest, NoBoxKnownValues1)
 
 TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0)
 {
-    constexpr int N = 10;
+    constexpr int N = 18;
     TypeParam coords0[3 * N] = {0};
     TypeParam coords1[3 * N] = {0};
     TypeParam out[N];
@@ -418,7 +421,7 @@ TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0)
         coords1[3 * i] = i;
     }
     TypeParam box[3] = {8, 8, 8};
-    TypeParam ref[N] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
+    TypeParam ref[N] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
 
     CalcBondsOrtho(coords0, coords1, box, N, out);
 
@@ -488,7 +491,7 @@ TYPED_TEST(IdxDistancesTest, NoBoxKnownValues1)
 
 TYPED_TEST(IdxDistancesTest, CalcBondsOrthoBoxKnownValues0)
 {
-    constexpr std::size_t Nidx = 10;
+    constexpr std::size_t Nidx = 18;
     constexpr std::size_t Ncoord = Nidx * 2;
     TypeParam coords[3 * Ncoord] = {0};
     TypeParam out[Nidx];
@@ -508,7 +511,7 @@ TYPED_TEST(IdxDistancesTest, CalcBondsOrthoBoxKnownValues0)
         }
     }
     TypeParam box[3] = {8, 8, 8};
-    TypeParam ref[Nidx] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
+    TypeParam ref[Nidx] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
 
     CalcBondsIdxOrtho(coords, idx, box, Nidx, out);
 
