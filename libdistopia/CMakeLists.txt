@@ -306,7 +306,7 @@ message(STATUS "${Green}DISTOPIA_DISPATCH is OFF. Are we using march and mtune f
   if(DISTOPIA_AGRESSIVE_MARCH)
     message(STATUS "${Green}DISTOPIA_AGRESSIVE_MARCH is ON. Enabling aggressive optimisations for CPU type with -march=native and -mtune=native ${ColourReset}")
     message(STATUS "${Yellow}Warning this will OVERRIDE SIMD specific options ${ColourReset}")
-    list(APPEND CXX_FLAGS "-march=native" "-mtune=native")
+    list(APPEND CXX_FLAGS "-march=native" "-mtune=native" "-mfma")
     message(STATUS "${Cyan}SIMD FLAGS are ${CXX_FLAGS} ${ColourReset}")
   else()
     message(STATUS "${Green}Aggressive CPU type optimisations (march=native mtune=native) disabled, enable them with DISTOPIA_AGRESSIVE_MARCH${ColourReset}")

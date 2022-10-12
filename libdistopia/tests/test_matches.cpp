@@ -22,7 +22,7 @@ TYPED_TEST_SUITE(Coordinates, FloatOnly);
 
 // coordinates in this test can overhang the edge of the box by 3 * the box
 // size.
-TYPED_TEST(Coordinates, CalcBondsMatchesMDA) {
+TYPED_TEST(Coordinates, CalcBondsOrthoMatchesMDA) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
 
   _calc_bond_distance_ortho((coordinate *)this->coords0,
@@ -48,7 +48,7 @@ TYPED_TEST(Coordinates, CalcBondsNoBoxMatchesMDA) {
   }
 }
 
-TYPED_TEST(Coordinates, VanillaCalcBondsMatchesMDA) {
+TYPED_TEST(Coordinates, VanillaCalcBondsOrthoMatchesMDA) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
 
   _calc_bond_distance_ortho((coordinate *)this->coords0,
@@ -75,7 +75,7 @@ TYPED_TEST(Coordinates, VanillaCalcBondsNoBoxMatchesMDA) {
   }
 }
 
-TYPED_TEST(Coordinates, CalcBondsMatchesVanilla) {
+TYPED_TEST(Coordinates, CalcBondsOrthoMatchesVanilla) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
 
   CalcBondsOrtho(this->coords0, this->coords1, this->box, this->nresults,

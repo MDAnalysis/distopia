@@ -5,5 +5,5 @@
 	path = libdistopia/tests/googletest
 	url = git@github.com:google/googletest.git
 [submodule "libdistopia/tests/benchmark"]
-	path = libdistopia/tests/benchmark
+	path = libdistopia/tests/googlebench
 	url = git@github.com:google/benchmark.git
