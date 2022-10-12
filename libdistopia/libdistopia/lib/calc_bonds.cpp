@@ -12,11 +12,10 @@
 #include "simd_dispatch.h"
 #endif
 
-
 #ifdef DISTOPIA_DISPATCH
 namespace DISPATCHED_NAMESPACE
 {
-#else 
+#else
 namespace
 {
 #endif // DISTOPIA_DISPATCH
@@ -30,21 +29,31 @@ namespace
         auto vecbox = BoxT(box);
         VectorTriple<VectorT> c0{}, c1{};
         std::size_t i = 0;
-        if (n % ValuesPerPack<VectorT>)
+        if (n < ValuesPerPack<VectorT>)
         {
-            c0.load_and_deinterleave(coords0);
-            c1.load_and_deinterleave(coords1);
+            c0.load_partial_and_deinterleave(coords0, n);
+            c1.load_partial_and_deinterleave(coords1, n);
             VectorT result = PBC_Distance(c0, c1, vecbox);
-            result.store(out);
-            i += n % ValuesPerPack<VectorT>;
+            result.store_partial(n, out);
         }
-        for (; i < n; i += ValuesPerPack<VectorT>)
+        else
         {
-            c0.load_and_deinterleave(&coords0[3 * i]);
-            c1.load_and_deinterleave(&coords1[3 * i]);
+            if (n % ValuesPerPack<VectorT>)
+            {
+                c0.load_and_deinterleave(coords0);
+                c1.load_and_deinterleave(coords1);
+                VectorT result = PBC_Distance(c0, c1, vecbox);
+                result.store(out);
+                i += n % ValuesPerPack<VectorT>;
+            }
+            for (; i < n; i += ValuesPerPack<VectorT>)
+            {
+                c0.load_and_deinterleave(&coords0[3 * i]);
+                c1.load_and_deinterleave(&coords1[3 * i]);
 
-            VectorT result = PBC_Distance(c0, c1, vecbox);
-            result.store(&out[i]);
+                VectorT result = PBC_Distance(c0, c1, vecbox);
+                result.store(&out[i]);
+            }
         }
     }
 
@@ -146,6 +155,5 @@ void CalcBondsIdxNoBox(const double *coords, const std::size_t *idxs,
 #ifdef DISTOPIA_DISPATCH
 } // DISPATCH_NAMESPACE
 #endif // DISTOPIA_DISPATCH
-
 
 #endif // DISTOPIA_CALC_BONDS_H
