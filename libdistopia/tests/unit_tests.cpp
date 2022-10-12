@@ -98,6 +98,31 @@ TYPED_TEST(VectorTripleTest, LoadAndDeinterleave)
     }
 }
 
+TYPED_TEST(VectorTripleTest, LoadPartialAndDeinterleave)
+{
+    auto vt = VectorTriple<TypeParam>();
+    // less values than the vector size
+    constexpr std::size_t N = ValuesPerPack<TypeParam> - 1;
+    VectorToScalarT<TypeParam> input_buffer[3 * N];
+    VectorToScalarT<TypeParam> out_buffer1[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer2[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer3[3 * ValuesPerPack<TypeParam>];
+
+    std::iota(std::begin(input_buffer), std::end(input_buffer), 0);
+
+    vt.load_partial_and_deinterleave(input_buffer, N);
+    vt.x.store(out_buffer1);
+    vt.y.store(out_buffer2);
+    vt.z.store(out_buffer3);
+    
+    for (int i = 0; i < N; i++)
+    {
+        EXPECT_SCALAR_EQ(out_buffer1[i], 3 * i);
+        EXPECT_SCALAR_EQ(out_buffer2[i], 3 * i + 1);
+        EXPECT_SCALAR_EQ(out_buffer3[i], 3 * i + 2);
+    }
+}
+
 // only Vec2d has width = 2 so no need for typed test
 TEST(Deinterleave2Test, Deinterleave)
 {
@@ -172,6 +197,58 @@ TYPED_TEST(Deinterleave4Test, Deinterleave)
     EXPECT_SCALAR_EQ(out_buffer3[1], 5);
     EXPECT_SCALAR_EQ(out_buffer3[2], 8);
     EXPECT_SCALAR_EQ(out_buffer3[3], 11);
+}
+
+
+TYPED_TEST(Deinterleave4Test, LoadPartialAndDeinterleave3)
+{
+    auto vt = VectorTriple<TypeParam>();
+    // less values than the vector size
+    constexpr std::size_t N = ValuesPerPack<TypeParam> - 3;
+    VectorToScalarT<TypeParam> input_buffer[3 * N];
+    VectorToScalarT<TypeParam> out_buffer1[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer2[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer3[3 * ValuesPerPack<TypeParam>];
+
+    std::iota(std::begin(input_buffer), std::end(input_buffer), 0);
+
+    vt.load_partial_and_deinterleave(input_buffer, N);
+    vt.x.store(out_buffer1);
+    vt.y.store(out_buffer2);
+    vt.z.store(out_buffer3);
+    
+    for (int i = 0; i < N; i++)
+    {
+        EXPECT_SCALAR_EQ(out_buffer1[i], 3 * i);
+        EXPECT_SCALAR_EQ(out_buffer2[i], 3 * i + 1);
+        EXPECT_SCALAR_EQ(out_buffer3[i], 3 * i + 2);
+    }
+}
+
+
+TYPED_TEST(Deinterleave4Test, LoadPartialAndDeinterleave2)
+{
+    auto vt = VectorTriple<TypeParam>();
+    // less values than the vector size
+    constexpr std::size_t N = ValuesPerPack<TypeParam> - 2;
+    VectorToScalarT<TypeParam> input_buffer[3 * N];
+    VectorToScalarT<TypeParam> out_buffer1[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer2[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer3[3 * ValuesPerPack<TypeParam>];
+
+    std::iota(std::begin(input_buffer), std::end(input_buffer), 0);
+
+    vt.load_partial_and_deinterleave(input_buffer, N);
+    vt.x.store(out_buffer1);
+    vt.y.store(out_buffer2);
+    vt.z.store(out_buffer3);
+    
+    for (int i = 0; i < N; i++)
+    {
+        EXPECT_SCALAR_EQ(out_buffer1[i], 3 * i);
+        EXPECT_SCALAR_EQ(out_buffer2[i], 3 * i + 1);
+        EXPECT_SCALAR_EQ(out_buffer3[i], 3 * i + 2);
+    }
 }
 
 template <typename T>

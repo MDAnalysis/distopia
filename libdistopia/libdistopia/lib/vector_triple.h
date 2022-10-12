@@ -65,6 +65,35 @@ public:
         Deinterleave(t1, t2, t3, x, y, z);
     }
 
+    void load_partial_and_deinterleave(const ScalarT *source, const std::size_t n)
+    {
+        VectorT t1(0);
+        VectorT t2(0);
+        VectorT t3(0);
+        auto quot = (3*n)/(size);
+        auto rem = (3*n)%(size);
+
+        if (quot == 0)
+        {
+            t1.load_partial(rem, source);
+        }
+
+        else if (quot == 1)
+        {
+            t1.load(source);
+            t2.load_partial(rem, source + size);
+        }
+
+        else if (quot == 2)
+        {
+            t1.load(source);
+            t2.load(source + size);
+            t3.load_partial(rem, source + 2 * size);
+        }
+        // Deinterleave inplace
+        Deinterleave(t1, t2, t3, x, y, z);
+    }
+
     /** \brief construct by loading discontiguously from an array of ScalarT
      *  eg float* or double* using the indices in idxs with a deinterleave applied.
      *  \tparam stride the stride at which to use the indices, take every nth index
