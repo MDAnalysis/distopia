@@ -14,11 +14,17 @@ template <typename VectorT> class OrthogonalBox {
 public:
   using ScalarT = VectorToScalarT<VectorT>;
   VectorTriple<VectorT> boxlengths;
+  ScalarT scalar_x;
+  ScalarT scalar_y;
+  ScalarT scalar_z;
 
   explicit OrthogonalBox(const ScalarT *src) : boxlengths() {
     boxlengths.x = src[0];
+    scalar_x = src[0];
     boxlengths.y = src[1];
+    scalar_y = src[1];
     boxlengths.z = src[2];
+    scalar_z = src[2];
   }
 };
 

@@ -19,7 +19,7 @@ inline VectorT remainder(VectorT x, VectorT y)
 }
 
 template <typename VectorT>
-inline VectorT _ortho_pbc_distance(VectorT x0, VectorT x1, VectorT y)
+inline VectorT _ortho_pbc_distance(VectorT x0, VectorT x1, VectorT y, VectorToScalarT<VectorT> scalar_y)
 {
   VectorT d = abs(x0 - x1);
   VectorT y_sub_d = y - d;
@@ -31,17 +31,19 @@ inline VectorT _ortho_pbc_distance(VectorT x0, VectorT x1, VectorT y)
     return min(d, y_sub_d);
   }
   // take remainder with box
-  x0 = remainder(x0, y);
-  x1 = remainder(x1, y);
+  // scalar_y promoted to double
+  x0 = fremainder(x0, scalar_y);
+  x1 = fremainder(x1, scalar_y);
   d = abs(x0 - x1);
   return min(d, y - d);
 }
 
 template <typename VectorT>
-inline VectorT _ortho_pbc_displacement(VectorT x0, VectorT x1, VectorT y)
+inline VectorT _ortho_pbc_displacement(VectorT x0, VectorT x1, VectorT y, VectorToScalarT<VectorT> scalar_y) 
 {
   VectorT disp = x0 - x1;
-  return remainder(disp, y);
+  // scalar_y promoted to double
+  return fremainder(disp, scalar_y);
 }
 
 template <typename VectorT, typename BoxT>
@@ -62,9 +64,9 @@ template <typename VectorT>
 inline VectorT PBC_Distance(const VectorTriple<VectorT> &p1, const VectorTriple<VectorT> &p2, const OrthogonalBox<VectorT> &box)
 {
 
-  VectorT dx = _ortho_pbc_distance(p1.x, p2.x, box.boxlengths.x);
-  VectorT dy = _ortho_pbc_distance(p1.y, p2.y, box.boxlengths.y);
-  VectorT dz = _ortho_pbc_distance(p1.z, p2.z, box.boxlengths.z);
+  VectorT dx = _ortho_pbc_distance(p1.x, p2.x, box.boxlengths.x, box.scalar_x);
+  VectorT dy = _ortho_pbc_distance(p1.y, p2.y, box.boxlengths.y, box.scalar_y);
+  VectorT dz = _ortho_pbc_distance(p1.z, p2.z, box.boxlengths.z, box.scalar_z);
 
   VectorT norm_sq = dx * dx;
   norm_sq = mul_add(dy, dy, norm_sq);
