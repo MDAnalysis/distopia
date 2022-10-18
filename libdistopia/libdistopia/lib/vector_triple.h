@@ -65,6 +65,11 @@ public:
         Deinterleave(t1, t2, t3, x, y, z);
     }
 
+    /** \brief load into the VectorTriple by loading from an array of ScalarT
+     *  eg float* or double * with a deinterleave being applied.
+     *  \param source scalar array to load from
+     *  \param n number of coordinates to load
+     */
     void load_partial_and_deinterleave(const ScalarT *source, const std::size_t n)
     {
         VectorT t1(0);
