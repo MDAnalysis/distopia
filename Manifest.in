@@ -9,6 +9,7 @@ include setup.py
 prune _skbuild
 prune docs/doxygen_build
 prune docs/_build
+recursive-exclude */__pycache__ *
 global-exclude *.pyc
 global-exclude *.pyo
 global-exclude *.pyd
