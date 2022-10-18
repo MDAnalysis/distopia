@@ -22,7 +22,7 @@ jobs:
                               "-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_AVX=ON -DDISTOPIA_BUILD_TEST=ON",
                               "-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_AVX2=ON -DDISTOPIA_BUILD_TEST=ON",
                               "-DDISTOPIA_DISPATCH=ON -DDISTOPIA_DISPATCH_MANUAL=ON -DDISTOPIA_USE_SSE3=ON -DDISTOPIA_USE_SSE4_1=ON -DDISTOPIA_USE_AVX=ON -DDISTOPIA_BUILD_TEST=ON"]
-        os: [ubuntu-latest, macos-latest] # windows not supported yet by us
+        os: [ubuntu-latest, macos-latest, windows-latest] 
         include:
           - os: macos-latest
             cxx_compiler: "clang++"
@@ -30,6 +30,9 @@ jobs:
           - os: ubuntu-latest
             cxx_compiler: "g++"
             c_compiler: "gcc"
+          - os: windows-latest
+            cxx_compiler: "cl"
+            c_compiler: "cl"
         exclude:
         # excludes AVX2 on macOS as the VM doesn't seem to support some AVX2 instructions.
           - os: macos-latest
