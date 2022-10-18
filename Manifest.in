@@ -6,9 +6,9 @@ global-include *.cpp
 recursive-include docs * 
 include README.md LICENSE.txt
 include setup.py
-global-exclude _skbuild
-global-exclude docs/doxygen_build
-global-exclude docs/_build
+prune _skbuild
+prune docs/doxygen_build
+prune docs/_build
 global-exclude *.pyc
 global-exclude *.pyo
 global-exclude *.pyd
