@@ -7,7 +7,6 @@ option(DISTOPIA_BUILD_TIMINGS "Build distopia timings binary." off)
 # include some pretty colors
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/ColorOutput.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/cmake/CodeCoverage.cmake)
 
 
 # user options for SIMD instructions
