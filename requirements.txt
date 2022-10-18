@@ -3,4 +3,3 @@ cython
 numpy
 ninja
 scikit-build
-versioneer
