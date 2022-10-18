@@ -490,6 +490,30 @@ TYPED_TEST(DistancesTest, NoBoxKnownValues0)
     }
 }
 
+TYPED_TEST(DistancesTest, NoBoxKnownValuesPartial)
+{
+    // will be a partial load for all vectors except Vec2d
+    constexpr std::size_t N = 3;
+    TypeParam coords0[3 * N];
+    TypeParam coords1[3 * N];
+    TypeParam out[N];
+
+    // {0,1,2}, {3,4,5} ...
+    std::iota(std::begin(coords0), std::end(coords0), 0);
+    // {1,2,3}, {4,5,6} ...
+    std::iota(std::begin(coords1), std::end(coords1), 1);
+
+    CalcBondsNoBox(coords0, coords1, N, out);
+
+    // result for every item should be sqrt(3)
+    TypeParam result = std::sqrt(3);
+
+    for (int i = 0; i < N; i++)
+    {
+        EXPECT_SCALAR_EQ(out[i], result);
+    }
+}
+
 TYPED_TEST(DistancesTest, NoBoxKnownValues1)
 {
     constexpr std::size_t N = 17;
@@ -550,6 +574,29 @@ TYPED_TEST(IdxDistancesTest, NoBoxKnownValues0)
     // larger than the maximum possible vector size (16)
     // for overhang on first loop, see CalcBondsIdxInner.
     constexpr std::size_t Nidx = 18;
+    constexpr std::size_t Ncoord = Nidx * 2;
+    TypeParam coords[3 * Ncoord];
+    TypeParam out[Nidx];
+    std::size_t idx[Ncoord];
+
+    std::iota(std::begin(coords), std::end(coords), 0);
+    std::iota(std::begin(idx), std::end(idx), 0);
+
+    CalcBondsIdxNoBox(coords, idx, Nidx, out);
+
+    // result for every item should be 3sqrt(3)
+    TypeParam result = std::sqrt(27);
+
+    for (int i = 0; i < Nidx; i++)
+    {
+        EXPECT_SCALAR_EQ(out[i], result);
+    }
+}
+
+TYPED_TEST(IdxDistancesTest, NoBoxKnownValuesPartial)
+{
+    // will be a partial load for all vectors except Vec2d
+    constexpr std::size_t Nidx = 3;
     constexpr std::size_t Ncoord = Nidx * 2;
     TypeParam coords[3 * Ncoord];
     TypeParam out[Nidx];
