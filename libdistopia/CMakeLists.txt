@@ -8,6 +8,7 @@ option(DISTOPIA_BUILD_TIMINGS "Build distopia timings binary." off)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/ColorOutput.cmake)
 
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # user options for SIMD instructions
 option(DISTOPIA_AUTO_SELECT_SIMD "Let Distopia choose highest instruction set only" off)
