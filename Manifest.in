@@ -1,0 +1,16 @@
+global-include *.pyx
+global-include *.pxd
+global-include *.c
+global-include *.h
+global-include *.cpp
+recursive-include docs * 
+include README.md LICENSE.txt
+include setup.py
+global-exclude _skbuild
+global-exclude docs/doxygen_build
+global-exclude docs/_build
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.pyd
+global-exclude *~
+global-exclude .git
