@@ -98,6 +98,31 @@ TYPED_TEST(VectorTripleTest, LoadAndDeinterleave)
     }
 }
 
+TYPED_TEST(VectorTripleTest, LoadPartialAndDeinterleave)
+{
+    auto vt = VectorTriple<TypeParam>();
+    // less values than the vector size
+    constexpr std::size_t N = ValuesPerPack<TypeParam> - 1;
+    VectorToScalarT<TypeParam> input_buffer[3 * N];
+    VectorToScalarT<TypeParam> out_buffer1[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer2[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer3[3 * ValuesPerPack<TypeParam>];
+
+    std::iota(std::begin(input_buffer), std::end(input_buffer), 0);
+
+    vt.load_partial_and_deinterleave(input_buffer, N);
+    vt.x.store(out_buffer1);
+    vt.y.store(out_buffer2);
+    vt.z.store(out_buffer3);
+    
+    for (int i = 0; i < N; i++)
+    {
+        EXPECT_SCALAR_EQ(out_buffer1[i], 3 * i);
+        EXPECT_SCALAR_EQ(out_buffer2[i], 3 * i + 1);
+        EXPECT_SCALAR_EQ(out_buffer3[i], 3 * i + 2);
+    }
+}
+
 // only Vec2d has width = 2 so no need for typed test
 TEST(Deinterleave2Test, Deinterleave)
 {
@@ -172,6 +197,58 @@ TYPED_TEST(Deinterleave4Test, Deinterleave)
     EXPECT_SCALAR_EQ(out_buffer3[1], 5);
     EXPECT_SCALAR_EQ(out_buffer3[2], 8);
     EXPECT_SCALAR_EQ(out_buffer3[3], 11);
+}
+
+
+TYPED_TEST(Deinterleave4Test, LoadPartialAndDeinterleave3)
+{
+    auto vt = VectorTriple<TypeParam>();
+    // less values than the vector size
+    constexpr std::size_t N = ValuesPerPack<TypeParam> - 3;
+    VectorToScalarT<TypeParam> input_buffer[3 * N];
+    VectorToScalarT<TypeParam> out_buffer1[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer2[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer3[3 * ValuesPerPack<TypeParam>];
+
+    std::iota(std::begin(input_buffer), std::end(input_buffer), 0);
+
+    vt.load_partial_and_deinterleave(input_buffer, N);
+    vt.x.store(out_buffer1);
+    vt.y.store(out_buffer2);
+    vt.z.store(out_buffer3);
+    
+    for (int i = 0; i < N; i++)
+    {
+        EXPECT_SCALAR_EQ(out_buffer1[i], 3 * i);
+        EXPECT_SCALAR_EQ(out_buffer2[i], 3 * i + 1);
+        EXPECT_SCALAR_EQ(out_buffer3[i], 3 * i + 2);
+    }
+}
+
+
+TYPED_TEST(Deinterleave4Test, LoadPartialAndDeinterleave2)
+{
+    auto vt = VectorTriple<TypeParam>();
+    // less values than the vector size
+    constexpr std::size_t N = ValuesPerPack<TypeParam> - 2;
+    VectorToScalarT<TypeParam> input_buffer[3 * N];
+    VectorToScalarT<TypeParam> out_buffer1[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer2[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer3[3 * ValuesPerPack<TypeParam>];
+
+    std::iota(std::begin(input_buffer), std::end(input_buffer), 0);
+
+    vt.load_partial_and_deinterleave(input_buffer, N);
+    vt.x.store(out_buffer1);
+    vt.y.store(out_buffer2);
+    vt.z.store(out_buffer3);
+    
+    for (int i = 0; i < N; i++)
+    {
+        EXPECT_SCALAR_EQ(out_buffer1[i], 3 * i);
+        EXPECT_SCALAR_EQ(out_buffer2[i], 3 * i + 1);
+        EXPECT_SCALAR_EQ(out_buffer3[i], 3 * i + 2);
+    }
 }
 
 template <typename T>
@@ -348,6 +425,37 @@ TYPED_TEST(VectorTripleIdxLoadTest, DeinterleaveAllIdxPlusOne)
     }
 }
 
+TYPED_TEST(VectorTripleIdxLoadTest, LoadPartialAndDeinterleave)
+{
+    auto vt = VectorTriple<TypeParam>();
+    // less values than the vector size
+    constexpr std::size_t N = ValuesPerPack<TypeParam> - 1;
+    std::size_t idx[N];
+    std::iota(std::begin(idx), std::end(idx), 0);
+
+    VectorToScalarT<TypeParam> input_buffer[3 * N];
+    VectorToScalarT<TypeParam> out_buffer1[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer2[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer3[3 * ValuesPerPack<TypeParam>];
+
+    std::iota(std::begin(input_buffer), std::end(input_buffer), 0);
+
+    vt.template idxload_and_deinterleave_partial<1>(input_buffer, idx, N);
+    vt.x.store(out_buffer1);
+    vt.y.store(out_buffer2);
+    vt.z.store(out_buffer3);
+    
+    for (int i = 0; i < N; i++)
+    {
+        EXPECT_SCALAR_EQ(out_buffer1[i], 3 * i);
+        EXPECT_SCALAR_EQ(out_buffer2[i], 3 * i + 1);
+        EXPECT_SCALAR_EQ(out_buffer3[i], 3 * i + 2);
+    }
+}
+
+// for distance and idx based tests make sure the number of tested indices is >= 16
+// to allow for widest SIMD width
+
 template <typename T>
 class DistancesTest : public ::testing::Test
 {
@@ -362,6 +470,30 @@ TYPED_TEST(DistancesTest, NoBoxKnownValues0)
     // larger than the maximum possible vector size (16) and an
     // odd number for overhang on first loop, see CalcBondsInner.
     constexpr std::size_t N = 17;
+    TypeParam coords0[3 * N];
+    TypeParam coords1[3 * N];
+    TypeParam out[N];
+
+    // {0,1,2}, {3,4,5} ...
+    std::iota(std::begin(coords0), std::end(coords0), 0);
+    // {1,2,3}, {4,5,6} ...
+    std::iota(std::begin(coords1), std::end(coords1), 1);
+
+    CalcBondsNoBox(coords0, coords1, N, out);
+
+    // result for every item should be sqrt(3)
+    TypeParam result = std::sqrt(3);
+
+    for (int i = 0; i < N; i++)
+    {
+        EXPECT_SCALAR_EQ(out[i], result);
+    }
+}
+
+TYPED_TEST(DistancesTest, NoBoxKnownValuesPartial)
+{
+    // will be a partial load for all vectors except Vec2d
+    constexpr std::size_t N = 3;
     TypeParam coords0[3 * N];
     TypeParam coords1[3 * N];
     TypeParam out[N];
@@ -408,7 +540,7 @@ TYPED_TEST(DistancesTest, NoBoxKnownValues1)
 
 TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0)
 {
-    constexpr int N = 10;
+    constexpr int N = 18;
     TypeParam coords0[3 * N] = {0};
     TypeParam coords1[3 * N] = {0};
     TypeParam out[N];
@@ -418,7 +550,7 @@ TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0)
         coords1[3 * i] = i;
     }
     TypeParam box[3] = {8, 8, 8};
-    TypeParam ref[N] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
+    TypeParam ref[N] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
 
     CalcBondsOrtho(coords0, coords1, box, N, out);
 
@@ -442,6 +574,29 @@ TYPED_TEST(IdxDistancesTest, NoBoxKnownValues0)
     // larger than the maximum possible vector size (16)
     // for overhang on first loop, see CalcBondsIdxInner.
     constexpr std::size_t Nidx = 18;
+    constexpr std::size_t Ncoord = Nidx * 2;
+    TypeParam coords[3 * Ncoord];
+    TypeParam out[Nidx];
+    std::size_t idx[Ncoord];
+
+    std::iota(std::begin(coords), std::end(coords), 0);
+    std::iota(std::begin(idx), std::end(idx), 0);
+
+    CalcBondsIdxNoBox(coords, idx, Nidx, out);
+
+    // result for every item should be 3sqrt(3)
+    TypeParam result = std::sqrt(27);
+
+    for (int i = 0; i < Nidx; i++)
+    {
+        EXPECT_SCALAR_EQ(out[i], result);
+    }
+}
+
+TYPED_TEST(IdxDistancesTest, NoBoxKnownValuesPartial)
+{
+    // will be a partial load for all vectors except Vec2d
+    constexpr std::size_t Nidx = 3;
     constexpr std::size_t Ncoord = Nidx * 2;
     TypeParam coords[3 * Ncoord];
     TypeParam out[Nidx];
@@ -488,7 +643,7 @@ TYPED_TEST(IdxDistancesTest, NoBoxKnownValues1)
 
 TYPED_TEST(IdxDistancesTest, CalcBondsOrthoBoxKnownValues0)
 {
-    constexpr std::size_t Nidx = 10;
+    constexpr std::size_t Nidx = 18;
     constexpr std::size_t Ncoord = Nidx * 2;
     TypeParam coords[3 * Ncoord] = {0};
     TypeParam out[Nidx];
@@ -508,7 +663,7 @@ TYPED_TEST(IdxDistancesTest, CalcBondsOrthoBoxKnownValues0)
         }
     }
     TypeParam box[3] = {8, 8, 8};
-    TypeParam ref[Nidx] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
+    TypeParam ref[Nidx] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
 
     CalcBondsIdxOrtho(coords, idx, box, Nidx, out);
 
