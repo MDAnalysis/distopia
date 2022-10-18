@@ -111,6 +111,30 @@ public:
         DeinterleaveIdx(v_arr, x, y, z);
     }
 
+    /** \brief construct by loading discontiguously from an array of ScalarT
+     *  eg float* or double* using the indices in idxs with a deinterleave applied.
+     *  \tparam stride the stride at which to use the indices, take every nth index
+     *  \param source scalar array to load from
+     *  \param idxs indices to the coordinate array
+     *  \param n number of indices to load
+     */
+    template <int stride>
+    void idxload_and_deinterleave_partial(const ScalarT *source, const std::size_t *idxs,  const std::size_t n)
+    {
+
+        IdxLoadT v_arr[ValuesPerPack<VectorT>];
+        for (std::size_t i = 0; i < n; i++)
+        {
+            v_arr[i] = IdxLoad4<IdxLoadT>(source, 3 * idxs[i * stride]);
+        }
+
+        for (std::size_t i = n; i < size; i++) {
+            IdxLoadT tmp(0);
+            v_arr[i] = tmp;
+        }
+        DeinterleaveIdx(v_arr, x, y, z);
+    }
+
     /** \brief print the contents of the vector
      */
     void debug_print(const char *nm)

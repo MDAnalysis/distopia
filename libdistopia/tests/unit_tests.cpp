@@ -425,6 +425,34 @@ TYPED_TEST(VectorTripleIdxLoadTest, DeinterleaveAllIdxPlusOne)
     }
 }
 
+TYPED_TEST(VectorTripleIdxLoadTest, LoadPartialAndDeinterleave)
+{
+    auto vt = VectorTriple<TypeParam>();
+    // less values than the vector size
+    constexpr std::size_t N = ValuesPerPack<TypeParam> - 1;
+    std::size_t idx[N];
+    std::iota(std::begin(idx), std::end(idx), 0);
+
+    VectorToScalarT<TypeParam> input_buffer[3 * N];
+    VectorToScalarT<TypeParam> out_buffer1[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer2[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer3[3 * ValuesPerPack<TypeParam>];
+
+    std::iota(std::begin(input_buffer), std::end(input_buffer), 0);
+
+    vt.template idxload_and_deinterleave_partial<1>(input_buffer, idx, N);
+    vt.x.store(out_buffer1);
+    vt.y.store(out_buffer2);
+    vt.z.store(out_buffer3);
+    
+    for (int i = 0; i < N; i++)
+    {
+        EXPECT_SCALAR_EQ(out_buffer1[i], 3 * i);
+        EXPECT_SCALAR_EQ(out_buffer2[i], 3 * i + 1);
+        EXPECT_SCALAR_EQ(out_buffer3[i], 3 * i + 2);
+    }
+}
+
 // for distance and idx based tests make sure the number of tested indices is >= 16
 // to allow for widest SIMD width
 
