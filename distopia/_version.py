@@ -44,7 +44,7 @@ def get_config():
     cfg = VersioneerConfig()
     cfg.VCS = "git"
     cfg.style = "pep440"
-    cfg.tag_prefix = "distopia"
+    cfg.tag_prefix = ""
     cfg.parentdir_prefix = "distopia-"
     cfg.versionfile_source = "distopia/_version.py"
     cfg.verbose = False
