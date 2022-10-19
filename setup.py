@@ -36,8 +36,8 @@ setup(
         "Issue Tracker": "https://github.com/MDAnalysis/distopia/issues",
     },
     install_requires=[
-        "numpy",
-        "cython",
+        "numpy>=1.20.0",
+        "cython>=0.28.0,<3.0.0",
         "scikit-build",
         "cmake"
     ],
