@@ -6,6 +6,6 @@ target_link_libraries(_distopia libdistopia)
 if(APPLE)
 set_target_properties(_distopia PROPERTIES INSTALL_RPATH
                                                   "@loader_path")
-                    
+endif()
 # set_target_properties(_distopia PROPERTIES INSTALL_RPATH_USE_LINK_PATH FALSE)
 install(TARGETS _distopia LIBRARY DESTINATION distopia)
