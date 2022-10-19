@@ -10,7 +10,7 @@ setup(
     author=['Hugo MacDermott-Opeskin', "Richard Gowers"],
     license="MIT",
     packages=['distopia'],
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     keywords=(
         "molecular dynamics distances simulation SIMD"
     ),
@@ -20,7 +20,6 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Programming Language :: C++",
         "Programming Language :: Cython",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
