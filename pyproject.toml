@@ -1,11 +1,11 @@
 [build-system]
 requires = [
-  #"platform_machine=='x86_64'",
   "setuptools>=42",
   "wheel",
+  # declaring numpy versions specifically to x86_64
   # lowest NumPy we can use for a given Python,
   # except for more exotic platform (Mac Arm flavors)
-  "numpy==1.20.0; python_version=='3.8' and platform_machine=='x86_64'",
+  "numpy==1.20.0; python_version=='3.8' and (platform_machine=='x86_64' or platform_machine=='amd64')",
   "numpy==1.20.0; python_version=='3.9' and platform_machine=='x86_64'",
   # As per https://github.com/scipy/oldest-supported-numpy/blob/main/setup.cfg
   # safest to build at 1.21.6 for all platforms
