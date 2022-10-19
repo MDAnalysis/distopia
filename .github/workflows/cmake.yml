@@ -31,7 +31,7 @@ jobs:
                               "-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_AVX2=ON -DDISTOPIA_BUILD_TEST=ON",
                               "-DDISTOPIA_DISPATCH=ON -DDISTOPIA_DISPATCH_MANUAL=ON -DDISTOPIA_USE_SSE3=ON -DDISTOPIA_USE_SSE4_1=ON -DDISTOPIA_USE_AVX=ON -DDISTOPIA_BUILD_TEST=ON"]
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11-rc.2"]
+        python-version: ["3.8", "3.9", "3.10", "3.11.0-rc.2"]
         include:
           - os: macos-latest
             cxx_compiler: "clang++"
