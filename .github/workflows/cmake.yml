@@ -101,7 +101,8 @@ jobs:
         python -m pip list
 
     - name: build
-      run: pip install -e . -DDISTOPIA_DISPATCH=ON -DDISTOPIA_DISPATCH_MANUAL=ON -DDISTOPIA_USE_SSE3=ON -DDISTOPIA_USE_SSE4_1=ON -DDISTOPIA_USE_AVX=ON -DDISTOPIA_BUILD_TEST=ON
+      run: pip install -e . 
+        # pip install -e . -DDISTOPIA_DISPATCH=ON -DDISTOPIA_DISPATCH_MANUAL=ON -DDISTOPIA_USE_SSE3=ON -DDISTOPIA_USE_SSE4_1=ON -DDISTOPIA_USE_AVX=ON -DDISTOPIA_BUILD_TEST=ON
 
     - name: test
       run: ctest --test-dir _skbuild/*/cmake-build/libdistopia
