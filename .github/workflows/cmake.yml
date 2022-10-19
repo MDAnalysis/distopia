@@ -64,6 +64,7 @@ jobs:
     - name: check_env
       run: |
         which python
+        which python3
         python -m pip list
 
     - name: Build
