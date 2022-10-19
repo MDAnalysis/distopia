@@ -17,6 +17,9 @@ include_directories(${PROJECT_SOURCE_DIR}/libdistopia/vcl2)
 # use, i.e. don't skip the full RPATH for the build tree
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
 
+# use RPATH on MACOS
+set(MACOSX_RPATH TRUE)
+
 # when building, don't use the install RPATH already
 # (but later on when installing)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
