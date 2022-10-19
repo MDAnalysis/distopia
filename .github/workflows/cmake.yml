@@ -110,9 +110,7 @@ jobs:
       run: |
         # https://github.com/scikit-build/scikit-build/issues/740
         export SETUPTOOLS_ENABLE_FEATURES="legacy-editable"
-        # python -m pip install -e . --  -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
         python -m pip install .
-        # pip install -e . -DDISTOPIA_DISPATCH=ON -DDISTOPIA_DISPATCH_MANUAL=ON -DDISTOPIA_USE_SSE3=ON -DDISTOPIA_USE_SSE4_1=ON -DDISTOPIA_USE_AVX=ON -DDISTOPIA_BUILD_TEST=ON
 
     - name: test
       run: ctest --test-dir _skbuild/*/cmake-build/libdistopia
