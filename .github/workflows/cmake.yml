@@ -97,9 +97,9 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
-    - uses: BSFishy/pip-action@v1
-      with:
-        requirements: requirements.txt
+        #- uses: BSFishy/pip-action@v1
+        #  with:
+        #    requirements: requirements.txt
 
     - name: check_env
       run: |
