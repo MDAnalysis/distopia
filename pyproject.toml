@@ -1,9 +1,11 @@
 [build-system]
 requires = [
   "setuptools>=42",
+  "wheel",
   "numpy",
   "scikit-build",
   "cmake",
+  "cython",
   "versioneer-518",
   "ninja; platform_system!='Windows'"
 ]
