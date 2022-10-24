@@ -1,12 +1,22 @@
 
 from skbuild import setup
 import versioneer
+import os
+
+description = "Fast distance calculations using explicitly vectorised SIMD"
+try:
+    readme_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.md")
+    with open(readme_file) as f:
+        long_description = f.read()
+except ImportError:
+    long_description = description
 
 setup(
     name="distopia",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    description="Fast distance calculations using explicitly vectorised SIMD",
+    description=description,
+    long_description=long_description,
     author=['Hugo MacDermott-Opeskin', "Richard Gowers"],
     license="MIT",
     packages=['distopia'],
