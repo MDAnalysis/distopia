@@ -499,6 +499,7 @@ set_target_properties(libdistopia
 
 # cmake will append the name lib already , avoid liblibdistopia
 set_target_properties(libdistopia PROPERTIES OUTPUT_NAME distopia)
+set_target_properties(libdistopia PROPERTIES INSTALL_RPATH "\$ORIGIN")
 
 install(TARGETS libdistopia
         DESTINATION distopia)
