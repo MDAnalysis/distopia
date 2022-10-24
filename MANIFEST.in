@@ -2,7 +2,7 @@ include setup.py
 include README.md
 include LICENSE.txt
 include CMakeLists.txt
-incldue requirements.txt
+include requirements.txt
 include pyproject.toml
 include setup.cfg
 global-include CMakeLists.txt
