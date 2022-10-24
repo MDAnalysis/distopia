@@ -46,8 +46,8 @@ endforeach()
 
 # default case
 if(NOT DISTOPIA_MANUAL_SELECT_SIMD AND NOT DISTOPIA_DISPATCH AND NOT DISTOPIA_DISPATCH_MAX AND NOT DISTOPIA_DISPATCH_MANUAL)
-  message(STATUS "${Yellow}No CMake build options specified, defaulting to DISTOPIA_AUTO_SELECT_SIMD ${ColourReset}")
-  set(DISTOPIA_AUTO_SELECT_SIMD on)
+  message(STATUS "${Yellow}No CMake build options specified, defaulting to DISTOPIA_DISPATCH ${ColourReset}")
+  set(DISTOPIA_DISPATCH on)
 endif()
 
 
