@@ -17,6 +17,7 @@ requires = [
   "scikit-build",
   "cmake",
   "cython>=0.28,<3.0",
+  "versioneer[toml]==0.26"
   "ninja; platform_system!='Windows'"
 ]
 build-backend = "setuptools.build_meta"
