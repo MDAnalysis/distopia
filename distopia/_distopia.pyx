@@ -63,7 +63,7 @@ cpdef cnp.ndarray[cnp.float32_t, ndim = 1] calc_bonds_ortho_float(float[:, ::1] 
     cdef size_t nvals = coords0.shape[0]
     cdef cnp.npy_intp[1] dims
     dims[0] = <ssize_t > nvals  # FIXME truncation?
-    if results == None:
+    if results is None:
         results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
 
     results_view = results
@@ -99,7 +99,7 @@ cpdef cnp.ndarray[cnp.float64_t, ndim = 1] calc_bonds_ortho_double(double[:, ::1
     cdef size_t nvals = coords0.shape[0]
     cdef cnp.npy_intp[1] dims
     dims[0] = <ssize_t > nvals  # FIXME truncation?
-    if results == None:
+    if results is None:
         results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
 
     results_view = results
@@ -132,7 +132,7 @@ cpdef cnp.ndarray[cnp.float32_t, ndim = 1] calc_bonds_no_box_float(float[:, ::1]
     cdef size_t nvals = coords0.shape[0]
     cdef cnp.npy_intp[1] dims
     dims[0] = <ssize_t > nvals  # FIXME truncation?
-    if results == None:
+    if results is None:
         results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
 
     results_view = results
@@ -167,7 +167,7 @@ cpdef cnp.ndarray[cnp.float64_t, ndim = 1] calc_bonds_no_box_double(double[:, ::
     cdef size_t nvals = coords0.shape[0]
     cdef cnp.npy_intp[1] dims
     dims[0] = <ssize_t > nvals  # FIXME truncation?
-    if results == None:
+    if results is None:
         results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
 
     results_view = results
@@ -205,7 +205,7 @@ cpdef cnp.ndarray[cnp.float32_t, ndim = 1] calc_bonds_idx_ortho_float(float[:, :
     cdef size_t nvals = idx.shape[0] // 2  # SAFE?
     cdef cnp.npy_intp[1] dims
     dims[0] = <ssize_t > nvals  # FIXME truncation?
-    if results == None:
+    if results is None:
         results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
 
     results_view = results
@@ -243,7 +243,7 @@ cpdef cnp.ndarray[cnp.float64_t, ndim = 1] calc_bonds_idx_ortho_double(double[:,
     cdef size_t nvals = idx.shape[0] // 2  # SAFE?
     cdef cnp.npy_intp[1] dims
     dims[0] = <ssize_t > nvals  # FIXME truncation?
-    if results == None:
+    if results is None:
         results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
 
     results_view = results
@@ -278,7 +278,7 @@ cpdef cnp.ndarray[cnp.float32_t, ndim = 1] calc_bonds_idx_no_box_float(float[:, 
     cdef size_t nvals = idx.shape[0] // 2  # SAFE?
     cdef cnp.npy_intp[1] dims
     dims[0] = <ssize_t > nvals  # FIXME truncation?
-    if results == None:
+    if results is None:
         results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
 
     results_view = results
@@ -313,7 +313,7 @@ cpdef cnp.ndarray[cnp.float64_t, ndim = 1] calc_bonds_idx_no_box_double(double[:
     cdef size_t nvals = idx.shape[0] // 2  # SAFE?
     cdef cnp.npy_intp[1] dims
     dims[0] = <ssize_t > nvals  # FIXME truncation?
-    if results==None:
+    if results is None:
         results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
 
     results_view = results
