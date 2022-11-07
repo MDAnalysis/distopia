@@ -370,9 +370,12 @@ if (DISTOPIA_DISPATCH)
       endif()
     endif()
   endforeach(opt ${all_instr})
-else()
-  # otherwise something has been specified, default to the flags used to build
-  list(APPEND CXX_FLAGS_MINIMAL ${DISTOPIA_SIMD_FLAGS})
+else()  # otherwise something has been specified, default to the flags used to build
+  if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+    list(APPEND CXX_FLAGS_MINIMAL ${DISTOPIA_SIMD_FLAGS_MSVC})
+  else()
+    list(APPEND CXX_FLAGS_MINIMAL ${DISTOPIA_SIMD_FLAGS})
+  endif()
 endif()
 
 
