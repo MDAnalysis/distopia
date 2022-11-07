@@ -60,6 +60,6 @@ class TestDistances:
         c0 = self.arange_input(N, np.float32)
         c1 = self.arange_input(N, np.float32)
         idx = self.idx_input(N)
-        coords = np.hstack((c0, c1))
+        coords = np.vstack((c0, c1))
         result = distopia.calc_bonds_idx_ortho_float(coords, idx, np.asarray(box).astype(np.float32))
         assert_allclose(result, np.zeros(N))
