@@ -63,3 +63,32 @@ class TestDistances:
         coords = np.vstack((c0, c1))
         result = distopia.calc_bonds_idx_ortho_float(coords, idx, np.asarray(box).astype(np.float32))
         assert_allclose(result, np.zeros(N))
+
+    @pytest.mark.parametrize('box', ([10, 10, 10], [100, 20, 10]))
+    @pytest.mark.parametrize('N', (0, 10, 1000, 10000))
+    def test_calc_bonds_idx_ortho_double_all_zero(self, N, box):
+        c0 = self.arange_input(N, np.float64)
+        c1 = self.arange_input(N, np.float64)
+        idx = self.idx_input(N)
+        coords = np.vstack((c0, c1))
+        result = distopia.calc_bonds_idx_ortho_double(coords, idx, np.asarray(box).astype(np.float64))
+        assert_allclose(result, np.zeros(N))
+    
+
+    @pytest.mark.parametrize('N', (0, 10, 1000, 10000))
+    def test_calc_bonds_idx_no_box_float_all_zero(self, N):
+        c0 = self.arange_input(N, np.float32)
+        c1 = self.arange_input(N, np.float32)
+        idx = self.idx_input(N)
+        coords = np.vstack((c0, c1))
+        result = distopia.calc_bonds_idx_no_box_float(coords, idx)
+        assert_allclose(result, np.zeros(N))
+
+    @pytest.mark.parametrize('N', (0, 10, 1000, 10000))
+    def test_calc_bonds_idx_no_box_double_all_zero(self, N):
+        c0 = self.arange_input(N, np.float64)
+        c1 = self.arange_input(N, np.float64)
+        idx = self.idx_input(N)
+        coords = np.vstack((c0, c1))
+        result = distopia.calc_bonds_idx_no_box_double(coords, idx)
+        assert_allclose(result, np.zeros(N))
