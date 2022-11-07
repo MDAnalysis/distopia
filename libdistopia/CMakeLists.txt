@@ -339,20 +339,43 @@ endif()
 # do cross platform compatibility here
 if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
   list(APPEND CXX_FLAGS "-O3" "-fno-math-errno" "-fno-trapping-math" "-Wno-ignored-attributes")
+  list(APPEND CXX_FLAGS_MINIMAL "-O3" "-fno-math-errno" "-fno-trapping-math" "-Wno-ignored-attributes")
   list(APPEND CXX_FLAGS ${DISTOPIA_SIMD_FLAGS})
   list(APPEND CXX_FLAGS_DEBUG  "-g" "-O0" "-Wall"  "-Wextra" )
   list(APPEND CXX_FLAGS_RELEASE "-Wno-unused")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES Clang)
   list(APPEND CXX_FLAGS "-O3" "-fno-math-errno" "-fno-trapping-math")
+  list(APPEND CXX_FLAGS_MINIMAL "-O3" "-fno-math-errno" "-fno-trapping-math")
   list(APPEND CXX_FLAGS ${DISTOPIA_SIMD_FLAGS})
   list(APPEND CXX_FLAGS_DEBUG   "-g" "-O0" "-Wall"  "-Wextra")
   list(APPEND CXX_FLAGS_RELEASE "-Wno-unused")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
   list(APPEND CXX_FLAGS "-O2")
+  list(APPEND CXX_FLAGS_MINIMAL "-O2")
   list(APPEND CXX_FLAGS ${DISTOPIA_SIMD_FLAGS_MSVC})
 
 else()
   message(FATAL_ERROR "${Red}Compiler not supported${ColourReset}")
+endif()
+
+# for the tests we need to only add the flags that are SUPPORTED which can be
+# a problem for the dispatch build which can go up to AVX512
+if (DISTOPIA_DISPATCH)
+  foreach(opt ${all_instr})
+    if( ${opt}_SUPPORTED)
+      if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+        list(APPEND CXX_FLAGS_MINIMAL ${DISTOPIA_${opt}_MSVC})
+      else()
+        list(APPEND CXX_FLAGS_MINIMAL ${DISTOPIA_${opt}_SIMD_FLAGS})
+      endif()
+    endif()
+  endforeach(opt ${all_instr})
+else()  # otherwise something has been specified, default to the flags used to build
+  if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+    list(APPEND CXX_FLAGS_MINIMAL ${DISTOPIA_SIMD_FLAGS_MSVC})
+  else()
+    list(APPEND CXX_FLAGS_MINIMAL ${DISTOPIA_SIMD_FLAGS})
+  endif()
 endif()
 
 
@@ -446,7 +469,7 @@ if(DISTOPIA_BUILD_TEST)
   target_include_directories(unit_tests PRIVATE ${DISTOPIA_SOURCE_DIR})
   target_compile_options(unit_tests
     PRIVATE
-      ${CXX_FLAGS}
+      ${CXX_FLAGS_MINIMAL}
       "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
       "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
     )
@@ -459,7 +482,7 @@ if(DISTOPIA_BUILD_TEST)
   add_executable(test_matches  ${DISTOPIA_TEST_DIR}/test_matches.cpp)
   target_compile_options(test_matches
     PRIVATE
-      ${CXX_FLAGS}
+      ${CXX_FLAGS_MINIMAL}
       "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
       "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
     )
@@ -483,10 +506,9 @@ if(DISTOPIA_BUILD_TIMINGS)
   file(GLOB benchmarks_src ${DISTOPIA_COMPARE_DIR}/*.cpp )
   list (APPEND benchmarks_src ${DISTOPIA_TEST_DIR}/benchmark.cpp)
   add_executable(benchmarks ${benchmarks_src}) 
-  list(APPEND CXX_FLAGS "-msse3")
   target_compile_options(benchmarks
   PRIVATE
-    ${CXX_FLAGS}
+    ${CXX_FLAGS_MINIMAL}
     "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
     "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
   )
