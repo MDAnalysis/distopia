@@ -56,13 +56,13 @@ struct DispatchTypeToIntStruct;
 template <>
 struct DispatchTypeToIntStruct<float>
 {
-    static constexpr int value = Float;
+    static constexpr int value = selectT::Float;
 };
 
 template <>
 struct DispatchTypeToIntStruct<double>
 {
-    static constexpr int value = Double;
+    static constexpr int value = selectT::Double;
 };
 
 // define the actual trait 
