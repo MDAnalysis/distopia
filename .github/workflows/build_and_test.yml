@@ -110,6 +110,9 @@ jobs:
     - name: test
       run: ctest --test-dir _skbuild/*/cmake-build/libdistopia
 
+    - name: install_pytest
+      run: pip install pytest
+      
     - name: Python_test
       # run python API tests
       run: pytest distopia/tests
