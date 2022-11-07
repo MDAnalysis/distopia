@@ -358,18 +358,22 @@ else()
   message(FATAL_ERROR "${Red}Compiler not supported${ColourReset}")
 endif()
 
-# for the tests we need to only add the flags that are SUPPORTED
-
-foreach(opt ${all_instr})
-  if( ${opt}_SUPPORTED)
-    if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-      list(APPEND CXX_FLAGS_MINIMAL ${DISTOPIA_${opt}_MSVC})
-    else()
-      list(APPEND CXX_FLAGS_MINIMAL ${DISTOPIA_${opt}_SIMD_FLAGS})
+# for the tests we need to only add the flags that are SUPPORTED which can be
+# a problem for the dispatch build which can go up to AVX512
+if (DISTOPIA_DISPATCH)
+  foreach(opt ${all_instr})
+    if( ${opt}_SUPPORTED)
+      if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+        list(APPEND CXX_FLAGS_MINIMAL ${DISTOPIA_${opt}_MSVC})
+      else()
+        list(APPEND CXX_FLAGS_MINIMAL ${DISTOPIA_${opt}_SIMD_FLAGS})
+      endif()
     endif()
-  endif()
-endforeach(opt ${all_instr})
-
+  endforeach(opt ${all_instr})
+else()
+  # otherwise something has been specified, default to the flags used to build
+  list(APPEND CXX_FLAGS_MINIMAL ${DISTOPIA_SIMD_FLAGS})
+endif()
 
 
 # add the directory structure 
