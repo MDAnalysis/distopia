@@ -42,6 +42,53 @@ using CalcBondsIdxNoBox_DptrT = decltype(&CalcBondsIdxNoBoxDispatch<double>);
 
 // type traits
 // ------------
+
+// IMPORTANT
+// enums for selectT and selectFunc tables
+enum selectT {Float = 0, Double = 1};
+enum selectFunc {Ortho = 0, NoBox = 1, IdxOrtho = 2, IdxNoBox = 3};
+
+
+// use this type trait to select an integer flag for a floating point type 
+template <typename T>
+struct DispatchTypeToIntStruct;
+
+template <>
+struct DispatchTypeToIntStruct<float>
+{
+    static constexpr int value = selectT::Float;
+};
+
+template <>
+struct DispatchTypeToIntStruct<double>
+{
+    static constexpr int value = selectT::Double;
+};
+
+// define the actual trait 
+template<typename T>
+constexpr int DispatchTypeToInt = DispatchTypeToIntStruct<T>::value;
+
+// use this type trait to select a floating point type for an integer flag
+template <int T>
+struct IntToDispatchTypeTStruct;
+
+template <>
+struct IntToDispatchTypeTStruct<selectT::Float>
+{
+    using type = float;
+};
+
+template <>
+struct IntToDispatchTypeTStruct<selectT::Double>
+{
+    using type = double;
+};
+
+// define the actual trait
+template <int T>
+using IntToDispatchTypeT = typename IntToDispatchTypeTStruct<T>::type;
+
 // use this type trait to select a function pointer signature based on floating
 // point type and function number. See table in function pointer registry
 
@@ -49,49 +96,49 @@ template <typename T, int selectFunc>
 struct DispatchTypeToFptrTStruct;
 
 template <>
-struct DispatchTypeToFptrTStruct<float, 0>
+struct DispatchTypeToFptrTStruct<float, selectFunc::Ortho>
 {
     using type = CalcBondsOrtho_FptrT;
 };
 
 template <>
-struct DispatchTypeToFptrTStruct<double, 0>
+struct DispatchTypeToFptrTStruct<double, selectFunc::Ortho>
 {
     using type = CalcBondsOrtho_DptrT;
 };
 
 template <>
-struct DispatchTypeToFptrTStruct<float, 1>
+struct DispatchTypeToFptrTStruct<float, selectFunc::NoBox>
 {
     using type = CalcBondsNoBox_FptrT;
 };
 
 template <>
-struct DispatchTypeToFptrTStruct<double, 1>
+struct DispatchTypeToFptrTStruct<double, selectFunc::NoBox>
 {
     using type = CalcBondsNoBox_DptrT;
 };
 
 template <>
-struct DispatchTypeToFptrTStruct<float, 2>
+struct DispatchTypeToFptrTStruct<float, selectFunc::IdxOrtho>
 {
     using type = CalcBondsIdxOrtho_FptrT;
 };
 
 template <>
-struct DispatchTypeToFptrTStruct<double, 2>
+struct DispatchTypeToFptrTStruct<double, selectFunc::IdxOrtho>
 {
     using type = CalcBondsIdxOrtho_DptrT;
 };
 
 template <>
-struct DispatchTypeToFptrTStruct<float, 3>
+struct DispatchTypeToFptrTStruct<float, selectFunc::IdxNoBox>
 {
     using type = CalcBondsIdxNoBox_FptrT;
 };
 
 template <>
-struct DispatchTypeToFptrTStruct<double, 3>
+struct DispatchTypeToFptrTStruct<double, selectFunc::IdxNoBox>
 {
     using type = CalcBondsIdxNoBox_DptrT;
 };
@@ -153,52 +200,52 @@ public:
     template <int selectT, int selectFunc, typename FPtrT>
     void set_ptr(FPtrT fptr)
     {
-        if constexpr (selectFunc == 0)
+        if constexpr (selectFunc == selectFunc::Ortho)
         {
-            if constexpr (selectT == 0)
+            if constexpr (selectT == selectT::Float)
             {
                 CalcBondsOrtho_Fptr = fptr;
             }
-            else if (selectT == 1)
+            else if (selectT == selectT::Double)
             {
                 CalcBondsOrtho_Dptr = fptr;
             }
         }
 
-        else if constexpr (selectFunc == 1)
+        else if constexpr (selectFunc == selectFunc::NoBox)
         {
-            if constexpr (selectT == 0)
+            if constexpr (selectT == selectT::Float)
             {
                 CalcBondsNoBox_Fptr = fptr;
             }
 
-            else if (selectT == 1)
+            else if (selectT == selectT::Double)
             {
                 CalcBondsNoBox_Dptr = fptr;
             }
         }
 
-        else if constexpr (selectFunc == 2)
+        else if constexpr (selectFunc == selectFunc::IdxOrtho)
         {
-            if constexpr (selectT == 0)
+            if constexpr (selectT == selectT::Float)
             {
                 CalcBondsIdxOrtho_Fptr = fptr;
             }
 
-            else if (selectT == 1)
+            else if (selectT == selectT::Double)
             {
                 CalcBondsIdxOrtho_Dptr = fptr;
             }
         }
 
-        else if constexpr (selectFunc == 3)
+        else if constexpr (selectFunc == selectFunc::IdxNoBox)
         {
-            if constexpr (selectT == 0)
+            if constexpr (selectT == selectT::Float)
             {
                 CalcBondsIdxNoBox_Fptr = fptr;
             }
 
-            else if (selectT == 1)
+            else if (selectT == selectT::Double)
             {
                 CalcBondsIdxNoBox_Dptr = fptr;
             }
@@ -212,54 +259,54 @@ public:
     template <int selectT, int selectFunc>
     DispatchTypeToFptrT<IntToDispatchTypeT<selectT>, selectFunc> get_ptr()
     {
-        if constexpr (selectFunc == 0)
+        if constexpr (selectFunc == selectFunc::Ortho)
         {
 
-            if constexpr (selectT == 0)
+            if constexpr (selectT == selectT::Float)
             {
                 return CalcBondsOrtho_Fptr;
             }
 
-            else if (selectT == 1)
+            else if (selectT == selectT::Double)
             {
                 return CalcBondsOrtho_Dptr;
             }
         }
 
-        else if constexpr (selectFunc == 1)
+        else if constexpr (selectFunc == selectFunc::NoBox)
         {
-            if constexpr (selectT == 0)
+            if constexpr (selectT == selectT::Float)
             {
                 return CalcBondsNoBox_Fptr;
             }
 
-            else if (selectT == 1)
+            else if (selectT == selectT::Double)
             {
                 return CalcBondsNoBox_Dptr;
             }
         }
 
-        else if constexpr (selectFunc == 2)
+        else if constexpr (selectFunc == selectFunc::IdxOrtho)
         {
-            if constexpr (selectT == 0)
+            if constexpr (selectT == selectT::Float)
             {
                 return CalcBondsIdxOrtho_Fptr;
             }
 
-            else if (selectT == 1)
+            else if (selectT == selectT::Double)
             {
                 return CalcBondsIdxOrtho_Dptr;
             }
         }
 
-        else if constexpr (selectFunc == 3)
+        else if constexpr (selectFunc == selectFunc::IdxNoBox)
         {
-            if constexpr (selectT == 0)
+            if constexpr (selectT == selectT::Float)
             {
                 return CalcBondsIdxNoBox_Fptr;
             }
 
-            else if (selectT == 1)
+            else if (selectT == selectT::Double)
             {
                 return CalcBondsIdxNoBox_Dptr;
             }
