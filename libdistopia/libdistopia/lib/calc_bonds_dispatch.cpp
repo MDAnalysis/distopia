@@ -32,7 +32,7 @@ void CalcBondsOrthoDispatch(const T *coords0, const T *coords1,
     // flag for dispatch pointer float = 0, double = 1
     constexpr int typeflag = DispatchTypeToInt<T>;
     // function flag 0 for CalcBondsOrtho
-    constexpr int funcflag = 0;
+    constexpr int funcflag = selectFunc::Ortho;
     // signature of the function pointer we are going to bind to
     using fptrT = DispatchTypeToFptrT<T, funcflag>;
 
@@ -125,7 +125,7 @@ void CalcBondsOrtho(const float *coords0, const float *coords1,
                     const float *box, std::size_t n, float *out)
 {
     // typeflag = 0 , funcflag = 0
-    (*_DISPATCH_fptr_register.get_ptr<Float, Ortho>())(coords0, coords1, box, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<selectT::Float, selectFunc::Ortho>())(coords0, coords1, box, n, out); // go to dispatched version
 }
 
 template <>
@@ -133,7 +133,7 @@ void CalcBondsOrtho(const double *coords0, const double *coords1,
                     const double *box, std::size_t n, double *out)
 {
     // typeflag = 1 , funcflag = 0
-    (*_DISPATCH_fptr_register.get_ptr<Double, Ortho>())(coords0, coords1, box, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<selectT::Double, selectFunc::Ortho>())(coords0, coords1, box, n, out); // go to dispatched version
 }
 
 //                              CALC_BONDS_NO_BOX
@@ -148,7 +148,7 @@ void CalcBondsNoBoxDispatch(const T *coords0, const T *coords1,
     // flag for dispatch pointer float = 0, double = 1
     constexpr int typeflag = DispatchTypeToInt<T>;
     // function flag 1 for CalcBondsNoBox
-    constexpr int funcflag = 1;
+    constexpr int funcflag = selectFunc::NoBox;
     // signature of the function pointer we are going to bind to
     using fptrT = DispatchTypeToFptrT<T, funcflag>;
 
@@ -241,7 +241,7 @@ void CalcBondsNoBox(const float *coords0, const float *coords1,
                     std::size_t n, float *out)
 {
     // typeflag = 0 , funcflag = 1
-    (*_DISPATCH_fptr_register.get_ptr<Float, NoBox>())(coords0, coords1, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<selectT::Float, selectFunc::NoBox>())(coords0, coords1, n, out); // go to dispatched version
 }
 
 template <>
@@ -249,7 +249,7 @@ void CalcBondsNoBox(const double *coords0, const double *coords1,
                     std::size_t n, double *out)
 {
     // typeflag = 1 , funcflag = 1
-    (*_DISPATCH_fptr_register.get_ptr<Double, NoBox>())(coords0, coords1, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<selectT::Double, selectFunc::NoBox>())(coords0, coords1, n, out); // go to dispatched version
 }
 
 //                              CALC_BONDS_IDX_ORTHO
@@ -263,8 +263,8 @@ void CalcBondsIdxOrthoDispatch(const T *coords, const std::size_t *idxs, const T
 {
     // flag for dispatch pointer float = 0, double = 1
     constexpr int typeflag = DispatchTypeToInt<T>;
-    // function flag 2 for CalcBondsOrtho
-    constexpr int funcflag = 2;
+    // function flag 2 for CalcBondsIdxOrtho
+    constexpr int funcflag = selectFunc::IdxOrtho;
     // signature of the function pointer we are going to bind to
     using fptrT = DispatchTypeToFptrT<T, funcflag>;
 
@@ -358,7 +358,7 @@ void CalcBondsIdxOrtho(const float *coords, const std::size_t *idxs, const float
                        std::size_t n, float *out)
 {
     // typeflag = 0 , funcflag = 2
-    (*_DISPATCH_fptr_register.get_ptr<Float, IdxOrtho>())(coords, idxs, box, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<selectT::Float, selectFunc::IdxOrtho>())(coords, idxs, box, n, out); // go to dispatched version
 }
 
 template <>
@@ -366,7 +366,7 @@ void CalcBondsIdxOrtho(const double *coords, const std::size_t *idxs, const doub
                        std::size_t n, double *out)
 {
     // typeflag = 1 , funcflag = 2
-    (*_DISPATCH_fptr_register.get_ptr<Double, IdxOrtho>())(coords, idxs, box, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<selectT::Double, selectFunc::IdxOrtho>())(coords, idxs, box, n, out); // go to dispatched version
 }
 
 
@@ -382,7 +382,7 @@ void CalcBondsIdxNoBoxDispatch(const T *coords, const std::size_t *idxs,
     // flag for dispatch pointer float = 0, double = 1
     constexpr int typeflag = DispatchTypeToInt<T>;
     // function flag 3 for CalcBondsIdxNoBox
-    constexpr int funcflag = 3;
+    constexpr int funcflag = selectFunc::IdxNoBox;
     // signature of the function pointer we are going to bind to
     using fptrT = DispatchTypeToFptrT<T, funcflag>;
 
@@ -476,7 +476,7 @@ void CalcBondsIdxNoBox(const float *coords, const std::size_t *idxs,
                        std::size_t n, float *out)
 {
     // typeflag = 0 , funcflag = 3
-    (*_DISPATCH_fptr_register.get_ptr<Float, IdxNoBox>())(coords, idxs, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<selectT::Float, selectFunc::IdxNoBox>())(coords, idxs, n, out); // go to dispatched version
 }
 
 template <>
@@ -484,7 +484,7 @@ void CalcBondsIdxNoBox(const double *coords, const std::size_t *idxs,
                        std::size_t n, double *out)
 {
     // typeflag = 1 , funcflag = 3
-    (*_DISPATCH_fptr_register.get_ptr<Double, IdxNoBox>())(coords, idxs, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<selectT::Double, selectFunc::IdxNoBox>())(coords, idxs, n, out); // go to dispatched version
 }
 
 #endif // DISTOPIA_USE_SSE1
