@@ -1,7 +1,7 @@
 distopia
 --------
 
-Faster distance calculations for the year 2022 🚀 🚀 🚀 
+Faster distance calculations for the year 2022 🚀 🚀 🚀 using x86 SIMD intrinsics
 
 Get it on PyPi with 
 
@@ -29,3 +29,9 @@ python setup.py install
 ```
 
 You can then use the fast distance functions provided by `distopia`!
+
+---
+**NOTE**
+
+Distopia is currently only for x86 processors
+---
