@@ -153,37 +153,6 @@ struct VectorToIdxLoadTStruct<Vec2d>
     using type = Vec4d;
 };
 
-template <typename T>
-struct DispatchTypeToIntStruct;
-
-template <>
-struct DispatchTypeToIntStruct<float>
-{
-    static constexpr int value = 0;
-};
-
-template <>
-struct DispatchTypeToIntStruct<double>
-{
-    static constexpr int value = 1;
-};
-
-template <int T>
-struct IntToDispatchTypeTStruct;
-
-template <>
-struct IntToDispatchTypeTStruct<0>
-{
-    using type = float;
-};
-
-template <>
-struct IntToDispatchTypeTStruct<1>
-{
-    using type = double;
-};
-
-
 
 template <typename VectorT>
 using VectorToScalarT = typename VectorToScalarTStruct<VectorT>::type;
@@ -199,11 +168,5 @@ using VectorToIdxLoadT = typename VectorToIdxLoadTStruct<VectorT>::type;
 
 template <typename T>
 constexpr std::size_t ValuesPerPack = sizeof(T) / sizeof(VectorToScalarT<T>);
-
-template<typename T>
-constexpr int DispatchTypeToInt = DispatchTypeToIntStruct<T>::value;
-
-template <int T>
-using IntToDispatchTypeT = typename IntToDispatchTypeTStruct<T>::type;
 
 #endif // DISTOPIA_TYPE_TRAITS_H

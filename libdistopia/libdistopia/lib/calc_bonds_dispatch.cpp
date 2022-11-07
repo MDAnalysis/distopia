@@ -125,7 +125,7 @@ void CalcBondsOrtho(const float *coords0, const float *coords1,
                     const float *box, std::size_t n, float *out)
 {
     // typeflag = 0 , funcflag = 0
-    (*_DISPATCH_fptr_register.get_ptr<0, 0>())(coords0, coords1, box, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<Float, Ortho>())(coords0, coords1, box, n, out); // go to dispatched version
 }
 
 template <>
@@ -133,7 +133,7 @@ void CalcBondsOrtho(const double *coords0, const double *coords1,
                     const double *box, std::size_t n, double *out)
 {
     // typeflag = 1 , funcflag = 0
-    (*_DISPATCH_fptr_register.get_ptr<1, 0>())(coords0, coords1, box, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<Double, Ortho>())(coords0, coords1, box, n, out); // go to dispatched version
 }
 
 //                              CALC_BONDS_NO_BOX
@@ -241,7 +241,7 @@ void CalcBondsNoBox(const float *coords0, const float *coords1,
                     std::size_t n, float *out)
 {
     // typeflag = 0 , funcflag = 1
-    (*_DISPATCH_fptr_register.get_ptr<0, 1>())(coords0, coords1, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<Float, NoBox>())(coords0, coords1, n, out); // go to dispatched version
 }
 
 template <>
@@ -249,7 +249,7 @@ void CalcBondsNoBox(const double *coords0, const double *coords1,
                     std::size_t n, double *out)
 {
     // typeflag = 1 , funcflag = 1
-    (*_DISPATCH_fptr_register.get_ptr<1, 1>())(coords0, coords1, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<Double, NoBox>())(coords0, coords1, n, out); // go to dispatched version
 }
 
 //                              CALC_BONDS_IDX_ORTHO
@@ -358,7 +358,7 @@ void CalcBondsIdxOrtho(const float *coords, const std::size_t *idxs, const float
                        std::size_t n, float *out)
 {
     // typeflag = 0 , funcflag = 2
-    (*_DISPATCH_fptr_register.get_ptr<0, 2>())(coords, idxs, box, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<Float, IdxOrtho>())(coords, idxs, box, n, out); // go to dispatched version
 }
 
 template <>
@@ -366,7 +366,7 @@ void CalcBondsIdxOrtho(const double *coords, const std::size_t *idxs, const doub
                        std::size_t n, double *out)
 {
     // typeflag = 1 , funcflag = 2
-    (*_DISPATCH_fptr_register.get_ptr<1, 2>())(coords, idxs, box, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<Double, IdxOrtho>())(coords, idxs, box, n, out); // go to dispatched version
 }
 
 
@@ -476,7 +476,7 @@ void CalcBondsIdxNoBox(const float *coords, const std::size_t *idxs,
                        std::size_t n, float *out)
 {
     // typeflag = 0 , funcflag = 3
-    (*_DISPATCH_fptr_register.get_ptr<0, 3>())(coords, idxs, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<Float, IdxNoBox>())(coords, idxs, n, out); // go to dispatched version
 }
 
 template <>
@@ -484,7 +484,7 @@ void CalcBondsIdxNoBox(const double *coords, const std::size_t *idxs,
                        std::size_t n, double *out)
 {
     // typeflag = 1 , funcflag = 3
-    (*_DISPATCH_fptr_register.get_ptr<1, 3>())(coords, idxs, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<Double, IdxNoBox>())(coords, idxs, n, out); // go to dispatched version
 }
 
 #endif // DISTOPIA_USE_SSE1
