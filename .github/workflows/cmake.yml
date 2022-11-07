@@ -80,10 +80,6 @@ jobs:
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run:  ctest --test-dir _skbuild/*/cmake-build/libdistopia
     
-    - name: Python_test
-      # run python API tests
-      run: pytest distopia/tests
-
   pip-install:
     # A pure Python install, which relies purely on pyproject.toml contents
     runs-on: ${{ matrix.os }}
@@ -113,3 +109,7 @@ jobs:
 
     - name: test
       run: ctest --test-dir _skbuild/*/cmake-build/libdistopia
+
+    - name: Python_test
+      # run python API tests
+      run: pytest distopia/tests
