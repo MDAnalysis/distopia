@@ -1,4 +1,4 @@
-name: CMake
+name: Build_and_test
 
 on:
   push:
@@ -112,7 +112,7 @@ jobs:
 
     - name: install_pytest
       run: pip install pytest
-      
+
     - name: Python_test
       # run python API tests
       run: pytest distopia/tests
