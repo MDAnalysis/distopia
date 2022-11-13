@@ -140,6 +140,17 @@ public:
         DeinterleaveIdx(v_arr, x, y, z);
     }
 
+    /** \brief Loads a single coordinate and broadcasts across the vectors
+     *  i.e. all values in the x array are source[0], all y are source[1], all z are source[2]
+     *
+     * @param source start of coordinates to load
+     */
+    void load_single(const ScalarT *source) {
+      x = source[0];
+      y = source[1];
+      z = source[2];
+    }
+
     /** \brief print the contents of the vector
      */
     void debug_print(const char *nm)
