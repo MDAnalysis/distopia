@@ -87,11 +87,11 @@ namespace roadwarrior {
     HWY_EXPORT(calc_bonds_double);
     HWY_EXPORT(calc_bonds_single);
 
-    HWY_DLLEXPORT void calc_bonds_double(const double* a, const double* b, int n, double* out) {
-        return HWY_DYNAMIC_DISPATCH(calc_bonds_double)(a, b, n, out);
-    }
-    HWY_DLLEXPORT void calc_bonds_single(const float* a, const float* b, int n, float* out) {
+    HWY_DLLEXPORT template <> void calc_bonds(const float* a, const float* b, int n, float* out) {
         return HWY_DYNAMIC_DISPATCH(calc_bonds_single)(a, b, n, out);
+    }
+    HWY_DLLEXPORT template <> void calc_bonds(const double* a, const double* b, int n, double* out) {
+        return HWY_DYNAMIC_DISPATCH(calc_bonds_double)(a, b, n, out);
     }
 }
 

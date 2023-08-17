@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
         c[i] = 0.0f;
     }
 
-    roadwarrior::calc_bonds_single(a, b, n, c);
+    roadwarrior::calc_bonds(a, b, n, c);
 
     for (float i : c) {
         std::cout << i << std::endl;
