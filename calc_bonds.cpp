@@ -38,8 +38,9 @@ namespace roadwarrior {
             return out;
         }
 
-        void calc_bonds(const float* a, const float* b, int n, float* out) {
-            const hn::ScalableTag<float> d;
+        template <typename T>
+        void calc_bonds(const T* a, const T* b, int n, T* out) {
+            const hn::ScalableTag<T> d;
             int N = hn::Lanes(d);
 
             auto a_x = hn::Undefined(d);
@@ -68,6 +69,13 @@ namespace roadwarrior {
                 hn::StoreU(result, d, out + i);
             }
         }
+
+        void calc_bonds_double(const double *a, const double *b, int n, double *out) {
+            calc_bonds(a, b, n, out);
+        }
+        void calc_bonds_single(const float *a, const float *b, int n, float *out) {
+            calc_bonds(a, b, n, out);
+        }
     }
 }
 
@@ -76,10 +84,14 @@ HWY_AFTER_NAMESPACE();
 #if HWY_ONCE
 
 namespace roadwarrior {
-    HWY_EXPORT(calc_bonds);
+    HWY_EXPORT(calc_bonds_double);
+    HWY_EXPORT(calc_bonds_single);
 
-    HWY_DLLEXPORT void calc_bonds(const float* a, const float* b, int n, float* out) {
-        return HWY_DYNAMIC_DISPATCH(calc_bonds)(a, b, n, out);
+    HWY_DLLEXPORT void calc_bonds_double(const double* a, const double* b, int n, double* out) {
+        return HWY_DYNAMIC_DISPATCH(calc_bonds_double)(a, b, n, out);
+    }
+    HWY_DLLEXPORT void calc_bonds_single(const float* a, const float* b, int n, float* out) {
+        return HWY_DYNAMIC_DISPATCH(calc_bonds_single)(a, b, n, out);
     }
 }
 
