@@ -19,6 +19,25 @@ namespace roadwarrior {
     namespace HWY_NAMESPACE {
         namespace hn = hwy::HWY_NAMESPACE;
 
+        template <class V>
+        HWY_INLINE V distance(const V &ax, const V &ay, const V &az,
+                   const V &bx, const V &by, const V &bz) {
+            auto dx = ax - bx;
+            auto dy = ay - by;
+            auto dz = az - bz;
+
+            dx = dx * dx;
+            dy = dy * dy;
+            dz = dz * dz;
+
+            auto acc = dx + dy;
+            acc = acc + dz;
+
+            auto out = hn::Sqrt(acc);
+
+            return out;
+        }
+
         void calc_bonds(const float* a, const float* b, int n, float* out) {
             const hn::ScalableTag<float> d;
             int N = hn::Lanes(d);
@@ -42,17 +61,7 @@ namespace roadwarrior {
                 hn::Print(d, "by is: ", b_y, 0, 16);
                 hn::Print(d, "bz is: ", b_z, 0, 16);
 
-                auto dx = a_x - b_x;
-                auto dy = a_y - b_y;
-                auto dz = a_z - b_z;
-                dx = dx * dx;
-                dy = dy * dy;
-                dz = dz * dz;
-
-                auto acc = dx + dy;
-                acc = acc + dz;
-
-                auto result = hn::Sqrt(acc);
+                auto result = distance(a_x, a_y, a_z, b_x, b_y, b_z);
 
                 hn::Print(d, "result is: ", result, 0, 16);
 
