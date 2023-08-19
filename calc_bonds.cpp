@@ -2,6 +2,7 @@
 // Created by richard on 13/08/23.
 //
 #include "calc_bonds.h"
+// #include "distance_shenanigans.h"
 
 #include <iostream>
 
@@ -19,9 +20,37 @@ namespace roadwarrior {
     namespace HWY_NAMESPACE {
         namespace hn = hwy::HWY_NAMESPACE;
 
-        template <class V>
+        template <class D, typename T = hn::TFromD<D>>
+        struct NoBox {
+            explicit NoBox(D) {};
+
+            void MinimiseVectors(hn::VFromD<D> &vx,
+                                 hn::VFromD<D> &vy,
+                                 hn::VFromD<D> &vz) const {};
+        };
+        template <class D, typename T = hn::TFromD<D>>
+        struct OrthogonalBox {
+            hn::VFromD<D> lx, ly, lz;
+            explicit OrthogonalBox(D) {};
+
+            void MinimiseVectors(hn::VFromD<D> &vx,
+                                 hn::VFromD<D> &vy,
+                                 hn::VFromD<D> &vz) const {};
+        };
+        template <class D, typename T = hn::TFromD<D>>
+        struct TriclinicBox {
+            hn::VFromD<D> xx, xy, yy, zx, zy, zz;
+            explicit TriclinicBox(D) {};
+
+            void MinimiseVectors(hn::VFromD<D> &vx,
+                                 hn::VFromD<D> &vy,
+                                 hn::VFromD<D> &vz) const {};
+        };
+
+        template <class V, typename T = hn::TFromV<V>, class B>
         HWY_INLINE V distance(const V &ax, const V &ay, const V &az,
-                              const V &bx, const V &by, const V &bz) {
+                              const V &bx, const V &by, const V &bz,
+                              const B &box) {
             auto dx = ax - bx;
             auto dy = ay - by;
             auto dz = az - bz;
@@ -29,6 +58,8 @@ namespace roadwarrior {
             dx = dx * dx;
             dy = dy * dy;
             dz = dz * dz;
+
+            box.MinimiseVectors(dx, dy, dz);
 
             auto acc = dx + dy;
             acc = acc + dz;
@@ -41,6 +72,8 @@ namespace roadwarrior {
         template <typename T>
         void calc_bonds(const T* a, const T* b, int n, T* out) {
             const hn::ScalableTag<T> d;
+
+            const NoBox box(d);
             int nlanes = hn::Lanes(d);
 
             // temporary arrays used for problem sizes smaller than nlanes
@@ -86,7 +119,7 @@ namespace roadwarrior {
                 hn::Print(d, "by is: ", b_y, 0, nlanes);
                 hn::Print(d, "bz is: ", b_z, 0, nlanes);
 
-                auto result = distance(a_x, a_y, a_z, b_x, b_y, b_z);
+                auto result = distance(a_x, a_y, a_z, b_x, b_y, b_z, box);
 
                 hn::Print(d, "result is: ", result, 0, 16);
 
