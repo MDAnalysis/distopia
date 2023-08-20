@@ -31,23 +31,37 @@ namespace roadwarrior {
                                  hn::VFromD<D> &vy,
                                  hn::VFromD<D> &vz) const {};
         };
-        template <class D, typename T = hn::TFromD<D>>
+
+        template <class D, typename T>
         struct OrthogonalBox {
             hn::VFromD<D> lx, ly, lz;
-            explicit OrthogonalBox(D) {};
+            explicit OrthogonalBox(D d, const T *sbox) {
+                this->lx = hn::Set(d, sbox[0]);
+                this->ly = hn::Set(d, sbox[1]);
+                this->lz = hn::Set(d, sbox[2]);
+            };
 
             void MinimiseVectors(hn::VFromD<D> &vx,
                                  hn::VFromD<D> &vy,
-                                 hn::VFromD<D> &vz) const {};
+                                 hn::VFromD<D> &vz) const {
+
+            };
         };
         template <class D, typename T = hn::TFromD<D>>
         struct TriclinicBox {
-            hn::VFromD<D> xx, xy, yy, zx, zy, zz;
-            explicit TriclinicBox(D) {};
+            hn::VFromD<D> xx, xy, yy, xz, yz, zz;
+
+            explicit TriclinicBox(D d, const T *sbox) {
+                this->xx = hn::Set(d, sbox[0]);
+                this->xy = hn::Set(d, sbox[1]); this->yy = hn::Set(d, sbox[2]);
+                this->xz = hn::Set(d, sbox[3]); this->yz = hn::Set(d, sbox[4]); this->zz = hn::Set(d, sbox[5]);
+            };
 
             void MinimiseVectors(hn::VFromD<D> &vx,
                                  hn::VFromD<D> &vy,
-                                 hn::VFromD<D> &vz) const {};
+                                 hn::VFromD<D> &vz) const {
+
+            };
         };
 
         template <class V, typename T = hn::TFromV<V>, class B>
@@ -72,11 +86,9 @@ namespace roadwarrior {
             return out;
         }
 
-        template <typename T>
-        void calc_bonds(const T* a, const T* b, int n, T* out) {
+        template <typename T, typename B>
+        void calc_bonds(const T* a, const T* b, int n, T* out, B &box) {
             const hn::ScalableTag<T> d;
-
-            const NoBox box(d);
             int nlanes = hn::Lanes(d);
 
             // temporary arrays used for problem sizes smaller than nlanes
@@ -114,9 +126,6 @@ namespace roadwarrior {
                 hn::LoadInterleaved3(d, a_src + 3 * p, a_x, a_y, a_z);
                 hn::LoadInterleaved3(d, b_src + 3 * p, b_x, b_y, b_z);
 
-
-
-
                 auto result = distance(a_x, a_y, a_z, b_x, b_y, b_z, box);
                 #ifndef DEBUG_DIST
                 hn::Print(d, "ax is: ", a_x, 0, nlanes);
@@ -137,10 +146,34 @@ namespace roadwarrior {
         }
 
         void calc_bonds_double(const double *a, const double *b, int n, double *out) {
-            calc_bonds(a, b, n, out);
+            hn::ScalableTag<double> d;
+            const NoBox vbox(d);
+            calc_bonds(a, b, n, out, vbox);
         }
         void calc_bonds_single(const float *a, const float *b, int n, float *out) {
-            calc_bonds(a, b, n, out);
+            hn::ScalableTag<float> d;
+            const NoBox vbox(d);
+            calc_bonds(a, b, n, out, vbox);
+        }
+        void calc_bonds_ortho_double(const double *a, const double *b, int n, const double *box, double *out) {
+            hn::ScalableTag<double> d;
+            const OrthogonalBox vbox(d, box);
+            calc_bonds(a, b, n, out, vbox);
+        }
+        void calc_bonds_ortho_single(const float *a, const float *b, int n, const float *box, float *out) {
+            hn::ScalableTag<float> d;
+            const OrthogonalBox vbox(d, box);
+            calc_bonds(a, b, n, out, vbox);
+        }
+        void calc_bonds_triclinic_double(const double *a, const double *b, int n, const double *box, double *out) {
+            hn::ScalableTag<double> d;
+            const TriclinicBox vbox(d, box);
+            calc_bonds(a, b, n, out, vbox);
+        }
+        void calc_bonds_triclinic_single(const float *a, const float *b, int n, const float *box, float *out) {
+            hn::ScalableTag<float> d;
+            const TriclinicBox vbox(d, box);
+            calc_bonds(a, b, n, out, vbox);
         }
     }
 }
@@ -152,6 +185,10 @@ HWY_AFTER_NAMESPACE();
 namespace roadwarrior {
     HWY_EXPORT(calc_bonds_double);
     HWY_EXPORT(calc_bonds_single);
+    HWY_EXPORT(calc_bonds_ortho_double);
+    HWY_EXPORT(calc_bonds_ortho_single);
+    HWY_EXPORT(calc_bonds_triclinic_double);
+    HWY_EXPORT(calc_bonds_triclinic_single);
 
     HWY_DLLEXPORT template <> void calc_bonds(const float* a, const float* b, int n, float* out) {
         // TODO: Could instead put small problem handling here, if n<16 manually dispatch to non-vector route
@@ -160,6 +197,18 @@ namespace roadwarrior {
     }
     HWY_DLLEXPORT template <> void calc_bonds(const double* a, const double* b, int n, double* out) {
         return HWY_DYNAMIC_DISPATCH(calc_bonds_double)(a, b, n, out);
+    }
+    HWY_DLLEXPORT template <> void calc_bonds_orthogonal(const float* a, const float* b, int n, const float *box, float* out) {
+        return HWY_DYNAMIC_DISPATCH(calc_bonds_ortho_single)(a, b, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void calc_bonds_orthogonal(const double* a, const double* b, int n, const double *box, double* out) {
+        return HWY_DYNAMIC_DISPATCH(calc_bonds_ortho_double)(a, b, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void calc_bonds_triclinic(const float* a, const float* b, int n, const float *box, float* out) {
+        return HWY_DYNAMIC_DISPATCH(calc_bonds_triclinic_single)(a, b, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void calc_bonds_triclinic(const double* a, const double* b, int n, const double *box, double* out) {
+        return HWY_DYNAMIC_DISPATCH(calc_bonds_triclinic_double)(a, b, n, box, out);
     }
 }
 
