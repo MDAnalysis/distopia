@@ -2,7 +2,7 @@
 #include <iostream>
 #include <random>
 
-#include "calc_bonds.h"
+#include "distopia.h"
 
 
 // creates nrandom floating points between pos and neg limit

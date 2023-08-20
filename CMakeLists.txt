@@ -20,7 +20,7 @@ target_include_directories(demo PUBLIC  ${CMAKE_SOURCE_DIR})
 
 
 add_library(calc_bonds_lib)
-target_sources(calc_bonds_lib PRIVATE "calc_bonds.h" "calc_bonds.cpp")
+target_sources(calc_bonds_lib PRIVATE "distopia.h" "distopia.cpp")
 target_link_libraries(calc_bonds_lib PRIVATE hwy)
 target_include_directories(calc_bonds_lib PUBLIC "highway")
 target_include_directories(calc_bonds_lib PUBLIC  ${CMAKE_SOURCE_DIR})
