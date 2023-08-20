@@ -15,6 +15,8 @@
 #include "hwy/highway.h"
 #include "hwy/print-inl.h"
 
+#define DEBUG_DIST 0
+
 HWY_BEFORE_NAMESPACE();
 
 namespace roadwarrior {
@@ -112,6 +114,11 @@ namespace roadwarrior {
                 hn::LoadInterleaved3(d, a_src + 3 * p, a_x, a_y, a_z);
                 hn::LoadInterleaved3(d, b_src + 3 * p, b_x, b_y, b_z);
 
+
+
+
+                auto result = distance(a_x, a_y, a_z, b_x, b_y, b_z, box);
+                #ifndef DEBUG_DIST
                 hn::Print(d, "ax is: ", a_x, 0, nlanes);
                 hn::Print(d, "ay is: ", a_y, 0, nlanes);
                 hn::Print(d, "az is: ", a_z, 0, nlanes);
@@ -119,10 +126,8 @@ namespace roadwarrior {
                 hn::Print(d, "bx is: ", b_x, 0, nlanes);
                 hn::Print(d, "by is: ", b_y, 0, nlanes);
                 hn::Print(d, "bz is: ", b_z, 0, nlanes);
-
-                auto result = distance(a_x, a_y, a_z, b_x, b_y, b_z, box);
-
                 hn::Print(d, "result is: ", result, 0, 16);
+                #endif
 
                 hn::StoreU(result, d, dst + p);
             }
