@@ -4,7 +4,7 @@
 
 // >>> dynamic dispatch
 #undef HWY_TARGET_INCLUDE
-#define HWY_TARGET_INCLUDE "/home/richard/code/distopia2_the_highway_warrior/library.cpp"
+#define HWY_TARGET_INCLUDE "library.cpp"
 
 #include "hwy/foreach_target.h"
 // <<< end dynamic dispatch
