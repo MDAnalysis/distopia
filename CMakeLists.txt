@@ -8,6 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED on)
 set(HWY_ENABLE_TESTS OFF CACHE BOOL "Enable HWY tests" FORCE)
 add_subdirectory("highway")
 
+set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Enable googlebench tests" FORCE)
+add_subdirectory("benchmark")
+
 
 add_executable(demo "test.cpp")
 target_sources(demo PRIVATE "library.h" "library.cpp")
@@ -26,3 +29,11 @@ add_executable(run_calc_bonds)
 target_sources(run_calc_bonds PRIVATE "run_calc_bonds.cpp")
 target_link_libraries(run_calc_bonds PUBLIC calc_bonds_lib)
 target_include_directories(run_calc_bonds PUBLIC  ${CMAKE_SOURCE_DIR})
+
+add_executable(run_bench)
+target_sources(run_bench PRIVATE "bench.cpp")
+target_link_libraries(run_bench PUBLIC benchmark::benchmark)
+target_link_libraries(run_bench PUBLIC calc_bonds_lib)
+target_include_directories(run_bench PUBLIC  ${CMAKE_SOURCE_DIR})
+
+
