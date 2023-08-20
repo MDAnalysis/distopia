@@ -33,17 +33,28 @@ namespace roadwarrior {
 
         template <class D, typename T>
         struct OrthogonalBox {
-            hn::VFromD<D> lx, ly, lz;
+            hn::VFromD<D> lx, ly, lz, ix, iy, iz;
             explicit OrthogonalBox(D d, const T *sbox) {
                 this->lx = hn::Set(d, sbox[0]);
                 this->ly = hn::Set(d, sbox[1]);
                 this->lz = hn::Set(d, sbox[2]);
+                this->ix = hn::Set(d, 1 / sbox[0]);
+                this->iy = hn::Set(d, 1 / sbox[1]);
+                this->iz = hn::Set(d, 1 / sbox[2]);
             };
 
             void MinimiseVectors(hn::VFromD<D> &vx,
                                  hn::VFromD<D> &vy,
                                  hn::VFromD<D> &vz) const {
-
+                auto sx = ix * vx;
+                auto dsx = sx - hn::Round(sx);
+                auto sy = iy * vy;
+                auto dsy = sy - hn::Round(sy);
+                auto sz = iz * vz;
+                auto dsz = sz - hn::Round(sz);
+                vx = lx * dsx;
+                vy = ly * dsy;
+                vz = lz * dsz;
             };
         };
         template <class D, typename T = hn::TFromD<D>>
