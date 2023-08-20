@@ -5,9 +5,10 @@
 // #include "distance_shenanigans.h"
 
 #include <iostream>
+#include <cstring>
 
 #undef HWY_TARGET_INCLUDE
-#define HWY_TARGET_INCLUDE "/home/richard/code/distopia2_the_highway_warrior/calc_bonds.cpp"
+#define HWY_TARGET_INCLUDE "calc_bonds.cpp"
 
 #include "hwy/foreach_target.h"
 
