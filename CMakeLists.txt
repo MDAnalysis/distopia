@@ -37,9 +37,14 @@ target_link_libraries(run_bench PUBLIC calc_bonds_lib)
 target_include_directories(run_bench PUBLIC  ${CMAKE_SOURCE_DIR})
 
 
+Include(GoogleTest)
+add_subdirectory(${CMAKE_SOURCE_DIR}/googletest)
+enable_testing()
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+
 add_executable(testing)
 target_sources(testing PRIVATE "testing.cpp")
-target_link_libraries(testing gtest gtest_main)
+target_link_libraries(testing PUBLIC gtest gtest_main)
 target_link_libraries(testing PUBLIC calc_bonds_lib)
 target_include_directories(testing PUBLIC  ${CMAKE_SOURCE_DIR})
 

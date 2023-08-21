@@ -8,7 +8,7 @@
 #include <cstring>
 
 #undef HWY_TARGET_INCLUDE
-#define HWY_TARGET_INCLUDE "calc_bonds.cpp"
+#define HWY_TARGET_INCLUDE "distopia.cpp"
 
 #include "hwy/foreach_target.h"
 
