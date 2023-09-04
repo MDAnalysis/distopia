@@ -48,7 +48,7 @@ jobs:
 
     - name:  Build Sphinx 🔧 # This is built with makefile
       run: |
-        pip install sphinx sphinx-sitemap sphinx_rtd_theme breathe
+        pip install sphinx sphinx-sitemap mdanalysis_sphinx_theme breathe
         cd docs
         make html
       
