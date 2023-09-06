@@ -115,20 +115,58 @@ public:
         benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
   }
 
+  void BM_calc_bonds_ortho(benchmark::State &state) {
+    for (auto _ : state) {
+      roadwarrior::calc_bonds_orthogonal(coords0, coords1, nresults, box, results);
+    }
+    state.SetItemsProcessed(nresults * state.iterations());
+    state.counters["Per Result"] = benchmark::Counter(
+        nresults * state.iterations(),
+        benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+  }
+
 
 
 };
 
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsInBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_bonds(state); }
+
+BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsInBoxFloat)
+    ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
+    ->RangeMultiplier(4);
+
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsInBoxDouble,
+                            double)
+(benchmark::State &state) { BM_calc_bonds(state); }
+
+BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsInBoxDouble)
+    ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
+    ->RangeMultiplier(4);
+
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxFloat,
+                            float)
+(benchmark::State &state) { BM_calc_bonds_ortho(state); }
 
 BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxFloat)
     ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
 
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxDouble,
+                            double)
+(benchmark::State &state) { BM_calc_bonds_ortho(state); }
+
+BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxDouble)
+    ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
+    ->RangeMultiplier(4);
 
 BENCHMARK_MAIN();
