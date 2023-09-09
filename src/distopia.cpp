@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <cmath>
 
 #undef HWY_TARGET_INCLUDE
 #define HWY_TARGET_INCLUDE "src/distopia.cpp"
@@ -57,20 +58,91 @@ namespace roadwarrior {
                 vz = lz * dsz;
             };
         };
-        template <class D, typename T = hn::TFromD<D>>
+
+        template <class D, typename T = hn::TFromD<D>, typename V = hn::VFromD<D>>
         struct TriclinicBox {
             hn::VFromD<D> xx, xy, yy, xz, yz, zz;
+            hn::VFromD<D> ix, iy, iz;
 
             explicit TriclinicBox(D d, const T *sbox) {
                 this->xx = hn::Set(d, sbox[0]);
                 this->xy = hn::Set(d, sbox[1]); this->yy = hn::Set(d, sbox[2]);
                 this->xz = hn::Set(d, sbox[3]); this->yz = hn::Set(d, sbox[4]); this->zz = hn::Set(d, sbox[5]);
+                // inverse of diagonal
+                this->ix = hn::Set(d, 1/sbox[0]);
+                this->iy = hn::Set(d, 1/sbox[2]);
+                this->iz = hn::Set(d, 1/sbox[5]);
             };
 
-            void MinimiseVectors(hn::VFromD<D> &vx,
-                                 hn::VFromD<D> &vy,
-                                 hn::VFromD<D> &vz) const {
+            void ShiftIntoPrimaryUnitCell(V &vx, V &vy, V &vz) const {
+                auto sz = hn::Floor(this->iz * vz);
+                vz += sz * this->zz;
+                vy += sz * this->yz;
+                vx += sz * this->xz;
+                auto sy = hn::Floor(this->iy * vy);
+                vy += sy * this->yy;
+                vx += sy * this->xy;
+                auto sx = hn::Floor(this->ix, vx);
+                vx += sx * this->xx;
+            }
 
+            void MinimiseVectors(V &vx,
+                                 V &vy,
+                                 V &vz) const {
+                // check all 27 (3x3x3) possibilities of adding/subtracting box vectors and choose minimum
+                V vmin[3];
+                hn::ScalableTag<T> d;
+                auto dsq_min = hn::Set(d, HUGE_VALF);
+
+                for (int i = -1; i < 2; ++i) {  // loop over subtracting, keeping or adding X dimension from vector
+                    auto rx = vx;
+                    if (i == -1) {
+                        rx -= this->xx;
+                    } else if (i == 1) {
+                        rx += this->xx;
+                    }
+                    for (int j = -1; j < 2; ++j) {
+                        auto ry = vy;
+                        if (j == -1) {
+                            rx -= this->xy;
+                            ry -= this->yy;
+                        } else if (j == 1) {
+                            rx += this->xy;
+                            ry += this->yy;
+                        }
+                        for (int k = -1; k < 2; ++k) {
+                            auto rz = vz;
+                            if (k == -1) {
+                                rx -= this->xz;
+                                ry -= this->yz;
+                                rz -= this->zz;
+                            } else if (k == 1) {
+                                rx += this->xz;
+                                ry += this->yz;
+                                rz += this->zz;
+                            }
+
+                            auto dsq = rx * rx;
+                            dsq += ry * ry;
+                            dsq += rz * rz;
+
+                            // dsq is now a vector of distance values
+                            // need to compare each against the corresponding current min in dsq_min
+                            // then where the dsq value is lower, update the current best
+                            auto better = dsq < dsq_min;
+
+                            vmin[0] = hn::IfThenElse(better, rx, vmin[0]);
+                            vmin[1] = hn::IfThenElse(better, ry, vmin[1]);
+                            vmin[2] = hn::IfThenElse(better, rz, vmin[2]);
+                            dsq_min = hn::Min(dsq_min, dsq);
+                        }
+                    }
+                }
+
+                // finally set to best value
+                vx = vmin[0];
+                vy = vmin[1];
+                vz = vmin[2];
             };
         };
 
@@ -81,6 +153,39 @@ namespace roadwarrior {
             auto dx = ax - bx;
             auto dy = ay - by;
             auto dz = az - bz;
+
+            box.MinimiseVectors(dx, dy, dz);
+
+            dx = dx * dx;
+            dy = dy * dy;
+            dz = dz * dz;
+
+            auto acc = dx + dy;
+            acc = acc + dz;
+
+            auto out = hn::Sqrt(acc);
+
+            return out;
+        }
+
+        template <class V, typename T = hn::TFromV<V>>
+        HWY_INLINE V distance(const V &ax, const V &ay, const V &az,
+                              const V &bx, const V &by, const V &bz,
+                              const TriclinicBox<V> &box) {
+            // first place coordinates into primary unit cell
+            V ax_copy = ax;
+            V ay_copy = ay;
+            V az_copy = az;
+            V bx_copy = bx;
+            V by_copy = by;
+            V bz_copy = bz;
+
+            box.ShiftIntoPrimaryUnitCell(ax_copy, ay_copy, az_copy);
+            box.ShiftIntoPrimaryUnitCell(bx_copy, by_copy, bz_copy);
+
+            auto dx = ax_copy - bx_copy;
+            auto dy = ay_copy - by_copy;
+            auto dz = az_copy - bz_copy;
 
             box.MinimiseVectors(dx, dy, dz);
 
