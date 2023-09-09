@@ -82,11 +82,11 @@ namespace roadwarrior {
             auto dy = ay - by;
             auto dz = az - bz;
 
+            box.MinimiseVectors(dx, dy, dz);
+
             dx = dx * dx;
             dy = dy * dy;
             dz = dz * dz;
-
-            box.MinimiseVectors(dx, dy, dz);
 
             auto acc = dx + dy;
             acc = acc + dz;
