@@ -7,7 +7,7 @@
 #include <cstring>
 
 #undef HWY_TARGET_INCLUDE
-#define HWY_TARGET_INCLUDE "distopia.cpp"
+#define HWY_TARGET_INCLUDE "src/distopia.cpp"
 
 #include "hwy/foreach_target.h"
 
