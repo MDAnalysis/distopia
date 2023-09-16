@@ -18,7 +18,7 @@
 
 HWY_BEFORE_NAMESPACE();
 
-namespace roadwarrior {
+namespace distopia {
     namespace HWY_NAMESPACE {
         namespace hn = hwy::HWY_NAMESPACE;
 
