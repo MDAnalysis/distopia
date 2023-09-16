@@ -55,7 +55,7 @@ TYPED_TEST(DistancesTest, NoBoxKnownValues0)
     // {1,2,3}, {4,5,6} ...
     std::iota(std::begin(coords1), std::end(coords1), 1);
 
-    distopia::calc_bonds(coords0, coords1, N, out);
+    distopia::CalcBondsNoBox(coords0, coords1, N, out);
 
     // result for every item should be sqrt(3)
     TypeParam result = std::sqrt(3);
@@ -79,7 +79,7 @@ TYPED_TEST(DistancesTest, NoBoxKnownValuesPartial)
     // {1,2,3}, {4,5,6} ...
     std::iota(std::begin(coords1), std::end(coords1), 1);
 
-    distopia::calc_bonds(coords0, coords1, N, out);
+    distopia::CalcBondsNoBox(coords0, coords1, N, out);
 
     // result for every item should be sqrt(3)
     TypeParam result = std::sqrt(3);
@@ -106,7 +106,7 @@ TYPED_TEST(DistancesTest, NoBoxKnownValues1)
         ref[i] = i;
     }
 
-   distopia::calc_bonds(coords0, coords1, N, out);
+    distopia::CalcBondsNoBox(coords0, coords1, N, out);
 
     for (int i = 0; i < N; i++)
     {
@@ -129,7 +129,7 @@ TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0)
     TypeParam box[3] = {8, 8, 8};
     TypeParam ref[N] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
 
-    distopia::calc_bonds_orthogonal(coords0, coords1, N, box, out);
+    distopia::CalcBondsOrtho(coords0, coords1, N, box, out);
 
     for (int i = 0; i < N; i++)
     {

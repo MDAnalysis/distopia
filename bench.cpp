@@ -107,7 +107,7 @@ public:
 
   void BM_calc_bonds(benchmark::State &state) {
     for (auto _ : state) {
-      distopia::calc_bonds(coords0, coords1, nresults, results);
+        distopia::CalcBondsNoBox(coords0, coords1, nresults, results);
     }
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
@@ -117,7 +117,7 @@ public:
 
   void BM_calc_bonds_ortho(benchmark::State &state) {
     for (auto _ : state) {
-      distopia::calc_bonds_orthogonal(coords0, coords1, nresults, box, results);
+        distopia::CalcBondsOrtho(coords0, coords1, nresults, box, results);
     }
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
