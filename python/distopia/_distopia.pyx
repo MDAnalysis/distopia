@@ -16,6 +16,9 @@ cimport numpy as cnp
 cnp.import_array()
 
 cdef extern from "distopia.h" namespace "distopia" nogil:
+    int GetNFloatLanes();
+    int GetNDoubleLanes();
+
     void CalcBondsOrtho[T](const T * coords0,
                            const T * coords1,
                            size_t n,
@@ -26,6 +29,16 @@ cdef extern from "distopia.h" namespace "distopia" nogil:
                            const T * coords1,
                            size_t n,
                            T * output)
+
+
+def NFloatLanes():
+    """The number of floats per register distopia will handle on this system"""
+    return GetNFloatLanes()
+
+
+def NDoubleLanes():
+    """The number of doubles per register distopia will handle on this system"""
+    return GetNDoubleLanes()
 
 
 @cython.boundscheck(False)

@@ -185,6 +185,15 @@ namespace distopia {
             const TriclinicBox vbox(d, box);
             CalcBonds(a, b, n, out, vbox);
         }
+
+        int GetNFloatLanes() {
+            hn::ScalableTag<float> d;
+            return hn::Lanes(d);
+        }
+        int GetNDoubleLanes() {
+            hn::ScalableTag<double> d;
+            return hn::Lanes(d);
+        }
     }
 }
 
@@ -199,7 +208,15 @@ namespace distopia {
     HWY_EXPORT(CalcBondsOrthoSingle);
     HWY_EXPORT(CalcBondsTriclinicDouble);
     HWY_EXPORT(CalcBondsTriclinicSingle);
+    HWY_EXPORT(GetNFloatLanes);
+    HWY_EXPORT(GetNDoubleLanes);
 
+    HWY_DLLEXPORT int GetNFloatLanes() {
+        return HWY_DYNAMIC_DISPATCH(GetNFloatLanes)();
+    }
+    HWY_DLLEXPORT int GetNDoubleLanes() {
+        return HWY_DYNAMIC_DISPATCH(GetNDoubleLanes)();
+    }
     HWY_DLLEXPORT template <> void CalcBondsNoBox(const float* a, const float* b, int n, float* out) {
         // TODO: Could instead put small problem handling here, if n<16 manually dispatch to non-vector route
         //       Would benefit the codepath in all vector versions
