@@ -19,17 +19,17 @@ target_include_directories(demo PUBLIC "highway")
 target_include_directories(demo PUBLIC  ${CMAKE_SOURCE_DIR})
 
 
-add_library(calc_bonds_lib)
-target_sources(calc_bonds_lib PRIVATE "src/distopia.cpp")
-target_link_libraries(calc_bonds_lib PRIVATE hwy)
-target_include_directories(calc_bonds_lib PUBLIC
+add_library(distopia)
+target_sources(distopia PRIVATE "src/distopia.cpp")
+target_link_libraries(distopia PRIVATE hwy)
+target_include_directories(distopia PUBLIC
         "highway"
         ${CMAKE_SOURCE_DIR}
         "${CMAKE_SOURCE_DIR}/include")
 
 add_executable(run_calc_bonds)
 target_sources(run_calc_bonds PRIVATE "run_calc_bonds.cpp")
-target_link_libraries(run_calc_bonds PUBLIC calc_bonds_lib)
+target_link_libraries(run_calc_bonds PUBLIC distopia)
 target_include_directories(run_calc_bonds PUBLIC
         ${CMAKE_SOURCE_DIR}
         "${CMAKE_SOURCE_DIR}/include")
@@ -37,7 +37,7 @@ target_include_directories(run_calc_bonds PUBLIC
 add_executable(run_bench)
 target_sources(run_bench PRIVATE "bench.cpp")
 target_link_libraries(run_bench PUBLIC benchmark::benchmark)
-target_link_libraries(run_bench PUBLIC calc_bonds_lib)
+target_link_libraries(run_bench PUBLIC distopia)
 target_include_directories(run_bench PUBLIC  ${CMAKE_SOURCE_DIR})
 
 
@@ -49,6 +49,5 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 add_executable(testing)
 target_sources(testing PRIVATE "testing.cpp")
 target_link_libraries(testing PUBLIC gtest gtest_main)
-target_link_libraries(testing PUBLIC calc_bonds_lib)
+target_link_libraries(testing PUBLIC distopia)
 target_include_directories(testing PUBLIC  ${CMAKE_SOURCE_DIR})
-
