@@ -1,15 +1,11 @@
-cmake_minimum_required(VERSION 3.24)
-project(distopia2_the_highway_warrior)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED on)
-
 
 set(HWY_ENABLE_TESTS OFF CACHE BOOL "Enable HWY tests" FORCE)
 add_subdirectory("highway")
 
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Enable googlebench tests" FORCE)
 add_subdirectory("benchmark")
+
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 
 add_executable(demo "test.cpp")
