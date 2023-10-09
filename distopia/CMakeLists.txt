@@ -2,7 +2,9 @@
 add_cython_target(_distopia CXX PY3)
 add_library(_distopia MODULE ${_distopia})
 python_extension_module(_distopia)
-target_link_libraries(_distopia libdistopia)
+target_link_libraries(_distopia distopia)
+target_include_directories(_distopia PRIVATE "/Users/hugomacdermott/Desktop/mdanalysis/distopia_2_the_highway_warrior/libdistopia/include")
+
 if(APPLE)
     set_target_properties(_distopia PROPERTIES INSTALL_RPATH "@loader_path")
 else()
