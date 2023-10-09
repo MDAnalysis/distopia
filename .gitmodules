@@ -1,0 +1,9 @@
+[submodule "libdistopia/googletest"]
+	path = libdistopia/googletest
+	url = https://github.com/google/googletest
+[submodule "libdistopia/googlebench"]
+	path = libdistopia/googlebench
+	url = https://github.com/google/benchmark
+[submodule "libdistopia/highway"]
+	path = libdistopia/highway
+	url = https://github.com/google/highway

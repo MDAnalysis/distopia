@@ -3,7 +3,7 @@ set(HWY_ENABLE_TESTS OFF CACHE BOOL "Enable HWY tests" FORCE)
 add_subdirectory("highway")
 
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Enable googlebench tests" FORCE)
-add_subdirectory("benchmark")
+add_subdirectory("googlebench")
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
