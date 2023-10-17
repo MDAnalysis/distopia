@@ -10,8 +10,9 @@ find_package(PythonExtensions REQUIRED)
 find_package(Cython REQUIRED)
 find_package(NumPy REQUIRED)
 include_directories(${NumPy_INCLUDE_DIRS})
-include_directories(${PROJECT_SOURCE_DIR}/libdistopia/libdistopia/include)
+include_directories(${PROJECT_SOURCE_DIR}/libdistopia/include)
 include_directories(${PROJECT_SOURCE_DIR}/libdistopia/libdistopia/lib)
+
 
 # use, i.e. don't skip the full RPATH for the build tree
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
