@@ -1,22 +1,19 @@
-from setuptools import Extension, setup
-import numpy as np
-from Cython.Build import cythonize
+from skbuild import setup
+import os
 
-
-extensions = [
-    Extension('distopia._distopia', ["python/distopia/_distopia.pyx"],
-              include_dirs=['/home/richard/code/distopia2_the_highway_warrior/include',
-                            np.get_include(),
-                            ],
-              libraries=['distopia', 'hwy'],
-              library_dirs=['/home/richard/code/distopia2_the_highway_warrior/build',
-                            '/home/richard/code/distopia2_the_highway_warrior/build/highway',
-                            ],
-              ),
-]
-
+description = "Fast distance calculations using explicitly vectorised SIMD"
+try:
+    readme_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.md")
+    with open(readme_file) as f:
+        long_description = f.read()
+except ImportError:
+    long_description = description
 
 setup(
     name="distopia",
-    ext_modules=cythonize(extensions)
+    packages=['distopia'],
+    python_requires=">=3.9",
+    install_requires=[
+        "numpy>=1.20.0"
+    ],
 )
