@@ -130,7 +130,7 @@ public:
 
   void BM_calc_bonds_triclinic(benchmark::State &state) {
       for (auto _ : state) {
-          roadwarrior::calc_bonds_triclinic(coords0, coords1, nresults, triclinic_box, results);
+          distopia::CalcBondsTriclinic(coords0, coords1, nresults, triclinic_box, results);
       }
       state.SetItemsProcessed(nresults * state.iterations());
       state.counters["Per Result"] = benchmark::Counter(
