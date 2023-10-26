@@ -1,9 +1,9 @@
-[submodule "highway"]
-	path = highway
-	url = https://github.com/google/highway.git
-[submodule "benchmark"]
-	path = benchmark
-	url = https://github.com/google/benchmark.git
-[submodule "googletest"]
-	path = googletest
-	url = https://github.com/google/googletest.git
+[submodule "libdistopia/googletest"]
+	path = libdistopia/googletest
+	url = https://github.com/google/googletest
+[submodule "libdistopia/googlebench"]
+	path = libdistopia/googlebench
+	url = https://github.com/google/benchmark
+[submodule "libdistopia/highway"]
+	path = libdistopia/highway
+	url = https://github.com/google/highway

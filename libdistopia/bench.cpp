@@ -110,7 +110,7 @@ public:
 
   void BM_calc_bonds(benchmark::State &state) {
     for (auto _ : state) {
-      roadwarrior::calc_bonds(coords0, coords1, nresults, results);
+        distopia::CalcBondsNoBox(coords0, coords1, nresults, results);
     }
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
@@ -119,13 +119,13 @@ public:
   }
 
   void BM_calc_bonds_ortho(benchmark::State &state) {
-      for (auto _ : state) {
-          roadwarrior::calc_bonds_orthogonal(coords0, coords1, nresults, box, results);
-      }
-      state.SetItemsProcessed(nresults * state.iterations());
-      state.counters["Per Result"] = benchmark::Counter(
-              nresults * state.iterations(),
-              benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    for (auto _ : state) {
+        distopia::CalcBondsOrtho(coords0, coords1, nresults, box, results);
+    }
+    state.SetItemsProcessed(nresults * state.iterations());
+    state.counters["Per Result"] = benchmark::Counter(
+        nresults * state.iterations(),
+        benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
   }
 
   void BM_calc_bonds_triclinic(benchmark::State &state) {

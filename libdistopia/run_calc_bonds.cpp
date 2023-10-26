@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
         c[i] = 0.0f;
     }
 
-    roadwarrior::calc_bonds(a, b, n_pos, c);
+    distopia::CalcBondsNoBox(a, b, n_pos, c);
 
     for (float i : c) {
         std::cout << i << std::endl;
