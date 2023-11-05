@@ -64,6 +64,12 @@ public:
     box[0] = boxsize;
     box[1] = boxsize;
     box[2] = boxsize;
+    triclinic_box[0] = boxsize;
+    triclinic_box[1] = boxsize / 10.;
+    triclinic_box[2] = boxsize;
+    triclinic_box[3] = boxsize / 10.;
+    triclinic_box[4] = boxsize / 10.;
+    triclinic_box[5] = boxsize;
 
     RandomInt(idxs, nindicies, 0, nindicies - 1);
   }
@@ -99,11 +105,8 @@ public:
   T *ref = nullptr;
   T *results = nullptr;
   T box[3];
+  T triclinic_box[6];
   std::size_t *idxs = nullptr;
-
-
-
-
 
   void BM_calc_bonds(benchmark::State &state) {
     for (auto _ : state) {
@@ -125,8 +128,15 @@ public:
         benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
   }
 
-
-
+  void BM_calc_bonds_triclinic(benchmark::State &state) {
+      for (auto _ : state) {
+          distopia::CalcBondsTriclinic(coords0, coords1, nresults, triclinic_box, results);
+      }
+      state.SetItemsProcessed(nresults * state.iterations());
+      state.counters["Per Result"] = benchmark::Counter(
+              nresults * state.iterations(),
+              benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+  }
 };
 
 
@@ -168,5 +178,25 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxDouble,
 BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxDouble)
     ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxFloat,
+                            float)
+(benchmark::State &state) { BM_calc_bonds_triclinic(state); }
+
+BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxFloat)
+        ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
+        ->RangeMultiplier(4);
+
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxDouble,
+                            double)
+(benchmark::State &state) { BM_calc_bonds_triclinic(state); }
+
+BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxDouble)
+        ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
+        ->RangeMultiplier(4);
+
 
 BENCHMARK_MAIN();
