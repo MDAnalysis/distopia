@@ -9,6 +9,9 @@ namespace distopia {
     template <typename T> void CalcBondsNoBox(const T *a, const T *b, int n, T *out);
     template <typename T> void CalcBondsOrtho(const T *a, const T *b, int n, const T *box, T *out);
     template <typename T> void CalcBondsTriclinic(const T *a, const T *b, int n, const T *box, T *out);
+    template <typename T> void CalcAnglesNoBox(const T *a, const T *b, const T *c, int n, T *out);
+    template <typename T> void CalcAnglesOrtho(const T *a, const T *b, const T *c, int n, const T *box, T *out);
+    template <typename T> void CalcAnglesTriclinic(const T *a, const T *b, const T *c, int n, const T *box, T *out);
     int GetNFloatLanes();
     int GetNDoubleLanes();
 }
