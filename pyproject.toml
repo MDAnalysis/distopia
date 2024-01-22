@@ -13,7 +13,7 @@ requires = [
   "numpy<2.0; python_version>='3.13'",
   "scikit-build",
   "cmake",
-  "cython>=0.28,<3.0",
+  "cython",
   "versioneer[toml]==0.26",
   "ninja; platform_system!='Windows'"
 ]
