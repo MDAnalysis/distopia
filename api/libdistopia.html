@@ -1,175 +1,105 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>libdistopia C++ layer &mdash; distopia  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e598625d" />
 
   
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="Distopia" href="distopia.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: white" >
-          
 
           
-            <a href="../index.html">
           
-
-          
+          <a href="../index.html">
             
-            <img src="../_static/mdanalysis-logo-thin.png" class="logo" alt="Logo"/>
-          
+              <img src="../_static/mdanalysis-logo-thin.png" class="logo" alt="Logo"/>
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../building_distopia.html">Building and testing distopia</a></li>
 <li class="toctree-l1"><a class="reference internal" href="distopia.html">Distopia</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">libdistopia C++ layer</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">libdistopia C++ layer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4I0E14CalcBondsOrthovPK1TPK1TPK1TNSt6size_tEP1T"><code class="docutils literal notranslate"><span class="pre">CalcBondsOrtho()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4I0E14CalcBondsNoBoxvPK1TPK1TNSt6size_tEP1T"><code class="docutils literal notranslate"><span class="pre">CalcBondsNoBox()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4I0E17CalcBondsIdxOrthovPK1TPKNSt6size_tEPK1TNSt6size_tEP1T"><code class="docutils literal notranslate"><span class="pre">CalcBondsIdxOrtho()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4I0E17CalcBondsIdxNoBoxvPK1TPKNSt6size_tENSt6size_tEP1T"><code class="docutils literal notranslate"><span class="pre">CalcBondsIdxNoBox()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4I0E12VectorTriple"><code class="docutils literal notranslate"><span class="pre">VectorTriple</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N12VectorTriple4loadEPK7ScalarT"><code class="docutils literal notranslate"><span class="pre">VectorTriple::load()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N12VectorTriple21load_and_deinterleaveEPK7ScalarT"><code class="docutils literal notranslate"><span class="pre">VectorTriple::load_and_deinterleave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N12VectorTriple29load_partial_and_deinterleaveEPK7ScalarTKNSt6size_tE"><code class="docutils literal notranslate"><span class="pre">VectorTriple::load_partial_and_deinterleave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4I_iEN12VectorTriple24idxload_and_deinterleaveEvPK7ScalarTPKNSt6size_tE"><code class="docutils literal notranslate"><span class="pre">VectorTriple::idxload_and_deinterleave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4I_iEN12VectorTriple32idxload_and_deinterleave_partialEvPK7ScalarTPKNSt6size_tEKNSt6size_tE"><code class="docutils literal notranslate"><span class="pre">VectorTriple::idxload_and_deinterleave_partial()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N12VectorTriple11debug_printEPKc"><code class="docutils literal notranslate"><span class="pre">VectorTriple::debug_print()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N12VectorTriple1xE"><code class="docutils literal notranslate"><span class="pre">VectorTriple::x</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N12VectorTriple1yE"><code class="docutils literal notranslate"><span class="pre">VectorTriple::y</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N12VectorTriple1zE"><code class="docutils literal notranslate"><span class="pre">VectorTriple::z</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N12VectorTriple4sizeE"><code class="docutils literal notranslate"><span class="pre">VectorTriple::size</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">distopia</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>libdistopia C++ layer</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">libdistopia C++ layer</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/api/libdistopia.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="libdistopia-c-layer">
-<h1>libdistopia C++ layer<a class="headerlink" href="#libdistopia-c-layer" title="Permalink to this heading">¶</a></h1>
+<h1>libdistopia C++ layer<a class="headerlink" href="#libdistopia-c-layer" title="Link to this heading"></a></h1>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0E14CalcBondsOrthovPK1TPK1TPK1TNSt6size_tEP1T">
-<span id="_CPPv3I0E14CalcBondsOrthoPK1TPK1TPK1TNSt6size_tEP1T"></span><span id="_CPPv2I0E14CalcBondsOrthoPK1TPK1TPK1TNSt6size_tEP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="distopia_8h_1a6decf43206c908b34d40ed84ddeacee9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CalcBondsOrtho</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E14CalcBondsOrthovPK1TPK1TPK1TNSt6size_tEP1T" title="CalcBondsOrtho::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coords0</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E14CalcBondsOrthovPK1TPK1TPK1TNSt6size_tEP1T" title="CalcBondsOrtho::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coords1</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E14CalcBondsOrthovPK1TPK1TPK1TNSt6size_tEP1T" title="CalcBondsOrtho::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">box</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0E14CalcBondsOrthovPK1TPK1TPK1TNSt6size_tEP1T" title="CalcBondsOrtho::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0E14CalcBondsOrthovPK1TPK1TPK1TNSt6size_tEP1T" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0E14CalcBondsOrthoPK1TPK1TPK1TNSt6size_tEP1T"></span><span id="_CPPv2I0E14CalcBondsOrthoPK1TPK1TPK1TNSt6size_tEP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="distopia_8h_1a6decf43206c908b34d40ed84ddeacee9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CalcBondsOrtho</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E14CalcBondsOrthovPK1TPK1TPK1TNSt6size_tEP1T" title="CalcBondsOrtho::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coords0</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E14CalcBondsOrthovPK1TPK1TPK1TNSt6size_tEP1T" title="CalcBondsOrtho::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coords1</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E14CalcBondsOrthovPK1TPK1TPK1TNSt6size_tEP1T" title="CalcBondsOrtho::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">box</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0E14CalcBondsOrthovPK1TPK1TPK1TNSt6size_tEP1T" title="CalcBondsOrtho::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0E14CalcBondsOrthovPK1TPK1TPK1TNSt6size_tEP1T" title="Link to this definition"></a><br /></dt>
 <dd><p>Calculates the distance between two sets of points in two contiguous arrays under orthorhombic periodic boundary conditions. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
@@ -189,7 +119,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0E14CalcBondsNoBoxvPK1TPK1TNSt6size_tEP1T">
-<span id="_CPPv3I0E14CalcBondsNoBoxPK1TPK1TNSt6size_tEP1T"></span><span id="_CPPv2I0E14CalcBondsNoBoxPK1TPK1TNSt6size_tEP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="distopia_8h_1a94bc48591069ee8d15062f4322af1930"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CalcBondsNoBox</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E14CalcBondsNoBoxvPK1TPK1TNSt6size_tEP1T" title="CalcBondsNoBox::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coords0</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E14CalcBondsNoBoxvPK1TPK1TNSt6size_tEP1T" title="CalcBondsNoBox::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coords1</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0E14CalcBondsNoBoxvPK1TPK1TNSt6size_tEP1T" title="CalcBondsNoBox::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0E14CalcBondsNoBoxvPK1TPK1TNSt6size_tEP1T" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0E14CalcBondsNoBoxPK1TPK1TNSt6size_tEP1T"></span><span id="_CPPv2I0E14CalcBondsNoBoxPK1TPK1TNSt6size_tEP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="distopia_8h_1a94bc48591069ee8d15062f4322af1930"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CalcBondsNoBox</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E14CalcBondsNoBoxvPK1TPK1TNSt6size_tEP1T" title="CalcBondsNoBox::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coords0</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E14CalcBondsNoBoxvPK1TPK1TNSt6size_tEP1T" title="CalcBondsNoBox::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coords1</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0E14CalcBondsNoBoxvPK1TPK1TNSt6size_tEP1T" title="CalcBondsNoBox::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0E14CalcBondsNoBoxvPK1TPK1TNSt6size_tEP1T" title="Link to this definition"></a><br /></dt>
 <dd><p>Calculates the distance between two sets of points in two contiguous arrays without periodic boundary conditions. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
@@ -208,7 +138,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0E17CalcBondsIdxOrthovPK1TPKNSt6size_tEPK1TNSt6size_tEP1T">
-<span id="_CPPv3I0E17CalcBondsIdxOrthoPK1TPKNSt6size_tEPK1TNSt6size_tEP1T"></span><span id="_CPPv2I0E17CalcBondsIdxOrthoPK1TPKNSt6size_tEPK1TNSt6size_tEP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="distopia_8h_1ad155c9ec1e2eef31687d36ddedd85829"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CalcBondsIdxOrtho</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E17CalcBondsIdxOrthovPK1TPKNSt6size_tEPK1TNSt6size_tEP1T" title="CalcBondsIdxOrtho::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coords</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">idxs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E17CalcBondsIdxOrthovPK1TPKNSt6size_tEPK1TNSt6size_tEP1T" title="CalcBondsIdxOrtho::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">box</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0E17CalcBondsIdxOrthovPK1TPKNSt6size_tEPK1TNSt6size_tEP1T" title="CalcBondsIdxOrtho::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0E17CalcBondsIdxOrthovPK1TPKNSt6size_tEPK1TNSt6size_tEP1T" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0E17CalcBondsIdxOrthoPK1TPKNSt6size_tEPK1TNSt6size_tEP1T"></span><span id="_CPPv2I0E17CalcBondsIdxOrthoPK1TPKNSt6size_tEPK1TNSt6size_tEP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="distopia_8h_1ad155c9ec1e2eef31687d36ddedd85829"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CalcBondsIdxOrtho</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E17CalcBondsIdxOrthovPK1TPKNSt6size_tEPK1TNSt6size_tEP1T" title="CalcBondsIdxOrtho::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coords</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">idxs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E17CalcBondsIdxOrthovPK1TPKNSt6size_tEPK1TNSt6size_tEP1T" title="CalcBondsIdxOrtho::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">box</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0E17CalcBondsIdxOrthovPK1TPKNSt6size_tEPK1TNSt6size_tEP1T" title="CalcBondsIdxOrtho::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0E17CalcBondsIdxOrthovPK1TPKNSt6size_tEPK1TNSt6size_tEP1T" title="Link to this definition"></a><br /></dt>
 <dd><p>Calculates the distance between sets of two points in a single array indexed by the idxs parameter under orthorhombic periodic boundary conditions. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
@@ -228,7 +158,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0E17CalcBondsIdxNoBoxvPK1TPKNSt6size_tENSt6size_tEP1T">
-<span id="_CPPv3I0E17CalcBondsIdxNoBoxPK1TPKNSt6size_tENSt6size_tEP1T"></span><span id="_CPPv2I0E17CalcBondsIdxNoBoxPK1TPKNSt6size_tENSt6size_tEP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="distopia_8h_1a44efd6dfe6590cb40acd3245b63a65c3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CalcBondsIdxNoBox</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E17CalcBondsIdxNoBoxvPK1TPKNSt6size_tENSt6size_tEP1T" title="CalcBondsIdxNoBox::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coords</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">idxs</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0E17CalcBondsIdxNoBoxvPK1TPKNSt6size_tENSt6size_tEP1T" title="CalcBondsIdxNoBox::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0E17CalcBondsIdxNoBoxvPK1TPKNSt6size_tENSt6size_tEP1T" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0E17CalcBondsIdxNoBoxPK1TPKNSt6size_tENSt6size_tEP1T"></span><span id="_CPPv2I0E17CalcBondsIdxNoBoxPK1TPKNSt6size_tENSt6size_tEP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="distopia_8h_1a44efd6dfe6590cb40acd3245b63a65c3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CalcBondsIdxNoBox</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E17CalcBondsIdxNoBoxvPK1TPKNSt6size_tENSt6size_tEP1T" title="CalcBondsIdxNoBox::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coords</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">idxs</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0E17CalcBondsIdxNoBoxvPK1TPKNSt6size_tENSt6size_tEP1T" title="CalcBondsIdxNoBox::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0E17CalcBondsIdxNoBoxvPK1TPKNSt6size_tENSt6size_tEP1T" title="Link to this definition"></a><br /></dt>
 <dd><p>Calculates the distance between sets of two points in a single array indexed by the idxs parameter without periodic boundary conditions. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
@@ -247,7 +177,7 @@
 
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4I0E12VectorTriple">
-<span id="_CPPv3I0E12VectorTriple"></span><span id="_CPPv2I0E12VectorTriple"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VectorT</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_vector_triple"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VectorTriple</span></span></span><a class="headerlink" href="#_CPPv4I0E12VectorTriple" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0E12VectorTriple"></span><span id="_CPPv2I0E12VectorTriple"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VectorT</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_vector_triple"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VectorTriple</span></span></span><a class="headerlink" href="#_CPPv4I0E12VectorTriple" title="Link to this definition"></a><br /></dt>
 <dd><p>Class that packs sets of 3 coordinates into a single unit for operations on interleaved or deinterleaved data. The number of coordinates held is determined by the SIMD width. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
@@ -258,7 +188,7 @@
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12VectorTriple4loadEPK7ScalarT">
-<span id="_CPPv3N12VectorTriple4loadEPK7ScalarT"></span><span id="_CPPv2N12VectorTriple4loadEPK7ScalarT"></span><span id="VectorTriple::load__ScalarTCP"></span><span class="target" id="class_vector_triple_1ab322cbe10680e4b16fed3745a89076d1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">ScalarT</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12VectorTriple4loadEPK7ScalarT" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N12VectorTriple4loadEPK7ScalarT"></span><span id="_CPPv2N12VectorTriple4loadEPK7ScalarT"></span><span id="VectorTriple::load__ScalarTCP"></span><span class="target" id="class_vector_triple_1ab322cbe10680e4b16fed3745a89076d1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">ScalarT</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12VectorTriple4loadEPK7ScalarT" title="Link to this definition"></a><br /></dt>
 <dd><p>load into the <a class="reference internal" href="#class_vector_triple"><span class="std std-ref">VectorTriple</span></a> by loading from an array of ScalarT eg float* or double *. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -269,7 +199,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12VectorTriple21load_and_deinterleaveEPK7ScalarT">
-<span id="_CPPv3N12VectorTriple21load_and_deinterleaveEPK7ScalarT"></span><span id="_CPPv2N12VectorTriple21load_and_deinterleaveEPK7ScalarT"></span><span id="VectorTriple::load_and_deinterleave__ScalarTCP"></span><span class="target" id="class_vector_triple_1aae41085dc9ff7fb896f73cd7971b8546"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load_and_deinterleave</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">ScalarT</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12VectorTriple21load_and_deinterleaveEPK7ScalarT" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N12VectorTriple21load_and_deinterleaveEPK7ScalarT"></span><span id="_CPPv2N12VectorTriple21load_and_deinterleaveEPK7ScalarT"></span><span id="VectorTriple::load_and_deinterleave__ScalarTCP"></span><span class="target" id="class_vector_triple_1aae41085dc9ff7fb896f73cd7971b8546"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load_and_deinterleave</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">ScalarT</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12VectorTriple21load_and_deinterleaveEPK7ScalarT" title="Link to this definition"></a><br /></dt>
 <dd><p>load into the <a class="reference internal" href="#class_vector_triple"><span class="std std-ref">VectorTriple</span></a> by loading from an array of ScalarT eg float* or double * with a deinterleave being applied. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -280,7 +210,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12VectorTriple29load_partial_and_deinterleaveEPK7ScalarTKNSt6size_tE">
-<span id="_CPPv3N12VectorTriple29load_partial_and_deinterleaveEPK7ScalarTKNSt6size_tE"></span><span id="_CPPv2N12VectorTriple29load_partial_and_deinterleaveEPK7ScalarTKNSt6size_tE"></span><span id="VectorTriple::load_partial_and_deinterleave__ScalarTCP.std::sC"></span><span class="target" id="class_vector_triple_1a0a6815ac40c98b79d72c581f6ea45f7c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load_partial_and_deinterleave</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">ScalarT</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12VectorTriple29load_partial_and_deinterleaveEPK7ScalarTKNSt6size_tE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N12VectorTriple29load_partial_and_deinterleaveEPK7ScalarTKNSt6size_tE"></span><span id="_CPPv2N12VectorTriple29load_partial_and_deinterleaveEPK7ScalarTKNSt6size_tE"></span><span id="VectorTriple::load_partial_and_deinterleave__ScalarTCP.std::sC"></span><span class="target" id="class_vector_triple_1a0a6815ac40c98b79d72c581f6ea45f7c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load_partial_and_deinterleave</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">ScalarT</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12VectorTriple29load_partial_and_deinterleaveEPK7ScalarTKNSt6size_tE" title="Link to this definition"></a><br /></dt>
 <dd><p>load into the <a class="reference internal" href="#class_vector_triple"><span class="std std-ref">VectorTriple</span></a> by loading from an array of ScalarT eg float* or double * with a deinterleave being applied. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -294,7 +224,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_iEN12VectorTriple24idxload_and_deinterleaveEvPK7ScalarTPKNSt6size_tE">
-<span id="_CPPv3I_iEN12VectorTriple24idxload_and_deinterleaveEPK7ScalarTPKNSt6size_tE"></span><span id="_CPPv2I_iEN12VectorTriple24idxload_and_deinterleaveEPK7ScalarTPKNSt6size_tE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_vector_triple_1aed7f3736e39ca557c80075475870024b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">idxload_and_deinterleave</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">ScalarT</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">idxs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_iEN12VectorTriple24idxload_and_deinterleaveEvPK7ScalarTPKNSt6size_tE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I_iEN12VectorTriple24idxload_and_deinterleaveEPK7ScalarTPKNSt6size_tE"></span><span id="_CPPv2I_iEN12VectorTriple24idxload_and_deinterleaveEPK7ScalarTPKNSt6size_tE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_vector_triple_1aed7f3736e39ca557c80075475870024b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">idxload_and_deinterleave</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">ScalarT</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">idxs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_iEN12VectorTriple24idxload_and_deinterleaveEvPK7ScalarTPKNSt6size_tE" title="Link to this definition"></a><br /></dt>
 <dd><p>construct by loading discontiguously from an array of ScalarT eg float* or double* using the indices in idxs with a deinterleave applied. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
@@ -311,7 +241,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_iEN12VectorTriple32idxload_and_deinterleave_partialEvPK7ScalarTPKNSt6size_tEKNSt6size_tE">
-<span id="_CPPv3I_iEN12VectorTriple32idxload_and_deinterleave_partialEPK7ScalarTPKNSt6size_tEKNSt6size_tE"></span><span id="_CPPv2I_iEN12VectorTriple32idxload_and_deinterleave_partialEPK7ScalarTPKNSt6size_tEKNSt6size_tE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_vector_triple_1aefb6eadf601abeb3bd38a41ae8d9f7fa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">idxload_and_deinterleave_partial</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">ScalarT</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">idxs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_iEN12VectorTriple32idxload_and_deinterleave_partialEvPK7ScalarTPKNSt6size_tEKNSt6size_tE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I_iEN12VectorTriple32idxload_and_deinterleave_partialEPK7ScalarTPKNSt6size_tEKNSt6size_tE"></span><span id="_CPPv2I_iEN12VectorTriple32idxload_and_deinterleave_partialEPK7ScalarTPKNSt6size_tEKNSt6size_tE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_vector_triple_1aefb6eadf601abeb3bd38a41ae8d9f7fa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">idxload_and_deinterleave_partial</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">ScalarT</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">idxs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_iEN12VectorTriple32idxload_and_deinterleave_partialEvPK7ScalarTPKNSt6size_tEKNSt6size_tE" title="Link to this definition"></a><br /></dt>
 <dd><p>construct by loading discontiguously from an array of ScalarT eg float* or double* using the indices in idxs with a deinterleave applied. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
@@ -329,7 +259,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12VectorTriple11debug_printEPKc">
-<span id="_CPPv3N12VectorTriple11debug_printEPKc"></span><span id="_CPPv2N12VectorTriple11debug_printEPKc"></span><span id="VectorTriple::debug_print__cCP"></span><span class="target" id="class_vector_triple_1a80de345837819d8cfa2b49d8486ea916"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">debug_print</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">nm</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12VectorTriple11debug_printEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N12VectorTriple11debug_printEPKc"></span><span id="_CPPv2N12VectorTriple11debug_printEPKc"></span><span id="VectorTriple::debug_print__cCP"></span><span class="target" id="class_vector_triple_1a80de345837819d8cfa2b49d8486ea916"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">debug_print</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">nm</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12VectorTriple11debug_printEPKc" title="Link to this definition"></a><br /></dt>
 <dd><p>print the contents of the vector </p>
 </dd></dl>
 
@@ -338,19 +268,19 @@
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N12VectorTriple1xE">
-<span id="_CPPv3N12VectorTriple1xE"></span><span id="_CPPv2N12VectorTriple1xE"></span><span id="VectorTriple::x__VectorT"></span><span class="target" id="class_vector_triple_1a5e11be21725f0cfcb83134e541e13cf4"></span><a class="reference internal" href="#_CPPv4I0E12VectorTriple" title="VectorTriple::VectorT"><span class="n"><span class="pre">VectorT</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">x</span></span></span><a class="headerlink" href="#_CPPv4N12VectorTriple1xE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N12VectorTriple1xE"></span><span id="_CPPv2N12VectorTriple1xE"></span><span id="VectorTriple::x__VectorT"></span><span class="target" id="class_vector_triple_1a5e11be21725f0cfcb83134e541e13cf4"></span><a class="reference internal" href="#_CPPv4I0E12VectorTriple" title="VectorTriple::VectorT"><span class="n"><span class="pre">VectorT</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">x</span></span></span><a class="headerlink" href="#_CPPv4N12VectorTriple1xE" title="Link to this definition"></a><br /></dt>
 <dd><p>SIMD type that contains x coordinates </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N12VectorTriple1yE">
-<span id="_CPPv3N12VectorTriple1yE"></span><span id="_CPPv2N12VectorTriple1yE"></span><span id="VectorTriple::y__VectorT"></span><span class="target" id="class_vector_triple_1a21d4397c4a2a86ba639fae5ccca049ea"></span><a class="reference internal" href="#_CPPv4I0E12VectorTriple" title="VectorTriple::VectorT"><span class="n"><span class="pre">VectorT</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">y</span></span></span><a class="headerlink" href="#_CPPv4N12VectorTriple1yE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N12VectorTriple1yE"></span><span id="_CPPv2N12VectorTriple1yE"></span><span id="VectorTriple::y__VectorT"></span><span class="target" id="class_vector_triple_1a21d4397c4a2a86ba639fae5ccca049ea"></span><a class="reference internal" href="#_CPPv4I0E12VectorTriple" title="VectorTriple::VectorT"><span class="n"><span class="pre">VectorT</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">y</span></span></span><a class="headerlink" href="#_CPPv4N12VectorTriple1yE" title="Link to this definition"></a><br /></dt>
 <dd><p>SIMD type that contains y coordinates </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N12VectorTriple1zE">
-<span id="_CPPv3N12VectorTriple1zE"></span><span id="_CPPv2N12VectorTriple1zE"></span><span id="VectorTriple::z__VectorT"></span><span class="target" id="class_vector_triple_1a256d1f6fc454de8d6af0152241b5cf84"></span><a class="reference internal" href="#_CPPv4I0E12VectorTriple" title="VectorTriple::VectorT"><span class="n"><span class="pre">VectorT</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">z</span></span></span><a class="headerlink" href="#_CPPv4N12VectorTriple1zE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N12VectorTriple1zE"></span><span id="_CPPv2N12VectorTriple1zE"></span><span id="VectorTriple::z__VectorT"></span><span class="target" id="class_vector_triple_1a256d1f6fc454de8d6af0152241b5cf84"></span><a class="reference internal" href="#_CPPv4I0E12VectorTriple" title="VectorTriple::VectorT"><span class="n"><span class="pre">VectorT</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">z</span></span></span><a class="headerlink" href="#_CPPv4N12VectorTriple1zE" title="Link to this definition"></a><br /></dt>
 <dd><p>SIMD type that contains z coordinates </p>
 </dd></dl>
 
@@ -359,7 +289,7 @@
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N12VectorTriple4sizeE">
-<span id="_CPPv3N12VectorTriple4sizeE"></span><span id="_CPPv2N12VectorTriple4sizeE"></span><span id="VectorTriple::size__std::s"></span><span class="target" id="class_vector_triple_1ade19214ac4b5bb47f3e6f8183a7cf6b7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">ValuesPerPack</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0E12VectorTriple" title="VectorTriple::VectorT"><span class="n"><span class="pre">VectorT</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N12VectorTriple4sizeE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N12VectorTriple4sizeE"></span><span id="_CPPv2N12VectorTriple4sizeE"></span><span id="VectorTriple::size__std::s"></span><span class="target" id="class_vector_triple_1ade19214ac4b5bb47f3e6f8183a7cf6b7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">ValuesPerPack</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0E12VectorTriple" title="VectorTriple::VectorT"><span class="n"><span class="pre">VectorT</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N12VectorTriple4sizeE" title="Link to this definition"></a><br /></dt>
 <dd><p>number of values per vector </p>
 </dd></dl>
 
@@ -370,29 +300,21 @@
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="distopia.html" class="btn btn-neutral float-left" title="Distopia" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2022, Hugo MacDermott-Opeskin Jakub Nabaglo Richard Gowers.
-
-    </p>
+    <p>&#169; Copyright 2022, Hugo MacDermott-Opeskin Jakub Nabaglo Richard Gowers.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
     provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
  
 <div class="footer"><p>Please see
     our <a href="https://www.mdanalysis.org/pages/privacy/">Privacy Policy</a>
@@ -405,22 +327,13 @@
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
