@@ -21,7 +21,7 @@ setup(
     author=['Hugo MacDermott-Opeskin', "Richard Gowers"],
     license="MIT",
     packages=['distopia'],
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     keywords=(
         "molecular dynamics distances simulation SIMD"
     ),
@@ -47,6 +47,6 @@ setup(
         "Issue Tracker": "https://github.com/MDAnalysis/distopia/issues",
     },
     install_requires=[
-        "numpy>=1.20.0"
+        "numpy>=1.23"
     ],
 )
