@@ -421,8 +421,68 @@ namespace distopia {
                               const V &cx, const V &cy, const V &cz,
                               const V &dx, const V &dy, const V &dz,
                               const B &box) {
+            hn::ScalableTag<T> d;
 
+            // construct minimal vectors
+            auto rab_x = hn::Undefined(d);
+            auto rab_y = hn::Undefined(d);
+            auto rab_z = hn::Undefined(d);
+            box.MinimalVectors(ax, ay, az, bx, by, bz, rab_x, rab_y, rab_z);
+
+            auto rbc_x = hn::Undefined(d);
+            auto rbc_y = hn::Undefined(d);
+            auto rbc_z = hn::Undefined(d);
+            box.MinimalVectors(bx, by, bz, cx, cy, cz, rbc_x, rbc_y, rbc_z);
+
+            auto rcd_x = hn::Undefined(d);
+            auto rcd_y = hn::Undefined(d);
+            auto rcd_z = hn::Undefined(d);
+            box.MinimalVectors(cx, cy, cz, dx, dy, dz, rcd_x, rcd_y, rcd_z);
+
+            auto n1x = hn::Undefined(d);
+            auto n1y = hn::Undefined(d);
+            auto n1z = hn::Undefined(d);
+            CrossProduct(
+                    rab_x, rab_y, rab_z,
+                    rbc_x, rbc_y, rbc_z,
+                    n1x, n1y, n1z);
+
+            auto n2x = hn::Undefined(d);
+            auto n2y = hn::Undefined(d);
+            auto n2z = hn::Undefined(d);
+            CrossProduct(
+                    rbc_x, rbc_y, rbc_z,
+                    rcd_x, rcd_y, rcd_z,
+                    n2x, n2y, n2z);
+
+            auto xp_x = hn::Undefined(d);
+            auto xp_y = hn::Undefined(d);
+            auto xp_z = hn::Undefined(d);
+            CrossProduct(
+                    n1x, n1y, n1z,
+                    n2x, n2y, n2z,
+                    xp_x, xp_y, xp_z);
+
+            auto x = hn::Zero(d);
+            hn::MulAdd(n1x, n2x, x);
+            hn::MulAdd(n1y, n2y, x);
+            hn::MulAdd(n1z, n2z, x);
+
+            auto vb_norm = hn::Zero(d);
+            hn::MulAdd(bx, bx, vb_norm);
+            hn::MulAdd(by, by, vb_norm);
+            hn::MulAdd(bz, bz, vb_norm);
+            vb_norm = hn::Sqrt(vb_norm);
+
+            auto y = hn::Zero(d);
+            hn::MulAdd(xp_x, bx, y);
+            hn::MulAdd(xp_y, by, y);
+            hn::MulAdd(xp_z, bz, y);
+            y = y / vb_norm;
+
+            return hn::Atan2(d, y, x);
         }
+
         template <typename T, typename B>
         void CalcDihedrals(const T *i, const T *j, const T *k, const T *l,
                            int n, T *out, B &box) {
