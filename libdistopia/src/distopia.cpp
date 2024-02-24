@@ -299,6 +299,22 @@ namespace distopia {
             }
         }
 
+        template <class V>
+        HWY_INLINE void CrossProduct(
+                const V &ix, const V &iy, const V &iz,
+                const V &jx, const V &jy, const V &jz,
+                V &kx, V &ky, V &kz) {
+            // kx = iy * jz - iz * jy;
+            // ky = iz * jx - ix * jz;
+            // kz = ix * jy - iy * jx;
+            kx = iy * jz;
+            kx = hn::NegMulAdd(iz, jy, kx);
+            ky = iz * jx;
+            ky = hn::NegMulAdd(ix, jz, ky);
+            kz = ix * jy;
+            kz = hn::NegMulAdd(iy, jx, kz);
+        }
+
         template <class V, typename T = hn::TFromV<V>, class B>
         HWY_INLINE V Angle(const V &ax, const V &ay, const V &az,
                            const V &bx, const V &by, const V &bz,
@@ -321,15 +337,12 @@ namespace distopia {
             x = hn::MulAdd(rji_y, rjk_y, x);
             x = hn::MulAdd(rji_z, rjk_z, x);
 
-            auto xp_x = hn::Zero(d);
-            auto xp_y = hn::Zero(d);
-            auto xp_z = hn::Zero(d);
-            xp_x = hn::MulAdd(rji_y, rjk_z, xp_x);
-            xp_x = hn::NegMulAdd(rji_x, rjk_z, xp_x);
-            xp_y = hn::NegMulAdd(rji_x, rjk_z, xp_y);
-            xp_y = hn::MulAdd(rji_z, rjk_x, xp_y);
-            xp_z = hn::MulAdd(rji_x, rjk_y, xp_z);
-            xp_z = hn::NegMulAdd(rji_y, rjk_x, xp_z);
+            auto xp_x = hn::Undefined(d);
+            auto xp_y = hn::Undefined(d);
+            auto xp_z = hn::Undefined(d);
+
+            CrossProduct(rji_x, rji_y, rji_z, rjk_x, rjk_y, rjk_z,
+                         xp_x, xp_y, xp_z);
 
             xp_x = xp_x * xp_x;
             xp_x = hn::MulAdd(xp_y, xp_y, xp_x);
