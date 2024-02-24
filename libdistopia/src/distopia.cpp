@@ -402,6 +402,20 @@ namespace distopia {
             //}
         }
 
+        template <class V, typename T = hn::TFromV<V>, class B>
+        HWY_INLINE V Dihedral(const V &ax, const V &ay, const V &az,
+                              const V &bx, const V &by, const V &bz,
+                              const V &cx, const V &cy, const V &cz,
+                              const V &dx, const V &dy, const V &dz,
+                              const B &box) {
+
+        }
+        template <typename T, typename B>
+        void CalcDihedrals(const T *i, const T *j, const T *k, const T *l,
+                           int n, T *out, B &box) {
+
+        }
+
         void CalcBondsNoBoxDouble(const double *a, const double *b, int n, double *out) {
             hn::ScalableTag<double> d;
             const NoBox vbox(d);
@@ -469,6 +483,47 @@ namespace distopia {
             CalcAngles(a, b, c, n, out, vbox);
         }
 
+        void CalcDihedralsNoBoxDouble(const double *i, const double *j, const double *k, const double *l, int n, double *out) {
+            hn::ScalableTag<double> d;
+            const NoBox vbox(d);
+
+            CalcDihedrals(i, j, k, l, n, out, vbox);
+        }
+        void CalcDihedralsNoBoxSingle(const float *i, const float *j, const float *k, const float *l, int n, float *out) {
+            hn::ScalableTag<float> d;
+            const NoBox vbox(d);
+
+            CalcDihedrals(i, j, k, l, n, out, vbox);
+        }
+        void CalcDihedralsOrthoDouble(const double *i, const double *j, const double *k, const double *l,
+                                      int n, const double *box, double *out) {
+            hn::ScalableTag<double> d;
+            const OrthogonalBox vbox(d, box);
+
+            CalcDihedrals(i, j, k, l, n, out, vbox);
+        }
+        void CalcDihedralsOrthoSingle(const float *i, const float *j, const float *k, const float *l,
+                                      int n, const float *box, float *out) {
+            hn::ScalableTag<float> d;
+            const OrthogonalBox vbox(d, box);
+
+            CalcDihedrals(i, j, k, l, n, out, vbox);
+        }
+        void CalcDihedralsTriclinicDouble(const double *i, const double *j, const double *k, const double *l,
+                                          int n, const double *box, double *out) {
+            hn::ScalableTag<double> d;
+            const TriclinicBox vbox(d, box);
+
+            CalcDihedrals(i, j, k, l, n, out, vbox);
+        }
+        void CalcDihedralsTriclinicSingle(const float *i, const float *j, const float *k, const float *l,
+                                          int n, const float *box, float *out) {
+            hn::ScalableTag<float> d;
+            const TriclinicBox vbox(d, box);
+
+            CalcDihedrals(i, j, k, l, n, out, vbox);
+        }
+
         int GetNFloatLanes() {
             hn::ScalableTag<float> d;
             return hn::Lanes(d);
@@ -497,6 +552,12 @@ namespace distopia {
     HWY_EXPORT(CalcAnglesOrthoSingle);
     HWY_EXPORT(CalcAnglesTriclinicDouble);
     HWY_EXPORT(CalcAnglesTriclinicSingle);
+    HWY_EXPORT(CalcDihedralsNoBoxDouble);
+    HWY_EXPORT(CalcDihedralsNoBoxSingle);
+    HWY_EXPORT(CalcDihedralsOrthoDouble);
+    HWY_EXPORT(CalcDihedralsOrthoSingle);
+    HWY_EXPORT(CalcDihedralsTriclinicDouble);
+    HWY_EXPORT(CalcDihedralsTriclinicSingle);
     HWY_EXPORT(GetNFloatLanes);
     HWY_EXPORT(GetNDoubleLanes);
 
@@ -543,6 +604,24 @@ namespace distopia {
     }
     HWY_DLLEXPORT template <> void CalcAnglesTriclinic(const double *a, const double *b, const double *c, int n, const double *box, double *out) {
         return HWY_DYNAMIC_DISPATCH(CalcAnglesTriclinicDouble)(a, b, c, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDihedralsNoBox(const float *a, const float *b, const float *c, const float *d, int n, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDihedralsNoBoxSingle)(a, b, c, d, n, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDihedralsNoBox(const double *a, const double *b, const double *c, const double *d, int n, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDihedralsNoBoxDouble)(a, b, c, d, n, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDihedralsOrtho(const float *a, const float *b, const float *c, const float *d, int n, const float *box, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDihedralsOrthoSingle)(a, b, c, d, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDihedralsOrtho(const double *a, const double *b, const double *c, const double *d, int n, const double *box, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDihedralsOrthoDouble)(a, b, c, d, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDihedralsTriclinic(const float *a, const float *b, const float *c, const float *d, int n, const float *box, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDihedralsTriclinicSingle)(a, b, c, d, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDihedralsTriclinic(const double *a, const double *b, const double *c, const double *d, int n, const double *box, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDihedralsTriclinicDouble)(a, b, c, d, n, box, out);
     }
 }
 
