@@ -407,9 +407,9 @@ namespace distopia {
                 hn::StoreU(result, d, dst + p);
             }
 
-            //if (HWY_UNLIKELY(n < nlanes)) {
-            //    memcpy(out, dst, n * sizeof(T));
-            //}
+            if (HWY_UNLIKELY(n < nlanes)) {
+                memcpy(out, dst, n * sizeof(T));
+            }
         }
 
         template <class V, typename T = hn::TFromV<V>, class B>
