@@ -275,7 +275,7 @@ namespace distopia {
 
             for (int i=0; i<n; i += nlanes) {
                 // to deal with end of loop, can't load starting further than a[n - nlanes] so clip i to that
-                size_t p = HWY_MIN(i, n - nlanes);
+                size_t p = HWY_MAX(HWY_MIN(i, n - nlanes), 0);
 
                 hn::LoadInterleaved3(d, a_src + 3 * p, a_x, a_y, a_z);
                 hn::LoadInterleaved3(d, b_src + 3 * p, b_x, b_y, b_z);
@@ -393,7 +393,7 @@ namespace distopia {
             auto c_z = hn::Undefined(d);
 
             for (int i=0; i<n; i += nlanes) {
-                size_t p = HWY_MIN(i, n - nlanes);
+                size_t p = HWY_MAX(HWY_MIN(i, n - nlanes), 0);
 
                 hn::LoadInterleaved3(d, a_src + 3 * p, a_x, a_y, a_z);
                 hn::LoadInterleaved3(d, b_src + 3 * p, b_x, b_y, b_z);
