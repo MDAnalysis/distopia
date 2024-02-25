@@ -43,7 +43,7 @@ TEST(TestAngles, TestThing) {
             y[j*3 + 1] = 0;
             y[j*3 + 2] = 0;
             // k spins around 8 points...
-            switch(j) {
+            switch(j%8) {
                 case 0:
                     z[j*3] = 0;
                     z[j*3 + 1] = 0;
@@ -79,11 +79,15 @@ TEST(TestAngles, TestThing) {
                     z[j*3 + 1] = - 1;
                     z[j*3 + 2] = 0;
                     break;
-                default:
                 case 7:
                     z[j*3] = 0;
                     z[j*3 + 1] = - 1;
                     z[j*3 + 2] = 0;
+                    break;
+                default:
+                    z[j*3] = 777;
+                    z[j*3 + 1] = 777;
+                    z[j*3 + 2] = 777;
                     break;
             }
         }
