@@ -529,7 +529,7 @@ namespace distopia {
             auto d_z = hn::Undefined(d);
 
             for (int iii=0; iii<n; iii += nlanes) {
-                size_t p = HWY_MIN(iii, n - nlanes);
+                size_t p = HWY_MAX(HWY_MIN(iii, n - nlanes), 0);
 
                 hn::LoadInterleaved3(d, a_src + 3 * p, a_x, a_y, a_z);
                 hn::LoadInterleaved3(d, b_src + 3 * p, b_x, b_y, b_z);
