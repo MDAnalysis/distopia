@@ -40,6 +40,29 @@ cdef extern from "distopia.h" namespace "distopia" nogil:
         const T *box,
         T *output
     )
+    void CalcAnglesNoBox[T](
+        const T *coords0,
+        const T *coords1,
+        const T *coords2,
+        size_t n,
+        T *out
+    )
+    void CalcAnglesOrtho[T](
+        const T *coords0,
+        const T *coords1,
+        const T *coords2,
+        size_t n,
+        const T *box,
+        T *out
+    )
+    void CalcAnglesTriclinic[T](
+        const T *coords0,
+        const T *coords1,
+        const T *coords2,
+        size_t n,
+        const T *box,
+        T *out
+    )
 
 def get_n_float_lanes():
     """The number of floats per register distopia will handle on this system"""
@@ -161,5 +184,82 @@ def  calc_bonds_triclinic(floating[:, ::1] coords0,
     results_view = results
 
     CalcBondsTriclinic(& coords0[0][0], & coords1[0][0], nvals, & box[0], & results_view[0])
+
+    return np.array(results)
+
+
+def calc_angles_no_box(
+     floating[:, ::1] coords0,
+     floating[:, ::1] coords1,
+     floating[:, ::1] coords2,
+     floating[::1] results=None):
+    cdef floating[::1] results_view
+    cdef size_t nvals = coords0.shape[0]
+    cdef cnp.npy_intp[1] dims
+
+    dims[0] = <ssize_t > nvals  # FIXME truncation?
+
+    if results is None:
+        if floating is float:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+        else:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+
+    results_view = results
+
+    CalcAnglesNoBox(&coords0[0][0], &coords1[0][0], &coords2[0][0],
+                    nvals, &results_view[0])
+
+    return np.array(results)
+
+
+def calc_angles_ortho(
+     floating[:, ::1] coords0,
+     floating[:, ::1] coords1,
+     floating[:, ::1] coords2,
+     floating[::1] box,
+     floating[::1] results=None):
+    cdef floating[::1] results_view
+    cdef size_t nvals = coords0.shape[0]
+    cdef cnp.npy_intp[1] dims
+
+    dims[0] = <ssize_t > nvals  # FIXME truncation?
+
+    if results is None:
+        if floating is float:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+        else:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+
+    results_view = results
+
+    CalcAnglesOrtho(&coords0[0][0], &coords1[0][0], &coords2[0][0],
+                    nvals, &box[0], &results_view[0])
+
+    return np.array(results)
+
+
+def calc_angles_triclinic(
+     floating[:, ::1] coords0,
+     floating[:, ::1] coords1,
+     floating[:, ::1] coords2,
+     floating[::1] box,
+     floating[::1] results=None):
+    cdef floating[::1] results_view
+    cdef size_t nvals = coords0.shape[0]
+    cdef cnp.npy_intp[1] dims
+
+    dims[0] = <ssize_t > nvals  # FIXME truncation?
+
+    if results is None:
+        if floating is float:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+        else:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+
+    results_view = results
+
+    CalcAnglesTriclinic(&coords0[0][0], &coords1[0][0], &coords2[0][0],
+                        nvals, &box[0], &results_view[0])
 
     return np.array(results)
