@@ -551,6 +551,12 @@ namespace distopia {
             }
         }
 
+        template <typename T, typename B>
+        void CalcDistanceArray(const T *a, const T *b, int na, int nb,
+                               T *out, B &box){
+            *out = 1.0;
+        }
+
         void CalcBondsNoBoxDouble(const double *a, const double *b, int n, double *out) {
             hn::ScalableTag<double> d;
             const NoBox vbox(d);
@@ -658,6 +664,36 @@ namespace distopia {
 
             CalcDihedrals(i, j, k, l, n, out, vbox);
         }
+        void CalcDistanceArrayNoBoxDouble(const double *a, const double *b, int na, int nb, double *out) {
+            hn::ScalableTag<double> d;
+            const NoBox vbox(d);
+            CalcDistanceArray(a, b, na, nb, out, vbox);
+        }
+        void CalcDistanceArrayNoBoxSingle(const float *a, const float *b, int na, int nb, float *out) {
+            hn::ScalableTag<double> d;
+            const NoBox vbox(d);
+            CalcDistanceArray(a, b, na, nb, out, vbox);
+        }
+        void CalcDistanceArrayOrthoDouble(const double *a, const double *b, int na, int nb, const double *box, double *out) {
+            hn::ScalableTag<double> d;
+            const OrthogonalBox vbox(d, box);
+            CalcDistanceArray(a, b, na, nb, out, vbox);
+        }
+        void CalcDistanceArrayOrthoSingle(const float *a, const float *b, int na, int nb, const float *box, float *out) {
+            hn::ScalableTag<double> d;
+            const OrthogonalBox vbox(d, box);
+            CalcDistanceArray(a, b, na, nb, out, vbox);
+        }
+        void CalcDistanceArrayTriclinicDouble(const double *a, const double *b, int na, int nb, const double *box, double *out) {
+            hn::ScalableTag<double> d;
+            const TriclinicBox vbox(d, box);
+            CalcDistanceArray(a, b, na, nb, out, vbox);
+        }
+        void CalcDistanceArrayTriclinicSingle(const float *a, const float *b, int na, int nb, const float *box, float *out) {
+            hn::ScalableTag<double> d;
+            const TriclinicBox vbox(d, box);
+            CalcDistanceArray(a, b, na, nb, out, vbox);
+        }
 
         int GetNFloatLanes() {
             hn::ScalableTag<float> d;
@@ -693,6 +729,12 @@ namespace distopia {
     HWY_EXPORT(CalcDihedralsOrthoSingle);
     HWY_EXPORT(CalcDihedralsTriclinicDouble);
     HWY_EXPORT(CalcDihedralsTriclinicSingle);
+    HWY_EXPORT(CalcDistanceArrayNoBoxDouble);
+    HWY_EXPORT(CalcDistanceArrayNoBoxSingle);
+    HWY_EXPORT(CalcDistanceArrayOrthoDouble);
+    HWY_EXPORT(CalcDistanceArrayOrthoSingle);
+    HWY_EXPORT(CalcDistanceArrayTriclinicDouble);
+    HWY_EXPORT(CalcDistanceArrayTriclinicSingle);
     HWY_EXPORT(GetNFloatLanes);
     HWY_EXPORT(GetNDoubleLanes);
 
@@ -758,6 +800,25 @@ namespace distopia {
     HWY_DLLEXPORT template <> void CalcDihedralsTriclinic(const double *a, const double *b, const double *c, const double *d, int n, const double *box, double *out) {
         return HWY_DYNAMIC_DISPATCH(CalcDihedralsTriclinicDouble)(a, b, c, d, n, box, out);
     }
+    HWY_DLLEXPORT template <> void CalcDistanceArrayNoBox(const double *a, const double *b, int na, int nb, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxDouble)(a, b, na, nb, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDistanceArrayNoBox(const float *a, const float* b, int na, int nb, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxSingle)(a, b, na, nb, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDistanceArrayOrtho(const double *a, const double *b, int na, int nb, const double *box, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayOrthoDouble)(a, b, na, nb, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDistanceArrayOrtho(const float *a, const float* b, int na, int nb, const float *box, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayOrthoSingle)(a, b, na, nb, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDistanceArrayTriclinic(const double *a, const double *b, int na, int nb, const double *box, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicDouble)(a, b, na, nb, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDistanceArrayTriclinic(const float *a, const float* b, int na, int nb, const float *box, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicSingle)(a, b, na, nb, box, out);
+    }
+
 }
 
 #endif

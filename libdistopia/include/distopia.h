@@ -15,6 +15,9 @@ namespace distopia {
     template <typename T> void CalcDihedralsNoBox(const T *a, const T *b, const T *c, const T *d, int n, T *out);
     template <typename T> void CalcDihedralsOrtho(const T *a, const T *b, const T *c, const T *d, int n, const T *box, T *out);
     template <typename T> void CalcDihedralsTriclinic(const T *a, const T *b, const T *c, const T *d, int n, const T *box, T *out);
+    template <typename T> void CalcDistanceArrayNoBox(const T *a, const T *b, int na, int nb, T *out);
+    template <typename T> void CalcDistanceArrayOrtho(const T *a, const T *b, int na, int nb, const T *box, T *out);
+    template <typename T> void CalcDistanceArrayTriclinic(const T *a, const T *b, int na, int nb, const T *box, T *out);
     int GetNFloatLanes();
     int GetNDoubleLanes();
 }
