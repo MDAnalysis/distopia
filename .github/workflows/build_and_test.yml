@@ -51,10 +51,6 @@ jobs:
           - os: windows-latest
             cxx_compiler: "cl"
             c_compiler: "cl"
-        # exclude:
-        # excludes AVX2 on macOS as the VM doesn't seem to support some AVX2 instructions.
-        #  - os: macos-13
-        #    instruction_set_flag: "-DDISTOPIA_MANUAL_SELECT_SIMD=ON -DDISTOPIA_USE_AVX2=ON -DDISTOPIA_BUILD_TEST=ON"
 
     steps:
     - uses: actions/checkout@v3
