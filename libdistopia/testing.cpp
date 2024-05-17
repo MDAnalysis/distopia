@@ -138,6 +138,29 @@ TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0)
 }
 
 
+TYPED_TEST(DistancesTest, CalcBondsTriclinicKnownValues0) {
+    constexpr int N = 18;
+    TypeParam coords0[3 * N] = {0};
+    TypeParam coords1[3 * N] = {0};
+    TypeParam out[N];
+    // values strung out on x axis {0,0,0} {1,0,0}, {2,0,0}
+    for (int i = 0; i < N; i++)
+    {
+        coords1[3 * i] = i;
+    }
+    TypeParam box[9] = {8, 8, 8, 0, 0, 0, 0, 0, 0};
+    TypeParam ref[N] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
+
+    distopia::CalcBondsTriclinic(coords0, coords1, N, box, out);
+
+    for (int i = 0; i < N; i++)
+    {
+        EXPECT_SCALAR_EQ(ref[i], out[i]);
+    }
+
+}
+
+
 template <typename T>
 class AnglesTest : public ::testing::Test
 {

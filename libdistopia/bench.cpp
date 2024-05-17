@@ -65,11 +65,11 @@ public:
     box[1] = boxsize;
     box[2] = boxsize;
     triclinic_box[0] = boxsize;
-    triclinic_box[1] = boxsize / 10.;
+    triclinic_box[1] = boxsize;
     triclinic_box[2] = boxsize;
-    triclinic_box[3] = boxsize / 10.;
-    triclinic_box[4] = boxsize / 10.;
-    triclinic_box[5] = boxsize;
+    triclinic_box[3] = 70;
+    triclinic_box[4] = 110;
+    triclinic_box[5] = 95;
 
     RandomInt(idxs, nindicies, 0, nindicies - 1);
   }
@@ -180,6 +180,27 @@ BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxDouble)
     ->RangeMultiplier(4);
 
 
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoOutBoxFloat,
+                            float)
+(benchmark::State &state) { BM_calc_bonds_ortho(state); }
+
+
+// coords can be +- 5 over boxlength
+BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsOrthoOutBoxFloat)
+        ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+        ->RangeMultiplier(4);
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoOutBoxDouble,
+                            double)
+(benchmark::State &state) { BM_calc_bonds_ortho(state); }
+
+// coords can be +- 5 over boxlength
+BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsOrthoOutBoxDouble)
+    ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+    ->RangeMultiplier(4);
+
+
 BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_bonds_triclinic(state); }
@@ -189,7 +210,6 @@ BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxFloat)
         ->RangeMultiplier(4);
 
 
-
 BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_bonds_triclinic(state); }
@@ -197,6 +217,27 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxDouble
 BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxDouble)
         ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
         ->RangeMultiplier(4);
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicOutBoxFloat,
+                            float)
+(benchmark::State &state) { BM_calc_bonds_triclinic(state); }
+
+
+BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsTriclinicOutBoxFloat)
+        ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+        ->RangeMultiplier(4);
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicOutBoxDouble,
+                            double)
+(benchmark::State &state) { BM_calc_bonds_triclinic(state); }
+
+
+BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsTriclinicOutBoxDouble)
+        ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+        ->RangeMultiplier(4);
+
 
 
 BENCHMARK_MAIN();
