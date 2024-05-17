@@ -137,3 +137,127 @@ TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0)
     }
 }
 
+
+template <typename T>
+class AnglesTest : public ::testing::Test
+{
+public:
+    // blank, we do all the stuff in each test
+};
+
+
+TYPED_TEST_SUITE(AnglesTest, ScalarTypes);
+
+
+TYPED_TEST(AnglesTest, HelicopterTest) {
+    constexpr int NVALS = 128;
+    float a[NVALS * 3];
+    float b[NVALS * 3];
+    float c[NVALS * 3];
+    float out[NVALS];
+    float ref[NVALS];
+
+    /*
+     * I'm calling this the helicopter test
+     * keep a and b position fixed,
+     * then in that plane rotate c around to get 8 known angle values out
+     */
+    for (int i=0; i<NVALS/8; ++i) {
+        float *x, *y, *z;
+        x=a;
+        y=b;
+        z=c;
+
+        // spin around and create 8 points
+        for (int j=i*8; j<NVALS; ++j) {
+            // i = (0, 0, 0)
+            x[j*3] = 0;
+            x[j*3 + 1] = 0;
+            x[j*3 + 2] = 0;
+            // j = (1, 0, 0)
+            y[j*3] = 1;
+            y[j*3 + 1] = 0;
+            y[j*3 + 2] = 0;
+            // k spins around 8 points...
+            switch(j%8) {
+                case 0:
+                    z[j*3] = 0;
+                    z[j*3 + 1] = 0;
+                    z[j*3 + 2] = 0;
+                    break;
+                case 1:
+                    z[j*3] = 0;
+                    z[j*3 + 1] = 1;
+                    z[j*3 + 2] = 0;
+                    break;
+                case 2:
+                    z[j*3] = 1;
+                    z[j*3 + 1] = 1;
+                    z[j*3 + 2] = 0;
+                    break;
+                case 3:
+                    z[j*3] = 2;
+                    z[j*3 + 1] = 1;
+                    z[j*3 + 2] = 0;
+                    break;
+                case 4:
+                    z[j*3] = 2;
+                    z[j*3 + 1] = 0;
+                    z[j*3 + 2] = 0;
+                    break;
+                case 5:
+                    z[j*3] = 2;
+                    z[j*3 + 1] = - 1;
+                    z[j*3 + 2] = 0;
+                    break;
+                case 6:
+                    z[j*3] = 1;
+                    z[j*3 + 1] = - 1;
+                    z[j*3 + 2] = 0;
+                    break;
+                case 7:
+                    z[j*3] = 0;
+                    z[j*3 + 1] = - 1;
+                    z[j*3 + 2] = 0;
+                    break;
+                default:
+                    z[j*3] = 777;
+                    z[j*3 + 1] = 777;
+                    z[j*3 + 2] = 777;
+                    break;
+            }
+        }
+    }
+
+    for (int i=0; i<NVALS; ++i) {
+        switch(i%8) {
+            default:
+            case 0:
+                ref[i] = 0.0;
+                break;
+            case 1:
+            case 7:
+                ref[i] = M_PI / 4.;
+                break;
+            case 2:
+            case 6:
+                ref[i] = M_PI / 2.;
+                break;
+            case 3:
+            case 5:
+                ref[i] = 3 * M_PI / 4.;
+                break;
+            case 4:
+                ref[i] = M_PI;
+                break;
+        }
+    }
+
+    distopia::CalcAnglesNoBox(a, b, c, NVALS, out);
+
+    for (int i=0; i<NVALS; ++i) {
+
+        EXPECT_SCALAR_EQ(out[i], ref[i]);
+    }
+}
+

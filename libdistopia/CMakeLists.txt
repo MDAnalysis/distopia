@@ -8,13 +8,6 @@ add_subdirectory("googlebench")
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 
-add_executable(demo "test.cpp")
-target_sources(demo PRIVATE "library.h" "library.cpp")
-target_link_libraries(demo PRIVATE hwy)
-target_include_directories(demo PUBLIC "highway")
-target_include_directories(demo PUBLIC  ${CMAKE_CURRENT_LIST_DIR})
-
-
 add_library(distopia)
 target_sources(distopia PRIVATE "src/distopia.cpp")
 target_link_libraries(distopia PRIVATE hwy)
@@ -23,12 +16,6 @@ target_include_directories(distopia PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
         "${CMAKE_CURRENT_LIST_DIR}/include")
 
-add_executable(run_calc_bonds)
-target_sources(run_calc_bonds PRIVATE "run_calc_bonds.cpp")
-target_link_libraries(run_calc_bonds PUBLIC distopia)
-target_include_directories(run_calc_bonds PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR}
-        "${CMAKE_CURRENT_LIST_DIR}/include")
 
 add_executable(run_bench)
 target_sources(run_bench PRIVATE "bench.cpp")
