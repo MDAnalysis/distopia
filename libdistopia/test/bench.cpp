@@ -3,238 +3,152 @@
 #include <random>
 
 #include "distopia.h"
+#include "test_utils.h"
+#include "test_fixtures.h"
 
 
-// creates nrandom floating points between pos and neg limit
+constexpr int BOXSIZE = 30;
+
 template <typename T>
-void RandomFloatingPoint(T *target, const int nrandom, const int neglimit,
-                         const int poslimit)
-{
-    std::random_device rd;
-    std::mt19937 gen(rd()); // Standard mersenne_twister_engine
-    std::uniform_real_distribution<T> distribution(neglimit, poslimit);
-    for (size_t i = 0; i < nrandom; i++)
-    {
-        target[i] = distribution(gen);
-    }
-}
-
-// creates nrandom integers between pos and neg and limit
-void RandomInt(std::size_t *target, const int nrandom, const int neglimit,
-               const int poslimit)
-{
-    std::random_device rd;
-    std::mt19937 gen(rd()); // Standard mersenne_twister_engine
-    std::uniform_int_distribution<std::size_t> distribution(neglimit, poslimit);
-    for (size_t i = 0; i < nrandom; i++)
-    {
-        target[i] = distribution(gen);
-    }
-}
-
-
-#define BOXSIZE 30
-
-
-template <typename T> class CoordinatesDynamicMem : public benchmark::Fixture {
+class CoordinatesBenchContainer : public benchmark::Fixture {
 public:
   void SetUp(benchmark::State &state) override {
     ncoords = static_cast<std::size_t>(state.range(0));
-
-    InitCoords(state.range(0), state.range(1), BOXSIZE, state.range(1));
-  }
-  // coordinates range from 0 - delta to BOXSIZE + delta
-  void InitCoords(const int n_results, const int n_indicies,
-                  const double boxsize, const double delta) {
-
-    nresults = n_results;
-    ncoords = 3 * nresults;
-    nindicies = n_indicies;
-    nidx_results = n_indicies / 2;
-
-    coords0 = new T[ncoords];
-    coords1 = new T[ncoords];
-    ref = new T[nresults];
-    results = new T[nresults];
-    idxs = new std::size_t[nindicies];
-
-    RandomFloatingPoint<T>(coords0, ncoords, 0 - delta, boxsize + delta);
-    RandomFloatingPoint<T>(coords1, ncoords, 0 - delta, boxsize + delta);
-
-    box[0] = boxsize;
-    box[1] = boxsize;
-    box[2] = boxsize;
-    triclinic_box[0] = boxsize;
-    triclinic_box[1] = boxsize;
-    triclinic_box[2] = boxsize;
-    triclinic_box[3] = 70;
-    triclinic_box[4] = 110;
-    triclinic_box[5] = 95;
-
-    RandomInt(idxs, nindicies, 0, nindicies - 1);
+    coords_instance = Coordinates(state.range(0), state.range(1), BOXSIZE, state.range(1));
+    
   }
 
-  void TearDown(const ::benchmark::State &state) override {
-    if (coords0) {
-      delete[] coords0;
-    }
-    if (coords1) {
-      delete[] coords1;
-    }
-    if (ref) {
-      delete[] ref;
-    }
-
-    if (results) {
-      delete[] results;
-    }
-
-    if (idxs) {
-      delete[] idxs;
-    }
-  }
 
   // members
-  int ncoords;
-  int nresults;
-  int nindicies;
-  int nidx_results;
-
-  T *coords0 = nullptr;
-  T *coords1 = nullptr;
-  T *ref = nullptr;
-  T *results = nullptr;
-  T box[3];
-  T triclinic_box[6];
-  std::size_t *idxs = nullptr;
+  Coordinates coords_instance;
 
   void BM_calc_bonds(benchmark::State &state) {
     for (auto _ : state) {
-        distopia::CalcBondsNoBox(coords0, coords1, nresults, results);
+        distopia::CalcBondsNoBox(coords_instance.coords0, coords_instance.coords1, coords_instance.nresults, coords_instance.results);
     }
-    state.SetItemsProcessed(nresults * state.iterations());
+    state.SetItemsProcessed(coords_instance.nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
-        nresults * state.iterations(),
+        coords_instance.nresults * state.iterations(),
         benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
   }
 
   void BM_calc_bonds_ortho(benchmark::State &state) {
     for (auto _ : state) {
-        distopia::CalcBondsOrtho(coords0, coords1, nresults, box, results);
+        distopia::CalcBondsOrtho(coords_instance.coords0, coords_instance.coords1, coords_instance.nresults, coords_instance.box, coords_instance.results);
     }
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
-        nresults * state.iterations(),
+        coords_instance.nresults * state.iterations(),
         benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
   }
 
   void BM_calc_bonds_triclinic(benchmark::State &state) {
       for (auto _ : state) {
-          distopia::CalcBondsTriclinic(coords0, coords1, nresults, triclinic_box, results);
+          distopia::CalcBondsTriclinic(coords_instance.coords0, coords_instance.coords1, coords_instance.nresults, coords_instance.triclinic_box, coords_instance.results);
       }
       state.SetItemsProcessed(nresults * state.iterations());
       state.counters["Per Result"] = benchmark::Counter(
-              nresults * state.iterations(),
+              coords_instance.nresults * state.iterations(),
               benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
   }
 };
 
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsInBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBenchContainer, CalcBondsInBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_bonds(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsInBoxFloat)
+BENCHMARK_REGISTER_F(CoordinatesBenchContainer, CalcBondsInBoxFloat)
     ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsInBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBenchContainer, CalcBondsInBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_bonds(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsInBoxDouble)
+BENCHMARK_REGISTER_F(CoordinatesBenchContainer, CalcBondsInBoxDouble)
     ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBenchContainer, CalcBondsOrthoInBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_bonds_ortho(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxFloat)
+BENCHMARK_REGISTER_F(CoordinatesBenchContainer, CalcBondsOrthoInBoxFloat)
     ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBenchContainer, CalcBondsOrthoInBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_bonds_ortho(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxDouble)
+BENCHMARK_REGISTER_F(CoordinatesBenchContainer, CalcBondsOrthoInBoxDouble)
     ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBenchContainer, CalcBondsOrthoOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_bonds_ortho(state); }
 
 
 // coords can be +- 5 over boxlength
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsOrthoOutBoxFloat)
+BENCHMARK_REGISTER_F(CoordinatesBenchContainer, CalcBondsOrthoOutBoxFloat)
         ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBenchContainer, CalcBondsOrthoOutBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_bonds_ortho(state); }
 
 // coords can be +- 5 over boxlength
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsOrthoOutBoxDouble)
+BENCHMARK_REGISTER_F(CoordinatesBenchContainer, CalcBondsOrthoOutBoxDouble)
     ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
     ->RangeMultiplier(4);
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBenchContainer, CalcBondsTriclinicInBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_bonds_triclinic(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxFloat)
+BENCHMARK_REGISTER_F(CoordinatesBenchContainer, CalcBondsTriclinicInBoxFloat)
         ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
         ->RangeMultiplier(4);
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBenchContainer, CalcBondsTriclinicInBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_bonds_triclinic(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxDouble)
+BENCHMARK_REGISTER_F(CoordinatesBenchContainer, CalcBondsTriclinicInBoxDouble)
         ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
         ->RangeMultiplier(4);
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBenchContainer, CalcBondsTriclinicOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_bonds_triclinic(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsTriclinicOutBoxFloat)
+BENCHMARK_REGISTER_F(CoordinatesBenchContainer, CalcBondsTriclinicOutBoxFloat)
         ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBenchContainer, CalcBondsTriclinicOutBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_bonds_triclinic(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsTriclinicOutBoxDouble)
+BENCHMARK_REGISTER_F(CoordinatesBenchContainer, CalcBondsTriclinicOutBoxDouble)
         ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
