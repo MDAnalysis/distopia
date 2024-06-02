@@ -641,8 +641,8 @@ static void _calc_bond_distance_triclinic(ScalarToCoordinateT<T>* atom1, ScalarT
                                           uint64_t numatom, U* box,
                                           T* distances)
 {
-  _triclinic_pbc(atom1, numatom, box);
-  _triclinic_pbc(atom2, numatom, box);
+  _triclinic_pbc<T, U>(atom1, numatom, box);
+  _triclinic_pbc<T, U>(atom2, numatom, box);
 
 #ifdef PARALLEL
 #pragma omp parallel for shared(distances)
@@ -653,7 +653,7 @@ static void _calc_bond_distance_triclinic(ScalarToCoordinateT<T>* atom1, ScalarT
     dx[1] = atom1[i][1] - atom2[i][1];
     dx[2] = atom1[i][2] - atom2[i][2];
     // PBC time!
-    minimum_image_triclinic(dx, box);
+    minimum_image_triclinic<T,U>(dx, box);
     T rsq = (dx[0]*dx[0])+(dx[1]*dx[1])+(dx[2]*dx[2]);
     *(distances+i) = sqrt(rsq);
   }
@@ -801,7 +801,6 @@ static void _calc_dihedral_angle(T* va, T* vb, T* vc, T* result)
   vb_norm = sqrt(vb[0]*vb[0] + vb[1]*vb[1] + vb[2]*vb[2]);
 
   y = (xp[0]*vb[0] + xp[1]*vb[1] + xp[2]*vb[2]) / vb_norm;
-
   if ( (fabs(x) == 0.0) && (fabs(y) == 0.0) ) // numpy consistency
   {
     *result = NAN;
@@ -812,7 +811,7 @@ static void _calc_dihedral_angle(T* va, T* vb, T* vc, T* result)
 }
 
 
-template <typename T, typename U>
+template <typename T>
 static void _calc_dihedral(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
                            ScalarToCoordinateT<T>* atom3, ScalarToCoordinateT<T>* atom4,
                            uint64_t numatom, T* angles)
@@ -836,7 +835,7 @@ static void _calc_dihedral(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>
     vc[1] = atom4[i][1] - atom3[i][1];
     vc[2] = atom4[i][2] - atom3[i][2];
 
-    _calc_dihedral_angle(va, vb, vc, angles + i);
+    _calc_dihedral_angle<T>(va, vb, vc, angles + i);
   }
 }
 
@@ -874,7 +873,7 @@ static void _calc_dihedral_ortho(ScalarToCoordinateT<T>* atom1, ScalarToCoordina
     vc[2] = atom4[i][2] - atom3[i][2];
     minimum_image(vc, box, inverse_box);
 
-    _calc_dihedral_angle(va, vb, vc, angles + i);
+    _calc_dihedral_angle<T>(va, vb, vc, angles + i);
   }
 }
 
@@ -910,7 +909,9 @@ static void _calc_dihedral_triclinic(ScalarToCoordinateT<T>* atom1, ScalarToCoor
     vc[2] = atom4[i][2] - atom3[i][2];
     minimum_image_triclinic(vc, box);
 
-    _calc_dihedral_angle(va, vb, vc, angles + i);
+    _calc_dihedral_angle<T>(va, vb, vc, angles + i);
   }
 }
+
+
 #endif

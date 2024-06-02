@@ -281,16 +281,6 @@ namespace distopia {
                 hn::LoadInterleaved3(d, b_src + 3 * p, b_x, b_y, b_z);
 
                 auto result = Distance(a_x, a_y, a_z, b_x, b_y, b_z, box);
-                #ifndef DEBUG_DIST
-                hn::Print(d, "ax is: ", a_x, 0, nlanes);
-                hn::Print(d, "ay is: ", a_y, 0, nlanes);
-                hn::Print(d, "az is: ", a_z, 0, nlanes);
-                std::cout << std::endl;
-                hn::Print(d, "bx is: ", b_x, 0, nlanes);
-                hn::Print(d, "by is: ", b_y, 0, nlanes);
-                hn::Print(d, "bz is: ", b_z, 0, nlanes);
-                hn::Print(d, "result is: ", result, 0, 16);
-                #endif
 
                 hn::StoreU(result, d, dst + p);
             }
@@ -444,6 +434,7 @@ namespace distopia {
                     rbc_x, rbc_y, rbc_z,
                     n1x, n1y, n1z);
 
+
             auto n2x = hn::Undefined(d);
             auto n2y = hn::Undefined(d);
             auto n2z = hn::Undefined(d);
@@ -460,24 +451,27 @@ namespace distopia {
                     n2x, n2y, n2z,
                     xp_x, xp_y, xp_z);
 
+
             auto x = hn::Zero(d);
-            hn::MulAdd(n1x, n2x, x);
-            hn::MulAdd(n1y, n2y, x);
-            hn::MulAdd(n1z, n2z, x);
+            x = hn::MulAdd(n1x, n2x, x);
+            x = hn::MulAdd(n1y, n2y, x);
+            x = hn::MulAdd(n1z, n2z, x);
 
             auto vb_norm = hn::Zero(d);
-            hn::MulAdd(bx, bx, vb_norm);
-            hn::MulAdd(by, by, vb_norm);
-            hn::MulAdd(bz, bz, vb_norm);
+            vb_norm = hn::MulAdd(rbc_x, rbc_x, vb_norm);
+            vb_norm = hn::MulAdd(rbc_y, rbc_y, vb_norm);
+            vb_norm = hn::MulAdd(rbc_z, rbc_z, vb_norm);
             vb_norm = hn::Sqrt(vb_norm);
 
             auto y = hn::Zero(d);
-            hn::MulAdd(xp_x, bx, y);
-            hn::MulAdd(xp_y, by, y);
-            hn::MulAdd(xp_z, bz, y);
+            y = hn::MulAdd(xp_x, rbc_x, y);
+            y = hn::MulAdd(xp_y, rbc_y, y);
+            y = hn::MulAdd(xp_z, rbc_z, y);
+            
             y = y / vb_norm;
 
-            return hn::Atan2(d, y, x);
+            // negate due to vector order (?)
+            return   hn::Neg(hn::Atan2(d, y, x));
         }
 
         template <typename T, typename B>
@@ -535,6 +529,8 @@ namespace distopia {
                 hn::LoadInterleaved3(d, b_src + 3 * p, b_x, b_y, b_z);
                 hn::LoadInterleaved3(d, c_src + 3 * p, c_x, c_y, c_z);
                 hn::LoadInterleaved3(d, d_src + 3 * p, d_x, d_y, d_z);
+
+
 
                 auto result = Dihedral(
                         a_x, a_y, a_z,
