@@ -3,40 +3,19 @@
 #include <random>
 
 #include "distopia.h"
+#include "test_utils.h"
+#include "test_fixtures.h"
+#include <benchmark/benchmark.h>
+#include <iostream>
+#include <random>
 
-
-// creates nrandom floating points between pos and neg limit
-template <typename T>
-void RandomFloatingPoint(T *target, const int nrandom, const int neglimit,
-                         const int poslimit)
-{
-    std::random_device rd;
-    std::mt19937 gen(rd()); // Standard mersenne_twister_engine
-    std::uniform_real_distribution<T> distribution(neglimit, poslimit);
-    for (size_t i = 0; i < nrandom; i++)
-    {
-        target[i] = distribution(gen);
-    }
-}
-
-// creates nrandom integers between pos and neg and limit
-void RandomInt(std::size_t *target, const int nrandom, const int neglimit,
-               const int poslimit)
-{
-    std::random_device rd;
-    std::mt19937 gen(rd()); // Standard mersenne_twister_engine
-    std::uniform_int_distribution<std::size_t> distribution(neglimit, poslimit);
-    for (size_t i = 0; i < nrandom; i++)
-    {
-        target[i] = distribution(gen);
-    }
-}
+#include "distopia.h"
 
 
 #define BOXSIZE 30
 
 
-template <typename T> class CoordinatesDynamicMem : public benchmark::Fixture {
+template <typename T> class CoordinatesBench : public benchmark::Fixture {
 public:
   void SetUp(benchmark::State &state) override {
     ncoords = static_cast<std::size_t>(state.range(0));
@@ -64,12 +43,20 @@ public:
     box[0] = boxsize;
     box[1] = boxsize;
     box[2] = boxsize;
-    triclinic_box[0] = boxsize;
-    triclinic_box[1] = boxsize;
-    triclinic_box[2] = boxsize;
-    triclinic_box[3] = 70;
-    triclinic_box[4] = 110;
-    triclinic_box[5] = 95;
+
+    // triclinic box
+    // [30, 30, 30, 70, 110, 95]  in L ,M, N alpha, beta, gamma format
+    // in matrix form
+
+    triclinic_box[0] = 30;
+    triclinic_box[1] = 0;
+    triclinic_box[2] = 0;
+    triclinic_box[3] = -2.6146722;
+    triclinic_box[4] = 29.885841;
+    triclinic_box[5] = 0;
+    triclinic_box[6] = -10.260604;
+    triclinic_box[7] = 9.402112;
+    triclinic_box[8] = 26.576687;
 
     RandomInt(idxs, nindicies, 0, nindicies - 1);
   }
@@ -105,7 +92,7 @@ public:
   T *ref = nullptr;
   T *results = nullptr;
   T box[3];
-  T triclinic_box[6];
+  T triclinic_box[9];
   std::size_t *idxs = nullptr;
 
   void BM_calc_bonds(benchmark::State &state) {
@@ -141,100 +128,100 @@ public:
 
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsInBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsInBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_bonds(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsInBoxFloat)
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsInBoxFloat)
     ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsInBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsInBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_bonds(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsInBoxDouble)
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsInBoxDouble)
     ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsOrthoInBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_bonds_ortho(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxFloat)
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsOrthoInBoxFloat)
     ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsOrthoInBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_bonds_ortho(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsOrthoInBoxDouble)
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsOrthoInBoxDouble)
     ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsOrthoOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_bonds_ortho(state); }
 
 
 // coords can be +- 5 over boxlength
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsOrthoOutBoxFloat)
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsOrthoOutBoxFloat)
         ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsOrthoOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsOrthoOutBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_bonds_ortho(state); }
 
 // coords can be +- 5 over boxlength
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsOrthoOutBoxDouble)
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsOrthoOutBoxDouble)
     ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
     ->RangeMultiplier(4);
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsTriclinicInBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_bonds_triclinic(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxFloat)
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsTriclinicInBoxFloat)
         ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
         ->RangeMultiplier(4);
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsTriclinicInBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_bonds_triclinic(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsTriclinicInBoxDouble)
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsTriclinicInBoxDouble)
         ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
         ->RangeMultiplier(4);
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsTriclinicOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_bonds_triclinic(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsTriclinicOutBoxFloat)
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsTriclinicOutBoxFloat)
         ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesDynamicMem, CalcBondsTriclinicOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsTriclinicOutBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_bonds_triclinic(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesDynamicMem, CalcBondsTriclinicOutBoxDouble)
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsTriclinicOutBoxDouble)
         ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
