@@ -547,6 +547,66 @@ namespace distopia {
             }
         }
 
+        template <typename T, typename B>
+        void CalcDistanceArray(const T *a, const T *b, int na, int nb,
+                               T *out, B &box){
+            const hn::ScalableTag<T> d;
+            int nlanes = hn::Lanes(d);
+
+            T a_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            T b_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            T out_sub[HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            const T *a_src, *b_src;
+            T *dst;
+
+            if (HWY_UNLIKELY(na < nlanes)) {
+                memcpy(a_sub, a, 3 * na * sizeof(T));
+            } else {
+                a_src = &a[0];
+            }
+            if (HWY_UNLIKELY(nb < nlanes)) {
+                memcpy(b_sub, b, 3 * nb * sizeof(T));
+            } else {
+                b_src = &b[0];
+            }
+            if (HWY_UNLIKELY(na * nb < nlanes)) {
+                dst = &out_sub[0];
+            } else {
+                dst = out;
+            }
+
+            auto b_x = hn::Undefined(d);
+            auto b_y = hn::Undefined(d);
+            auto b_z = hn::Undefined(d);
+
+            for (int ia=0; ia < na; ++ia) {
+                // load a single value from a
+                auto a_x = hn::Set(d, a_src[3 * ia]);
+                auto a_y = hn::Set(d, a_src[3 * ia + 1]);
+                auto a_z = hn::Set(d, a_src[3 * ia + 2]);
+
+                // first result offset, the row we're on
+                size_t p_a = ia * na;
+
+                for (int ib=0; ib < nb; ib += nlanes) {
+                    // also used as second result offset
+
+                    size_t p_b = HWY_MAX(HWY_MIN(ib, nb - nlanes), 0);
+
+                    hn::LoadInterleaved3(d, b_src + 3 * p_b, b_x, b_y, b_z);
+
+                    //auto result = Distance(a_x, a_y, a_z, b_x, b_y, b_z, box);
+
+                    //hn::StoreU(result, d, dst + p_a + p_b);
+                }
+            }
+
+            if (HWY_UNLIKELY(na * nb < nlanes)) {
+                memcpy(out, dst, na * nb * sizeof(T));
+            }
+
+        }
+
         void CalcBondsNoBoxDouble(const double *a, const double *b, int n, double *out) {
             hn::ScalableTag<double> d;
             const NoBox vbox(d);
@@ -654,6 +714,36 @@ namespace distopia {
 
             CalcDihedrals(i, j, k, l, n, out, vbox);
         }
+        void CalcDistanceArrayNoBoxDouble(const double *a, const double *b, int na, int nb, double *out) {
+            hn::ScalableTag<double> d;
+            const NoBox vbox(d);
+            CalcDistanceArray(a, b, na, nb, out, vbox);
+        }
+        void CalcDistanceArrayNoBoxSingle(const float *a, const float *b, int na, int nb, float *out) {
+            hn::ScalableTag<double> d;
+            const NoBox vbox(d);
+            CalcDistanceArray(a, b, na, nb, out, vbox);
+        }
+        void CalcDistanceArrayOrthoDouble(const double *a, const double *b, int na, int nb, const double *box, double *out) {
+            hn::ScalableTag<double> d;
+            const OrthogonalBox vbox(d, box);
+            CalcDistanceArray(a, b, na, nb, out, vbox);
+        }
+        void CalcDistanceArrayOrthoSingle(const float *a, const float *b, int na, int nb, const float *box, float *out) {
+            hn::ScalableTag<double> d;
+            const OrthogonalBox vbox(d, box);
+            CalcDistanceArray(a, b, na, nb, out, vbox);
+        }
+        void CalcDistanceArrayTriclinicDouble(const double *a, const double *b, int na, int nb, const double *box, double *out) {
+            hn::ScalableTag<double> d;
+            const TriclinicBox vbox(d, box);
+            CalcDistanceArray(a, b, na, nb, out, vbox);
+        }
+        void CalcDistanceArrayTriclinicSingle(const float *a, const float *b, int na, int nb, const float *box, float *out) {
+            hn::ScalableTag<double> d;
+            const TriclinicBox vbox(d, box);
+            CalcDistanceArray(a, b, na, nb, out, vbox);
+        }
 
         int GetNFloatLanes() {
             hn::ScalableTag<float> d;
@@ -689,6 +779,12 @@ namespace distopia {
     HWY_EXPORT(CalcDihedralsOrthoSingle);
     HWY_EXPORT(CalcDihedralsTriclinicDouble);
     HWY_EXPORT(CalcDihedralsTriclinicSingle);
+    HWY_EXPORT(CalcDistanceArrayNoBoxDouble);
+    HWY_EXPORT(CalcDistanceArrayNoBoxSingle);
+    HWY_EXPORT(CalcDistanceArrayOrthoDouble);
+    HWY_EXPORT(CalcDistanceArrayOrthoSingle);
+    HWY_EXPORT(CalcDistanceArrayTriclinicDouble);
+    HWY_EXPORT(CalcDistanceArrayTriclinicSingle);
     HWY_EXPORT(GetNFloatLanes);
     HWY_EXPORT(GetNDoubleLanes);
 
@@ -754,6 +850,25 @@ namespace distopia {
     HWY_DLLEXPORT template <> void CalcDihedralsTriclinic(const double *a, const double *b, const double *c, const double *d, int n, const double *box, double *out) {
         return HWY_DYNAMIC_DISPATCH(CalcDihedralsTriclinicDouble)(a, b, c, d, n, box, out);
     }
+    HWY_DLLEXPORT template <> void CalcDistanceArrayNoBox(const double *a, const double *b, int na, int nb, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxDouble)(a, b, na, nb, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDistanceArrayNoBox(const float *a, const float* b, int na, int nb, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxSingle)(a, b, na, nb, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDistanceArrayOrtho(const double *a, const double *b, int na, int nb, const double *box, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayOrthoDouble)(a, b, na, nb, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDistanceArrayOrtho(const float *a, const float* b, int na, int nb, const float *box, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayOrthoSingle)(a, b, na, nb, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDistanceArrayTriclinic(const double *a, const double *b, int na, int nb, const double *box, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicDouble)(a, b, na, nb, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcDistanceArrayTriclinic(const float *a, const float* b, int na, int nb, const float *box, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicSingle)(a, b, na, nb, box, out);
+    }
+
 }
 
 #endif
