@@ -554,7 +554,61 @@ namespace distopia {
         template <typename T, typename B>
         void CalcDistanceArray(const T *a, const T *b, int na, int nb,
                                T *out, B &box){
-            *out = 1.0;
+            const hn::ScalableTag<T> d;
+            int nlanes = hn::Lanes(d);
+
+            T a_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            T b_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            T out_sub[HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            const T *a_src, *b_src;
+            T *dst;
+
+            if (HWY_UNLIKELY(na < nlanes)) {
+                memcpy(a_sub, a, 3 * na * sizeof(T));
+            } else {
+                a_src = &a[0];
+            }
+            if (HWY_UNLIKELY(nb < nlanes)) {
+                memcpy(b_sub, b, 3 * nb * sizeof(T));
+            } else {
+                b_src = &b[0];
+            }
+            if (HWY_UNLIKELY(na * nb < nlanes)) {
+                dst = &out_sub[0];
+            } else {
+                dst = out;
+            }
+
+            auto b_x = hn::Undefined(d);
+            auto b_y = hn::Undefined(d);
+            auto b_z = hn::Undefined(d);
+
+            for (int ia=0; ia < na; ++ia) {
+                // load a single value from a
+                auto a_x = hn::Set(d, a_src[3 * ia]);
+                auto a_y = hn::Set(d, a_src[3 * ia + 1]);
+                auto a_z = hn::Set(d, a_src[3 * ia + 2]);
+
+                // first result offset, the row we're on
+                size_t p_a = ia * na;
+
+                for (int ib=0; ib < nb; ib += nlanes) {
+                    // also used as second result offset
+
+                    size_t p_b = HWY_MAX(HWY_MIN(ib, nb - nlanes), 0);
+
+                    hn::LoadInterleaved3(d, b_src + 3 * p_b, b_x, b_y, b_z);
+
+                    //auto result = Distance(a_x, a_y, a_z, b_x, b_y, b_z, box);
+
+                    //hn::StoreU(result, d, dst + p_a + p_b);
+                }
+            }
+
+            if (HWY_UNLIKELY(na * nb < nlanes)) {
+                memcpy(out, dst, na * nb * sizeof(T));
+            }
+
         }
 
         void CalcBondsNoBoxDouble(const double *a, const double *b, int n, double *out) {
