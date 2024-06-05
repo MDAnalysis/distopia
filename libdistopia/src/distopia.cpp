@@ -32,16 +32,16 @@ namespace distopia {
                                  hn::VFromD<D> &vy,
                                  hn::VFromD<D> &vz) const {}
 
-            void MinimalVectors(const hn::VFromD<D> &ix, const hn::VFromD<D> &iy, const hn::VFromD<D> &iz,
-                                const hn::VFromD<D> &jx, const hn::VFromD<D> &jy, const hn::VFromD<D> &jz,
-                                hn::VFromD<D> &ijx, hn::VFromD<D> &ijy, hn::VFromD<D> &ijz) const {
+            void MinimalVectors(const V &ix, const V &iy, const V &iz,
+                                const V &jx, const V &jy, const V &jz,
+                                V &ijx, V &ijy, V &ijz) const {
                 ijx = ix - jx;
                 ijy = iy - jy;
                 ijz = iz - jz;
             }
 
-            HWY_INLINE V Distance(const hn::VFromD<D> &ax, const hn::VFromD<D> &ay, const hn::VFromD<D> &az,
-                                  const hn::VFromD<D> &bx, const hn::VFromD<D> &by, const hn::VFromD<D> &bz) const {
+            HWY_INLINE V Distance(const V &ax, const V &ay, const V &az,
+                                  const V &bx, const V &by, const V &bz) const {
                 hn::ScalableTag<T> d;
 
                 auto dx = ax - bx;
@@ -69,9 +69,9 @@ namespace distopia {
                 this->iz = hn::Set(d, 1 / sbox[2]);
             }
 
-            void MinimiseVectors(hn::VFromD<D> &vx,
-                                 hn::VFromD<D> &vy,
-                                 hn::VFromD<D> &vz) const {
+            void MinimiseVectors(V &vx,
+                                 V &vy,
+                                 V &vz) const {
                 auto sx = ix * vx;
                 auto dsx = sx - hn::Round(sx);
                 auto sy = iy * vy;
@@ -83,18 +83,18 @@ namespace distopia {
                 vz = lz * dsz;
             }
 
-            void MinimalVectors(const hn::VFromD<D> &ix, const hn::VFromD<D> &iy, const hn::VFromD<D> &iz,
-                                const hn::VFromD<D> &jx, const hn::VFromD<D> &jy, const hn::VFromD<D> &jz,
-                                hn::VFromD<D> &ijx, hn::VFromD<D> &ijy, hn::VFromD<D> &ijz) const {
-                ijx = ix - jx;
-                ijy = iy - jy;
-                ijz = iz - jz;
+            void MinimalVectors(const V &px, const V &py, const V &pz,
+                                const V &qx, const V &qy, const V &qz,
+                                V &ijx, V &ijy, V &ijz) const {
+                ijx = px - qx;
+                ijy = py - qy;
+                ijz = pz - qz;
 
                 MinimiseVectors(ijx, ijy, ijz);
             }
 
-            HWY_INLINE V Distance(const V &ax, const hn::VFromD<D> &ay, const hn::VFromD<D> &az,
-                                  const V &bx, const hn::VFromD<D> &by, const hn::VFromD<D> &bz) const {
+            HWY_INLINE V Distance(const V &ax, const V &ay, const V &az,
+                                  const V &bx, const V &by, const V &bz) const {
                 hn::ScalableTag<T> d;
 
                 auto dx = ax - bx;
