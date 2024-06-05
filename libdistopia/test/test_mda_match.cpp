@@ -92,10 +92,11 @@ TYPED_TEST(CoordinatesTest, CalcBondsTriclinicMatchesMDA)
   triclinic_box_reduced[4] = this->triclinic_box[7];
   triclinic_box_reduced[5] = this->triclinic_box[8];
 
-  _calc_bond_distance_triclinic((ctype*)this->coords0, (ctype*)this->coords1, 
+  distopia::CalcBondsTriclinic(this->coords0, this->coords1, this->nresults, triclinic_box_reduced, this->results);
+
+  _calc_bond_distance_triclinic((ctype*)this->coords0, (ctype*)this->coords1,
                       this->nresults, this->triclinic_box, this->ref);
 
-  distopia::CalcBondsTriclinic(this->coords0, this->coords1, this->nresults, triclinic_box_reduced, this->results);
 
   for (std::size_t i = 0; i < this->nresults; i++)
   {
