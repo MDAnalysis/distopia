@@ -739,9 +739,9 @@ static void _calc_angle_triclinic(ScalarToCoordinateT<T>* atom1, ScalarToCoordin
                                   U* box, T* angles)
 {
   // Triclinic version of min image aware angle calculate, see above
-  _triclinic_pbc(atom1, numatom, box);
-  _triclinic_pbc(atom2, numatom, box);
-  _triclinic_pbc(atom3, numatom, box);
+  _triclinic_pbc<T, U>(atom1, numatom, box);
+  _triclinic_pbc<T, U>(atom2, numatom, box);
+  _triclinic_pbc<T, U>(atom3, numatom, box);
 
 #ifdef PARALLEL
 #pragma omp parallel for shared(angles)
