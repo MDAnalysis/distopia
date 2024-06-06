@@ -613,9 +613,9 @@ namespace distopia {
 
                     hn::LoadInterleaved3(d, b_src + 3 * p_b, b_x, b_y, b_z);
 
-                    //auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
+                    auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
 
-                    //hn::StoreU(result, d, dst + p_a + p_b);
+                    hn::StoreU(result, d, dst + p_a + p_b);
                 }
             }
 
@@ -738,7 +738,7 @@ namespace distopia {
             CalcDistanceArray(a, b, na, nb, out, vbox);
         }
         void CalcDistanceArrayNoBoxSingle(const float *a, const float *b, int na, int nb, float *out) {
-            hn::ScalableTag<double> d;
+            hn::ScalableTag<float> d;
             const NoBox vbox(d);
             CalcDistanceArray(a, b, na, nb, out, vbox);
         }
@@ -748,7 +748,7 @@ namespace distopia {
             CalcDistanceArray(a, b, na, nb, out, vbox);
         }
         void CalcDistanceArrayOrthoSingle(const float *a, const float *b, int na, int nb, const float *box, float *out) {
-            hn::ScalableTag<double> d;
+            hn::ScalableTag<float> d;
             const OrthogonalBox vbox(d, box);
             CalcDistanceArray(a, b, na, nb, out, vbox);
         }
@@ -758,7 +758,7 @@ namespace distopia {
             CalcDistanceArray(a, b, na, nb, out, vbox);
         }
         void CalcDistanceArrayTriclinicSingle(const float *a, const float *b, int na, int nb, const float *box, float *out) {
-            hn::ScalableTag<double> d;
+            hn::ScalableTag<float> d;
             const TriclinicBox vbox(d, box);
             CalcDistanceArray(a, b, na, nb, out, vbox);
         }
