@@ -573,7 +573,7 @@ namespace distopia {
 
             T a_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
             T b_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
-            T out_sub[HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            T out_sub[HWY_MAX_LANES_D(hn::ScalableTag<T>) * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
             const T *a_src, *b_src;
             T *dst;
 
