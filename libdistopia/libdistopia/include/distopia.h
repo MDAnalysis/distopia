@@ -150,5 +150,19 @@ template <typename T>
 void CalcBondsIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
                        T *out);
 
+template <typename T>
+void DistanceArrayOrtho(const T *coords0, const T *coords1, const T *box,
+                        std::size_t n0, std::size_t n1, T *out);
+/*!
+ * \brief  Calculate a matrix of distances between coordinates in two arrays
+ * \tparam T the type of coordinates (float or double)
+ * \param  coords0 first array of coordinates
+ * \param  coords1 second array of coordinates
+ * \param  n0 number of coordinates in the first array
+ * \param  n1 number of coordinates in the second array
+ * \param  out result array, must be size n0 * n1
+ *
+ */
+
 #endif // DISTOPIA_DISPATCH
 #endif // DISTOPIA_H
