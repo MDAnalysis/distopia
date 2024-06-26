@@ -53,5 +53,4 @@ if(APPLE)
 else()
     set_target_properties(libdistopia PROPERTIES INSTALL_RPATH "\$ORIGIN")
 endif()
-install(TARGETS libdistopia
-        DESTINATION distopia)
+install(TARGETS libdistopia DESTINATION distopia)

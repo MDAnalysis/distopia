@@ -13,7 +13,6 @@ if (${BUILD_PYTHON})
     include_directories(${NumPy_INCLUDE_DIRS})
 endif ()
 include_directories(${PROJECT_SOURCE_DIR}/libdistopia/include)
-include_directories(${PROJECT_SOURCE_DIR}/libdistopia/libdistopia/lib)
 
 
 # use, i.e. don't skip the full RPATH for the build tree
