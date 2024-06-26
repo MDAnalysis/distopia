@@ -68,8 +68,8 @@ class TestMDA:
 
     prec = 5
 
-    @pytest.fixture()
     @staticmethod
+    @pytest.fixture()
     def positions():
         # dummy atom data
         a = np.array([[0., 0., 0.], [0., 0., 0.], [0., 11., 0.], [1., 1., 1.]], dtype=np.float32)
@@ -78,9 +78,8 @@ class TestMDA:
         d = np.array([[0., 0., 0.], [3., 3., 3.], [11., -11., 0.], [65., -65., 65.]], dtype=np.float32)
         return a, b, c, d
 
-
-    @pytest.fixture()
     @staticmethod
+    @pytest.fixture()
     def box_bonds():
         return np.array([10., 10., 10., 90., 90., 90.], dtype=np.float32)
 
