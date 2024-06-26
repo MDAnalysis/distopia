@@ -129,7 +129,8 @@ TYPED_TEST(DistancesTest, CalcBondsTriclinicKnownValues0) {
     {
         coords1[3 * i] = i;
     }
-    TypeParam box[9] = {8, 8, 8, 0, 0, 0, 0, 0, 0};
+    // this is the fugly box representation, [lx, xy, ly, xz, yz, lz]
+    TypeParam box[6] = {8, 0, 8, 0, 0, 8};
     TypeParam ref[N] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
 
     distopia::CalcBondsTriclinic(coords0, coords1, N, box, out);

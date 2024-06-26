@@ -24,7 +24,7 @@ namespace distopia {
     namespace HWY_NAMESPACE {
         namespace hn = hwy::HWY_NAMESPACE;
 
-        template <class D, typename T = hn::TFromD<D>>
+        template <class D, typename T = hn::TFromD<D>, typename V = hn::VFromD<D>>
         struct NoBox {
             explicit NoBox(D) {};
 
@@ -32,16 +32,32 @@ namespace distopia {
                                  hn::VFromD<D> &vy,
                                  hn::VFromD<D> &vz) const {}
 
-            void MinimalVectors(const hn::VFromD<D> &ix, const hn::VFromD<D> &iy, const hn::VFromD<D> &iz,
-                                const hn::VFromD<D> &jx, const hn::VFromD<D> &jy, const hn::VFromD<D> &jz,
-                                hn::VFromD<D> &ijx, hn::VFromD<D> &ijy, hn::VFromD<D> &ijz) const {
+            void MinimalVectors(const V &ix, const V &iy, const V &iz,
+                                const V &jx, const V &jy, const V &jz,
+                                V &ijx, V &ijy, V &ijz) const {
                 ijx = ix - jx;
                 ijy = iy - jy;
                 ijz = iz - jz;
             }
+
+            HWY_INLINE V Distance(const V &ax, const V &ay, const V &az,
+                                  const V &bx, const V &by, const V &bz) const {
+                hn::ScalableTag<T> d;
+
+                auto dx = ax - bx;
+                auto dy = ay - by;
+                auto dz = az - bz;
+
+                auto acc = hn::Zero(d);
+                acc = hn::MulAdd(dx, dx, acc);
+                acc = hn::MulAdd(dy, dy, acc);
+                acc = hn::MulAdd(dz, dz, acc);
+
+                return hn::Sqrt(acc);
+            }
         };
 
-        template <class D, typename T>
+        template <class D, typename T, typename V = hn::VFromD<D>>
         struct OrthogonalBox {
             hn::VFromD<D> lx, ly, lz, ix, iy, iz;
             explicit OrthogonalBox(D d, const T *sbox) {
@@ -53,9 +69,9 @@ namespace distopia {
                 this->iz = hn::Set(d, 1 / sbox[2]);
             }
 
-            void MinimiseVectors(hn::VFromD<D> &vx,
-                                 hn::VFromD<D> &vy,
-                                 hn::VFromD<D> &vz) const {
+            void MinimiseVectors(V &vx,
+                                 V &vy,
+                                 V &vz) const {
                 auto sx = ix * vx;
                 auto dsx = sx - hn::Round(sx);
                 auto sy = iy * vy;
@@ -67,14 +83,32 @@ namespace distopia {
                 vz = lz * dsz;
             }
 
-            void MinimalVectors(const hn::VFromD<D> &ix, const hn::VFromD<D> &iy, const hn::VFromD<D> &iz,
-                                const hn::VFromD<D> &jx, const hn::VFromD<D> &jy, const hn::VFromD<D> &jz,
-                                hn::VFromD<D> &ijx, hn::VFromD<D> &ijy, hn::VFromD<D> &ijz) const {
-                ijx = ix - jx;
-                ijy = iy - jy;
-                ijz = iz - jz;
+            void MinimalVectors(const V &px, const V &py, const V &pz,
+                                const V &qx, const V &qy, const V &qz,
+                                V &ijx, V &ijy, V &ijz) const {
+                ijx = px - qx;
+                ijy = py - qy;
+                ijz = pz - qz;
 
                 MinimiseVectors(ijx, ijy, ijz);
+            }
+
+            HWY_INLINE V Distance(const V &ax, const V &ay, const V &az,
+                                  const V &bx, const V &by, const V &bz) const {
+                hn::ScalableTag<T> d;
+
+                auto dx = ax - bx;
+                auto dy = ay - by;
+                auto dz = az - bz;
+
+                MinimiseVectors(dx, dy, dz);
+
+                auto acc = hn::Zero(d);
+                acc = hn::MulAdd(dx, dx, acc);
+                acc = hn::MulAdd(dy, dy, acc);
+                acc = hn::MulAdd(dz, dz, acc);
+
+                return hn::Sqrt(acc);
             }
         };
 
@@ -87,7 +121,7 @@ namespace distopia {
                 this->xx = hn::Set(d, sbox[0]);
                 this->xy = hn::Set(d, sbox[1]); this->yy = hn::Set(d, sbox[2]);
                 this->xz = hn::Set(d, sbox[3]); this->yz = hn::Set(d, sbox[4]); this->zz = hn::Set(d, sbox[5]);
-                // inverse of diagonal
+                // inverse of diagonal elements
                 this->inv_xx = hn::Set(d, 1/sbox[0]);
                 this->inv_yy = hn::Set(d, 1/sbox[2]);
                 this->inv_zz = hn::Set(d, 1/sbox[5]);
@@ -95,64 +129,72 @@ namespace distopia {
 
             void ShiftIntoPrimaryUnitCell(V &vx, V &vy, V &vz) const {
                 auto sz = hn::Floor(this->inv_zz * vz);
-                vz += sz * this->zz;
-                vy += sz * this->yz;
-                vx += sz * this->xz;
+                vz -= sz * this->zz;
+                vy -= sz * this->yz;
+                vx -= sz * this->xz;
                 auto sy = hn::Floor(this->inv_yy * vy);
-                vy += sy * this->yy;
-                vx += sy * this->xy;
+                vy -= sy * this->yy;
+                vx -= sy * this->xy;
                 auto sx = hn::Floor(this->inv_xx * vx);
-                vx += sx * this->xx;
+                vx -= sx * this->xx;
             }
 
             void MinimiseVectors(V &vx,
                                  V &vy,
                                  V &vz) const {
+                hn::ScalableTag<T> d;
                 // check all 27 (3x3x3) possibilities of adding/subtracting box vectors and choose minimum
                 V vmin[3];
-                hn::ScalableTag<T> d;
+                V rx;
+                V ry[2];
+                V rz[3];
                 auto dsq_min = hn::Set(d, HUGE_VALF);
 
-                for (int i = -1; i < 2; ++i) {  // loop over subtracting, keeping or adding X dimension from vector
-                    auto rx = vx;
+                for (int i = -1; i < 2; ++i) {
+                    rx = vx;
                     if (i == -1) {
                         rx -= this->xx;
                     } else if (i == 1) {
                         rx += this->xx;
                     }
                     for (int j = -1; j < 2; ++j) {
-                        auto ry = vy;
+                        ry[0] = rx;
+                        ry[1] = vy;
                         if (j == -1) {
-                            rx -= this->xy;
-                            ry -= this->yy;
+                            ry[0] -= this->xy;
+                            ry[1] -= this->yy;
                         } else if (j == 1) {
-                            rx += this->xy;
-                            ry += this->yy;
+                            ry[0] += this->xy;
+                            ry[1] += this->yy;
                         }
+
                         for (int k = -1; k < 2; ++k) {
-                            auto rz = vz;
+                            rz[0] = ry[0];
+                            rz[1] = ry[1];
+                            rz[2] = vz;
                             if (k == -1) {
-                                rx -= this->xz;
-                                ry -= this->yz;
-                                rz -= this->zz;
+                                rz[0] -= this->xz;
+                                rz[1] -= this->yz;
+                                rz[2] -= this->zz;
                             } else if (k == 1) {
-                                rx += this->xz;
-                                ry += this->yz;
-                                rz += this->zz;
+                                rz[0] += this->xz;
+                                rz[1] += this->yz;
+                                rz[2] += this->zz;
                             }
 
-                            auto dsq = rx * rx;
-                            dsq += ry * ry;
-                            dsq += rz * rz;
+                            auto dsq = hn::Zero(d);
+                            dsq = hn::MulAdd(rz[0], rz[0], dsq);
+                            dsq = hn::MulAdd(rz[1], rz[1], dsq);
+                            dsq = hn::MulAdd(rz[2], rz[2], dsq);
 
                             // dsq is now a vector of distance values
                             // need to compare each against the corresponding current min in dsq_min
                             // then where the dsq value is lower, update the current best
                             auto better = dsq < dsq_min;
 
-                            vmin[0] = hn::IfThenElse(better, rx, vmin[0]);
-                            vmin[1] = hn::IfThenElse(better, ry, vmin[1]);
-                            vmin[2] = hn::IfThenElse(better, rz, vmin[2]);
+                            vmin[0] = hn::IfThenElse(better, rz[0], vmin[0]);
+                            vmin[1] = hn::IfThenElse(better, rz[1], vmin[1]);
+                            vmin[2] = hn::IfThenElse(better, rz[2], vmin[2]);
                             dsq_min = hn::Min(dsq_min, dsq);
                         }
                     }
@@ -183,62 +225,38 @@ namespace distopia {
 
                 MinimiseVectors(ijx, ijy, ijz);
             }
+
+            HWY_INLINE V Distance(const V &ax, const V &ay, const V &az,
+                                  const V &bx, const V &by, const V &bz) const {
+                hn::ScalableTag<T> d;
+
+                // first place coordinates into primary unit cell
+                V ax_copy = ax;
+                V ay_copy = ay;
+                V az_copy = az;
+                V bx_copy = bx;
+                V by_copy = by;
+                V bz_copy = bz;
+
+                ShiftIntoPrimaryUnitCell(ax_copy, ay_copy, az_copy);
+                ShiftIntoPrimaryUnitCell(bx_copy, by_copy, bz_copy);
+
+                auto dx = ax_copy - bx_copy;
+                auto dy = ay_copy - by_copy;
+                auto dz = az_copy - bz_copy;
+
+                MinimiseVectors(dx, dy, dz);
+
+                auto acc = hn::Zero(d);
+                acc = hn::MulAdd(dx, dx, acc);
+                acc = hn::MulAdd(dy, dy, acc);
+                acc = hn::MulAdd(dz, dz, acc);
+
+                acc = hn::Sqrt(acc);
+
+                return acc;
+            }
         };
-
-        template <class V, typename T = hn::TFromV<V>, class B>
-        HWY_INLINE V Distance(const V &ax, const V &ay, const V &az,
-                              const V &bx, const V &by, const V &bz,
-                              const B &box) {
-            auto dx = ax - bx;
-            auto dy = ay - by;
-            auto dz = az - bz;
-
-            box.MinimiseVectors(dx, dy, dz);
-
-            dx = dx * dx;
-            dy = dy * dy;
-            dz = dz * dz;
-
-            auto acc = dx + dy;
-            acc = acc + dz;
-
-            auto out = hn::Sqrt(acc);
-
-            return out;
-        }
-
-        template <class V, typename T = hn::TFromV<V>>
-        HWY_INLINE V Distance(const V &ax, const V &ay, const V &az,
-                              const V &bx, const V &by, const V &bz,
-                              const TriclinicBox<V> &box) {
-            // first place coordinates into primary unit cell
-            V ax_copy = ax;
-            V ay_copy = ay;
-            V az_copy = az;
-            V bx_copy = bx;
-            V by_copy = by;
-            V bz_copy = bz;
-
-            box.ShiftIntoPrimaryUnitCell(ax_copy, ay_copy, az_copy);
-            box.ShiftIntoPrimaryUnitCell(bx_copy, by_copy, bz_copy);
-
-            auto dx = ax_copy - bx_copy;
-            auto dy = ay_copy - by_copy;
-            auto dz = az_copy - bz_copy;
-
-            box.MinimiseVectors(dx, dy, dz);
-
-            dx = dx * dx;
-            dy = dy * dy;
-            dz = dz * dz;
-
-            auto acc = dx + dy;
-            acc = acc + dz;
-
-            auto out = hn::Sqrt(acc);
-
-            return out;
-        }
 
         template <typename T, typename B>
         void CalcBonds(const T* a, const T* b, int n, T* out, B &box) {
@@ -280,7 +298,7 @@ namespace distopia {
                 hn::LoadInterleaved3(d, a_src + 3 * p, a_x, a_y, a_z);
                 hn::LoadInterleaved3(d, b_src + 3 * p, b_x, b_y, b_z);
 
-                auto result = Distance(a_x, a_y, a_z, b_x, b_y, b_z, box);
+                auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
 
                 hn::StoreU(result, d, dst + p);
             }
@@ -595,7 +613,7 @@ namespace distopia {
 
                     hn::LoadInterleaved3(d, b_src + 3 * p_b, b_x, b_y, b_z);
 
-                    //auto result = Distance(a_x, a_y, a_z, b_x, b_y, b_z, box);
+                    //auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
 
                     //hn::StoreU(result, d, dst + p_a + p_b);
                 }

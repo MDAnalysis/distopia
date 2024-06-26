@@ -94,10 +94,11 @@ TYPED_TEST(CoordinatesTest, CalcBondsTriclinicMatchesMDA)
   triclinic_box_reduced[4] = this->triclinic_box[7];
   triclinic_box_reduced[5] = this->triclinic_box[8];
 
-  _calc_bond_distance_triclinic((ctype*)this->coords0, (ctype*)this->coords1, 
+  distopia::CalcBondsTriclinic(this->coords0, this->coords1, this->nresults, triclinic_box_reduced, this->results);
+
+  _calc_bond_distance_triclinic((ctype*)this->coords0, (ctype*)this->coords1,
                       this->nresults, this->triclinic_box, this->ref);
 
-  distopia::CalcBondsTriclinic(this->coords0, this->coords1, this->nresults, triclinic_box_reduced, this->results);
 
   for (std::size_t i = 0; i < this->nresults; i++)
   {
@@ -143,7 +144,40 @@ TYPED_TEST(CoordinatesTest, CalcAnglesNoBoxMatchesMDA)
 
 TYPED_TEST(CoordinatesTest, CalcAnglesTriclinicMatchesMDA)
 {
-  // triclinic box TODO: fix distances first
+    this->SetUp(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
+
+    using ctype = ScalarToCoordinateT<TypeParam>;
+
+    this->triclinic_box[0]  = 30;
+    this->triclinic_box[1]  = 0;
+    this->triclinic_box[2]  = 0;
+    this->triclinic_box[3]  = -2.6146722;
+    this->triclinic_box[4]  = 29.885841;
+    this->triclinic_box[5]  = 0;
+    this->triclinic_box[6]  = -10.260604;
+    this->triclinic_box[7]  = 9.402112;
+    this->triclinic_box[8]  = 26.576687;
+
+    // in lower triangular  matrix form
+
+    TypeParam triclinic_box_reduced[6];
+    triclinic_box_reduced[0] = this->triclinic_box[0];
+    triclinic_box_reduced[1] = this->triclinic_box[3];
+    triclinic_box_reduced[2] = this->triclinic_box[4];
+    triclinic_box_reduced[3] = this->triclinic_box[6];
+    triclinic_box_reduced[4] = this->triclinic_box[7];
+    triclinic_box_reduced[5] = this->triclinic_box[8];
+
+    distopia::CalcAnglesTriclinic(this->coords0, this->coords1, this->coords2,
+                                  this->nresults, triclinic_box_reduced, this->results);
+
+    _calc_angle_triclinic((ctype*)this->coords0, (ctype*)this->coords1, (ctype*)this->coords2,
+                          this->nresults, this->triclinic_box, this->ref);
+
+    for (std::size_t i = 0; i < this->nresults; i++)
+    {
+        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    }
 }
 
 
@@ -180,3 +214,39 @@ TYPED_TEST(CoordinatesTest, CalcDihedralsNoBoxMatchesMDA)
   }
 }
 
+
+TYPED_TEST(CoordinatesTest, CalcDihedralsTriclinicMatchesMDA)
+{
+    this->SetUp(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
+
+    using ctype = ScalarToCoordinateT<TypeParam>;
+
+    this->triclinic_box[0]  = 30;
+    this->triclinic_box[1]  = 0;
+    this->triclinic_box[2]  = 0;
+    this->triclinic_box[3]  = -2.6146722;
+    this->triclinic_box[4]  = 29.885841;
+    this->triclinic_box[5]  = 0;
+    this->triclinic_box[6]  = -10.260604;
+    this->triclinic_box[7]  = 9.402112;
+    this->triclinic_box[8]  = 26.576687;
+
+    TypeParam triclinic_box_reduced[6];
+    triclinic_box_reduced[0] = this->triclinic_box[0];
+    triclinic_box_reduced[1] = this->triclinic_box[3];
+    triclinic_box_reduced[2] = this->triclinic_box[4];
+    triclinic_box_reduced[3] = this->triclinic_box[6];
+    triclinic_box_reduced[4] = this->triclinic_box[7];
+    triclinic_box_reduced[5] = this->triclinic_box[8];
+
+    distopia::CalcDihedralsTriclinic(this->coords0, this->coords1, this->coords2, this->coords3,
+                                     this->nresults, triclinic_box_reduced, this->results);
+
+    _calc_dihedral_triclinic((ctype*)this->coords0, (ctype*)this->coords1, (ctype*)this->coords2,
+                             (ctype*)this->coords3, this->nresults, this->triclinic_box, this->ref);
+
+    for (std::size_t i = 0; i < this->nresults; i++)
+    {
+        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    }
+}
