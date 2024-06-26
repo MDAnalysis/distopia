@@ -3,10 +3,10 @@ name: build_and_test
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
   schedule:
     # 3 am Tuesdays and Fridays
     - cron: "0 3 * * 2,5"
