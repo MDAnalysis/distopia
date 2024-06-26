@@ -52,7 +52,7 @@ class TestDistances:
     @pytest.mark.parametrize("dtype", (np.float32, np.float64))
     @pytest.mark.parametrize("N", (0, 10, 1000, 10000))
     @pytest.mark.parametrize("use_result_buffer", (True, False))
-    @pytest.mark.xfail(reason="Triclinic bonds not implemented correctly and test not right")
+    #FIXME: This test is failing, box is likely wrong
     def test_calc_bonds_triclinic_all_zero(self, N, use_result_buffer, dtype):
         c0 = self.arange_input(N, dtype)
         c1 = self.arange_input(N, dtype)
@@ -110,7 +110,6 @@ class TestMDA:
                             err_msg="PBC check #w with box")
     
 
-    @pytest.mark.xfail(reason="Triclinic bonds not implemented correctly")
     @pytest.mark.parametrize("dtype", (np.float32, np.float64))
     def test_bonds_triclinic(self, triclinic_box, dtype, positions):
         a, b, c, d = positions
