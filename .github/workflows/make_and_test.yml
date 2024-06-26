@@ -19,6 +19,9 @@ defaults:
   run:
     shell: bash
 
+concurrency:
+  group: ${{ github.ref }}-${{ github.head_ref }}-${{ github.worfklow }}
+  cancel-in-progress: true
 
 jobs:
   build:
