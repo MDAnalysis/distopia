@@ -34,6 +34,8 @@ target_sources(test PRIVATE "test/test.cpp")
 target_link_libraries(test PUBLIC gtest gtest_main)
 target_link_libraries(test PUBLIC distopia)
 target_include_directories(test PUBLIC  ${CMAKE_SOURCE_DIR})
+gtest_discover_tests(test WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
 
 
 add_executable(test_mda_match)
@@ -41,3 +43,4 @@ target_sources(test_mda_match PRIVATE "test/test_mda_match.cpp")
 target_link_libraries(test_mda_match PUBLIC gtest gtest_main)
 target_link_libraries(test_mda_match PUBLIC distopia)
 target_include_directories(test_mda_match PUBLIC  ${CMAKE_SOURCE_DIR})
+gtest_discover_tests(test_mda_match WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
