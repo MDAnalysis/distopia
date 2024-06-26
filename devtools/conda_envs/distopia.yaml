@@ -1,13 +1,13 @@
 name: distopia
 channels:
-  - conda-forge
+- conda-forge
 dependencies:
-  - cmake
-  - make
-  - pip
-  - python >= 3.9
-  - cython
-  - numpy
-  - ninja
-  - pytest
-  - scikit-build
+- cmake
+- make
+- pip
+- python >= 3.9
+- cython
+- numpy
+- ninja
+- pytest
+- scikit-build
