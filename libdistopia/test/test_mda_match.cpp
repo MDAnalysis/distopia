@@ -29,18 +29,18 @@ TYPED_TEST(CoordinatesTest, CalcBondsOrthoMatchesMDA)
 {
   this->SetUp(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
 
-  using ctype = ScalarToCoordinateT<TypeParam>;
+    using ctype = ScalarToCoordinateT<TypeParam>;
 
-  _calc_bond_distance_ortho((ctype*)this->coords0,
-                            (ctype*)this->coords1, this->nresults,
-                            this->box, this->ref);
-  distopia::CalcBondsOrtho(this->coords0, this->coords1, this->nresults, this->box,
-                 this->results);
+    _calc_bond_distance_ortho((ctype*)this->coords0,
+                              (ctype*)this->coords1, this->nresults,
+                              this->box, this->ref);
+    distopia::CalcBondsOrtho(this->coords0, this->coords1, this->nresults, this->box,
+                             this->results);
 
-  for (std::size_t i = 0; i < this->nresults; i++)
-  {
-    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
-  }
+    for (std::size_t i = 0; i < this->nresults; i++)
+    {
+        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    }
 }
 
 
@@ -247,4 +247,30 @@ TYPED_TEST(CoordinatesTest, CalcDihedralsTriclinicMatchesMDA)
     {
         EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
     }
+}
+
+TYPED_TEST(CoordinatesTest, CalcDistanceArrayOrthoMatchesMDA) {
+    this->SetUp(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
+
+    using ctype = ScalarToCoordinateT<TypeParam>;
+
+    _calc_distance_array_ortho((ctype*)this->coords0, this->nresults,
+                              (ctype*)this->coords1, this->nresults,
+                              this->box, this->ref);
+
+    distopia::CalcDistanceArrayOrtho(this->coords0, this->coords1, this->nresults, this->nresults,
+                                     this->box, this->results);
+
+    for (std::size_t i = 0; i < NRESULTS; i++)
+    {
+        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    }
+}
+
+TYPED_TEST(CoordinatesTest, CalcDistanceArrayNoBoxMatchesMDA) {
+
+}
+
+TYPED_TEST(CoordinatesTest, CalcDistanceArrayTriclinicMatchesMDA) {
+
 }

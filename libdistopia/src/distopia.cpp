@@ -573,7 +573,7 @@ namespace distopia {
 
             T a_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
             T b_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
-            T out_sub[HWY_MAX_LANES_D(hn::ScalableTag<T>) * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            T *out_sub;
             const T *a_src, *b_src;
             T *dst;
 
@@ -588,6 +588,7 @@ namespace distopia {
                 b_src = &b[0];
             }
             if (HWY_UNLIKELY(na * nb < nlanes)) {
+                out_sub = new T[nlanes * nlanes];
                 dst = &out_sub[0];
             } else {
                 dst = out;
@@ -621,6 +622,7 @@ namespace distopia {
 
             if (HWY_UNLIKELY(na * nb < nlanes)) {
                 memcpy(out, dst, na * nb * sizeof(T));
+                delete[] out_sub;
             }
 
         }
