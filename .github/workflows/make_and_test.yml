@@ -17,7 +17,7 @@ env:
 
 defaults:
   run:
-    shell: bash
+    shell: bash -l {0}
 
 concurrency:
   group: ${{ github.ref }}-${{ github.head_ref }}-${{ github.worfklow }}
