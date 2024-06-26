@@ -10,4 +10,4 @@ dependencies:
 - numpy
 - ninja
 - pytest
-- scikit-build < 0.18.0
+- scikit-build
