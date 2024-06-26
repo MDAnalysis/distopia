@@ -10,6 +10,8 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 add_library(libdistopia)
 target_sources(libdistopia PRIVATE "src/distopia.cpp")
+# needed for M_PI symbol on Win
+target_compile_definitions(libdistopia PUBLIC -D_USE_MATH_DEFINES)
 target_link_libraries(libdistopia PRIVATE hwy)
 target_include_directories(libdistopia PUBLIC
         "highway"
