@@ -1,6 +1,6 @@
 import pytest
-import distopia
 import numpy as np
+import distopia
 from numpy.testing import assert_allclose
 
 
@@ -29,7 +29,7 @@ class TestDistances:
         c1 = self.arange_input(N, dtype)
         result_buffer = self.result_shim(use_result_buffer, N, dtype)
         box = np.asarray(box, dtype=dtype)
-        result = func(
+        result = distopia.calc_bonds_ortho(
             c0, c1, box, results=result_buffer
         )
         assert_allclose(result, np.zeros(N))
@@ -43,7 +43,7 @@ class TestDistances:
         c0 = self.arange_input(N, dtype)
         c1 = self.arange_input(N, dtype)
         result_buffer = self.result_shim(use_result_buffer, N, dtype)
-        result = distopia.calc_bonds_no_box_float(c0, c1, results=result_buffer)
+        result = distopia.calc_bonds_no_box(c0, c1, results=result_buffer)
         assert_allclose(result, np.zeros(N))
         # check dtype of result
         assert result.dtype == dtype

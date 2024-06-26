@@ -40,3 +40,6 @@ distopia.egg-info/
 .idea/
 .vscode/
 .DS_store
+
+# pycache
+__pycache__/

@@ -1,6 +1,6 @@
 from ._version import __version__
 
-from . import _distopia
-
-
-from .thing import foo
+from ._distopia import (
+    calc_bonds_ortho,
+    calc_bonds_no_box,
+)
