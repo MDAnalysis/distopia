@@ -1,0 +1,99 @@
+name: build_and_test
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+  schedule:
+    # 3 am Tuesdays and Fridays
+  - cron: 0 3 * * 2,5
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.head_ref }}-${{ github.worfklow }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # The CMake configure and build commands are platform agnostic and should work equally
+    # well on Windows or Mac.  You can convert this to a matrix build if you need
+    # cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 12
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - uses: mamba-org/setup-micromamba@v1
+      with:
+        environment-file: devtools/conda_envs/distopia.yaml
+        environment-name: distopia
+        create-args: >-
+          python==${{ matrix.python-version }}
+
+
+
+    - name: Build
+      # Execute the build.  You can specify a specific target with "--target <NAME>"
+      run: python setup.py build
+
+    - name: Test
+      # Execute tests defined by the CMake configuration.  
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ctest --test-dir _skbuild/*/cmake-build/libdistopia
+
+
+  pip-install:
+    # A pure Python install, which relies purely on pyproject.toml contents
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # for now windows pip install builds seem to fail for some reason
+        os: [ubuntu-latest, macos-13]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: check_env
+      run: |
+        which python
+        python -m pip list
+
+    - name: build
+      run: python -m pip install . -vvv
+
+    - name: test
+      run: ctest --test-dir _skbuild/*/cmake-build/libdistopia || true
+
+    - name: install_pytest
+      run: pip install pytest
+
+    - name: python_test
+      # run python API tests
+      run: pytest distopia/tests
