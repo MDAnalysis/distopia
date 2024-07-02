@@ -35,8 +35,8 @@ public:
     coords1 = new T[ncoords];
     coords2 = new T[ncoords];
     coords3 = new T[ncoords];
-    ref = new T[nresults * nresults];
-    results = new T[nresults * nresults];
+    ref = new T[nresults];
+    results = new T[nresults];
     idxs = new std::size_t[nindicies];
 
     RandomFloatingPoint<T>(coords0, ncoords, 0 - delta, boxsize + delta);
