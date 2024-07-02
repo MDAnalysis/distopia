@@ -460,8 +460,8 @@ static void _calc_distance_array_triclinic(ScalarToCoordinateT<T>* ref, uint64_t
                                            U* box, T* distances)
 {
   // Move coords to inside box
-  _triclinic_pbc(ref, numref, box);
-  _triclinic_pbc(conf, numconf, box);
+  _triclinic_pbc<T, U>(ref, numref, box);
+  _triclinic_pbc<T, U>(conf, numconf, box);
 
 #ifdef PARALLEL
 #pragma omp parallel for shared(distances)
