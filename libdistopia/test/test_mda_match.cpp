@@ -287,6 +287,20 @@ TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayNoBoxMatchesMDA) {
     }
 }
 
-TYPED_TEST(CoordinatesTest, CalcDistanceArrayTriclinicMatchesMDA) {
+TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayTriclinicMatchesMDA) {
+    this->SetUp(100, 150, 50.0, 75.0);
 
+    using ctype = ScalarToCoordinateT<TypeParam>;
+
+    distopia::CalcDistanceArrayTriclinic(this->coordsA, this->coordsB, this->ncoordsA, this->ncoordsB,
+                                     this->box, this->results);
+
+    _calc_distance_array_triclinic((ctype*)this->coordsA, this->ncoordsA,
+                               (ctype*)this->coordsB, this->ncoordsB,
+                               this->box, this->ref);
+
+    for (std::size_t i = 0; i < NRESULTS; i++)
+    {
+        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    }
 }
