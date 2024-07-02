@@ -249,16 +249,18 @@ TYPED_TEST(CoordinatesTest, CalcDihedralsTriclinicMatchesMDA)
     }
 }
 
-TYPED_TEST(CoordinatesTest, CalcDistanceArrayOrthoMatchesMDA) {
-    this->SetUp(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
+TYPED_TEST_SUITE(DistanceArrayCoordinates, ScalarTypes);
+
+TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayOrthoMatchesMDA) {
+    this->SetUp(100, 150, 50.0, 75.0);
 
     using ctype = ScalarToCoordinateT<TypeParam>;
 
-    _calc_distance_array_ortho((ctype*)this->coords0, this->nresults,
-                              (ctype*)this->coords1, this->nresults,
+    _calc_distance_array_ortho((ctype*)this->coordsA, this->ncoordsA,
+                              (ctype*)this->coordsB, this->ncoordsB,
                               this->box, this->ref);
 
-    distopia::CalcDistanceArrayOrtho(this->coords0, this->coords1, this->nresults, this->nresults,
+    distopia::CalcDistanceArrayOrtho(this->coordsA, this->coordsB, this->ncoordsA, this->ncoordsB,
                                      this->box, this->results);
 
     for (std::size_t i = 0; i < NRESULTS; i++)
@@ -267,8 +269,22 @@ TYPED_TEST(CoordinatesTest, CalcDistanceArrayOrthoMatchesMDA) {
     }
 }
 
-TYPED_TEST(CoordinatesTest, CalcDistanceArrayNoBoxMatchesMDA) {
+TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayNoBoxMatchesMDA) {
+    this->SetUp(100, 150, 50.0, 75.0);
 
+    using ctype = ScalarToCoordinateT<TypeParam>;
+
+    _calc_distance_array((ctype*)this->coordsA, this->ncoordsA,
+                               (ctype*)this->coordsB, this->ncoordsB,
+                               this->ref);
+
+    distopia::CalcDistanceArrayNoBox(this->coordsA, this->coordsB, this->ncoordsA, this->ncoordsB,
+                                     this->results);
+
+    for (std::size_t i = 0; i < NRESULTS; i++)
+    {
+        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    }
 }
 
 TYPED_TEST(CoordinatesTest, CalcDistanceArrayTriclinicMatchesMDA) {
