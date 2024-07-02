@@ -69,9 +69,56 @@ public:
 };
 
 
+template <typename T>
+class DistanceArrayCoordinates : public ::testing::Test {
+public:
+    // members
+    int ncoordsA;
+    int ncoordsB;
+    int nresults;
+    T* coordsA = nullptr;
+    T* coordsB = nullptr;
+    T* ref = nullptr;
+    T* results = nullptr;
+    T box[3];
+    T triclinic_box[9];
 
+    void SetUp(int nA, int nB,
+               const double boxsize, const double delta) {
+        ncoordsA = nA;
+        ncoordsB = nB;
+        nresults = nA * nB;
 
+        coordsA = new T[nA * 3];
+        coordsB = new T[nB * 3];
+        ref = new T[nresults];
+        results = new T[nresults];
 
+        RandomFloatingPoint<T>(coordsA, nA * 3, 0 - delta, boxsize + delta);
+        RandomFloatingPoint<T>(coordsB, nB * 3, 0 - delta, boxsize + delta);
 
+        box[0] = boxsize;
+        box[1] = boxsize;
+        box[2] = boxsize;
+
+        triclinic_box[0] = boxsize;  // lx
+        triclinic_box[1] = 0.0;  // must be 0
+        triclinic_box[2] = 0.0;  // "
+        triclinic_box[3] = 0.0;  // xy
+        triclinic_box[4] = boxsize;  // ly
+        triclinic_box[5] = 0.0;  // must be zero
+        triclinic_box[6] = 0.0;  // xz
+        triclinic_box[7] = 0.0;  // yz
+        triclinic_box[8] = boxsize;  // lz
+
+    }
+
+    virtual void TearDown()  {
+        delete[] coordsA;
+        delete[] coordsB;
+        delete[] ref;
+        delete[] results;
+    }
+};
 
 #endif // DISTOPIA_TEST_FIXTURES_H
