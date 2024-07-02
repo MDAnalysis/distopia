@@ -409,7 +409,7 @@ static void _triclinic_pbc(ScalarToCoordinateT<T>* coords, uint64_t numcoords, U
     }
 }
 
-template <typename T, typename U>
+template <typename T>
 static void _calc_distance_array(ScalarToCoordinateT<T>* ref, uint64_t numref, ScalarToCoordinateT<T>* conf,
                                  uint64_t numconf, T* distances)
 {
