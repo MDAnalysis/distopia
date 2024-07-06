@@ -10,6 +10,7 @@
 #include <random>
 
 #include "distopia.h"
+#include "compare/calc_distances.h"
 
 
 #define BOXSIZE 30
@@ -124,6 +125,20 @@ public:
               nresults * state.iterations(),
               benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
   }
+
+  void BM_calc_bonds_ortho_MDA(benchmark::State &state) {
+    using ctype = ScalarToCoordinateT<T>;
+
+    for (auto _ : state) {
+    _calc_bond_distance_ortho((ctype*)coords0,
+                            (ctype*)coords1, nresults,
+                            box, results);
+    }
+    state.SetItemsProcessed(nresults * state.iterations());
+    state.counters["Per Result"] = benchmark::Counter(
+        nresults * state.iterations(),
+        benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+  }
 };
 
 
@@ -225,6 +240,26 @@ BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsTriclinicOutBoxDouble)
         ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsOrthoMDAFloat,
+                            float)
+(benchmark::State &state) { BM_calc_bonds_ortho_MDA(state); }
+
+
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsOrthoMDAFloat)
+        ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+        ->RangeMultiplier(4);
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsOrthoMDADouble,
+                            double)
+(benchmark::State &state) { BM_calc_bonds_ortho_MDA(state); }
+
+
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsOrthoMDADouble)
+        ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+        ->RangeMultiplier(4);
 
 
 BENCHMARK_MAIN();
