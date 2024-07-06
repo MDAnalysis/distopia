@@ -173,22 +173,22 @@ public:
 // calc_bonds
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsInBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsFloat,
                             float)
 (benchmark::State &state) { BM_calc_bonds(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsInBoxFloat)
-    ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsFloat)
+    ->Ranges({{16, 16 << 14}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsInBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsDouble,
                             double)
 (benchmark::State &state) { BM_calc_bonds(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsInBoxDouble)
-    ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsDouble)
+    ->Ranges({{16, 16 << 14}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
 
@@ -199,7 +199,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsOrthoInBoxFloat,
 (benchmark::State &state) { BM_calc_bonds_ortho(state); }
 
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsOrthoInBoxFloat)
-    ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
+    ->Ranges({{16, 16 << 14}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
 
@@ -209,7 +209,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsOrthoInBoxDouble,
 (benchmark::State &state) { BM_calc_bonds_ortho(state); }
 
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsOrthoInBoxDouble)
-    ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
+    ->Ranges({{16, 16 << 14}, {0, 0}, {0, 0}})
     ->RangeMultiplier(4);
 
 
@@ -220,7 +220,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsOrthoOutBoxFloat,
 
 // coords can be +- 5 over boxlength
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsOrthoOutBoxFloat)
-        ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+        ->Ranges({{16, 16 << 14}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
 
@@ -230,7 +230,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsOrthoOutBoxDouble,
 
 // coords can be +- 5 over boxlength
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsOrthoOutBoxDouble)
-    ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+    ->Ranges({{16, 16 << 14}, {0, 0}, {5, 5}})
     ->RangeMultiplier(4);
 
 
@@ -241,7 +241,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsTriclinicInBoxFloat,
 (benchmark::State &state) { BM_calc_bonds_triclinic(state); }
 
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsTriclinicInBoxFloat)
-        ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
+        ->Ranges({{16, 16 << 14}, {0, 0}, {0, 0}})
         ->RangeMultiplier(4);
 
 
@@ -250,7 +250,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsTriclinicInBoxDouble,
 (benchmark::State &state) { BM_calc_bonds_triclinic(state); }
 
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsTriclinicInBoxDouble)
-        ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
+        ->Ranges({{16, 16 << 14}, {0, 0}, {0, 0}})
         ->RangeMultiplier(4);
 
 
@@ -260,7 +260,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsTriclinicOutBoxFloat,
 
 
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsTriclinicOutBoxFloat)
-        ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+        ->Ranges({{16, 16 << 14}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
 
@@ -270,7 +270,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsTriclinicOutBoxDouble,
 
 
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsTriclinicOutBoxDouble)
-        ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+        ->Ranges({{16, 16 << 14}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
 
@@ -285,7 +285,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsMDAFloat,
 
 
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsMDAFloat)
-        ->Ranges({{16, 16 << 12}, {0, 0}, {0, 0}})
+        ->Ranges({{16, 16 << 14}, {0, 0}, {0, 0}})
         ->RangeMultiplier(4);
 
 
@@ -295,7 +295,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsMDADouble,
 
 
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsMDADouble)
-        ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+        ->Ranges({{16, 16 << 14}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
 // calc_bonds_ortho
@@ -306,7 +306,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsMDAOrthoOutBoxFloat,
 
 
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsMDAOrthoOutBoxFloat)
-        ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+        ->Ranges({{16, 16 << 14}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
 
@@ -316,7 +316,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsMDAOrthoOutBoxDouble,
 
 
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsMDAOrthoOutBoxDouble)
-        ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+        ->Ranges({{16, 16 << 14}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
 
@@ -330,7 +330,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsMDATriclinicOutBoxFloat,
 
 
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsMDATriclinicOutBoxFloat)
-        ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+        ->Ranges({{16, 16 << 14}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
 
@@ -340,7 +340,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsMDATriclinicOutBoxDouble,
 
 
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsMDATriclinicOutBoxDouble)
-        ->Ranges({{16, 16 << 12}, {0, 0}, {5, 5}})
+        ->Ranges({{16, 16 << 14}, {0, 0}, {5, 5}})
         ->RangeMultiplier(4);
 
   
