@@ -877,18 +877,33 @@ namespace distopia {
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxDouble)(a, b, na, nb, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayNoBox(const float *a, const float* b, int na, int nb, float *out) {
+        if (nb < 8) {
+            return N_SCALAR::CalcDistanceArrayNoBoxSingle(a, b, na, nb, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxSingle)(a, b, na, nb, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayOrtho(const double *a, const double *b, int na, int nb, const double *box, double *out) {
+        if (nb < 4) {
+            return N_SCALAR::CalcDistanceArrayOrthoDouble(a, b, na, nb, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayOrthoDouble)(a, b, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayOrtho(const float *a, const float* b, int na, int nb, const float *box, float *out) {
+        if (nb < 8) {
+            return N_SCALAR::CalcDistanceArrayOrthoSingle(a, b, na, nb, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayOrthoSingle)(a, b, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayTriclinic(const double *a, const double *b, int na, int nb, const double *box, double *out) {
+        if (nb < 4) {
+            return N_SCALAR::CalcDistanceArrayTriclinicDouble(a, b, na, nb, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicDouble)(a, b, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayTriclinic(const float *a, const float* b, int na, int nb, const float *box, float *out) {
+        if (nb < 8) {
+            return N_SCALAR::CalcDistanceArrayTriclinicSingle(a, b, na, nb, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicSingle)(a, b, na, nb, box, out);
     }
 

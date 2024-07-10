@@ -271,6 +271,26 @@ TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayOrthoMatchesMDA) {
     }
 }
 
+
+// not enough coordinates to use a full vector, will dispatch to a scalar path
+TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayOrthoMatchesMDAScalarPath) {
+    this->SetUp(3, 3, 50.0, 75.0);
+
+    using ctype = ScalarToCoordinateT<TypeParam>;
+
+    _calc_distance_array_ortho((ctype*)this->coordsA, this->ncoordsA,
+                              (ctype*)this->coordsB, this->ncoordsB,
+                              this->box, this->ref);
+
+    distopia::CalcDistanceArrayOrtho(this->coordsA, this->coordsB, this->ncoordsA, this->ncoordsB,
+                                     this->box, this->results);
+
+    for (std::size_t i = 0; i < NRESULTS; i++)
+    {
+        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    }
+}
+
 TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayNoBoxMatchesMDA) {
     this->SetUp(100, 150, 50.0, 75.0);
 
@@ -289,8 +309,48 @@ TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayNoBoxMatchesMDA) {
     }
 }
 
+
+// not enough coordinates to use a full vector, will dispatch to a scalar path
+TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayNoBoxMatchesMDAScalarPath) {
+    this->SetUp(3, 3, 50.0, 75.0);
+
+    using ctype = ScalarToCoordinateT<TypeParam>;
+
+    _calc_distance_array((ctype*)this->coordsA, this->ncoordsA,
+                               (ctype*)this->coordsB, this->ncoordsB,
+                               this->ref);
+
+    distopia::CalcDistanceArrayNoBox(this->coordsA, this->coordsB, this->ncoordsA, this->ncoordsB,
+                                     this->results);
+
+    for (std::size_t i = 0; i < NRESULTS; i++)
+    {
+        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    }
+}
+
 TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayTriclinicMatchesMDA) {
     this->SetUp(100, 150, 50.0, 75.0);
+
+    using ctype = ScalarToCoordinateT<TypeParam>;
+
+    distopia::CalcDistanceArrayTriclinic(this->coordsA, this->coordsB, this->ncoordsA, this->ncoordsB,
+                                     this->box, this->results);
+
+    _calc_distance_array_triclinic((ctype*)this->coordsA, this->ncoordsA,
+                               (ctype*)this->coordsB, this->ncoordsB,
+                               this->box, this->ref);
+
+    for (std::size_t i = 0; i < NRESULTS; i++)
+    {
+        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    }
+}
+
+
+// not enough coordinates to use a full vector, will dispatch to a scalar path
+TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayTriclinicMatchesMDAScalarPath) {
+    this->SetUp(3, 3, 50.0, 75.0);
 
     using ctype = ScalarToCoordinateT<TypeParam>;
 
