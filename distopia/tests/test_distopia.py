@@ -56,7 +56,7 @@ class TestDistances:
         c0 = self.arange_input(N, dtype)
         c1 = self.arange_input(N, dtype)
         result_buffer = self.result_shim(use_result_buffer, N, dtype)
-        box = np.asarray([30, -2.6146722, 29.885841, -10.260604, 9.402112, 26.576687], dtype=dtype)
+        box = np.asarray([[30, 0, 0], [-2.6146722, 29.885841, 0], [-10.260604, 9.402112, 26.576687]], dtype=dtype)
         result = distopia.calc_bonds_triclinic(c0, c1, box, results=result_buffer)
         assert_allclose(result, np.zeros(N))
         # check dtype of result
