@@ -119,8 +119,8 @@ namespace distopia {
 
             explicit TriclinicBox(D d, const T *sbox) {
                 this->xx = hn::Set(d, sbox[0]);
-                this->xy = hn::Set(d, sbox[1]); this->yy = hn::Set(d, sbox[2]);
-                this->xz = hn::Set(d, sbox[3]); this->yz = hn::Set(d, sbox[4]); this->zz = hn::Set(d, sbox[5]);
+                this->xy = hn::Set(d, sbox[3]); this->yy = hn::Set(d, sbox[4]);
+                this->xz = hn::Set(d, sbox[6]); this->yz = hn::Set(d, sbox[7]); this->zz = hn::Set(d, sbox[8]);
                 // inverse of diagonal elements
                 this->inv_xx = hn::Set(d, 1/sbox[0]);
                 this->inv_yy = hn::Set(d, 1/sbox[2]);

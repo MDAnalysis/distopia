@@ -86,7 +86,7 @@ class TestMDA:
     @staticmethod
     @pytest.fixture()
     def triclinic_box():
-        return np.asarray([10, 1, 10, 1, 0, 10], dtype=np.float32)
+        return np.asarray([[10, 0, 0], [1, 10, 0], [1, 0, 10]], dtype=np.float32)
 
     @pytest.mark.parametrize("dtype", (np.float32, np.float64))
     def test_bonds(self, box_bonds, dtype, positions):
