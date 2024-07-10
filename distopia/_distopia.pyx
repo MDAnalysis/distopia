@@ -423,7 +423,7 @@ def calc_distance_array_no_box(
 def calc_distance_array_ortho(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
-     floating[:, ::1] box,
+     floating[::1] box,
      floating[::1] results=None):
     cdef floating[::1] results_view
     cdef size_t nvals0 = coords0.shape[0]
@@ -470,7 +470,7 @@ def calc_distance_array_triclinic(
 
     CalcDistanceArrayTriclinic(&coords0[0][0], &coords1[0][0],
                                nvals0, nvals1,
-                               &box[0],
+                               &box[0][0],
                                &results_view[0])
 
     return np.array(results).reshape(coords0.shape[0], coords1.shape[0])
