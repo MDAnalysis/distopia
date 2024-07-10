@@ -7,6 +7,7 @@
 #include <cstring>
 #include <cmath>
 
+
 #undef HWY_TARGET_INCLUDE
 #define HWY_TARGET_INCLUDE "src/distopia.cpp"
 
@@ -16,7 +17,6 @@
 #include "hwy/print-inl.h"
 #include "hwy/contrib/math/math-inl.h"
 
-#define DEBUG_DIST 0
 
 HWY_BEFORE_NAMESPACE();
 
@@ -871,13 +871,8 @@ namespace distopia {
         return HWY_DYNAMIC_DISPATCH(CalcDihedralsTriclinicDouble)(a, b, c, d, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayNoBox(const double *a, const double *b, int na, int nb, double *out) {
-        // hn::ScalableTag<double> d;
         if (nb < 4) {
-            abort();
-            // TODO: We probably need to go to a scalar width if nb is less than a vectors width
-            //return N_SCALAR::CalcDistanceArrayNoBoxDouble(a, b, na, nb, out);
-            //return N_SCALAR::CalcDistanceArrayNoBoxDouble(a, b, na, nb, out);
-            //return HWY_STATIC_DISPATCH(CalcDistanceArrayNoBoxDouble)(a, b, na, nb, out);
+            return N_SCALAR::CalcDistanceArrayNoBoxDouble(a, b, na, nb, out);
         }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxDouble)(a, b, na, nb, out);
     }

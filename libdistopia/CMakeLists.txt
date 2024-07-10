@@ -17,7 +17,8 @@ target_include_directories(libdistopia PUBLIC
         "highway"
         ${CMAKE_CURRENT_LIST_DIR}
         "${CMAKE_CURRENT_LIST_DIR}/include")
-
+# must compile all attainable for HWY_SCALAR codepath to be built
+target_compile_definitions(libdistopia PUBLIC HWY_COMPILE_ALL_ATTAINABLE)
 
 add_executable(bench)
 target_sources(bench PRIVATE "test/bench.cpp")
