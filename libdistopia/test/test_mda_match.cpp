@@ -82,7 +82,9 @@ TYPED_TEST(CoordinatesTest, CalcBondsTriclinicMatchesMDA)
   this->triclinic_box[7]  = 9.402112;
   this->triclinic_box[8]  = 26.576687;
 
+
     // in lower triangular  matrix form
+    // [30, -2.6146722, 29.885841, -10.260604, 9.402112, 26.576687]
 
   TypeParam triclinic_box_reduced[6];
   triclinic_box_reduced[0] = this->triclinic_box[0];
