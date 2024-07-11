@@ -17,8 +17,8 @@ target_include_directories(libdistopia PUBLIC
         "highway"
         ${CMAKE_CURRENT_LIST_DIR}
         "${CMAKE_CURRENT_LIST_DIR}/include")
-# must compile all attainable for HWY_SCALAR codepath to be built
-target_compile_definitions(libdistopia PUBLIC HWY_COMPILE_ALL_ATTAINABLE)
+# target_compile_definitions(libdistopia PUBLIC HWY_COMPILE_ALL_ATTAINABLE)
+
 
 add_executable(bench)
 target_sources(bench PRIVATE "test/bench.cpp")
@@ -40,6 +40,10 @@ target_include_directories(test PUBLIC  ${CMAKE_SOURCE_DIR})
 gtest_discover_tests(test WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 
+add_executable(targets)
+target_sources(targets PRIVATE "test/targets.cpp")
+target_link_libraries(targets PUBLIC libdistopia)
+target_include_directories(targets PUBLIC  ${CMAKE_SOURCE_DIR})
 
 add_executable(test_mda_match)
 target_sources(test_mda_match PRIVATE "test/test_mda_match.cpp")

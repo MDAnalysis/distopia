@@ -5,6 +5,8 @@
 
 #include <iostream>
 #include <cstring>
+#include <string>
+#include <vector>
 #include <cmath>
 
 
@@ -770,6 +772,8 @@ namespace distopia {
             hn::ScalableTag<double> d;
             return hn::Lanes(d);
         }
+
+
     }
 }
 
@@ -869,40 +873,56 @@ namespace distopia {
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayNoBox(const double *a, const double *b, int na, int nb, double *out) {
         if (nb < GetNDoubleLanes() ) {
-            return distopia::N_SCALAR::CalcDistanceArrayNoBoxDouble(a, b, na, nb, out);
+            return distopia::N_EMU128::CalcDistanceArrayNoBoxDouble(a, b, na, nb, out);
         }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxDouble)(a, b, na, nb, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayNoBox(const float *a, const float* b, int na, int nb, float *out) {
         if (nb < GetNFloatLanes()) {
-            return  distopia::N_SCALAR::CalcDistanceArrayNoBoxSingle(a, b, na, nb, out);
+            return  distopia::N_EMU128::CalcDistanceArrayNoBoxSingle(a, b, na, nb, out);
         }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxSingle)(a, b, na, nb, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayOrtho(const double *a, const double *b, int na, int nb, const double *box, double *out) {
         if (nb < GetNDoubleLanes()) {
-            return  distopia::N_SCALAR::CalcDistanceArrayOrthoDouble(a, b, na, nb, box, out);
+            return  distopia::N_EMU128::CalcDistanceArrayOrthoDouble(a, b, na, nb, box, out);
         }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayOrthoDouble)(a, b, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayOrtho(const float *a, const float* b, int na, int nb, const float *box, float *out) {
         if (nb < GetNFloatLanes()) {
-            return  distopia::N_SCALAR::CalcDistanceArrayOrthoSingle(a, b, na, nb, box, out);
+            return  distopia::N_EMU128::CalcDistanceArrayOrthoSingle(a, b, na, nb, box, out);
         }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayOrthoSingle)(a, b, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayTriclinic(const double *a, const double *b, int na, int nb, const double *box, double *out) {
         if (nb < GetNDoubleLanes()) {
-            return  distopia::N_SCALAR::CalcDistanceArrayTriclinicDouble(a, b, na, nb, box, out);
+            return  distopia::N_EMU128::CalcDistanceArrayTriclinicDouble(a, b, na, nb, box, out);
         }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicDouble)(a, b, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayTriclinic(const float *a, const float* b, int na, int nb, const float *box, float *out) {
         if (nb < GetNFloatLanes()) {
-            return  distopia::N_SCALAR::CalcDistanceArrayTriclinicSingle(a, b, na, nb, box, out);
+            return  distopia::N_EMU128::CalcDistanceArrayTriclinicSingle(a, b, na, nb, box, out);
         }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicSingle)(a, b, na, nb, box, out);
     }
+
+
+     std::vector<std::string> DistopiaSupportedAndGeneratedTargets() {
+            std::vector<int64_t> targets = hwy::SupportedAndGeneratedTargets();
+            // for each print the name
+            std::vector<std::string> names;
+            for (auto target : targets) {
+                names.push_back(hwy::TargetName(target));
+            }
+            // print the names
+            std::cout << "Supported and generated targets:\n";
+            for (auto name : names) {
+                std::cout << name << std::endl;
+            }
+            return names;
+        }
 
 }
 
