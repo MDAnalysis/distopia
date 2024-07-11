@@ -44,7 +44,7 @@ jobs:
 
     - uses: mamba-org/setup-micromamba@v1
       with:
-        environment-file: devtools/conda_envs/distopia.yaml
+        environment-file: devtools/conda_envs/distopia_${{ matrix.os }}.yaml
         environment-name: distopia
         create-args: >-
           python==${{ matrix.python-version }}

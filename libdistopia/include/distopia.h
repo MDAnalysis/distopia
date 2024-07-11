@@ -9,7 +9,9 @@
 #define DISTOPIA2_THE_HIGHWAY_WARRIOR_DISTOPIA_H
 
 
+// set EMU 128 to broken so that HWY_SCALAR is the baseline dispatch target
 #define HWY_BROKEN_EMU128 1
+// compile all attainable targets
 #define HWY_COMPILE_ALL_ATTAINABLE
 
 
