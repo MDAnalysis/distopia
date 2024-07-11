@@ -19,6 +19,8 @@ target_include_directories(libdistopia PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/include")
 # must compile all attainable for HWY_SCALAR codepath to be built
 target_compile_definitions(libdistopia PUBLIC HWY_COMPILE_ALL_ATTAINABLE)
+# add wall flag no sign warning
+target_compile_options(libdistopia PRIVATE -Wall -Wno-sign-compare)
 
 add_executable(bench)
 target_sources(bench PRIVATE "test/bench.cpp")

@@ -267,8 +267,9 @@ namespace distopia {
             T a_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
             T b_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
             T out_sub[HWY_MAX_LANES_D(hn::ScalableTag<T>)];
-            const T *a_src, *b_src;
-            T *dst;
+            const T *a_src = nullptr;
+            const T *b_src = nullptr;
+            T *dst = nullptr;
 
             if (HWY_UNLIKELY(n < nlanes)) {
                 // input problem was too small to bother with
@@ -371,8 +372,10 @@ namespace distopia {
             T b_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
             T c_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
             T out_sub[HWY_MAX_LANES_D(hn::ScalableTag<T>)];
-            const T *a_src, *b_src, *c_src;
-            T *dst;
+            const T *a_src = nullptr;
+            const T *b_src = nullptr;
+            const T *c_src = nullptr;
+            T *dst = nullptr;
 
             if (HWY_UNLIKELY(n < nlanes)) {
                 memcpy(a_sub, a, 3 * n * sizeof(T));
@@ -499,8 +502,11 @@ namespace distopia {
 
             auto nlanes = hn::Lanes(d);
 
-            const T *a_src, *b_src, *c_src, *d_src;
-            T *dst;
+            const T *a_src = nullptr;
+            const T *b_src = nullptr;
+            const T *c_src = nullptr;
+            const T *d_src = nullptr;
+            T *dst = nullptr;
 
             T a_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
             T b_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
@@ -573,9 +579,10 @@ namespace distopia {
 
             T a_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
             T b_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
-            T *out_sub;
-            const T *a_src, *b_src;
-            T *dst;
+            T *out_sub = nullptr;
+            const T *a_src = nullptr;
+            const T *b_src = nullptr;
+            T *dst = nullptr;
 
             if (HWY_UNLIKELY(na < nlanes)) {
                 memcpy(a_sub, a, 3 * na * sizeof(T));
