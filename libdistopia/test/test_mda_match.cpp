@@ -309,11 +309,11 @@ TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayTriclinicMatchesMDA) {
     using ctype = ScalarToCoordinateT<TypeParam>;
 
     distopia::CalcDistanceArrayTriclinic(this->coordsA, this->coordsB, this->ncoordsA, this->ncoordsB,
-                                     this->box, this->results);
+                                     this->triclinic_box, this->results);
 
     _calc_distance_array_triclinic((ctype*)this->coordsA, this->ncoordsA,
                                (ctype*)this->coordsB, this->ncoordsB,
-                               this->box, this->ref);
+                               this->triclinic_box, this->ref);
 
     for (std::size_t i = 0; i < NRESULTS; i++)
     {
@@ -329,11 +329,11 @@ TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayTriclinicMatchesMDAScalarP
     using ctype = ScalarToCoordinateT<TypeParam>;
 
     distopia::CalcDistanceArrayTriclinic(this->coordsA, this->coordsB, this->ncoordsA, this->ncoordsB,
-                                     this->box, this->results);
+                                     this->triclinic_box, this->results);
 
     _calc_distance_array_triclinic((ctype*)this->coordsA, this->ncoordsA,
                                (ctype*)this->coordsB, this->ncoordsB,
-                               this->box, this->ref);
+                               this->triclinic_box, this->ref);
 
     for (std::size_t i = 0; i < NRESULTS; i++)
     {

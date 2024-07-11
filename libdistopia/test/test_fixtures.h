@@ -101,6 +101,7 @@ public:
         box[1] = boxsize;
         box[2] = boxsize;
 
+
         triclinic_box[0] = boxsize;  // lx
         triclinic_box[1] = 0.0;  // must be 0
         triclinic_box[2] = 0.0;  // "
