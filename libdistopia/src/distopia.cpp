@@ -605,17 +605,14 @@ namespace distopia {
                 auto a_z = hn::Set(d, a_src[3 * ia + 2]);
 
                 // first result offset, the row we're on
-                size_t p_a = ia * na;
+                size_t p_a = ia * nb; // NOTE: nb elements per row, not na
 
                 for (int ib=0; ib < nb; ib += nlanes) {
                     // also used as second result offset
-
                     size_t p_b = HWY_MAX(HWY_MIN(ib, nb - nlanes), 0);
-
                     hn::LoadInterleaved3(d, b_src + 3 * p_b, b_x, b_y, b_z);
 
                     auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
-
                     hn::StoreU(result, d, dst + p_a + p_b);
                 }
             }
