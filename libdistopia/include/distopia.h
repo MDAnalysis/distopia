@@ -3,6 +3,7 @@
 //
 
 #include <vector>
+#include <string>
 
 #ifndef DISTOPIA2_THE_HIGHWAY_WARRIOR_DISTOPIA_H
 #define DISTOPIA2_THE_HIGHWAY_WARRIOR_DISTOPIA_H
