@@ -52,12 +52,11 @@ class TestDistances:
     @pytest.mark.parametrize("dtype", (np.float32, np.float64))
     @pytest.mark.parametrize("N", (0, 10, 1000, 10000))
     @pytest.mark.parametrize("use_result_buffer", (True, False))
-    #FIXME: This test is failing, box is likely wrong
     def test_calc_bonds_triclinic_all_zero(self, N, use_result_buffer, dtype):
         c0 = self.arange_input(N, dtype)
         c1 = self.arange_input(N, dtype)
         result_buffer = self.result_shim(use_result_buffer, N, dtype)
-        box = np.asarray([30, -2.6146722, 29.885841, -10.260604, 9.402112, 26.576687], dtype=dtype)
+        box = np.asarray([[30, 0, 0], [-2.6146722, 29.885841, 0], [-10.260604, 9.402112, 26.576687]], dtype=dtype)
         result = distopia.calc_bonds_triclinic(c0, c1, box, results=result_buffer)
         assert_allclose(result, np.zeros(N))
         # check dtype of result
@@ -86,7 +85,7 @@ class TestMDA:
     @staticmethod
     @pytest.fixture()
     def triclinic_box():
-        return np.asarray([10, 1, 10, 1, 0, 10], dtype=np.float32)
+        return np.asarray([[10, 0, 0], [1, 10, 0], [1, 0, 10]], dtype=np.float32)
 
     @pytest.mark.parametrize("dtype", (np.float32, np.float64))
     def test_bonds(self, box_bonds, dtype, positions):

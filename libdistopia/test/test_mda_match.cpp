@@ -83,18 +83,8 @@ TYPED_TEST(CoordinatesTest, CalcBondsTriclinicMatchesMDA)
   this->triclinic_box[8]  = 26.576687;
 
 
-    // in lower triangular  matrix form
-    // [30, -2.6146722, 29.885841, -10.260604, 9.402112, 26.576687]
 
-  TypeParam triclinic_box_reduced[6];
-  triclinic_box_reduced[0] = this->triclinic_box[0];
-  triclinic_box_reduced[1] = this->triclinic_box[3];
-  triclinic_box_reduced[2] = this->triclinic_box[4];
-  triclinic_box_reduced[3] = this->triclinic_box[6];
-  triclinic_box_reduced[4] = this->triclinic_box[7];
-  triclinic_box_reduced[5] = this->triclinic_box[8];
-
-  distopia::CalcBondsTriclinic(this->coords0, this->coords1, this->nresults, triclinic_box_reduced, this->results);
+  distopia::CalcBondsTriclinic(this->coords0, this->coords1, this->nresults, this->triclinic_box, this->results);
 
   _calc_bond_distance_triclinic((ctype*)this->coords0, (ctype*)this->coords1,
                       this->nresults, this->triclinic_box, this->ref);
@@ -158,18 +148,9 @@ TYPED_TEST(CoordinatesTest, CalcAnglesTriclinicMatchesMDA)
     this->triclinic_box[7]  = 9.402112;
     this->triclinic_box[8]  = 26.576687;
 
-    // in lower triangular  matrix form
-
-    TypeParam triclinic_box_reduced[6];
-    triclinic_box_reduced[0] = this->triclinic_box[0];
-    triclinic_box_reduced[1] = this->triclinic_box[3];
-    triclinic_box_reduced[2] = this->triclinic_box[4];
-    triclinic_box_reduced[3] = this->triclinic_box[6];
-    triclinic_box_reduced[4] = this->triclinic_box[7];
-    triclinic_box_reduced[5] = this->triclinic_box[8];
 
     distopia::CalcAnglesTriclinic(this->coords0, this->coords1, this->coords2,
-                                  this->nresults, triclinic_box_reduced, this->results);
+                                  this->nresults, this->triclinic_box, this->results);
 
     _calc_angle_triclinic((ctype*)this->coords0, (ctype*)this->coords1, (ctype*)this->coords2,
                           this->nresults, this->triclinic_box, this->ref);
@@ -231,16 +212,9 @@ TYPED_TEST(CoordinatesTest, CalcDihedralsTriclinicMatchesMDA)
     this->triclinic_box[7]  = 9.402112;
     this->triclinic_box[8]  = 26.576687;
 
-    TypeParam triclinic_box_reduced[6];
-    triclinic_box_reduced[0] = this->triclinic_box[0];
-    triclinic_box_reduced[1] = this->triclinic_box[3];
-    triclinic_box_reduced[2] = this->triclinic_box[4];
-    triclinic_box_reduced[3] = this->triclinic_box[6];
-    triclinic_box_reduced[4] = this->triclinic_box[7];
-    triclinic_box_reduced[5] = this->triclinic_box[8];
 
     distopia::CalcDihedralsTriclinic(this->coords0, this->coords1, this->coords2, this->coords3,
-                                     this->nresults, triclinic_box_reduced, this->results);
+                                     this->nresults, this->triclinic_box, this->results);
 
     _calc_dihedral_triclinic((ctype*)this->coords0, (ctype*)this->coords1, (ctype*)this->coords2,
                              (ctype*)this->coords3, this->nresults, this->triclinic_box, this->ref);

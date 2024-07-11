@@ -179,7 +179,7 @@ def  calc_bonds_ortho(floating[:, ::1] coords0,
 @cython.wraparound(False)
 def  calc_bonds_triclinic(floating[:, ::1] coords0,
                           floating[:, ::1] coords1,
-                          floating[::1] box,
+                          floating[:, ::1] box,
                           floating[::1] results=None):
     """Calculate pairwise distances between coords0 and coords1
 
@@ -209,7 +209,7 @@ def  calc_bonds_triclinic(floating[:, ::1] coords0,
 
     results_view = results
 
-    CalcBondsTriclinic(& coords0[0][0], & coords1[0][0], nvals, & box[0], & results_view[0])
+    CalcBondsTriclinic(& coords0[0][0], & coords1[0][0], nvals, & box[0][0], & results_view[0])
 
     return np.array(results)
 
@@ -269,7 +269,7 @@ def calc_angles_triclinic(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[:, ::1] coords2,
-     floating[::1] box,
+     floating[:, ::1] box,
      floating[::1] results=None):
     cdef floating[::1] results_view
     cdef size_t nvals = coords0.shape[0]
@@ -286,7 +286,7 @@ def calc_angles_triclinic(
     results_view = results
 
     CalcAnglesTriclinic(&coords0[0][0], &coords1[0][0], &coords2[0][0],
-                        nvals, &box[0], &results_view[0])
+                        nvals, &box[0][0], &results_view[0])
 
     return np.array(results)
 
@@ -349,7 +349,7 @@ def calc_dihedrals_triclinic(
      floating[:, ::1] coords1,
      floating[:, ::1] coords2,
      floating[:, ::1] coords3,
-     floating[::1] box,
+     floating[:, ::1] box,
      floating[::1] results=None):
     cdef floating[::1] results_view
     cdef size_t nvals = coords0.shape[0]
@@ -366,6 +366,6 @@ def calc_dihedrals_triclinic(
     results_view = results
 
     CalcDihedralsTriclinic(&coords0[0][0], &coords1[0][0], &coords2[0][0], &coords3[0][0],
-                           nvals, &box[0], &results_view[0])
+                           nvals, &box[0][0], &results_view[0])
 
     return np.array(results)
