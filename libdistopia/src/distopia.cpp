@@ -5,6 +5,8 @@
 
 #include <iostream>
 #include <cstring>
+#include <string>
+#include <vector>
 #include <cmath>
 
 #undef HWY_TARGET_INCLUDE
@@ -771,6 +773,8 @@ namespace distopia {
             hn::ScalableTag<double> d;
             return hn::Lanes(d);
         }
+
+
     }
 }
 
@@ -886,6 +890,22 @@ namespace distopia {
     HWY_DLLEXPORT template <> void CalcDistanceArrayTriclinic(const float *a, const float* b, int na, int nb, const float *box, float *out) {
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicSingle)(a, b, na, nb, box, out);
     }
+
+
+     std::vector<std::string> DistopiaSupportedAndGeneratedTargets() {
+            std::vector<int64_t> targets = hwy::SupportedAndGeneratedTargets();
+            // for each print the name
+            std::vector<std::string> names;
+            for (auto target : targets) {
+                names.push_back(hwy::TargetName(target));
+            }
+            // print the names
+            std::cout << "Supported and generated targets:\n";
+            for (auto name : names) {
+                std::cout << name << std::endl;
+            }
+            return names;
+        }
 
 }
 
