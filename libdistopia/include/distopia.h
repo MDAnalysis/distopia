@@ -5,6 +5,10 @@
 #ifndef DISTOPIA2_THE_HIGHWAY_WARRIOR_DISTOPIA_H
 #define DISTOPIA2_THE_HIGHWAY_WARRIOR_DISTOPIA_H
 
+
+#define HWY_COMPILE_ONLY_SCALAR
+#define HWY_COMPILE_ALL_ATTAINABLE
+
 namespace distopia {
     template <typename T> void CalcBondsNoBox(const T *a, const T *b, int n, T *out);
     template <typename T> void CalcBondsOrtho(const T *a, const T *b, int n, const T *box, T *out);
