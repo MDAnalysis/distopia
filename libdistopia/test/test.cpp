@@ -129,7 +129,6 @@ TYPED_TEST(DistancesTest, CalcBondsTriclinicKnownValues0) {
     {
         coords1[3 * i] = i;
     }
-    // this is the fugly box representation, [lx, xy, ly, xz, yz, lz]
     TypeParam box[9] = {8, 0, 0, 0, 8, 0, 0, 0, 8};
     TypeParam ref[N] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
 

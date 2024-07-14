@@ -2,8 +2,18 @@
 // Created by richard on 13/08/23.
 //
 
+#include <vector>
+#include <string>
+
 #ifndef DISTOPIA2_THE_HIGHWAY_WARRIOR_DISTOPIA_H
 #define DISTOPIA2_THE_HIGHWAY_WARRIOR_DISTOPIA_H
+
+
+// set EMU 128 to broken so that HWY_SCALAR is the baseline dispatch target
+#define HWY_BROKEN_EMU128 1
+// compile all attainable targets
+#define HWY_COMPILE_ALL_ATTAINABLE
+
 
 namespace distopia {
     template <typename T> void CalcBondsNoBox(const T *a, const T *b, int n, T *out);
@@ -20,6 +30,7 @@ namespace distopia {
     template <typename T> void CalcDistanceArrayTriclinic(const T *a, const T *b, int na, int nb, const T *box, T *out);
     int GetNFloatLanes();
     int GetNDoubleLanes();
+    std::vector<std::string> DistopiaSupportedAndGeneratedTargets();
 }
 
 #endif //DISTOPIA2_THE_HIGHWAY_WARRIOR_DISTOPIA_H

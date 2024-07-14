@@ -51,5 +51,23 @@ inline void EXPECT_SCALAR_NEAR(double result, double ref, float tol)
 }
 
 
+template <typename T>
+void pretty_print_matrix(T *matrix, int rows, int cols)
+{
+    // set the precision to 3 decimal places
+    std::cout.precision(3);
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            std::cout << matrix[i * cols + j] << " ";
+        }
+        std::cout << std::endl;
+    }
+    // restore the default precision
+    std::cout.precision(6);
+}
+
+
 
 #endif // DISTOPIA_TEST_UTILS_H

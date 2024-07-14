@@ -1,0 +1,15 @@
+name: distopia
+channels:
+- conda-forge
+dependencies:
+- cmake
+- make
+- pip
+- python >= 3.9
+- cython
+- numpy
+- ninja
+- pytest
+- scikit-build
+- compilers
+- libxcrypt

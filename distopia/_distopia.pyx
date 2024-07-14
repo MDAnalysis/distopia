@@ -89,6 +89,29 @@ cdef extern from "distopia.h" namespace "distopia" nogil:
         const T *box,
         T *out
     )
+    void CalcDistanceArrayNoBox[T](
+        const T *coords0,
+        const T *coords1,
+        size_t n0,
+        size_t n1,
+        T *out,
+    )
+    void CalcDistanceArrayOrtho[T](
+        const T *coords0,
+        const T *coords1,
+        size_t n0,
+        size_t n1,
+        const T *box,
+        T *out,
+    )
+    void CalcDistanceArrayTriclinic[T](
+        const T *coords0,
+        const T *coords1,
+        size_t n0,
+        size_t n1,
+        const T *box,
+        T *out,
+    )
 
 def get_n_float_lanes():
     """The number of floats per register distopia will handle on this system"""
@@ -369,3 +392,85 @@ def calc_dihedrals_triclinic(
                            nvals, &box[0][0], &results_view[0])
 
     return np.array(results)
+
+
+def calc_distance_array_no_box(
+     floating[:, ::1] coords0,
+     floating[:, ::1] coords1,
+     floating[::1] results=None):
+    cdef floating[::1] results_view
+    cdef size_t nvals0 = coords0.shape[0]
+    cdef size_t nvals1 = coords1.shape[0]
+    cdef cnp.npy_intp[1] dims
+
+    dims[0] = <ssize_t > nvals0 * nvals1
+
+    if results is None:
+        if floating is float:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+        else:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+
+    results_view = results
+
+    CalcDistanceArrayNoBox(&coords0[0][0], &coords1[0][0],
+                           nvals0, nvals1,
+                           &results_view[0])
+
+    return np.array(results).reshape(coords0.shape[0], coords1.shape[0])
+
+
+def calc_distance_array_ortho(
+     floating[:, ::1] coords0,
+     floating[:, ::1] coords1,
+     floating[::1] box,
+     floating[::1] results=None):
+    cdef floating[::1] results_view
+    cdef size_t nvals0 = coords0.shape[0]
+    cdef size_t nvals1 = coords1.shape[0]
+    cdef cnp.npy_intp[1] dims
+
+    dims[0] = <ssize_t > nvals0 * nvals1
+
+    if results is None:
+        if floating is float:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+        else:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+
+    results_view = results
+
+    CalcDistanceArrayOrtho(&coords0[0][0], &coords1[0][0],
+                           nvals0, nvals1,
+                           &box[0],
+                           &results_view[0])
+
+    return np.array(results).reshape(coords0.shape[0], coords1.shape[0])
+
+
+def calc_distance_array_triclinic(
+     floating[:, ::1] coords0,
+     floating[:, ::1] coords1,
+     floating[:, ::1] box,
+     floating[::1] results=None):
+    cdef floating[::1] results_view
+    cdef size_t nvals0 = coords0.shape[0]
+    cdef size_t nvals1 = coords1.shape[0]
+    cdef cnp.npy_intp[1] dims
+
+    dims[0] = <ssize_t > nvals0 * nvals1
+
+    if results is None:
+        if floating is float:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+        else:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+
+    results_view = results
+
+    CalcDistanceArrayTriclinic(&coords0[0][0], &coords1[0][0],
+                               nvals0, nvals1,
+                               &box[0][0],
+                               &results_view[0])
+
+    return np.array(results).reshape(coords0.shape[0], coords1.shape[0])

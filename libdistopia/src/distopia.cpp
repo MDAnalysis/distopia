@@ -5,7 +5,10 @@
 
 #include <iostream>
 #include <cstring>
+#include <string>
+#include <vector>
 #include <cmath>
+
 
 #undef HWY_TARGET_INCLUDE
 #define HWY_TARGET_INCLUDE "src/distopia.cpp"
@@ -16,7 +19,6 @@
 #include "hwy/print-inl.h"
 #include "hwy/contrib/math/math-inl.h"
 
-#define DEBUG_DIST 0
 
 HWY_BEFORE_NAMESPACE();
 
@@ -573,7 +575,7 @@ namespace distopia {
 
             T a_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
             T b_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
-            T out_sub[HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            T *out_sub;
             const T *a_src, *b_src;
             T *dst;
 
@@ -588,6 +590,7 @@ namespace distopia {
                 b_src = &b[0];
             }
             if (HWY_UNLIKELY(na * nb < nlanes)) {
+                out_sub = new T[nlanes * nlanes];
                 dst = &out_sub[0];
             } else {
                 dst = out;
@@ -604,23 +607,21 @@ namespace distopia {
                 auto a_z = hn::Set(d, a_src[3 * ia + 2]);
 
                 // first result offset, the row we're on
-                size_t p_a = ia * na;
+                size_t p_a = ia * nb; // NOTE: nb elements per row, not na
 
                 for (int ib=0; ib < nb; ib += nlanes) {
                     // also used as second result offset
-
                     size_t p_b = HWY_MAX(HWY_MIN(ib, nb - nlanes), 0);
-
                     hn::LoadInterleaved3(d, b_src + 3 * p_b, b_x, b_y, b_z);
 
-                    //auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
-
-                    //hn::StoreU(result, d, dst + p_a + p_b);
+                    auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
+                    hn::StoreU(result, d, dst + p_a + p_b);
                 }
             }
 
             if (HWY_UNLIKELY(na * nb < nlanes)) {
                 memcpy(out, dst, na * nb * sizeof(T));
+                delete[] out_sub;
             }
 
         }
@@ -738,7 +739,7 @@ namespace distopia {
             CalcDistanceArray(a, b, na, nb, out, vbox);
         }
         void CalcDistanceArrayNoBoxSingle(const float *a, const float *b, int na, int nb, float *out) {
-            hn::ScalableTag<double> d;
+            hn::ScalableTag<float> d;
             const NoBox vbox(d);
             CalcDistanceArray(a, b, na, nb, out, vbox);
         }
@@ -748,7 +749,7 @@ namespace distopia {
             CalcDistanceArray(a, b, na, nb, out, vbox);
         }
         void CalcDistanceArrayOrthoSingle(const float *a, const float *b, int na, int nb, const float *box, float *out) {
-            hn::ScalableTag<double> d;
+            hn::ScalableTag<float> d;
             const OrthogonalBox vbox(d, box);
             CalcDistanceArray(a, b, na, nb, out, vbox);
         }
@@ -758,7 +759,7 @@ namespace distopia {
             CalcDistanceArray(a, b, na, nb, out, vbox);
         }
         void CalcDistanceArrayTriclinicSingle(const float *a, const float *b, int na, int nb, const float *box, float *out) {
-            hn::ScalableTag<double> d;
+            hn::ScalableTag<float> d;
             const TriclinicBox vbox(d, box);
             CalcDistanceArray(a, b, na, nb, out, vbox);
         }
@@ -771,6 +772,8 @@ namespace distopia {
             hn::ScalableTag<double> d;
             return hn::Lanes(d);
         }
+
+
     }
 }
 
@@ -869,23 +872,57 @@ namespace distopia {
         return HWY_DYNAMIC_DISPATCH(CalcDihedralsTriclinicDouble)(a, b, c, d, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayNoBox(const double *a, const double *b, int na, int nb, double *out) {
+        if (nb < GetNDoubleLanes() ) {
+            return distopia::N_SCALAR::CalcDistanceArrayNoBoxDouble(a, b, na, nb, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxDouble)(a, b, na, nb, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayNoBox(const float *a, const float* b, int na, int nb, float *out) {
+        if (nb < GetNFloatLanes()) {
+            return  distopia::N_SCALAR::CalcDistanceArrayNoBoxSingle(a, b, na, nb, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxSingle)(a, b, na, nb, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayOrtho(const double *a, const double *b, int na, int nb, const double *box, double *out) {
+        if (nb < GetNDoubleLanes()) {
+            return  distopia::N_SCALAR::CalcDistanceArrayOrthoDouble(a, b, na, nb, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayOrthoDouble)(a, b, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayOrtho(const float *a, const float* b, int na, int nb, const float *box, float *out) {
+        if (nb < GetNFloatLanes()) {
+            return  distopia::N_SCALAR::CalcDistanceArrayOrthoSingle(a, b, na, nb, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayOrthoSingle)(a, b, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayTriclinic(const double *a, const double *b, int na, int nb, const double *box, double *out) {
+        if (nb < GetNDoubleLanes()) {
+            return  distopia::N_SCALAR::CalcDistanceArrayTriclinicDouble(a, b, na, nb, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicDouble)(a, b, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayTriclinic(const float *a, const float* b, int na, int nb, const float *box, float *out) {
+        if (nb < GetNFloatLanes()) {
+            return  distopia::N_SCALAR::CalcDistanceArrayTriclinicSingle(a, b, na, nb, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicSingle)(a, b, na, nb, box, out);
     }
+
+
+     std::vector<std::string> DistopiaSupportedAndGeneratedTargets() {
+            std::vector<int64_t> targets = hwy::SupportedAndGeneratedTargets();
+            // for each print the name
+            std::vector<std::string> names;
+            for (auto target : targets) {
+                names.push_back(hwy::TargetName(target));
+            }
+            // print the names
+            std::cout << "Supported and generated targets:\n";
+            for (auto name : names) {
+                std::cout << name << std::endl;
+            }
+            return names;
+        }
 
 }
 
