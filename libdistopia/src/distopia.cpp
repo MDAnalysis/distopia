@@ -626,6 +626,11 @@ namespace distopia {
 
         }
 
+        template <typename T, typename B>
+        void CalcSelfDistanceArray(const T *a, int n, T *out, B &box) {
+
+        }
+
         void CalcBondsNoBoxDouble(const double *a, const double *b, int n, double *out) {
             hn::ScalableTag<double> d;
             const NoBox vbox(d);
@@ -763,6 +768,36 @@ namespace distopia {
             const TriclinicBox vbox(d, box);
             CalcDistanceArray(a, b, na, nb, out, vbox);
         }
+        void CalcSelfDistanceArrayNoBoxSingle(const float *a, int n, float *out) {
+            hn::ScalableTag<float> d;
+            const NoBox vbox(d);
+            CalcSelfDistanceArray(a, n, out, vbox);
+        }
+        void CalcSelfDistanceArrayNoBoxDouble(const double *a, int n, double *out) {
+            hn::ScalableTag<double> d;
+            const NoBox vbox(d);
+            CalcSelfDistanceArray(a, n, out, vbox);
+        }
+        void CalcSelfDistanceArrayOrthoSingle(const float *a, int n, const float *box, float *out) {
+            hn::ScalableTag<float> d;
+            const OrthogonalBox vbox(d, box);
+            CalcSelfDistanceArray(a, n, out, vbox);
+        }
+        void CalcSelfDistanceArrayOrthoDouble(const double *a, int n, const double *box, double *out) {
+            hn::ScalableTag<double> d;
+            const OrthogonalBox vbox(d, box);
+            CalcSelfDistanceArray(a, n, out, vbox);
+        }
+        void CalcSelfDistanceArrayTriclinicSingle(const float *a, int n, const float *box, float *out) {
+            hn::ScalableTag<float> d;
+            const TriclinicBox vbox(d, box);
+            CalcSelfDistanceArray(a, n, out, vbox);
+        }
+        void CalcSelfDistanceArrayTriclinicDouble(const double *a, int n, const double *box, double *out) {
+            hn::ScalableTag<double> d;
+            const TriclinicBox vbox(d, box);
+            CalcSelfDistanceArray(a, n, out, vbox);
+        }
 
         int GetNFloatLanes() {
             hn::ScalableTag<float> d;
@@ -806,6 +841,12 @@ namespace distopia {
     HWY_EXPORT(CalcDistanceArrayOrthoSingle);
     HWY_EXPORT(CalcDistanceArrayTriclinicDouble);
     HWY_EXPORT(CalcDistanceArrayTriclinicSingle);
+    HWY_EXPORT(CalcSelfDistanceArrayNoBoxDouble);
+    HWY_EXPORT(CalcSelfDistanceArrayNoBoxSingle);
+    HWY_EXPORT(CalcSelfDistanceArrayOrthoDouble);
+    HWY_EXPORT(CalcSelfDistanceArrayOrthoSingle);
+    HWY_EXPORT(CalcSelfDistanceArrayTriclinicDouble);
+    HWY_EXPORT(CalcSelfDistanceArrayTriclinicSingle);
     HWY_EXPORT(GetNFloatLanes);
     HWY_EXPORT(GetNDoubleLanes);
 
@@ -907,7 +948,24 @@ namespace distopia {
         }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicSingle)(a, b, na, nb, box, out);
     }
-
+    HWY_DLLEXPORT template <> void CalcSelfDistanceArrayNoBox(const float *a, int n, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayNoBoxSingle)(a, n, out);
+    }
+    HWY_DLLEXPORT template <> void CalcSelfDistanceArrayNoBox(const double *a, int n, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayNoBoxDouble)(a, n, out);
+    }
+    HWY_DLLEXPORT template <> void CalcSelfDistanceArrayOrtho(const float *a, int n, const float *box, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayOrthoSingle)(a, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcSelfDistanceArrayOrtho(const double *a, int n, const double *box, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayOrthoDouble)(a, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcSelfDistanceArrayTriclinic(const float *a, int n, const float* box, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayTriclinicSingle)(a, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcSelfDistanceArrayTriclinic(const double *a, int n, const double *box, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayTriclinicDouble)(a, n, box, out);
+    }
 
      std::vector<std::string> DistopiaSupportedAndGeneratedTargets() {
             std::vector<int64_t> targets = hwy::SupportedAndGeneratedTargets();
