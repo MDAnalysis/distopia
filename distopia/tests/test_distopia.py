@@ -63,9 +63,20 @@ class TestDistances:
         assert result.dtype == dtype
 
 
+
+
 class TestMDA:
 
     prec = 5
+
+
+    @staticmethod
+    def convert_ndarray(*args, dtype):
+        if len(args) == 1:
+            return np.asarray(args[0], dtype=dtype)
+        else:
+            return (np.asarray(a, dtype=dtype) for a in args)
+
 
     @staticmethod
     @pytest.fixture()
@@ -90,6 +101,9 @@ class TestMDA:
     @pytest.mark.parametrize("dtype", (np.float32, np.float64))
     def test_bonds(self, box_bonds, dtype, positions):
         a, b, c, d = positions
+        a, b, c, d = self.convert_ndarray(a, b, c, d, dtype=dtype)
+        box_bonds = self.convert_ndarray(box_bonds, dtype=dtype)
+
         dists = distopia.calc_bonds_no_box(a, b)
         assert_equal(len(dists), 4, err_msg="calc_bonds results have wrong length")
         dists_pbc = distopia.calc_bonds_ortho(a, b, box_bonds)
@@ -114,3 +128,35 @@ class TestMDA:
         dists = distopia.calc_bonds_triclinic(a, b, triclinic_box)
         reference = np.array([0.0, 1.7320508, 1.4142136, 2.82842712])
         assert_almost_equal(dists, reference, self.prec, err_msg="calc_bonds with triclinic box failed")
+
+
+
+
+    @pytest.mark.parametrize("dtype", (np.float32, np.float64))
+    def test_angles(self, dtype, positions):
+        a, b, c, d = positions
+        a, b, c, d = self.convert_ndarray(a, b, c, d, dtype=dtype)
+
+        angles = distopia.calc_angles_no_box(a, b, c)
+        # Check calculated values
+        assert_equal(len(angles), 4, err_msg="calc_angles results have wrong length")
+        assert_almost_equal(angles[1], np.pi, self.prec,
+                            err_msg="180 degree angle calculation failed")
+        assert_almost_equal(np.rad2deg(angles[2]), 90., self.prec,
+                            err_msg="Ninety degree angle in calc_angles failed")
+        assert_almost_equal(angles[3], 0.098174833, self.prec,
+                            err_msg="Small angle failed in calc_angles")
+        
+
+    @pytest.mark.parametrize("dtype", (np.float32, np.float64))
+    def test_dihedrals(self, dtype, positions):
+        a, b, c, d = positions
+        a, b, c, d = self.convert_ndarray(a, b, c, d, dtype=dtype)
+        dihedrals = distopia.calc_dihedrals_no_box(a, b, c, d)
+        # Check calculated values
+        assert_equal(len(dihedrals), 4, err_msg="calc_dihedrals results have wrong length")
+        assert np.isnan(dihedrals[0]), "Zero length dihedral failed"
+        assert np.isnan(dihedrals[1]), "Straight line dihedral failed"
+        assert_almost_equal(dihedrals[2], np.pi, self.prec, err_msg="180 degree dihedral failed")
+        assert_almost_equal(dihedrals[3], -0.50714064, self.prec,
+                            err_msg="arbitrary dihedral angle failed")
