@@ -488,9 +488,10 @@ namespace distopia {
             y = hn::MulAdd(xp_y, rbc_y, y);
             y = hn::MulAdd(xp_z, rbc_z, y);
             
+            
+
             y = y / vb_norm;
 
-            // negate due to vector order (?)
             return   hn::Neg(hn::Atan2(d, y, x));
         }
 

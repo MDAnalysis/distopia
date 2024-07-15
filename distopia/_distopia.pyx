@@ -124,15 +124,15 @@ def get_n_double_lanes():
 
 
 def _check_results(results, nvals):
-    """Check that results is the right shape and dtype"""
+    """Check that results is the right shape"""
     if results.ndim > 1:
         raise ValueError("results must be a 1D array")
     if results.shape[0] != nvals:
         raise ValueError(f"results must be the same length as coordinates ({nvals}), you provided {results.shape[0]}")
 
 
-def _check_results_darray(results, nvals0, nvals1, dtype):
-    """Check that results is the right shape and dtype"""
+def _check_results_darray(results, nvals0, nvals1):
+    """Check that results is the right shape"""
     if results.ndim > 1:
         raise ValueError("results must be a 1D array")
     if results.shape[0] != nvals0 * nvals1:
@@ -340,7 +340,7 @@ def calc_angles_ortho(
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
 
     else:
-        _check_results(results, nvals, coords0.dtype)
+        _check_results(results, nvals)
 
     results_view = results
 
@@ -474,7 +474,7 @@ def calc_dihedrals_ortho(
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
 
     else:
-        _check_results(results, nvals, coords0.dtype)
+        _check_results(results, nvals)
 
     results_view = results
 
