@@ -628,7 +628,60 @@ namespace distopia {
 
         template <typename T, typename B>
         void CalcSelfDistanceArray(const T *a, int n, T *out, B &box) {
+            // n is *at least* nlanes
+            const hn::ScalableTag<T> d;
+            int nlanes = hn::Lanes(d);
 
+            // load all of one value into register
+            // loop over spans following that value
+
+            // for storing stub end values
+            T out_sub[HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+
+            auto b_x = hn::Undefined(d);
+            auto b_y = hn::Undefined(d);
+            auto b_z = hn::Undefined(d);
+            // we are saving a triangular matrix into a flattened array
+            // this is the "row" offset in output array
+            size_t p_a = 0;
+            for (size_t ia=0; ia<n-1; ia++) {  // ignore final a as it has nothing to compare to
+                // a registers hold single value
+                auto a_x = hn::Set(d, a[3 * ia]);
+                auto a_y = hn::Set(d, a[3 * ia + 1]);
+                auto a_z = hn::Set(d, a[3 * ia + 2]);
+                // "column" offset in output array
+                size_t p_b = 0;
+                for (size_t ib = ia + 1; ib + nlanes <= n; ib += nlanes) {
+                    // b registers hold values to compare against a
+                    hn::LoadInterleaved3(d, a + 3*ib, b_x, b_y, b_z);
+
+                    auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
+                    hn::StoreU(result, d, out + p_a + p_b);
+                    p_b += nlanes;
+                }
+                // remainder loop
+                // all calls will have messy final sizes,
+                // e.g. final a iteration always has one b value to compare against
+                // therefore can't use previous backtrack strategy (calcbonds) to always handle a full vector width
+                // and can't use distancearray strategy of chickening out for small n
+                size_t iteration_size = n - 1 - ia;
+                size_t rem = (iteration_size) % nlanes;
+                if (rem) {
+                    // load final nlane values
+                    // we've guarded elsewhere that n >= nlanes
+                    hn::LoadInterleaved3(d, a + 3 * (n - nlanes), b_x, b_y, b_z);
+
+                    auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
+                    // carefully extract from result into out
+                    // extract lanes is noted to be slow, so dump entire vector and copy out
+                    hn::StoreU(result, d, out_sub);
+                    // move *rem* values from *back* of out_sub into out
+                    memcpy(out + p_a + iteration_size - rem, out_sub + (nlanes - rem), rem * sizeof(T));
+                }
+                // increment by number of values written this iteration
+                // on first iteration there are (n-1) values, this decreases by 1 each a loop
+                p_a += iteration_size;
+            }
         }
 
         void CalcBondsNoBoxDouble(const double *a, const double *b, int n, double *out) {
@@ -949,21 +1002,39 @@ namespace distopia {
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicSingle)(a, b, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcSelfDistanceArrayNoBox(const float *a, int n, float *out) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcSelfDistanceArrayNoBoxSingle(a, n, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayNoBoxSingle)(a, n, out);
     }
     HWY_DLLEXPORT template <> void CalcSelfDistanceArrayNoBox(const double *a, int n, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcSelfDistanceArrayNoBoxDouble(a, n, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayNoBoxDouble)(a, n, out);
     }
     HWY_DLLEXPORT template <> void CalcSelfDistanceArrayOrtho(const float *a, int n, const float *box, float *out) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcSelfDistanceArrayOrthoSingle(a, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayOrthoSingle)(a, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcSelfDistanceArrayOrtho(const double *a, int n, const double *box, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcSelfDistanceArrayOrthoDouble(a, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayOrthoDouble)(a, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcSelfDistanceArrayTriclinic(const float *a, int n, const float* box, float *out) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcSelfDistanceArrayTriclinicSingle(a, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayTriclinicSingle)(a, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcSelfDistanceArrayTriclinic(const double *a, int n, const double *box, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcSelfDistanceArrayTriclinicDouble(a, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayTriclinicDouble)(a, n, box, out);
     }
 
