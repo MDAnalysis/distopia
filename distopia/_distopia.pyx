@@ -140,10 +140,11 @@ def  _check_results_darray(results, nvals0 , nvals1 ):
 
 
 def  _check_shapes(*args):
-    """Check that all arrays are the same length"""
-    shapes = set([arg.shape for arg in args])
-    if len(shapes) > 1:
-        raise ValueError("All input arrays must be the same length")
+    """Check that all arrays are the same shape"""
+    s1 = args[0].shape
+    if not all(thing.shape == s1 for thing in args[1:]):
+        raise ValueError("All input arrays must be the same length, you provided "
+                         f"{', '.join(t.shape for t in args)}")
     
     
     
