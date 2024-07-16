@@ -14,6 +14,8 @@ if (${BUILD_PYTHON})
 endif ()
 include_directories(${PROJECT_SOURCE_DIR}/libdistopia/include)
 
+# setup an option for using external HWY
+option(DISTOPIA_USE_EXTERNAL_HWY "Use external HWY" OFF)
 
 # use, i.e. don't skip the full RPATH for the build tree
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
