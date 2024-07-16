@@ -67,25 +67,31 @@ class TestDistances:
 
 
 
-    def test_no_box_bad_result(self):
+    def test_no_box_bad_result_or_input_shape(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="results must be"):
             distopia.calc_bonds_no_box(c0, c1, results=np.empty(1, dtype=np.float32))
+        with pytest.raises(ValueError, match="All input arrays must"):
+            distopia.calc_bonds_no_box(c0, c1[:-1])
 
-    def test_ortho_bad_result(self):
+    def test_ortho_bad_result_or_input_shape(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         box = np.array([10, 10, 10], dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="results must be"):
             distopia.calc_bonds_ortho(c0, c1, box, results=np.empty(1, dtype=np.float32))
+        with pytest.raises(ValueError, match="All input arrays must"):
+            distopia.calc_bonds_ortho(c0, c1[:-1], box)
 
-    def test_triclinic_bad_result(self):
+    def test_triclinic_bad_result_or_input_shape(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         box = np.array([[10, 0, 0], [0, 10, 0], [0, 0, 10]], dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="results must be"):
             distopia.calc_bonds_triclinic(c0, c1, box, results=np.empty(1, dtype=np.float32))
+        with pytest.raises(ValueError, match="All input arrays must"):
+            distopia.calc_bonds_triclinic(c0, c1[:-1], box)
         
 
 
@@ -102,28 +108,34 @@ class TestAngles:
         assert_almost_equal(results, np.array([np.pi / 2, np.pi / 2, 0,  np.pi], dtype=np.float32))
 
 
-    def test_no_box_bad_result(self):
+    def test_no_box_bad_result_or_input_shape(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c2 = np.zeros(6, dtype=np.float32).reshape(2, 3)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="results must be"):
             distopia.calc_angles_no_box(c0, c1, c2, results=np.empty(1, dtype=np.float32))
+        with pytest.raises(ValueError, match="All input arrays must"):
+            distopia.calc_angles_no_box(c0, c1[:-1], c2)
 
-    def test_ortho_bad_result(self):
+    def test_ortho_bad_result_or_input_shape(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c2 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         box = np.array([10, 10, 10], dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="results must be"):
             distopia.calc_angles_ortho(c0, c1, c2, box, results=np.empty(1, dtype=np.float32))
+        with pytest.raises(ValueError, match="All input arrays must"):
+            distopia.calc_angles_ortho(c0, c1[:-1], c2, box)
         
-    def test_triclinic_bad_result(self):
+    def test_triclinic_bad_result_or_input_shape(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c2 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         box = np.array([[10, 0, 0], [0, 10, 0], [0, 0, 10]], dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="results must be"):
             distopia.calc_angles_triclinic(c0, c1, c2, box, results=np.empty(1, dtype=np.float32))
+        with pytest.raises(ValueError, match="All input arrays must"):
+            distopia.calc_angles_triclinic(c0, c1[:-1], c2, box)
 
 
 
@@ -143,54 +155,67 @@ class TestDihedrals:
 
 
 
-    def test_no_box_bad_result(self):
+    def test_no_box_bad_result_or_input_shape(self):
         c0 = np.zeros(12, dtype=np.float32).reshape(4, 3)
         c1 = np.zeros(12, dtype=np.float32).reshape(4, 3)
         c2 = np.zeros(12, dtype=np.float32).reshape(4, 3)
         c3 = np.zeros(12, dtype=np.float32).reshape(4, 3)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="results must be"):
             distopia.calc_dihedrals_no_box(c0, c1, c2, c3, results=np.empty(1, dtype=np.float32))
+        with pytest.raises(ValueError, match="All input arrays must"):
+            distopia.calc_dihedrals_no_box(c0, c1[:-1], c2, c3)
     
-    def test_ortho_bad_result(self):
+    def test_ortho_bad_result_or_input_shape(self):
         c0 = np.zeros(12, dtype=np.float32).reshape(4, 3)
         c1 = np.zeros(12, dtype=np.float32).reshape(4, 3)
         c2 = np.zeros(12, dtype=np.float32).reshape(4, 3)
         c3 = np.zeros(12, dtype=np.float32).reshape(4, 3)
         box = np.array([10, 10, 10], dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="results must be"):
             distopia.calc_dihedrals_ortho(c0, c1, c2, c3, box, results=np.empty(1, dtype=np.float32))
+        with pytest.raises(ValueError, match="All input arrays must"):
+            distopia.calc_dihedrals_ortho(c0, c1[:-1], c2, c3, box)
 
-    def test_triclinic_bad_result(self):
+    def test_triclinic_bad_result_or_input_shape(self):
         c0 = np.zeros(12, dtype=np.float32).reshape(4, 3)
         c1 = np.zeros(12, dtype=np.float32).reshape(4, 3)
         c2 = np.zeros(12, dtype=np.float32).reshape(4, 3)
         c3 = np.zeros(12, dtype=np.float32).reshape(4, 3)
         box = np.array([[10, 0, 0], [0, 10, 0], [0, 0, 10]], dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="results must be"):
             distopia.calc_dihedrals_triclinic(c0, c1, c2, c3, box, results=np.empty(1, dtype=np.float32))
+        with pytest.raises(ValueError, match="All input arrays must"):
+            distopia.calc_dihedrals_triclinic(c0, c1[:-1], c2, c3, box)
 
 
 class TestDistanceArray:
 
-    def test_no_box_bad_result(self):
+    def test_no_box_bad_result_or_input_shape(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="results must be"):
             distopia.calc_distance_array_no_box(c0, c1, results=np.empty(1, dtype=np.float32))
+        with pytest.raises(ValueError, match="All input arrays must"):
+            distopia.calc_distance_array_no_box(c0, c1[:-1])
 
-    def test_ortho_bad_result(self):
+    def test_ortho_bad_result_or_input_shape(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         box = np.array([10, 10, 10], dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="results must be"):
             distopia.calc_distance_array_ortho(c0, c1, box, results=np.empty(1, dtype=np.float32))
+        with pytest.raises(ValueError, match="All input arrays must"):
+            distopia.calc_distance_array_ortho(c0, c1[:-1], box)
+        
 
-    def test_triclinic_bad_result(self):
+    def test_triclinic_bad_result_or_input_shape(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         box = np.array([[10, 0, 0], [0, 10, 0], [0, 0, 10]], dtype=np.float32)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="results must be"):
             distopia.calc_distance_array_triclinic(c0, c1, box, results=np.empty(1, dtype=np.float32))
+        with pytest.raises(ValueError, match="All input arrays must"):
+            distopia.calc_distance_array_triclinic(c0, c1[:-1], box)
 
 
 

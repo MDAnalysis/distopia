@@ -131,12 +131,23 @@ def _check_results(results, nvals):
         raise ValueError(f"results must be the same length as coordinates ({nvals}), you provided {results.shape[0]}")
 
 
-def _check_results_darray(results, nvals0, nvals1):
+def  _check_results_darray(results, nvals0 , nvals1 ):
     """Check that results is the right shape"""
     if results.ndim > 1:
         raise ValueError("results must be a 1D array")
     if results.shape[0] != nvals0 * nvals1:
         raise ValueError(f"results must be a flattened 2D array of length MxN ({ nvals0, nvals1} -> {nvals0 *nvals1}), you provided {results.shape[0]}")
+
+
+def  _check_shapes(*args):
+    """Check that all arrays are the same length"""
+    shapes = set([arg.shape for arg in args])
+    if len(shapes) > 1:
+        raise ValueError("All input arrays must be the same length")
+    
+    
+    
+    
 
 
 @cython.boundscheck(False)
@@ -162,6 +173,9 @@ def calc_bonds_no_box(floating[:, ::1] coords0,
     cdef size_t nvals = coords0.shape[0]
     cdef cnp.npy_intp[1] dims
     dims[0] = <ssize_t> nvals  # FIXME truncation?
+
+    _check_shapes(coords0, coords1)
+
     if results is None:
         if floating is float:
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
@@ -204,11 +218,16 @@ def  calc_bonds_ortho(floating[:, ::1] coords0,
     cdef size_t nvals = coords0.shape[0]
     cdef cnp.npy_intp[1] dims
     dims[0] = <ssize_t > nvals  # FIXME truncation?
+
+    _check_shapes(coords0, coords1)
+
+
     if results is None:
         if floating is float:
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
         else:
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+
 
     else:
         _check_results(results, nvals)
@@ -246,6 +265,10 @@ def  calc_bonds_triclinic(floating[:, ::1] coords0,
     cdef size_t nvals = coords0.shape[0]
     cdef cnp.npy_intp[1] dims
     dims[0] = <ssize_t > nvals  # FIXME truncation?
+
+    _check_shapes(coords0, coords1)
+
+
     if results is None:
         if floating is float:
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
@@ -286,6 +309,8 @@ def calc_angles_no_box(
     cdef cnp.npy_intp[1] dims
 
     dims[0] = <ssize_t > nvals  # FIXME truncation?
+
+    _check_shapes(coords0, coords1)
 
     if results is None:
         if floating is float:
@@ -333,6 +358,8 @@ def calc_angles_ortho(
 
     dims[0] = <ssize_t > nvals  # FIXME truncation?
 
+    _check_shapes(coords0, coords1, coords2)
+
     if results is None:
         if floating is float:
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
@@ -378,6 +405,9 @@ def calc_angles_triclinic(
 
     dims[0] = <ssize_t > nvals  # FIXME truncation?
 
+    _check_shapes(coords0, coords1, coords2)
+
+
     if results is None:
         if floating is float:
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
@@ -420,6 +450,9 @@ def calc_dihedrals_no_box(
     cdef cnp.npy_intp[1] dims
 
     dims[0] = <ssize_t > nvals  # FIXME truncation?
+
+    _check_shapes(coords0, coords1, coords2, coords3)
+
 
     if results is None:
         if floating is float:
@@ -467,6 +500,8 @@ def calc_dihedrals_ortho(
 
     dims[0] = <ssize_t > nvals  # FIXME truncation?
 
+    _check_shapes(coords0, coords1, coords2, coords3)
+
     if results is None:
         if floating is float:
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
@@ -513,6 +548,9 @@ def calc_dihedrals_triclinic(
 
     dims[0] = <ssize_t > nvals  # FIXME truncation?
 
+    _check_shapes(coords0, coords1, coords2, coords3)
+
+
     if results is None:
         if floating is float:
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
@@ -555,6 +593,8 @@ def calc_distance_array_no_box(
     cdef cnp.npy_intp[1] dims
 
     dims[0] = <ssize_t > nvals0 * nvals1
+
+    _check_shapes(coords0, coords1)
 
     if results is None:
         if floating is float:
@@ -603,6 +643,8 @@ def calc_distance_array_ortho(
 
     dims[0] = <ssize_t > nvals0 * nvals1
 
+    _check_shapes(coords0, coords1)
+
     if results is None:
         if floating is float:
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
@@ -646,9 +688,12 @@ def calc_distance_array_triclinic(
     cdef floating[::1] results_view
     cdef size_t nvals0 = coords0.shape[0]
     cdef size_t nvals1 = coords1.shape[0]
+
     cdef cnp.npy_intp[1] dims
 
     dims[0] = <ssize_t > nvals0 * nvals1
+
+    _check_shapes(coords0, coords1)
 
     if results is None:
         if floating is float:
