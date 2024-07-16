@@ -544,7 +544,7 @@ template <typename T, typename U>
 static void _calc_self_distance_array_triclinic(ScalarToCoordinateT<T>* ref, uint64_t numref,
                                                 U* box, T *distances)
 {
-  _triclinic_pbc(ref, numref, box);
+  _triclinic_pbc<T, U>(ref, numref, box);
 
   uint64_t distpos = 0;
 

@@ -1,6 +1,6 @@
 
 set(HWY_ENABLE_TESTS OFF CACHE BOOL "Enable HWY tests" FORCE)
-add_subdirectory("highway")
+
 
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Enable googlebench tests" FORCE)
 add_subdirectory("googlebench")
@@ -12,12 +12,23 @@ add_library(libdistopia)
 target_sources(libdistopia PRIVATE "src/distopia.cpp")
 # needed for M_PI symbol on Win
 target_compile_definitions(libdistopia PUBLIC -D_USE_MATH_DEFINES)
-target_link_libraries(libdistopia PRIVATE hwy)
 target_include_directories(libdistopia PUBLIC
         "highway"
         ${CMAKE_CURRENT_LIST_DIR}
         "${CMAKE_CURRENT_LIST_DIR}/include")
 
+
+# the link target for HWY differs if it is an external library
+if(DISTOPIA_USE_EXTERNAL_HWY)
+    message(STATUS "Using external HWY")
+    find_package(HWY REQUIRED)
+    target_link_libraries(libdistopia PRIVATE hwy::hwy)
+else()
+    message(STATUS "Using vendored HWY subpackage")
+    add_subdirectory("highway")
+    target_link_libraries(libdistopia PRIVATE hwy)
+endif()
+    
 
 add_executable(bench)
 target_sources(bench PRIVATE "test/bench.cpp")
