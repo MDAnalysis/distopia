@@ -144,7 +144,7 @@ def  _check_shapes(*args):
     s1 = args[0].shape
     if not all(thing.shape == s1 for thing in args[1:]):
         raise ValueError("All input arrays must be the same length, you provided "
-                         f"{', '.join(t.shape for t in args)}")
+                         f"{', '.join(str(t.shape) for t in args)}")
     
     
     
