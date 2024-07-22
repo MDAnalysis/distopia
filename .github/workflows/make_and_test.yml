@@ -53,7 +53,7 @@ jobs:
 
     - name: Build
       # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: python setup.py build -G "NMake Makefiles JOM"
+      run: python setup.py build -G "NMake Makefiles"
 
     - name: Test
       # Execute tests defined by the CMake configuration.  
