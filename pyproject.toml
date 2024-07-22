@@ -7,7 +7,7 @@ requires = [
   "cmake",
   "cython",
   "versioningit",
-  "ninja; platform_system!='Windows'"
+  "make",
 ]
 
 build-backend = "setuptools.build_meta"
