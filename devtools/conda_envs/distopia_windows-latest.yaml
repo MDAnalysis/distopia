@@ -8,7 +8,7 @@ dependencies:
 - python >=3.9
 - cython
 - numpy
-- ninja
+- jom
 - pytest
 - scikit-build
 - compilers
