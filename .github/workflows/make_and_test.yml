@@ -53,7 +53,7 @@ jobs:
 
     - name: Build
       # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: python setup.py build -- -DCMAKE_VERBOSE_MAKEFILE=ON
+      run: python setup.py build -- -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_CXX_COMPILER=gcc
 
     - name: Test
       # Execute tests defined by the CMake configuration.  
