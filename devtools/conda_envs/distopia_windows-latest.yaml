@@ -5,10 +5,10 @@ dependencies:
 - cmake
 - make
 - pip
-- python >= 3.9
+- python >=3.9
 - cython
 - numpy
 - ninja
 - pytest
 - scikit-build
-- compilers
+- m2w64-gcc
