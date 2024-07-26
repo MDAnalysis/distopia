@@ -13,5 +13,6 @@ dependencies:
 - scikit-build
 - compilers
 - libxcrypt
-- clang
-- clangxx
+# - clang
+# - clangxx
+- compilers

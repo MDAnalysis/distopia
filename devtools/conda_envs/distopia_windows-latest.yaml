@@ -11,5 +11,6 @@ dependencies:
 - ninja
 - pytest
 - scikit-build
-- clang
-- clangxx
+# - clang
+# - clangxx
+- compilers
