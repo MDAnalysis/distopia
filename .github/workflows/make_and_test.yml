@@ -55,7 +55,7 @@ jobs:
 
 
     - name: Build
-      run: python setup.py build -- -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
+      run:  python setup.py build -G "Unix Makefiles" -- -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DHAVE_STD_REGEX=ON -DVERBOSE_MAKEFILE=ON
 
     - name: Setup tmate session
       if: ${{ failure() }}
