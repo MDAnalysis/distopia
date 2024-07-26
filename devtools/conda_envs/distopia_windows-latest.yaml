@@ -11,4 +11,5 @@ dependencies:
 - ninja
 - pytest
 - scikit-build
-- m2w64-gcc
+- clang
+- clangxx

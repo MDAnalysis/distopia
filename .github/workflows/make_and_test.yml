@@ -37,10 +37,16 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.9', '3.10', '3.11', '3.12']
 
+
     steps:
     - uses: actions/checkout@v3
       with:
         submodules: recursive
+
+    # add in more swap
+    - uses: pierotofy/set-swap-space@master
+      with:
+        swap-size-gb: 10
 
     - uses: mamba-org/setup-micromamba@v1
       with:
@@ -52,8 +58,7 @@ jobs:
 
 
     - name: Build
-      # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: python setup.py build -- -DCMAKE_VERBOSE_MAKEFILE=ON
+      run: python setup.py build -- -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
 
     - name: Test
       # Execute tests defined by the CMake configuration.  
