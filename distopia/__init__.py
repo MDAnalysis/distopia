@@ -13,6 +13,9 @@ from ._distopia import (
     calc_distance_array_no_box,
     calc_distance_array_ortho,
     calc_distance_array_triclinic,
+    calc_self_distance_array_no_box,
+    calc_self_distance_array_ortho,
+    calc_self_distance_array_triclinic,
 )
 
 __all__ = [
@@ -28,5 +31,8 @@ __all__ = [
     'calc_distance_array_no_box',
     'calc_distance_array_ortho',
     'calc_distance_array_triclinic',
+    'calc_self_distance_array_no_box',
+    'calc_self_distance_array_ortho',
+    'calc_self_distance_array_triclinic',
     '__version__',
 ]
