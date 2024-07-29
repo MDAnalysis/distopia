@@ -190,6 +190,7 @@ class TestDihedrals:
 
 class TestDistanceArray:
 
+
     def test_no_box_bad_result_or_input_shape(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
@@ -219,6 +220,24 @@ class TestDistanceArray:
 
 
 
+class TestSelfDistanceArray:
+
+    def test_no_box_bad_result(self):
+        c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
+        with pytest.raises(ValueError, match="results must be"):
+            distopia.calc_self_distance_array_no_box(c0, results=np.empty(1, dtype=np.float32))
+
+    def test_ortho_bad_result(self):
+        c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
+        box = np.array([10, 10, 10], dtype=np.float32)
+        with pytest.raises(ValueError, match="results must be"):
+            distopia.calc_self_distance_array_ortho(c0, box, results=np.empty(1, dtype=np.float32))
+    
+    def test_triclinic_bad_result(self):
+        c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
+        box = np.array([[10, 0, 0], [0, 10, 0], [0, 0, 10]], dtype=np.float32)
+        with pytest.raises(ValueError, match="results must be"):
+            distopia.calc_self_distance_array_triclinic(c0, box, results=np.empty(1, dtype=np.float32))
 
 
 class TestMDA:

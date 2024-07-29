@@ -112,6 +112,23 @@ cdef extern from "distopia.h" namespace "distopia" nogil:
         const T *box,
         T *out,
     )
+    void CalcSelfDistanceArrayNoBox[T](
+        const T *coords,
+        size_t n,
+        T *out,
+    )
+    void CalcSelfDistanceArrayOrtho[T](
+        const T *coords,
+        size_t n,
+        const T *box,
+        T *out,
+    )
+    void CalcSelfDistanceArrayTriclinic[T](
+        const T *coords,
+        size_t n,
+        const T *box,
+        T *out,
+    )
 
 def get_n_float_lanes():
     """The number of floats per register distopia will handle on this system"""
@@ -285,7 +302,8 @@ def  calc_bonds_triclinic(floating[:, ::1] coords0,
 
     return np.array(results)
 
-
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def calc_angles_no_box(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
@@ -329,7 +347,8 @@ def calc_angles_no_box(
 
     return np.array(results)
 
-
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def calc_angles_ortho(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
@@ -377,7 +396,8 @@ def calc_angles_ortho(
 
     return np.array(results)
 
-
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def calc_angles_triclinic(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
@@ -425,7 +445,8 @@ def calc_angles_triclinic(
 
     return np.array(results)
 
-
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def calc_dihedrals_no_box(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
@@ -471,7 +492,8 @@ def calc_dihedrals_no_box(
 
     return np.array(results)
 
-
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def calc_dihedrals_ortho(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
@@ -520,6 +542,8 @@ def calc_dihedrals_ortho(
     return np.array(results)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def calc_dihedrals_triclinic(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
@@ -569,6 +593,8 @@ def calc_dihedrals_triclinic(
     return np.array(results)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def calc_distance_array_no_box(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
@@ -615,7 +641,8 @@ def calc_distance_array_no_box(
 
     return np.array(results).reshape(coords0.shape[0], coords1.shape[0])
 
-
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def calc_distance_array_ortho(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
@@ -665,6 +692,8 @@ def calc_distance_array_ortho(
     return np.array(results).reshape(coords0.shape[0], coords1.shape[0])
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def calc_distance_array_triclinic(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
@@ -713,3 +742,152 @@ def calc_distance_array_triclinic(
                                &results_view[0])
 
     return np.array(results).reshape(coords0.shape[0], coords1.shape[0])
+
+
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def calc_self_distance_array_no_box(
+     floating[:, ::1] coords0,
+     floating[::1] results=None):
+    """Calculate pairwise distance matrix between coordinates under triclinic boundary conditions
+
+    Parameters
+    ----------
+    coords0, coords1 : float32 or float64 array
+      must be same length and dtype
+    box : float32 or float64 array
+        periodic boundary dimensions, in 3x3 format
+    results: float32 or float64 array (optional)
+        array to store results in, must be a single dimension of length MxN where M is the length of coords0 and N is the length of coords1
+    
+    Returns
+    -------
+    distances : np array
+      MxN array of distances
+    """
+    cdef floating[::1] results_view
+    cdef size_t nvals0 = coords0.shape[0]
+
+    cdef cnp.npy_intp[1] dims
+
+    dims[0] = <ssize_t > nvals0 * nvals0
+
+
+    if results is None:
+        if floating is float:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+        else:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+
+    else:
+        _check_results(results, nvals0)
+
+    results_view = results
+
+    CalcSelfDistanceArrayNoBox(&coords0[0][0],
+                               nvals0,
+                               &results_view[0])
+
+    return np.array(results).reshape(coords0.shape[0], coords0.shape[0])
+
+
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def calc_self_distance_array_ortho(
+     floating[:, ::1] coords0,
+     floating[::1] box,
+     floating[::1] results=None):
+    """Calculate pairwise distance matrix between coordinates under triclinic boundary conditions
+
+    Parameters
+    ----------
+    coords0, coords1 : float32 or float64 array
+      must be same length and dtype
+    box : float32 or float64 array
+        periodic boundary dimensions, in 3x3 format
+    results: float32 or float64 array (optional)
+        array to store results in, must be a single dimension of length MxN where M is the length of coords0 and N is the length of coords1
+    
+    Returns
+    -------
+    distances : np array
+      MxN array of distances
+    """
+    cdef floating[::1] results_view
+    cdef size_t nvals0 = coords0.shape[0]
+
+    cdef cnp.npy_intp[1] dims
+
+    dims[0] = <ssize_t > nvals0 * nvals0
+
+
+    if results is None:
+        if floating is float:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+        else:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+
+    else:
+        _check_results(results, nvals0)
+
+    results_view = results
+
+    CalcSelfDistanceArrayOrtho(&coords0[0][0],
+                               nvals0,
+                               &box[0],
+                               &results_view[0])
+
+    return np.array(results).reshape(coords0.shape[0], coords0.shape[0])
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def calc_self_distance_array_triclinic(
+     floating[:, ::1] coords0,
+     floating[:, ::1] box,
+     floating[::1] results=None):
+    """Calculate pairwise distance matrix between coordinates under triclinic boundary conditions
+
+    Parameters
+    ----------
+    coords0, coords1 : float32 or float64 array
+      must be same length and dtype
+    box : float32 or float64 array
+        periodic boundary dimensions, in 3x3 format
+    results: float32 or float64 array (optional)
+        array to store results in, must be a single dimension of length MxN where M is the length of coords0 and N is the length of coords1
+    
+    Returns
+    -------
+    distances : np array
+      MxN array of distances
+    """
+    cdef floating[::1] results_view
+    cdef size_t nvals0 = coords0.shape[0]
+
+    cdef cnp.npy_intp[1] dims
+
+    dims[0] = <ssize_t > nvals0 * nvals0
+
+
+    if results is None:
+        if floating is float:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+        else:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+
+    else:
+        _check_results(results, nvals0)
+
+    results_view = results
+
+    CalcSelfDistanceArrayTriclinic(&coords0[0][0],
+                               nvals0,
+                               &box[0][0],
+                               &results_view[0])
+
+    return np.array(results).reshape(coords0.shape[0], coords0.shape[0])
