@@ -190,6 +190,7 @@ class TestDihedrals:
 
 class TestDistanceArray:
 
+
     def test_no_box_bad_result_or_input_shape(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
