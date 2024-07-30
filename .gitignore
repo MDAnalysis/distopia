@@ -1,3 +1,6 @@
+# emacs tmp files
+*~
+
 # Prerequisites
 *.d
 
@@ -43,3 +46,6 @@ distopia.egg-info/
 
 # pycache
 __pycache__/
+
+# mkdocs builds
+site/
