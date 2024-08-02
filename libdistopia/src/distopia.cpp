@@ -685,6 +685,103 @@ namespace distopia {
             }
         }
 
+        template <typename V>
+        HWY_INLINE void LoadInterleavedIdx(const unsigned int *idx, const float *src,
+                                           V &x_dst, V &y_dst, V &z_dst) {
+            hn::ScalableTag<float> d;
+            hn::ScalableTag<int> d_int;
+            auto vidx = hn::LoadU(d_int, (int*)idx);
+            auto Vthree = hn::Set(d_int, 3);
+            auto Vone = hn::Set(d_int, 1);
+            // convert indices to 3D coordinate indices, i.e. index 10 at pointer 30 etc
+            vidx = hn::Mul(vidx, Vthree);
+            x_dst = hn::GatherIndex(d, src, vidx);
+            vidx = hn::Add(vidx, Vone);
+            y_dst = hn::GatherIndex(d, src, vidx);
+            vidx = hn::Add(vidx, Vone);
+            z_dst = hn::GatherIndex(d, src, vidx);
+        }
+
+        template <typename V>
+        HWY_INLINE void LoadInterleavedIdx(const unsigned int *idx, const double *src,
+                                           V &x_dst, V &y_dst, V &z_dst) {
+            hn::ScalableTag<double> d;
+            hn::ScalableTag<int> d_int;
+            hn::ScalableTag<long long> d_long;
+            // can't call gather to doubles with int indices so:
+            // load int32s and cast them up to int64s so they match width of double values
+            auto vidx_narrow = hn::LoadU(d_int, (int*)idx);
+            auto vidx = hn::ZeroExtendResizeBitCast(d_long, d_int, vidx_narrow);
+
+            auto Vthree = hn::Set(d_long, 3);
+            auto Vone = hn::Set(d_long, 1);
+
+            vidx = hn::Mul(vidx, Vthree);
+            x_dst = hn::GatherIndex(d, src, vidx);
+            vidx = hn::Add(vidx, Vone);
+            y_dst = hn::GatherIndex(d, src, vidx);
+            vidx = hn::Add(vidx, Vone);
+            z_dst = hn::GatherIndex(d, src, vidx);
+        }
+
+        template <typename T, typename B>
+        void CalcBondsIdx(const T *coords, const unsigned int *a_idx, const unsigned int *b_idx, int n,
+                          T *out, const B &box) {
+            const hn::ScalableTag<T> d;
+            int nlanes = hn::Lanes(d);
+
+            unsigned int a_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            unsigned int b_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            T out_sub[HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            T *dst;
+
+            if (HWY_UNLIKELY(n < nlanes)) {
+                // zero out idx arrays, so we can safely load 0th values when we spill
+                memset(a_sub, 0, sizeof(int) * nlanes);
+                memset(b_sub, 0, sizeof(int) * nlanes);
+                memcpy(a_sub, a_idx, sizeof(int) * n);
+                memcpy(b_sub, b_idx, sizeof(int) * n);
+                // switch to use a_sub as index array now we've copied contents
+                a_idx = a_sub;
+                b_idx = b_sub;
+                dst = out_sub;
+            } else {
+                dst = out;
+            }
+
+            auto a_x = hn::Undefined(d);
+            auto a_y = hn::Undefined(d);
+            auto a_z = hn::Undefined(d);
+            auto b_x = hn::Undefined(d);
+            auto b_y = hn::Undefined(d);
+            auto b_z = hn::Undefined(d);
+
+            for (size_t i=0; i <= n - nlanes; i += nlanes) {
+                // load N indices of each source
+                // interleaved gather these indices
+                LoadInterleavedIdx(a_idx + i, coords, a_x, a_y, a_z);
+                LoadInterleavedIdx(b_idx + i, coords, b_x, b_y, b_z);
+
+                auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
+
+                hn::StoreU(result, d, dst + i);
+            }
+            size_t rem = n % nlanes;
+            if (rem) {  // if we had a non-multiple of nlanes, do final nlanes values again
+                LoadInterleavedIdx(a_idx + n - nlanes, coords, a_x, a_y, a_z);
+                LoadInterleavedIdx(b_idx + n - nlanes, coords, b_x, b_y, b_z);
+
+                auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
+
+                hn::StoreU(result, d, dst + n - nlanes);
+            }
+
+            if (HWY_UNLIKELY(n < nlanes)) {
+                // copy results back from temp array into actual output array
+                memcpy(out, out_sub, n * sizeof(T));
+            }
+        }
+
         void CalcBondsNoBoxDouble(const double *a, const double *b, int n, double *out) {
             hn::ScalableTag<double> d;
             const NoBox vbox(d);
@@ -852,6 +949,18 @@ namespace distopia {
             const TriclinicBox vbox(d, box);
             CalcSelfDistanceArray(a, n, out, vbox);
         }
+        void CalcBondsNoBoxIdxSingle(const float *coords, const unsigned int *a_idx, const unsigned int *b_idx,
+                                     int n, float *out) {
+            hn::ScalableTag<float> d;
+            const NoBox box(d);
+            CalcBondsIdx(coords, a_idx, b_idx, n, out, box);
+        }
+        void CalcBondsNoBoxIdxDouble(const double *coords, const unsigned int *a_idx, const unsigned int *b_idx,
+                                     int n, double *out) {
+            hn::ScalableTag<double> d;
+            const NoBox box(d);
+            CalcBondsIdx(coords, a_idx, b_idx, n, out, box);
+        }
 
         int GetNFloatLanes() {
             hn::ScalableTag<float> d;
@@ -901,6 +1010,8 @@ namespace distopia {
     HWY_EXPORT(CalcSelfDistanceArrayOrthoSingle);
     HWY_EXPORT(CalcSelfDistanceArrayTriclinicDouble);
     HWY_EXPORT(CalcSelfDistanceArrayTriclinicSingle);
+    HWY_EXPORT(CalcBondsNoBoxIdxSingle);
+    HWY_EXPORT(CalcBondsNoBoxIdxDouble);
     HWY_EXPORT(GetNFloatLanes);
     HWY_EXPORT(GetNDoubleLanes);
 
@@ -1037,6 +1148,14 @@ namespace distopia {
             return distopia::N_SCALAR::CalcSelfDistanceArrayTriclinicDouble(a, n, box, out);
         }
         return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayTriclinicDouble)(a, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcBondsNoBoxIdx(const float *coords, const unsigned int *a_idx, const unsigned int *b_idx,
+                                                     int n, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcBondsNoBoxIdxSingle)(coords, a_idx, b_idx, n, out);
+    }
+    HWY_DLLEXPORT template <> void CalcBondsNoBoxIdx(const double *coords, const unsigned int *a_idx, const unsigned int *b_idx,
+                                                     int n, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcBondsNoBoxIdxDouble)(coords, a_idx, b_idx, n, out);
     }
 
      std::vector<std::string> DistopiaSupportedAndGeneratedTargets() {
