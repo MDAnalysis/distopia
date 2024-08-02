@@ -785,6 +785,12 @@ namespace distopia {
             }
         }
 
+        template <typename T, typename B>
+        void CalcAnglesIdx(const T *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx, int n,
+                           T *out, const B &box) {
+
+        }
+
         void CalcBondsNoBoxDouble(const double *a, const double *b, int n, double *out) {
             hn::ScalableTag<double> d;
             const NoBox vbox(d);
@@ -992,6 +998,48 @@ namespace distopia {
 
             CalcBondsIdx(coords, a_idx, b_idx, n, out, vbox);
         }
+        void CalcAnglesNoBoxIdxSingle(const float *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx,
+                                      int n, float *out) {
+            hn::ScalableTag<float> d;
+            const NoBox vbox(d);
+
+            CalcAnglesIdx(coords, a_idx, b_idx, c_idx, n, out, vbox);
+        }
+        void CalcAnglesNoBoxIdxDouble(const double *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx,
+                                      int n, double *out) {
+            hn::ScalableTag<double> d;
+            const NoBox vbox(d);
+
+            CalcAnglesIdx(coords, a_idx, b_idx, c_idx, n, out, vbox);
+        }
+        void CalcAnglesOrthoIdxSingle(const float *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx,
+                                      int n, const float *box, float *out) {
+            hn::ScalableTag<float> d;
+            const OrthogonalBox vbox(d, box);
+
+            CalcAnglesIdx(coords, a_idx, b_idx, c_idx, n, out, vbox);
+        }
+        void CalcAnglesOrthoIdxDouble(const double *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx,
+                                      int n, const double *box, double *out) {
+            hn::ScalableTag<double> d;
+            const OrthogonalBox vbox(d, box);
+
+            CalcAnglesIdx(coords, a_idx, b_idx, c_idx, n, out, vbox);
+        }
+        void CalcAnglesTriclinicIdxSingle(const float *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx,
+                                          int n, const float *box, float *out) {
+            hn::ScalableTag<float> d;
+            const TriclinicBox vbox(d, box);
+
+            CalcAnglesIdx(coords, a_idx, b_idx, c_idx, n, out, vbox);
+        }
+        void CalcAnglesTriclinicIdxDouble(const double *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx,
+                                          int n, const double *box, double *out) {
+            hn::ScalableTag<double> d;
+            const TriclinicBox vbox(d, box);
+
+            CalcAnglesIdx(coords, a_idx, b_idx, c_idx, n, out, vbox);
+        }
 
         int GetNFloatLanes() {
             hn::ScalableTag<float> d;
@@ -1047,6 +1095,12 @@ namespace distopia {
     HWY_EXPORT(CalcBondsOrthoIdxDouble);
     HWY_EXPORT(CalcBondsTriclinicIdxSingle);
     HWY_EXPORT(CalcBondsTriclinicIdxDouble);
+    HWY_EXPORT(CalcAnglesNoBoxIdxSingle);
+    HWY_EXPORT(CalcAnglesNoBoxIdxDouble);
+    HWY_EXPORT(CalcAnglesOrthoIdxSingle);
+    HWY_EXPORT(CalcAnglesOrthoIdxDouble);
+    HWY_EXPORT(CalcAnglesTriclinicIdxSingle);
+    HWY_EXPORT(CalcAnglesTriclinicIdxDouble);
     HWY_EXPORT(GetNFloatLanes);
     HWY_EXPORT(GetNDoubleLanes);
 
@@ -1208,8 +1262,32 @@ namespace distopia {
                                                          int n, const double *box, double *out) {
         return HWY_DYNAMIC_DISPATCH(CalcBondsTriclinicIdxDouble)(coords, a_idx, b_idx, n, box, out);
     }
+    HWY_DLLEXPORT template <> void CalcAnglesNoBoxIdx(const float *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx,
+                                                      int n, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcAnglesNoBoxIdxSingle)(coords, a_idx, b_idx, c_idx, n, out);
+    }
+    HWY_DLLEXPORT template <> void CalcAnglesNoBoxIdx(const double *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx,
+                                                      int n, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcAnglesNoBoxIdxDouble)(coords, a_idx, b_idx, c_idx, n, out);
+    }
+    HWY_DLLEXPORT template <> void CalcAnglesOrthoIdx(const float *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx,
+                                                      int n, const float *box, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcAnglesOrthoIdxSingle)(coords, a_idx, b_idx, c_idx, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcAnglesOrthoIdx(const double *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx,
+                                                      int n, const double *box, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcAnglesOrthoIdxDouble)(coords, a_idx, b_idx, c_idx, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcAnglesTriclinicIdx(const float *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx,
+                                                          int n, const float *box, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcAnglesTriclinicIdxSingle)(coords, a_idx, b_idx, c_idx, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcAnglesTriclinicIdx(const double *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx,
+                                                          int n, const double *box, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcAnglesTriclinicIdxDouble)(coords, a_idx, b_idx, c_idx, n, box, out);
+    }
 
-     std::vector<std::string> DistopiaSupportedAndGeneratedTargets() {
+    std::vector<std::string> DistopiaSupportedAndGeneratedTargets() {
             std::vector<int64_t> targets = hwy::SupportedAndGeneratedTargets();
             // for each print the name
             std::vector<std::string> names;

@@ -34,6 +34,9 @@ namespace distopia {
     template <typename T> void CalcBondsNoBoxIdx(const T *coords, const unsigned int *a_idx, const unsigned int *b_idx, int n, T *out);
     template <typename T> void CalcBondsOrthoIdx(const T *coords, const unsigned int *a_idx, const unsigned int *b_idx, int n, const T *box, T *out);
     template <typename T> void CalcBondsTriclinicIdx(const T *coords, const unsigned int *a_idx, const unsigned int *b_idx, int n, const T *box, T *out);
+    template <typename T> void CalcAnglesNoBoxIdx(const T *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx, int n, T *out);
+    template <typename T> void CalcAnglesOrthoIdx(const T *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx, int n, const T *box, T *out);
+    template <typename T> void CalcAnglesTriclinicIdx(const T *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx, int n, const T *box, T *out);
     int GetNFloatLanes();
     int GetNDoubleLanes();
     std::vector<std::string> DistopiaSupportedAndGeneratedTargets();
