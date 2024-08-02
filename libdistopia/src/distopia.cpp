@@ -964,6 +964,34 @@ namespace distopia {
             const NoBox box(d);
             CalcBondsIdx(coords, a_idx, b_idx, n, out, box);
         }
+        void CalcBondsOrthoIdxSingle(const float *coords, const unsigned int *a_idx, const unsigned int *b_idx,
+                                     int n, const float *box, float *out) {
+            hn::ScalableTag<float> d;
+            const OrthogonalBox vbox(d, box);
+
+            CalcBondsIdx(coords, a_idx, b_idx, n, out, vbox);
+        }
+        void CalcBondsOrthoIdxDouble(const double *coords, const unsigned int *a_idx, const unsigned int *b_idx,
+                                     int n, const double *box, double *out) {
+            hn::ScalableTag<double> d;
+            const OrthogonalBox vbox(d, box);
+
+            CalcBondsIdx(coords, a_idx, b_idx, n, out, vbox);
+        }
+        void CalcBondsTriclinicIdxSingle(const float *coords, const unsigned int *a_idx, const unsigned int *b_idx,
+                                         int n, const float *box, float *out) {
+            hn::ScalableTag<float> d;
+            const TriclinicBox vbox(d, box);
+
+            CalcBondsIdx(coords, a_idx, b_idx, n, out, vbox);
+        }
+        void CalcBondsTriclinicIdxDouble(const double *coords, const unsigned int *a_idx, const unsigned int *b_idx,
+                                         int n, const double *box, double *out) {
+            hn::ScalableTag<double> d;
+            const TriclinicBox vbox(d, box);
+
+            CalcBondsIdx(coords, a_idx, b_idx, n, out, vbox);
+        }
 
         int GetNFloatLanes() {
             hn::ScalableTag<float> d;
@@ -1015,6 +1043,10 @@ namespace distopia {
     HWY_EXPORT(CalcSelfDistanceArrayTriclinicSingle);
     HWY_EXPORT(CalcBondsNoBoxIdxSingle);
     HWY_EXPORT(CalcBondsNoBoxIdxDouble);
+    HWY_EXPORT(CalcBondsOrthoIdxSingle);
+    HWY_EXPORT(CalcBondsOrthoIdxDouble);
+    HWY_EXPORT(CalcBondsTriclinicIdxSingle);
+    HWY_EXPORT(CalcBondsTriclinicIdxDouble);
     HWY_EXPORT(GetNFloatLanes);
     HWY_EXPORT(GetNDoubleLanes);
 
@@ -1159,6 +1191,22 @@ namespace distopia {
     HWY_DLLEXPORT template <> void CalcBondsNoBoxIdx(const double *coords, const unsigned int *a_idx, const unsigned int *b_idx,
                                                      int n, double *out) {
         return HWY_DYNAMIC_DISPATCH(CalcBondsNoBoxIdxDouble)(coords, a_idx, b_idx, n, out);
+    }
+    HWY_DLLEXPORT template <> void CalcBondsOrthoIdx(const float *coords, const unsigned int *a_idx, const unsigned int *b_idx,
+                                                     int n, const float *box, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcBondsOrthoIdxSingle)(coords, a_idx, b_idx, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcBondsOrthoIdx(const double *coords, const unsigned int *a_idx, const unsigned int *b_idx,
+                                                     int n, const double *box, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcBondsOrthoIdxDouble)(coords, a_idx, b_idx, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcBondsTriclinicIdx(const float *coords, const unsigned int *a_idx, const unsigned int *b_idx,
+                                                         int n, const float *box, float *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcBondsTriclinicIdxSingle)(coords, a_idx, b_idx, n, box, out);
+    }
+    HWY_DLLEXPORT template <> void CalcBondsTriclinicIdx(const double *coords, const unsigned int *a_idx, const unsigned int *b_idx,
+                                                         int n, const double *box, double *out) {
+        return HWY_DYNAMIC_DISPATCH(CalcBondsTriclinicIdxDouble)(coords, a_idx, b_idx, n, box, out);
     }
 
      std::vector<std::string> DistopiaSupportedAndGeneratedTargets() {
