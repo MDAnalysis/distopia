@@ -480,3 +480,24 @@ TYPED_TEST(DistanceArrayCoordinates, CalcSelfDistanceArrayTriclinicScalar) {
         EXPECT_NEAR(this->ref[i], this->results[i], abs_err);
     }
 }
+
+
+TYPED_TEST_SUITE(CoordinatesIdx, ScalarTypes);
+
+
+TYPED_TEST(CoordinatesIdx, CalcBondsIdx) {
+    int ncoords = 250;
+    int nidx = 100;
+
+    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+
+    // reference result
+    distopia::CalcBondsNoBox(this->a_coords_contig, this->b_coords_contig, this->nidx, this->ref_results);
+
+    // test the idx
+    distopia::CalcBondsNoBoxIdx(this->coords, this->a_idx, this->b_idx, this->nidx, this->results);
+
+    for (std::size_t i=0; i<this->nidx; i++) {
+        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+    }
+}
