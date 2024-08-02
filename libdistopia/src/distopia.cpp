@@ -708,9 +708,10 @@ namespace distopia {
             hn::ScalableTag<double> d;
             hn::ScalableTag<int> d_int;
             hn::ScalableTag<long long> d_long;
+            size_t nlong_lanes = hn::Lanes(d_long);
             // can't call gather to doubles with int indices so:
             // load int32s and cast them up to int64s so they match width of double values
-            auto vidx_narrow = hn::LoadU(d_int, (int*)idx);
+            auto vidx_narrow = hn::LoadN(d_int, (int*)idx, nlong_lanes);
             auto vidx = hn::ZeroExtendResizeBitCast(d_long, d_int, vidx_narrow);
 
             auto Vthree = hn::Set(d_long, 3);
