@@ -134,9 +134,13 @@ public:
     T *coords = nullptr;
     T *a_coords_contig = nullptr;
     T *b_coords_contig = nullptr;
+    T *c_coords_contig = nullptr;
+    T *d_coords_contig = nullptr;
     size_t *big_idx;
     unsigned int *a_idx = nullptr;
     unsigned int *b_idx = nullptr;
+    unsigned int *c_idx = nullptr;
+    unsigned int *d_idx = nullptr;
     T *ref_results = nullptr;
     T *results = nullptr;
     T box[3];
@@ -149,9 +153,13 @@ public:
         coords = new T[ncoords * 3];
         a_coords_contig = new T[nidx * 3];
         b_coords_contig = new T[nidx * 3];
+        c_coords_contig = new T[nidx * 3];
+        d_coords_contig = new T[nidx * 3];
         big_idx = new size_t[nidx];
         a_idx = new unsigned int[nidx];
         b_idx = new unsigned int[nidx];
+        c_idx = new unsigned int[nidx];
+        d_idx = new unsigned int[nidx];
         ref_results = new T[nidx];
         results = new T[nidx];
 
@@ -166,12 +174,25 @@ public:
             a_coords_contig[i*3 + 2] = coords[a_idx[i] * 3 + 2];
         }
         RandomInt(big_idx, nidx, 0, ncoords);
-        // copy bigidx into smaller, and also make contig coords array
         for (size_t i=0; i<nidx; i++) {
             b_idx[i] = big_idx[i];
             b_coords_contig[i*3 + 0] = coords[b_idx[i] * 3];
             b_coords_contig[i*3 + 1] = coords[b_idx[i] * 3 + 1];
             b_coords_contig[i*3 + 2] = coords[b_idx[i] * 3 + 2];
+        }
+        RandomInt(big_idx, nidx, 0, ncoords);
+        for (size_t i=0; i<nidx; i++) {
+            c_idx[i] = big_idx[i];
+            c_coords_contig[i*3 + 0] = coords[c_idx[i] * 3];
+            c_coords_contig[i*3 + 1] = coords[c_idx[i] * 3 + 1];
+            c_coords_contig[i*3 + 2] = coords[c_idx[i] * 3 + 2];
+        }
+        RandomInt(big_idx, nidx, 0, ncoords);
+        for (size_t i=0; i<nidx; i++) {
+            d_idx[i] = big_idx[i];
+            d_coords_contig[i*3 + 0] = coords[d_idx[i] * 3];
+            d_coords_contig[i*3 + 1] = coords[d_idx[i] * 3 + 1];
+            d_coords_contig[i*3 + 2] = coords[d_idx[i] * 3 + 2];
         }
 
         box[0] = boxsize;
@@ -190,9 +211,13 @@ public:
         delete[] coords;
         delete[] a_coords_contig;
         delete[] b_coords_contig;
+        delete[] c_coords_contig;
+        delete[] d_coords_contig;
         delete[] big_idx;
         delete[] a_idx;
         delete[] b_idx;
+        delete[] c_idx;
+        delete[] d_idx;
         delete[] ref_results;
         delete[] results;
     }

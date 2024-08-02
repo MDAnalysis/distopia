@@ -537,3 +537,57 @@ TYPED_TEST(CoordinatesIdx, CalcBondsTriclinicIdx) {
         EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }
+
+
+TYPED_TEST(CoordinatesIdx, CalcAnglesNoBoxIdx) {
+    int ncoords = 250;
+    int nidx = 100;
+
+    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+
+    // reference result
+    distopia::CalcAnglesNoBox(this->a_coords_contig, this->b_coords_contig, this->c_coords_contig, this->nidx, this->ref_results);
+
+    // test the idx
+    distopia::CalcAnglesNoBoxIdx(this->coords, this->a_idx, this->b_idx, this->c_idx, this->nidx, this->results);
+
+    for (std::size_t i=0; i<this->nidx; i++) {
+        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+    }
+}
+
+
+TYPED_TEST(CoordinatesIdx, CalcAnglesOrthoIdx) {
+    int ncoords = 250;
+    int nidx = 100;
+
+    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+
+    // reference result
+    distopia::CalcAnglesOrtho(this->a_coords_contig, this->b_coords_contig, this->c_coords_contig, this->nidx, this->box, this->ref_results);
+
+    // test the idx
+    distopia::CalcAnglesOrthoIdx(this->coords, this->a_idx, this->b_idx, this->c_idx, this->nidx, this->box, this->results);
+
+    for (std::size_t i=0; i<this->nidx; i++) {
+        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+    }
+}
+
+
+TYPED_TEST(CoordinatesIdx, CalcAnglesTriclinicIdx) {
+    int ncoords = 250;
+    int nidx = 100;
+
+    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+
+    // reference result
+    distopia::CalcAnglesTriclinic(this->a_coords_contig, this->b_coords_contig, this->c_coords_contig, this->nidx, this->triclinic_box, this->ref_results);
+
+    // test the idx
+    distopia::CalcAnglesTriclinicIdx(this->coords, this->a_idx, this->b_idx, this->c_idx, this->nidx, this->triclinic_box, this->results);
+
+    for (std::size_t i=0; i<this->nidx; i++) {
+        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+    }
+}
