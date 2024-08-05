@@ -706,16 +706,16 @@ namespace distopia {
         HWY_INLINE void LoadInterleavedIdx(const unsigned int *idx, const double *src,
                                            V &x_dst, V &y_dst, V &z_dst) {
             hn::ScalableTag<double> d;
-            hn::ScalableTag<long long> d_long;
-            hn::ScalableTag<int> d_int;
-            size_t nlong_lanes = hn::Lanes(d_long);
+            hn::ScalableTag<int64_t> d_long;
+            // "int64_t" number of lanes but "int" type
+            hn::Rebind<int, hn::ScalableTag<int64_t>> d_int;
 
             // can't call Gather to doubles with int indices so: load int32s and cast them up to int64s so widths match
             // first load NLONG values from idx
             // !! important to not segfault here by loading LONG*2 (i.e. a full vector of 32s) !!
-            auto vidx_narrow = hn::LoadN(d_int, (int*)idx, nlong_lanes);
+            auto vidx_narrow = hn::LoadU(d_int, (int*)idx);
             // then cast int32 values to int64, taking only lower half of vector
-            auto vidx = hn::PromoteLowerTo(d_long, vidx_narrow);
+            auto vidx = hn::PromoteTo(d_long, vidx_narrow);
             auto Vthree = hn::Set(d_long, 3);
             auto Vone = hn::Set(d_long, 1);
 
