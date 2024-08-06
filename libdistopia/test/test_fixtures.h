@@ -163,7 +163,7 @@ public:
         ref_results = new T[nidx];
         results = new T[nidx];
 
-        RandomFloatingPoint<T>(coords, ncoords, 0 - delta, boxsize + delta);
+        RandomFloatingPoint<T>(coords, ncoords * 3, 0 - delta, boxsize + delta);
 
         RandomInt(big_idx, nidx, 0, ncoords);
         // copy bigidx into smaller, and also make contig coords array
