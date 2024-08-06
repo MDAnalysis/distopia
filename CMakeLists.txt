@@ -16,6 +16,8 @@ include_directories(${PROJECT_SOURCE_DIR}/libdistopia/include)
 
 # setup an option for using external HWY
 option(DISTOPIA_USE_EXTERNAL_HWY "Use external HWY" OFF)
+option(DISTOPIA_LIBDISTOPIA_SUPRESS_MSVC_OPT "Supress MSVC optimisations in libdistopia" OFF) # causes compiler crash on MSVC on GHA
+
 
 # use, i.e. don't skip the full RPATH for the build tree
 set(CMAKE_SKIP_BUILD_RPATH FALSE)

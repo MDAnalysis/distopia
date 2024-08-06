@@ -8,6 +8,7 @@ add_subdirectory("googlebench")
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 
+
 add_library(libdistopia)
 target_sources(libdistopia PRIVATE "src/distopia.cpp")
 # needed for M_PI symbol on Win
@@ -16,6 +17,10 @@ target_include_directories(libdistopia PUBLIC
         "highway"
         ${CMAKE_CURRENT_LIST_DIR}
         "${CMAKE_CURRENT_LIST_DIR}/include")
+
+if (DISTOPIA_LIBDISTOPIA_SUPRESS_MSVC_OPT)  # causes compiler crash on MSVC on GHA
+    target_compile_options(libdistopia PRIVATE /Od)
+endif()
 
 
 # the link target for HWY differs if it is an external library
