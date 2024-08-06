@@ -26,7 +26,7 @@ if (DISTOPIA_LIBDISTOPIA_SUPRESS_MSVC_OPT)  # causes compiler crash on MSVC on G
     message(STATUS "Supressing MSVC optimisations in libdistopia")
     message(WARNING "This should only be used for testing and debugging purposes")
     if (MSVC)
-        target_compile_options(libdistopia PRIVATE /Od /Gv /GF /Gy)
+        target_compile_options(libdistopia PRIVATE /Od /GF /Gy)
     endif()
 endif()
 
