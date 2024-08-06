@@ -160,8 +160,8 @@ public:
         b_idx = new int[nidx];
         c_idx = new int[nidx];
         d_idx = new int[nidx];
-        ref_results = new T[nidx];
-        results = new T[nidx];
+        ref_results = new T[nidx * nidx];
+        results = new T[nidx * nidx];
 
         RandomFloatingPoint<T>(coords, ncoords * 3, 0 - delta, boxsize + delta);
 
