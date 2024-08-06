@@ -645,3 +645,63 @@ TYPED_TEST(CoordinatesIdx, CalcDihedralsTriclinicIdx) {
         EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }
+
+
+TYPED_TEST(CoordinatesIdx, DistanceArrayNoBoxIdx) {
+    int ncoords = 250;
+    int nidx = 100;
+
+    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+
+    // ref
+    distopia::CalcDistanceArrayNoBox(this->a_coords_contig, this->b_coords_contig, this->nidx, this->nidx, this->ref_results);
+
+    // test
+    distopia::CalcDistanceArrayNoBoxIdx(this->coords, this->a_idx, this->b_idx, this->nidx, this->nidx, this->results);
+
+    size_t n_results = nidx * nidx;
+    for (std::size_t i=0; i<n_results; i++) {
+        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+    }
+
+}
+
+
+TYPED_TEST(CoordinatesIdx, DistanceArrayOrthoIdx) {
+    int ncoords = 250;
+    int nidx = 100;
+
+    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+
+    // ref
+    distopia::CalcDistanceArrayOrtho(this->a_coords_contig, this->b_coords_contig, this->nidx, this->nidx, this->box, this->ref_results);
+
+    // test
+    distopia::CalcDistanceArrayOrthoIdx(this->coords, this->a_idx, this->b_idx, this->nidx, this->nidx, this->box, this->results);
+
+    size_t n_results = nidx * nidx;
+    for (std::size_t i=0; i<n_results; i++) {
+        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+    }
+
+}
+
+
+TYPED_TEST(CoordinatesIdx, DistanceArrayTriclinicIdx) {
+    int ncoords = 250;
+    int nidx = 100;
+
+    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+
+    // ref
+    distopia::CalcDistanceArrayTriclinic(this->a_coords_contig, this->b_coords_contig, this->nidx, this->nidx, this->triclinic_box, this->ref_results);
+
+    // test
+    distopia::CalcDistanceArrayTriclinicIdx(this->coords, this->a_idx, this->b_idx, this->nidx, this->nidx, this->triclinic_box, this->results);
+
+    size_t n_results = nidx * nidx;
+    for (std::size_t i=0; i<n_results; i++) {
+        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+    }
+
+}
