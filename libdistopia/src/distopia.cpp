@@ -931,7 +931,37 @@ namespace distopia {
         template <typename T, typename B>
         void CalcDistanceArrayIdx(const T *coords, const int *a_idx, const int *b_idx, int na, int nb,
                                   T *out, const B &box) {
+            hn::ScalableTag<T> d;
 
+            int nlanes = hn::Lanes(d);
+            auto b_x = hn::Undefined(d);
+            auto b_y = hn::Undefined(d);
+            auto b_z = hn::Undefined(d);
+
+            size_t rem = nb % nlanes;
+            for (size_t i=0; i<na; i++) {
+                size_t k = i * nb;
+
+                auto a_x = hn::Set(d, coords[a_idx[i] * 3]);
+                auto a_y = hn::Set(d, coords[a_idx[i] * 3 + 1]);
+                auto a_z = hn::Set(d, coords[a_idx[i] * 3 + 2]);
+
+                for (int j=0; j <= nb - nlanes; j += nlanes) {
+                    LoadInterleavedIdx(b_idx + j, coords, b_x, b_y, b_z);
+
+                    auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
+
+                    hn::StoreU(result, d, out + k + j);
+                }
+                if (rem) {
+                    // do final vector again
+                    LoadInterleavedIdx(b_idx + nb - nlanes, coords, b_x, b_y, b_z);
+
+                    auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
+
+                    hn::StoreU(result, d, out + k + nb - nlanes);
+                }
+            }
         }
 
         void CalcBondsNoBoxDouble(const double *a, const double *b, int n, double *out) {
