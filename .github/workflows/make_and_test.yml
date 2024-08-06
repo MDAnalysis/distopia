@@ -53,6 +53,14 @@ jobs:
           python==${{ matrix.python-version }}
 
 
+    # if on windows configure pagefile 
+    - name: Configure pagefile
+      if: matrix.os == 'windows-latest'
+      uses: al-cheb/configure-pagefile-action@v1.2
+      with:
+        minimum-size: 8GB
+
+
     # complicated build as ninja + MSVC is segfaulting at compile time for windows. Use make + GCC + add flag for late test discovery (https://discourse.cmake.org/t/default-value-for-new-discovery-mode-option-for-gtest-discover-tests/1422)
     - name: Build
       run:  python setup.py build -- -DDISTOPIA_LIBDISTOPIA_SUPRESS_MSVC_OPT=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DHAVE_STD_REGEX=ON -DVERBOSE_MAKEFILE=ON -DCMAKE_GTEST_DISCOVER_TESTS_DISCOVERY_MODE=PRE_TEST

@@ -22,13 +22,13 @@ target_include_directories(libdistopia PUBLIC
 #     target_compile_options(libdistopia PUBLIC /arch:AVX2 /Gv)
 # endif()
 
-if (DISTOPIA_LIBDISTOPIA_SUPRESS_MSVC_OPT)  # causes compiler crash on MSVC on GHA
-    message(STATUS "Supressing MSVC optimisations in libdistopia")
-    message(WARNING "This should only be used for testing and debugging purposes")
-    if (MSVC)
-        target_compile_options(libdistopia PRIVATE /Od /Ob2)
-    endif()
-endif()
+# if (DISTOPIA_LIBDISTOPIA_SUPRESS_MSVC_OPT)  # causes compiler crash on MSVC on GHA
+#     message(STATUS "Supressing MSVC optimisations in libdistopia")
+#     message(WARNING "This should only be used for testing and debugging purposes")
+#     if (MSVC)
+#         target_compile_options(libdistopia PRIVATE /Od /Ob2)
+#     endif()
+# endif()
 
 
 # the link target for HWY differs if it is an external library
