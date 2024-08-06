@@ -1544,21 +1544,39 @@ namespace distopia {
         return HWY_DYNAMIC_DISPATCH(CalcDihedralsTriclinicIdxDouble)(coords, a_idx, b_idx, c_idx, d_idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayNoBoxIdx(const float *coords, const int *a_idx, const int *b_idx, int na, int nb, float *out) {
+        if (nb < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcDistanceArrayNoBoxIdxSingle(coords, a_idx, b_idx, na, nb, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxIdxSingle)(coords, a_idx, b_idx, na, nb, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayNoBoxIdx(const double *coords, const int *a_idx, const int *b_idx, int na, int nb, double *out) {
+        if (nb < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcDistanceArrayNoBoxIdxDouble(coords, a_idx, b_idx, na, nb, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxIdxDouble)(coords, a_idx, b_idx, na, nb, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayOrthoIdx(const float *coords, const int *a_idx, const int *b_idx, int na, int nb, const float *box, float *out) {
+        if (nb < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcDistanceArrayOrthoIdxSingle(coords, a_idx, b_idx, na, nb, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayOrthoIdxSingle)(coords, a_idx, b_idx, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayOrthoIdx(const double *coords, const int *a_idx, const int *b_idx, int na, int nb, const double *box, double *out) {
+        if (nb < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcDistanceArrayOrthoIdxDouble(coords, a_idx, b_idx, na, nb, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayOrthoIdxDouble)(coords, a_idx, b_idx, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayTriclinicIdx(const float *coords, const int *a_idx, const int *b_idx, int na, int nb, const float *box, float *out) {
+        if (nb < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcDistanceArrayTriclinicIdxSingle(coords, a_idx, b_idx, na, nb, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicIdxSingle)(coords, a_idx, b_idx, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayTriclinicIdx(const double *coords, const int *a_idx, const int *b_idx, int na, int nb, const double *box, double *out) {
+        if (nb < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcDistanceArrayTriclinicIdxDouble(coords, a_idx, b_idx, na, nb, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicIdxDouble)(coords, a_idx, b_idx, na, nb, box, out);
     }
 
