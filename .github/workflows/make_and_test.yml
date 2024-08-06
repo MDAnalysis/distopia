@@ -57,19 +57,18 @@ jobs:
     - name: Build
       run:  python setup.py build -- -DDISTOPIA_LIBDISTOPIA_SUPRESS_MSVC_OPT=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DHAVE_STD_REGEX=ON -DVERBOSE_MAKEFILE=ON -DCMAKE_GTEST_DISCOVER_TESTS_DISCOVERY_MODE=PRE_TEST
 
-    - name: Setup tmate session
-      if: ${{ failure() }}
-      uses: mxschmitt/action-tmate@v3
-      with:
-        limit-access-to-actor: true
-      timeout-minutes: 60
 
     - name: Test
       # Execute tests defined by the CMake configuration.  
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest --test-dir _skbuild/*/cmake-build/libdistopia
 
-
+    - name: Setup tmate session
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true
+      timeout-minutes: 60
 
   pip-install:
     # A pure Python install, which relies purely on pyproject.toml contents

@@ -19,7 +19,10 @@ target_include_directories(libdistopia PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/include")
 
 if (DISTOPIA_LIBDISTOPIA_SUPRESS_MSVC_OPT)  # causes compiler crash on MSVC on GHA
-    target_compile_options(libdistopia PRIVATE /Od)
+    message(STATUS "Supressing MSVC optimisations in libdistopia")
+    if (MSVC)
+        target_compile_options(libdistopia PRIVATE /Od)
+    endif()
 endif()
 
 
