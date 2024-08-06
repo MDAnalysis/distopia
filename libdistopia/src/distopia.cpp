@@ -851,6 +851,81 @@ namespace distopia {
         template <typename T, typename B>
         void CalcDihedralsIdx(const T *coords, const unsigned int *a_idx, const unsigned int *b_idx, const unsigned int *c_idx, const unsigned int *d_idx, int n,
                               T *out, const B &box) {
+            // Logic here closely follows BondsIdx, except with an additional coordinate
+            const hn::ScalableTag<T> d;
+            int nlanes = hn::Lanes(d);
+
+            unsigned int a_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            unsigned int b_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            unsigned int c_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            unsigned int d_sub[3 * HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            T out_sub[HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            T *dst;
+
+            if (HWY_UNLIKELY(n < nlanes)) {
+                memset(a_sub, 0, sizeof(int) * nlanes);
+                memset(b_sub, 0, sizeof(int) * nlanes);
+                memset(c_sub, 0, sizeof(int) * nlanes);
+                memset(d_sub, 0, sizeof(int) * nlanes);
+                memcpy(a_sub, a_idx, sizeof(int) * n);
+                memcpy(b_sub, b_idx, sizeof(int) * n);
+                memcpy(c_sub, c_idx, sizeof(int) * n);
+                memcpy(d_sub, d_idx, sizeof(int) * n);
+                a_idx = a_sub;
+                b_idx = b_sub;
+                c_idx = c_sub;
+                d_idx = d_sub;
+                dst = out_sub;
+            } else {
+                dst = out;
+            }
+
+            auto a_x = hn::Undefined(d);
+            auto a_y = hn::Undefined(d);
+            auto a_z = hn::Undefined(d);
+            auto b_x = hn::Undefined(d);
+            auto b_y = hn::Undefined(d);
+            auto b_z = hn::Undefined(d);
+            auto c_x = hn::Undefined(d);
+            auto c_y = hn::Undefined(d);
+            auto c_z = hn::Undefined(d);
+            auto d_x = hn::Undefined(d);
+            auto d_y = hn::Undefined(d);
+            auto d_z = hn::Undefined(d);
+
+            for (size_t i=0; i <= n - nlanes; i += nlanes) {
+                LoadInterleavedIdx(a_idx + i, coords, a_x, a_y, a_z);
+                LoadInterleavedIdx(b_idx + i, coords, b_x, b_y, b_z);
+                LoadInterleavedIdx(c_idx + i, coords, c_x, c_y, c_z);
+                LoadInterleavedIdx(d_idx + i, coords, d_x, d_y, d_z);
+
+                auto result = Dihedral(a_x, a_y, a_z,
+                                       b_x, b_y, b_z,
+                                       c_x, c_y, c_z,
+                                       d_x, d_y, d_z,
+                                       box);
+
+                hn::StoreU(result, d, dst + i);
+            }
+            size_t rem = n % nlanes;
+            if (rem) {
+                LoadInterleavedIdx(a_idx + n - nlanes, coords, a_x, a_y, a_z);
+                LoadInterleavedIdx(b_idx + n - nlanes, coords, b_x, b_y, b_z);
+                LoadInterleavedIdx(c_idx + n - nlanes, coords, c_x, c_y, c_z);
+                LoadInterleavedIdx(d_idx + n - nlanes, coords, d_x, d_y, d_z);
+
+                auto result = Dihedral(a_x, a_y, a_z,
+                                       b_x, b_y, b_z,
+                                       c_x, c_y, c_z,
+                                       d_x, d_y, d_z,
+                                       box);
+
+                hn::StoreU(result, d, dst + n - nlanes);
+            }
+
+            if (HWY_UNLIKELY(n < nlanes)) {
+                memcpy(out, out_sub, n * sizeof(T));
+            }
         }
 
         void CalcBondsNoBoxDouble(const double *a, const double *b, int n, double *out) {
