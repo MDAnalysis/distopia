@@ -20,8 +20,9 @@ target_include_directories(libdistopia PUBLIC
 
 if (DISTOPIA_LIBDISTOPIA_SUPRESS_MSVC_OPT)  # causes compiler crash on MSVC on GHA
     message(STATUS "Supressing MSVC optimisations in libdistopia")
+    message(WARNING "This should only be used for testing and debugging purposes")
     if (MSVC)
-        target_compile_options(libdistopia PRIVATE /Od /Oi /Ot /Oy /Ob2)
+        target_compile_options(libdistopia PRIVATE /O1)
     endif()
 endif()
 
