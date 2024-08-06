@@ -137,10 +137,10 @@ public:
     T *c_coords_contig = nullptr;
     T *d_coords_contig = nullptr;
     size_t *big_idx;
-    unsigned int *a_idx = nullptr;
-    unsigned int *b_idx = nullptr;
-    unsigned int *c_idx = nullptr;
-    unsigned int *d_idx = nullptr;
+    int *a_idx = nullptr;
+    int *b_idx = nullptr;
+    int *c_idx = nullptr;
+    int *d_idx = nullptr;
     T *ref_results = nullptr;
     T *results = nullptr;
     T box[3];
@@ -156,10 +156,10 @@ public:
         c_coords_contig = new T[nidx * 3];
         d_coords_contig = new T[nidx * 3];
         big_idx = new size_t[nidx];
-        a_idx = new unsigned int[nidx];
-        b_idx = new unsigned int[nidx];
-        c_idx = new unsigned int[nidx];
-        d_idx = new unsigned int[nidx];
+        a_idx = new int[nidx];
+        b_idx = new int[nidx];
+        c_idx = new int[nidx];
+        d_idx = new int[nidx];
         ref_results = new T[nidx];
         results = new T[nidx];
 
