@@ -966,7 +966,64 @@ namespace distopia {
 
         template <typename T, typename B>
         void CalcSelfDistanceArrayIdx(const T *coords, const int *idx, int n, T *out, const B &box) {
+            hn::ScalableTag<T> d;
 
+            int tmpidx[HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            T tmpout[HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            T stubout[HWY_MAX_LANES_D(hn::ScalableTag<T>)];
+            T *dst;
+
+            int nlanes = hn::Lanes(d);
+            // if n undersized, copy to new array
+            if (HWY_UNLIKELY(n < nlanes)) {
+                memset(tmpidx, 0, sizeof(int) * nlanes);
+                memcpy(tmpidx, idx, sizeof(int) * n);
+                idx = tmpidx;
+                dst = tmpout;
+            } else {
+                dst = out;
+            }
+
+            auto b_x = hn::Undefined(d);
+            auto b_y = hn::Undefined(d);
+            auto b_z = hn::Undefined(d);
+
+            size_t dstptr = 0;  // start of "row" in output
+            for (size_t i=0; i<n-1; i++) {
+                int a_idx = idx[i];
+                auto a_x = hn::Set(d, coords[a_idx * 3]);
+                auto a_y = hn::Set(d, coords[a_idx * 3 + 1]);
+                auto a_z = hn::Set(d, coords[a_idx * 3 + 2]);
+
+                size_t dstptr_j = 0;  // current "column" in output
+                for (size_t j=i+1; j <= n - nlanes; j += nlanes) {
+                    LoadInterleavedIdx(idx + j, coords, b_x, b_y, b_z);
+
+                    auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
+                    hn::StoreU(result, d, dst + dstptr + dstptr_j);
+                    dstptr_j += nlanes;
+                }
+                // start of next "row", don't move this update to below rem section
+                dstptr += n - (i + 1);
+
+                size_t rem = (n - (i+1)) % nlanes;
+                if (rem) {
+                    // load final nlanes values again
+                    LoadInterleavedIdx(idx + n - nlanes, coords, b_x, b_y, b_z);
+
+                    auto result = box.Distance(a_x, a_y, a_z, b_x, b_y, b_z);
+
+                    hn::StoreU(result, d, stubout);
+
+                    // copy out final rem values from stub save area
+                    // dstptr was already incremented, so we fill the *rem* values behind it
+                    memcpy(dst + dstptr - rem, stubout + (nlanes - rem), sizeof(T) * rem);
+                }
+            }
+
+            if (HWY_UNLIKELY(n < nlanes)) {
+                memcpy(out, dst, sizeof(T) * n);
+            }
         }
 
         void CalcBondsNoBoxDouble(const double *a, const double *b, int n, double *out) {

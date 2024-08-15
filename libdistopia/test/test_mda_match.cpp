@@ -705,3 +705,63 @@ TYPED_TEST(CoordinatesIdx, DistanceArrayTriclinicIdx) {
     }
 
 }
+
+
+TYPED_TEST(CoordinatesIdx, SelfDistanceArrayNoBoxIdx) {
+    int ncoords = 250;
+    int nidx = 100;
+
+    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+
+    // ref
+    distopia::CalcSelfDistanceArrayNoBox(this->a_coords_contig, this->nidx, this->ref_results);
+
+    // test
+    distopia::CalcSelfDistanceArrayNoBoxIdx(this->coords, this->a_idx, this->nidx, this->results);
+
+
+    size_t n_results = nidx * (nidx-1) / 2;
+    for (std::size_t i=0; i<n_results; i++) {
+        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+    }
+}
+
+
+TYPED_TEST(CoordinatesIdx, SelfDistanceArrayOrthoIdx) {
+    int ncoords = 250;
+    int nidx = 100;
+
+    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+
+    // ref
+    distopia::CalcSelfDistanceArrayOrtho(this->a_coords_contig, this->nidx, this->box, this->ref_results);
+
+    // test
+    distopia::CalcSelfDistanceArrayOrthoIdx(this->coords, this->a_idx, this->nidx, this->box, this->results);
+
+
+    size_t n_results = nidx * (nidx-1) / 2;
+    for (std::size_t i=0; i<n_results; i++) {
+        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+    }
+}
+
+
+TYPED_TEST(CoordinatesIdx, SelfDistanceArrayTriclinicIdx) {
+    int ncoords = 250;
+    int nidx = 100;
+
+    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+
+    // ref
+    distopia::CalcSelfDistanceArrayTriclinic(this->a_coords_contig, this->nidx, this->triclinic_box, this->ref_results);
+
+    // test
+    distopia::CalcSelfDistanceArrayTriclinicIdx(this->coords, this->a_idx, this->nidx, this->triclinic_box, this->results);
+
+
+    size_t n_results = nidx * (nidx-1) / 2;
+    for (std::size_t i=0; i<n_results; i++) {
+        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+    }
+}
