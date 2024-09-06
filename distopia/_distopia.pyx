@@ -982,3 +982,147 @@ def calc_self_distance_array_triclinic(
     return np.array(results).reshape(coords0.shape[0], coords0.shape[0])
 
 
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def calc_bonds_no_box_idx(
+     floating[:, ::1] coords,
+     int[::1] a_idx,
+     int[::1] b_idx,
+     floating[::1] results=None):
+    """Calculate pairwise distances between coords[a_idx] and coords[b_idx] with no periodic boundary conditions
+
+    Parameters
+    ----------
+    coords : float32 or float64 array
+      must be same length and dtype
+    a_idx, b_idx : int array
+      must be same length and dtype
+    results: float32 or float64 array (optional)
+      array to store results in, must be same size and dtype as a_idx/b_idx
+
+    Returns
+    -------
+    distances : float32 or float64 array
+      same length and dtype as a_idx/b_idx
+    """
+    cdef floating[::1] results_view
+    cdef size_t nvals = a_idx.shape[0]
+    cdef cnp.npy_intp[1] dims
+    dims[0] = <ssize_t > nvals  # FIXME truncation?
+
+    _check_shapes(a_idx, b_idx)
+
+    if results is None:
+        if floating is float:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+        else:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+
+    else:
+        _check_results(results, nvals)
+
+    results_view = results
+
+    CalcBondsNoBoxIdx(& coords[0][0], & a_idx[0], & b_idx[0], nvals, & results_view[0])
+
+    return np.array(results)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def calc_bonds_ortho_idx(
+     floating[:, ::1] coords,
+     int[::1] a_idx,
+     int[::1] b_idx,
+     floating[::1] box,
+     floating[::1] results=None):
+    """Calculate pairwise distances between coords[a_idx] and coords[b_idx] under orthorhombic boundary conditions
+
+    Parameters
+    ----------
+    coords : float32 or float64 array
+      must be same length and dtype
+    a_idx, b_idx : int array
+      must be same length and dtype
+    box : float32 or float64 array
+      orthorhombic periodic boundary dimensions in [L, L, L] format
+    results: float32 or float64 array (optional)
+      array to store results in, must be same size and dtype as a_idx/b_idx
+
+    Returns
+    -------
+    distances : float32 or float64 array
+      same length and dtype as a_idx/b_idx
+    """
+    cdef floating[::1] results_view
+    cdef size_t nvals = a_idx.shape[0]
+    cdef cnp.npy_intp[1] dims
+    dims[0] = <ssize_t > nvals  # FIXME truncation?
+
+    _check_shapes(a_idx, b_idx)
+
+    if results is None:
+        if floating is float:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+        else:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+
+    else:
+        _check_results(results, nvals)
+
+    results_view = results
+
+    CalcBondsOrthoIdx(& coords[0][0], & a_idx[0], & b_idx[0], nvals, & box[0], & results_view[0])
+
+    return np.array(results)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def calc_bonds_triclinic_idx(
+     floating[:, ::1] coords,
+     int[::1] a_idx,
+     int[::1] b_idx,
+     floating[:, ::1] box,
+     floating[::1] results=None):
+    """Calculate pairwise distances between coords[a_idx] and coords[b_idx] under triclinic boundary conditions
+
+    Parameters
+    ----------
+    coords : float32 or float64 array
+      must be same length and dtype
+    a_idx, b_idx : int array
+      must be same length and dtype
+    box : float32 or float64 array
+      periodic boundary dimensions, in 3x3 format
+    results: float32 or float64 array (optional)
+      array to store results in, must be same size and dtype as a_idx/b_idx
+
+    Returns
+    -------
+    distances : float32 or float64 array
+      same length and dtype as a_idx/b_idx
+    """
+    cdef floating[::1] results_view
+    cdef size_t nvals = a_idx.shape[0]
+    cdef cnp.npy_intp[1] dims
+    dims[0] = <ssize_t > nvals  # FIXME truncation?
+
+    _check_shapes(a_idx, b_idx)
+
+    if results is None:
+        if floating is float:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+        else:
+            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+
+    else:
+        _check_results(results, nvals)
+
+    results_view = results
+
+    CalcBondsTriclinicIdx(& coords[0][0], & a_idx[0], & b_idx[0], nvals, & box[0][0], & results_view[0])
+
+    return np.array(results)
+

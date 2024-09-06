@@ -240,6 +240,35 @@ class TestSelfDistanceArray:
             distopia.calc_self_distance_array_triclinic(c0, box, results=np.empty(1, dtype=np.float32))
 
 
+
+class TestDistancesIdx:
+    def arange_input(self, N, dtype):
+        return np.arange(3 * N, dtype=dtype).reshape(N, 3)
+
+    def result_shim(self, make_arr, N, dtype):
+        if not make_arr:
+            return None
+        else:
+            return np.empty(N, dtype=dtype)
+
+
+    @pytest.mark.parametrize("dtype", (np.float32, np.float64))
+    @pytest.mark.parametrize("N", (0, 10, 1000, 10000))
+    @pytest.mark.parametrize("use_result_buffer", (True, False))
+    def test_calc_bonds_no_box_idx(self, N, use_result_buffer, dtype):
+        c = self.arange_input(N, dtype)
+        a_idx = np.asarray([0, 1, 2, 3, 4, 5])
+        b_idx = np.asarray([6, 7, 8, 9, 10, 11])
+        result_buffer = self.result_shim(use_result_buffer, N, dtype)
+        result = distopia.calc_bonds_no_box_idx(
+            c, a_idx, b_idx, results=result_buffer
+        )
+        assert_allclose(result, np.zeros(N))
+        # check dtype of result
+        assert result.dtype == dtype
+    
+
+
 class TestMDA:
     """
     Copy of some of the tests from MDAnalysisTests repo
@@ -382,3 +411,7 @@ class TestMDA:
 
         for val in [test1, test2, test3]:
             assert_almost_equal(ref, val, self.prec, err_msg="Min image in angle calculation failed")
+
+
+
+
