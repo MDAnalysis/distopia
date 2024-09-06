@@ -129,6 +129,95 @@ cdef extern from "distopia.h" namespace "distopia" nogil:
         const T *box,
         T *out,
     )
+    void CalcBondsNoBoxIdx[T](
+        const T *coords,
+        const int* a_idx,
+        const int* b_idx,
+        size_t n,
+        T *out,
+    )
+
+    void CalcBondsOrthoIdx[T](
+        const T *coords,
+        const int* a_idx,
+        const int* b_idx,
+        size_t n,
+        const T *box,
+        T *out,
+    )
+
+    void CalcBondsTriclinicIdx[T](
+        const T *coords,
+        const int* a_idx,
+        const int* b_idx,
+        size_t n,
+        const T *box,
+        T *out,
+    )
+
+    void CalcAnglesNoBoxIdx[T](
+        const T *coords,
+        const int* a_idx,
+        const int* b_idx,
+        const int* c_idx,
+        size_t n,
+        T *out,
+    )
+
+    void CalcAnglesOrthoIdx[T](
+        const T *coords,
+        const int* a_idx,
+        const int* b_idx,
+        const int* c_idx,
+        size_t n,
+        const T *box,
+        T *out,
+    )
+
+    void CalcAnglesTriclinicIdx[T](
+        const T *coords,
+        const int* a_idx,
+        const int* b_idx,
+        const int* c_idx,
+        size_t n,
+        const T *box,
+        T *out,
+    )
+
+    void CalcDihedralsNoBoxIdx[T](
+        const T *coords,
+        const int* a_idx,
+        const int* b_idx,
+        const int* c_idx,
+        const int* d_idx,
+        size_t n,
+        T *out,
+    )
+
+    void CalcDihedralsOrthoIdx[T](
+        const T *coords,
+        const int* a_idx,
+        const int* b_idx,
+        const int* c_idx,
+        const int* d_idx,
+        size_t n,
+        const T *box,
+        T *out,
+    )
+
+
+    void CalcDihedralsTriclinicIdx[T](
+        const T *coords,
+        const int* a_idx,
+        const int* b_idx,
+        const int* c_idx,
+        const int* d_idx,
+        size_t n,
+        const T *box,
+        T *out,
+    )
+
+
 
 def get_n_float_lanes():
     """The number of floats per register distopia will handle on this system"""
@@ -891,3 +980,5 @@ def calc_self_distance_array_triclinic(
                                &results_view[0])
 
     return np.array(results).reshape(coords0.shape[0], coords0.shape[0])
+
+
