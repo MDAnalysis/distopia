@@ -1,6 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include <numeric>
+#include <stdlib.h>     
 
 #include "gtest/gtest.h"
 #include "distopia.h"
@@ -494,6 +495,24 @@ TYPED_TEST(CoordinatesIdx, CalcBondsNoBoxIdx) {
     // reference result
     distopia::CalcBondsNoBox(this->a_coords_contig, this->b_coords_contig, this->nidx, this->ref_results);
 
+    // test the idx
+    distopia::CalcBondsNoBoxIdx(this->coords, this->a_idx, this->b_idx, this->nidx, this->results);
+
+    for (std::size_t i=0; i<this->nidx; i++) {
+        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+    }
+}
+
+TYPED_TEST(CoordinatesIdx, CalcBondsNoBoxIdxSmall) {
+    int ncoords = 250;
+    // 3 is always a wierd remainder case due to 
+    int nidx = 3;
+
+    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+
+    // reference result
+    distopia::CalcBondsNoBox(this->a_coords_contig, this->b_coords_contig, this->nidx, this->ref_results);
+    std::cout << "ref_results: " << std::endl;
     // test the idx
     distopia::CalcBondsNoBoxIdx(this->coords, this->a_idx, this->b_idx, this->nidx, this->results);
 

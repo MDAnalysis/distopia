@@ -253,10 +253,11 @@ class TestDistancesIdx:
 
 
     @pytest.mark.parametrize("dtype", (np.float32, np.float64))
-    @pytest.mark.parametrize("N", (10, 1000, 10000))
+    @pytest.mark.parametrize("N", (3, 6, 10, 1000, 10000))
     @pytest.mark.parametrize("use_result_buffer", (True, False))
     def test_calc_bonds_no_box_idx(self, N, use_result_buffer, dtype):
         c = self.arange_input(N, dtype)
+
         a_idx = np.asarray(np.arange(N -3)).astype(np.int32)
         b_idx = np.asarray(np.arange(N -3)).astype(np.int32)
         result_buffer = self.result_shim(use_result_buffer, len(a_idx), dtype)

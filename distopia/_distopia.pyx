@@ -1013,7 +1013,6 @@ def calc_bonds_no_box_idx(
 
     _check_shapes(a_idx, b_idx)
 
-
     if results is None:
         if floating is float:
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
