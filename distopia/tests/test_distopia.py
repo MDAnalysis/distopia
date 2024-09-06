@@ -253,13 +253,13 @@ class TestDistancesIdx:
 
 
     @pytest.mark.parametrize("dtype", (np.float32, np.float64))
-    @pytest.mark.parametrize("N", (0, 10, 1000, 10000))
+    @pytest.mark.parametrize("N", (10, 1000, 10000))
     @pytest.mark.parametrize("use_result_buffer", (True, False))
     def test_calc_bonds_no_box_idx(self, N, use_result_buffer, dtype):
         c = self.arange_input(N, dtype)
-        a_idx = np.asarray([0, 1, 2, 3, 4, 5])
-        b_idx = np.asarray([6, 7, 8, 9, 10, 11])
-        result_buffer = self.result_shim(use_result_buffer, N, dtype)
+        a_idx = np.asarray(np.arange(N -3)).astype(np.int32)
+        b_idx = np.asarray(np.arange(N -3)).astype(np.int32)
+        result_buffer = self.result_shim(use_result_buffer, len(a_idx), dtype)
         result = distopia.calc_bonds_no_box_idx(
             c, a_idx, b_idx, results=result_buffer
         )

@@ -987,8 +987,8 @@ def calc_self_distance_array_triclinic(
 @cython.wraparound(False)
 def calc_bonds_no_box_idx(
      floating[:, ::1] coords,
-     integral[::1] a_idx,
-     integral[::1] b_idx,
+     int[::1] a_idx,
+     int[::1] b_idx,
      floating[::1] results=None):
     """Calculate pairwise distances between coords[a_idx] and coords[b_idx] with no periodic boundary conditions
 
@@ -1013,6 +1013,7 @@ def calc_bonds_no_box_idx(
 
     _check_shapes(a_idx, b_idx)
 
+
     if results is None:
         if floating is float:
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
@@ -1033,8 +1034,8 @@ def calc_bonds_no_box_idx(
 @cython.wraparound(False)
 def calc_bonds_ortho_idx(
      floating[:, ::1] coords,
-     integral[::1] a_idx,
-     integral[::1] b_idx,
+     int[::1] a_idx,
+     int[::1] b_idx,
      floating[::1] box,
      floating[::1] results=None):
     """Calculate pairwise distances between coords[a_idx] and coords[b_idx] under orthorhombic boundary conditions
@@ -1062,6 +1063,7 @@ def calc_bonds_ortho_idx(
 
     _check_shapes(a_idx, b_idx)
 
+
     if results is None:
         if floating is float:
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
@@ -1082,8 +1084,8 @@ def calc_bonds_ortho_idx(
 @cython.wraparound(False)
 def calc_bonds_triclinic_idx(
      floating[:, ::1] coords,
-     integral[::1] a_idx,
-     integral[::1] b_idx,
+     int[::1] a_idx,
+     int[::1] b_idx,
      floating[:, ::1] box,
      floating[::1] results=None):
     """Calculate pairwise distances between coords[a_idx] and coords[b_idx] under triclinic boundary conditions
@@ -1110,6 +1112,7 @@ def calc_bonds_triclinic_idx(
     dims[0] = <ssize_t > nvals  # FIXME truncation?
 
     _check_shapes(a_idx, b_idx)
+
 
     if results is None:
         if floating is float:
