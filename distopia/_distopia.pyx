@@ -13,7 +13,7 @@ The python functions for distopia
 import numpy as np
 cimport cython
 cimport numpy as cnp
-from cython cimport floating
+from cython cimport floating, integral
 cnp.import_array()
 
 cdef extern from "distopia.h" namespace "distopia" nogil:
@@ -987,8 +987,8 @@ def calc_self_distance_array_triclinic(
 @cython.wraparound(False)
 def calc_bonds_no_box_idx(
      floating[:, ::1] coords,
-     int[::1] a_idx,
-     int[::1] b_idx,
+     integral[::1] a_idx,
+     integral[::1] b_idx,
      floating[::1] results=None):
     """Calculate pairwise distances between coords[a_idx] and coords[b_idx] with no periodic boundary conditions
 
@@ -1033,8 +1033,8 @@ def calc_bonds_no_box_idx(
 @cython.wraparound(False)
 def calc_bonds_ortho_idx(
      floating[:, ::1] coords,
-     int[::1] a_idx,
-     int[::1] b_idx,
+     integral[::1] a_idx,
+     integral[::1] b_idx,
      floating[::1] box,
      floating[::1] results=None):
     """Calculate pairwise distances between coords[a_idx] and coords[b_idx] under orthorhombic boundary conditions
@@ -1082,8 +1082,8 @@ def calc_bonds_ortho_idx(
 @cython.wraparound(False)
 def calc_bonds_triclinic_idx(
      floating[:, ::1] coords,
-     int[::1] a_idx,
-     int[::1] b_idx,
+     integral[::1] a_idx,
+     integral[::1] b_idx,
      floating[:, ::1] box,
      floating[::1] results=None):
     """Calculate pairwise distances between coords[a_idx] and coords[b_idx] under triclinic boundary conditions
