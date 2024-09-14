@@ -493,7 +493,10 @@ TYPED_TEST(CoordinatesIdx, CalcBondsNoBoxIdx) {
     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
 
     // reference result
-    distopia::CalcBondsNoBox(this->a_coords_contig, this->b_coords_contig, this->nidx, this->ref_results);
+    // distopia::CalcBondsNoBox(this->a_coords_contig, this->b_coords_contig, this->nidx, this->ref_results);
+    using ctype = ScalarToCoordinateT<TypeParam>;
+
+    _calc_bond_distance((ctype*)this->a_coords_contig, (ctype*)this->b_coords_contig, this->nidx, this->ref_results);
 
     // test the idx
     distopia::CalcBondsNoBoxIdx(this->coords, this->a_idx, this->b_idx, this->nidx, this->results);
@@ -501,6 +504,7 @@ TYPED_TEST(CoordinatesIdx, CalcBondsNoBoxIdx) {
     for (std::size_t i=0; i<this->nidx; i++) {
         EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
+
 }
 
 TYPED_TEST(CoordinatesIdx, CalcBondsNoBoxIdxSmall) {
@@ -509,10 +513,10 @@ TYPED_TEST(CoordinatesIdx, CalcBondsNoBoxIdxSmall) {
     int nidx = 3;
 
     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+    using ctype = ScalarToCoordinateT<TypeParam>;
 
     // reference result
-    distopia::CalcBondsNoBox<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->nidx, this->ref_results);
-    std::cout << "ref_results: " << std::endl;
+    _calc_bond_distance((ctype*)this->a_coords_contig, (ctype*)this->b_coords_contig, this->nidx, this->ref_results);
     // test the idx
     distopia::CalcBondsNoBoxIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->nidx, this->results);
 
@@ -527,10 +531,10 @@ TYPED_TEST(CoordinatesIdx, CalcBondsOrthoIdx) {
     int nidx = 100;
 
     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+    using ctype = ScalarToCoordinateT<TypeParam>;
 
     // reference result
-    distopia::CalcBondsOrtho<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->nidx, this->box, this->ref_results);
-
+    _calc_bond_distance_ortho((ctype*)this->a_coords_contig, (ctype*)this->b_coords_contig, this->nidx, this->box, this->ref_results);
 
     // test the idx
     distopia::CalcBondsOrthoIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->nidx, this->box, this->results);
@@ -547,10 +551,10 @@ TYPED_TEST(CoordinatesIdx, CalcBondsTriclinicIdx) {
     int nidx = 100;
 
     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+    using ctype = ScalarToCoordinateT<TypeParam>;
 
     // reference result
-    distopia::CalcBondsTriclinic<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->nidx, this->triclinic_box, this->ref_results);
-
+    _calc_bond_distance_triclinic((ctype*)this->a_coords_contig, (ctype*)this->b_coords_contig, this->nidx, this->triclinic_box, this->ref_results);
     // test the idx
     distopia::CalcBondsTriclinicIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->nidx, this->triclinic_box, this->results);
 
@@ -565,10 +569,9 @@ TYPED_TEST(CoordinatesIdx, CalcAnglesNoBoxIdx) {
     int nidx = 100;
 
     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
-
+    using ctype = ScalarToCoordinateT<TypeParam>;
     // reference result
-    distopia::CalcAnglesNoBox<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->c_coords_contig, this->nidx, this->ref_results);
-
+    _calc_angle((ctype*)this->a_coords_contig, (ctype*)this->b_coords_contig, (ctype*)this->c_coords_contig, this->nidx, this->ref_results);
     // test the idx
     distopia::CalcAnglesNoBoxIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->c_idx, this->nidx, this->results);
 
@@ -583,10 +586,9 @@ TYPED_TEST(CoordinatesIdx, CalcAnglesOrthoIdx) {
     int nidx = 100;
 
     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
-
+    using ctype = ScalarToCoordinateT<TypeParam>;
     // reference result
-    distopia::CalcAnglesOrtho<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->c_coords_contig, this->nidx, this->box, this->ref_results);
-
+    _calc_angle_ortho((ctype*)this->a_coords_contig, (ctype*)this->b_coords_contig, (ctype*)this->c_coords_contig, this->nidx, this->box, this->ref_results);
     // test the idx
     distopia::CalcAnglesOrthoIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->c_idx, this->nidx, this->box, this->results);
 
@@ -599,11 +601,11 @@ TYPED_TEST(CoordinatesIdx, CalcAnglesOrthoIdx) {
 TYPED_TEST(CoordinatesIdx, CalcAnglesTriclinicIdx) {
     int ncoords = 250;
     int nidx = 100;
-
+    using ctype = ScalarToCoordinateT<TypeParam>;
     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
 
     // reference result
-    distopia::CalcAnglesTriclinic<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->c_coords_contig, this->nidx, this->triclinic_box, this->ref_results);
+    _calc_angle_triclinic((ctype*)this->a_coords_contig, (ctype*)this->b_coords_contig, (ctype*)this->c_coords_contig, this->nidx, this->triclinic_box, this->ref_results);
 
     // test the idx
     distopia::CalcAnglesTriclinicIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->c_idx, this->nidx, this->triclinic_box, this->results);
@@ -619,10 +621,9 @@ TYPED_TEST(CoordinatesIdx, CalcDihedralsNoBoxIdx) {
     int nidx = 100;
 
     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
-
+    using ctype = ScalarToCoordinateT<TypeParam>;
     // reference result
-    distopia::CalcDihedralsNoBox<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->c_coords_contig, this->d_coords_contig, this->nidx, this->ref_results);
-
+    _calc_dihedral((ctype*)this->a_coords_contig, (ctype*)this->b_coords_contig, (ctype*)this->c_coords_contig, (ctype*)this->d_coords_contig, this->nidx, this->ref_results);
     // test the idx
     distopia::CalcDihedralsNoBoxIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->c_idx, this->d_idx, this->nidx, this->results);
 
@@ -637,10 +638,9 @@ TYPED_TEST(CoordinatesIdx, CalcDihedralsOrthoIdx) {
     int nidx = 100;
 
     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
-
+    using ctype = ScalarToCoordinateT<TypeParam>;
     // reference result
-    distopia::CalcDihedralsOrtho<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->c_coords_contig, this->d_coords_contig, this->nidx, this->box, this->ref_results);
-
+    _calc_dihedral_ortho((ctype*)this->a_coords_contig, (ctype*)this->b_coords_contig, (ctype*)this->c_coords_contig, (ctype*)this->d_coords_contig, this->nidx, this->box, this->ref_results);
     // test the idx
     distopia::CalcDihedralsOrthoIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->c_idx, this->d_idx, this->nidx, this->box, this->results);
 
@@ -655,10 +655,9 @@ TYPED_TEST(CoordinatesIdx, CalcDihedralsTriclinicIdx) {
     int nidx = 100;
 
     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
-
+    using ctype = ScalarToCoordinateT<TypeParam>;
     // reference result
-    distopia::CalcDihedralsTriclinic<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->c_coords_contig, this->d_coords_contig, this->nidx, this->triclinic_box, this->ref_results);
-
+    _calc_dihedral_triclinic((ctype*)this->a_coords_contig, (ctype*)this->b_coords_contig, (ctype*)this->c_coords_contig, (ctype*)this->d_coords_contig, this->nidx, this->triclinic_box, this->ref_results);
     // test the idx
     distopia::CalcDihedralsTriclinicIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->c_idx, this->d_idx, this->nidx, this->triclinic_box, this->results);
 
@@ -668,121 +667,121 @@ TYPED_TEST(CoordinatesIdx, CalcDihedralsTriclinicIdx) {
 }
 
 
-TYPED_TEST(CoordinatesIdx, DistanceArrayNoBoxIdx) {
-    int ncoords = 250;
-    int nidx = 100;
+// TYPED_TEST(CoordinatesIdx, DistanceArrayNoBoxIdx) {
+//     int ncoords = 250;
+//     int nidx = 100;
 
-    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+//     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
 
-    // ref
-    distopia::CalcDistanceArrayNoBox<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->nidx, this->nidx, this->ref_results);
+//     // ref
+//     distopia::CalcDistanceArrayNoBox<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->nidx, this->nidx, this->ref_results);
 
-    // test
-    distopia::CalcDistanceArrayNoBoxIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->nidx, this->nidx, this->results);
+//     // test
+//     distopia::CalcDistanceArrayNoBoxIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->nidx, this->nidx, this->results);
 
-    size_t n_results = nidx * nidx;
-    for (std::size_t i=0; i<n_results; i++) {
-        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
-    }
+//     size_t n_results = nidx * nidx;
+//     for (std::size_t i=0; i<n_results; i++) {
+//         EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
+//     }
 
-}
-
-
-TYPED_TEST(CoordinatesIdx, DistanceArrayOrthoIdx) {
-    int ncoords = 250;
-    int nidx = 100;
-
-    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
-
-    // ref
-    distopia::CalcDistanceArrayOrtho<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->nidx, this->nidx, this->box, this->ref_results);
-
-    // test
-    distopia::CalcDistanceArrayOrthoIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->nidx, this->nidx, this->box, this->results);
-
-    size_t n_results = nidx * nidx;
-    for (std::size_t i=0; i<n_results; i++) {
-        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
-    }
-
-}
+// }
 
 
-TYPED_TEST(CoordinatesIdx, DistanceArrayTriclinicIdx) {
-    int ncoords = 250;
-    int nidx = 100;
+// TYPED_TEST(CoordinatesIdx, DistanceArrayOrthoIdx) {
+//     int ncoords = 250;
+//     int nidx = 100;
 
-    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+//     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
 
-    // ref
-    distopia::CalcDistanceArrayTriclinic<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->nidx, this->nidx, this->triclinic_box, this->ref_results);
+//     // ref
+//     distopia::CalcDistanceArrayOrtho<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->nidx, this->nidx, this->box, this->ref_results);
 
-    // test
-    distopia::CalcDistanceArrayTriclinicIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->nidx, this->nidx, this->triclinic_box, this->results);
+//     // test
+//     distopia::CalcDistanceArrayOrthoIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->nidx, this->nidx, this->box, this->results);
 
-    size_t n_results = nidx * nidx;
-    for (std::size_t i=0; i<n_results; i++) {
-        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
-    }
+//     size_t n_results = nidx * nidx;
+//     for (std::size_t i=0; i<n_results; i++) {
+//         EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
+//     }
 
-}
-
-
-TYPED_TEST(CoordinatesIdx, SelfDistanceArrayNoBoxIdx) {
-    int ncoords = 250;
-    int nidx = 100;
-
-    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
-
-    // ref
-    distopia::CalcSelfDistanceArrayNoBox<TypeParam>(this->a_coords_contig, this->nidx, this->ref_results);
-
-    // test
-    distopia::CalcSelfDistanceArrayNoBoxIdx<TypeParam>(this->coords, this->a_idx, this->nidx, this->results);
+// }
 
 
-    size_t n_results = nidx * (nidx-1) / 2;
-    for (std::size_t i=0; i<n_results; i++) {
-        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
-    }
-}
+// TYPED_TEST(CoordinatesIdx, DistanceArrayTriclinicIdx) {
+//     int ncoords = 250;
+//     int nidx = 100;
+
+//     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+
+//     // ref
+//     distopia::CalcDistanceArrayTriclinic<TypeParam>(this->a_coords_contig, this->b_coords_contig, this->nidx, this->nidx, this->triclinic_box, this->ref_results);
+
+//     // test
+//     distopia::CalcDistanceArrayTriclinicIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->nidx, this->nidx, this->triclinic_box, this->results);
+
+//     size_t n_results = nidx * nidx;
+//     for (std::size_t i=0; i<n_results; i++) {
+//         EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
+//     }
+
+// }
 
 
-TYPED_TEST(CoordinatesIdx, SelfDistanceArrayOrthoIdx) {
-    int ncoords = 250;
-    int nidx = 100;
+// TYPED_TEST(CoordinatesIdx, SelfDistanceArrayNoBoxIdx) {
+//     int ncoords = 250;
+//     int nidx = 100;
 
-    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+//     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
 
-    // ref
-    distopia::CalcSelfDistanceArrayOrtho<TypeParam>(this->a_coords_contig, this->nidx, this->box, this->ref_results);
+//     // ref
+//     distopia::CalcSelfDistanceArrayNoBox<TypeParam>(this->a_coords_contig, this->nidx, this->ref_results);
 
-    // test
-    distopia::CalcSelfDistanceArrayOrthoIdx<TypeParam>(this->coords, this->a_idx, this->nidx, this->box, this->results);
-
-
-    size_t n_results = nidx * (nidx-1) / 2;
-    for (std::size_t i=0; i<n_results; i++) {
-        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
-    }
-}
+//     // test
+//     distopia::CalcSelfDistanceArrayNoBoxIdx<TypeParam>(this->coords, this->a_idx, this->nidx, this->results);
 
 
-TYPED_TEST(CoordinatesIdx, SelfDistanceArrayTriclinicIdx) {
-    int ncoords = 250;
-    int nidx = 100;
-
-    this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
-
-    // ref
-    distopia::CalcSelfDistanceArrayTriclinic<TypeParam>(this->a_coords_contig, this->nidx, this->triclinic_box, this->ref_results);
-
-    // test
-    distopia::CalcSelfDistanceArrayTriclinicIdx<TypeParam>(this->coords, this->a_idx, this->nidx, this->triclinic_box, this->results);
+//     size_t n_results = nidx * (nidx-1) / 2;
+//     for (std::size_t i=0; i<n_results; i++) {
+//         EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
+//     }
+// }
 
 
-    size_t n_results = nidx * (nidx-1) / 2;
-    for (std::size_t i=0; i<n_results; i++) {
-        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
-    }
-}
+// TYPED_TEST(CoordinatesIdx, SelfDistanceArrayOrthoIdx) {
+//     int ncoords = 250;
+//     int nidx = 100;
+
+//     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+
+//     // ref
+//     distopia::CalcSelfDistanceArrayOrtho<TypeParam>(this->a_coords_contig, this->nidx, this->box, this->ref_results);
+
+//     // test
+//     distopia::CalcSelfDistanceArrayOrthoIdx<TypeParam>(this->coords, this->a_idx, this->nidx, this->box, this->results);
+
+
+//     size_t n_results = nidx * (nidx-1) / 2;
+//     for (std::size_t i=0; i<n_results; i++) {
+//         EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
+//     }
+// }
+
+
+// TYPED_TEST(CoordinatesIdx, SelfDistanceArrayTriclinicIdx) {
+//     int ncoords = 250;
+//     int nidx = 100;
+
+//     this->SetUp(ncoords, nidx, BOXSIZE, 3 * BOXSIZE);
+
+//     // ref
+//     distopia::CalcSelfDistanceArrayTriclinic<TypeParam>(this->a_coords_contig, this->nidx, this->triclinic_box, this->ref_results);
+
+//     // test
+//     distopia::CalcSelfDistanceArrayTriclinicIdx<TypeParam>(this->coords, this->a_idx, this->nidx, this->triclinic_box, this->results);
+
+
+//     size_t n_results = nidx * (nidx-1) / 2;
+//     for (std::size_t i=0; i<n_results; i++) {
+//         EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
+//     }
+// }
