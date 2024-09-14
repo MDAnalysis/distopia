@@ -4,6 +4,8 @@
 #include <random>
 
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
+
 // creates nrandom floating points between pos and neg limit
 template <typename T>
 void RandomFloatingPoint(T *target, const int nrandom, const int neglimit,
