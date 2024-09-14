@@ -759,10 +759,6 @@ namespace distopia {
             auto b_y = hn::Undefined(d);
             auto b_z = hn::Undefined(d);
 
-            std::cout << "nlanes: " << nlanes << std::endl;
-            std::cout << "n: " << n << std::endl;
-            std::cout << "n - nlanes: " << n - nlanes << std::endl;
-
             for (size_t i=0; i <= n - nlanes; i += nlanes) {
                 // load N indices of each source
                 // interleaved gather these indices
@@ -773,7 +769,6 @@ namespace distopia {
 
                 hn::StoreU(result, d, dst + i);
             }
-            std::cout << "n % nlanes: " << n % nlanes << std::endl;
             size_t rem = n % nlanes;
             if (rem) {  // if we had a non-multiple of nlanes, do final nlanes values again
                 LoadInterleavedIdx(a_idx + n - nlanes, coords, a_x, a_y, a_z);
