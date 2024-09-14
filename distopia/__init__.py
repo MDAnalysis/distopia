@@ -16,6 +16,9 @@ from ._distopia import (
     calc_self_distance_array_no_box,
     calc_self_distance_array_ortho,
     calc_self_distance_array_triclinic,
+    calc_bonds_no_box_idx,
+    calc_bonds_ortho_idx,
+    calc_bonds_triclinic_idx,
 )
 
 __all__ = [
@@ -34,5 +37,8 @@ __all__ = [
     'calc_self_distance_array_no_box',
     'calc_self_distance_array_ortho',
     'calc_self_distance_array_triclinic',
+    'calc_bonds_no_box_idx',
+    'calc_bonds_ortho_idx',
+    'calc_bonds_triclinic_idx',
     '__version__',
 ]
