@@ -35,21 +35,21 @@ void RandomInt(std::size_t *target, const int nrandom, const int neglimit,
 
 inline void EXPECT_SCALAR_EQ(float result, float ref)
 {
-    EXPECT_FLOAT_EQ(result, ref);
+    EXPECT_THAT(result, ::testing::NanSensitiveFloatEq(ref));
 }
 
 inline void EXPECT_SCALAR_EQ(double result, double ref)
 {
-    EXPECT_DOUBLE_EQ(result, ref);
+    EXPECT_THAT(result, ::testing::NanSensitiveDoubleEq(ref));
 }
 
 inline void EXPECT_SCALAR_NEAR(float result, float ref, float tol)
 {
-    EXPECT_NEAR(result, ref, tol);
+    EXPECT_THAT(result, ::testing::NanSensitiveFloatNear(ref, tol));
 }
 inline void EXPECT_SCALAR_NEAR(double result, double ref, float tol)
 {
-    EXPECT_NEAR(result, ref, tol);
+    EXPECT_THAT(result, ::testing::NanSensitiveDoubleNear(ref, tol));
 }
 
 
