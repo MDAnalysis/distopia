@@ -40,7 +40,7 @@ TYPED_TEST(CoordinatesTest, CalcBondsOrthoMatchesMDA)
 
     for (std::size_t i = 0; i < this->nresults; i++)
     {
-        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
     }
 }
 
@@ -57,7 +57,7 @@ TYPED_TEST(CoordinatesTest, CalcBondsNoBoxMatchesMDA)
 
   for (std::size_t i = 0; i < this->nresults; i++)
   {
-    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
   }
 }
 
@@ -93,7 +93,7 @@ TYPED_TEST(CoordinatesTest, CalcBondsTriclinicMatchesMDA)
 
   for (std::size_t i = 0; i < this->nresults; i++)
   {
-    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
   }
 }
 
@@ -112,7 +112,7 @@ TYPED_TEST(CoordinatesTest, CalcAnglesOrthoMatchesMDA)
 
   for (std::size_t i = 0; i < this->nresults; i++)
   {
-    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
   }
 }
 
@@ -129,7 +129,7 @@ TYPED_TEST(CoordinatesTest, CalcAnglesNoBoxMatchesMDA)
 
   for (std::size_t i = 0; i < this->nresults; i++)
   {
-    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
   }
 }
 
@@ -158,7 +158,7 @@ TYPED_TEST(CoordinatesTest, CalcAnglesTriclinicMatchesMDA)
 
     for (std::size_t i = 0; i < this->nresults; i++)
     {
-        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
     }
 }
 
@@ -175,7 +175,7 @@ TYPED_TEST(CoordinatesTest, CalcDihedralsOrthoMatchesMDA)
 
   for (std::size_t i = 0; i < this->nresults; i++)
   {
-    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
   }
 }
 
@@ -192,7 +192,7 @@ TYPED_TEST(CoordinatesTest, CalcDihedralsNoBoxMatchesMDA)
 
   for (std::size_t i = 0; i < this->nresults; i++)
   {
-    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+    EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
   }
 }
 
@@ -222,7 +222,7 @@ TYPED_TEST(CoordinatesTest, CalcDihedralsTriclinicMatchesMDA)
 
     for (std::size_t i = 0; i < this->nresults; i++)
     {
-        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
     }
 }
 
@@ -242,7 +242,7 @@ TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayOrthoMatchesMDA) {
 
     for (std::size_t i = 0; i < this->nresults; i++)
     {
-        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
     }
 
 }
@@ -262,7 +262,7 @@ TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayOrthoMatchesMDAWide) {
 
     for (std::size_t i = 0; i < this->nresults; i++)
     {
-        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
     }
 
 }
@@ -283,7 +283,7 @@ TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayOrthoMatchesMDAScalarPath)
 
     for (std::size_t i = 0; i < this->nresults; i++)
     {
-        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
     }
 }
 
@@ -301,7 +301,7 @@ TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayNoBoxMatchesMDA) {
 
     for (std::size_t i = 0; i < this->nresults; i++)
     {
-        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
     }
 }
 
@@ -321,7 +321,7 @@ TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayNoBoxMatchesMDAScalarPath)
 
     for (std::size_t i = 0; i <  this->nresults; i++)
     {
-        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
     }
 }
 
@@ -339,7 +339,7 @@ TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayTriclinicMatchesMDA) {
 
     for (std::size_t i = 0;  i < this->nresults; i++)
     {
-        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
     }
 }
 
@@ -359,7 +359,7 @@ TYPED_TEST(DistanceArrayCoordinates, CalcDistanceArrayTriclinicMatchesMDAScalarP
 
     for (std::size_t i = 0; i < this->nresults; i++)
     {
-        EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->results[i], this->ref[i], abs_err);
     }
 }
 
@@ -378,7 +378,7 @@ TYPED_TEST(DistanceArrayCoordinates, CalcSelfDistanceArrayNoBox) {
     //nresults >>= 2;
 
     for (std::size_t i=0; i<nresults; ++i) {
-        EXPECT_NEAR(this->ref[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref[i], this->results[i], abs_err);
     }
 }
 
@@ -398,7 +398,7 @@ TYPED_TEST(DistanceArrayCoordinates, CalcSelfDistanceArrayOrtho) {
     //nresults >>= 2;
 
     for (std::size_t i=0; i<nresults; ++i) {
-        EXPECT_NEAR(this->ref[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref[i], this->results[i], abs_err);
     }
 }
 
@@ -418,7 +418,7 @@ TYPED_TEST(DistanceArrayCoordinates, CalcSelfDistanceArrayTriclinic) {
     //nresults >>= 2;
 
     for (std::size_t i=0; i<nresults; ++i) {
-        EXPECT_NEAR(this->ref[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref[i], this->results[i], abs_err);
     }
 }
 
@@ -438,7 +438,7 @@ TYPED_TEST(DistanceArrayCoordinates, CalcSelfDistanceArrayNoBoxScalar) {
     //nresults >>= 2;
 
     for (std::size_t i=0; i<nresults; ++i) {
-        EXPECT_NEAR(this->ref[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref[i], this->results[i], abs_err);
     }
 }
 
@@ -458,7 +458,7 @@ TYPED_TEST(DistanceArrayCoordinates, CalcSelfDistanceArrayOrthoScalar) {
     //nresults >>= 2;
 
     for (std::size_t i=0; i<nresults; ++i) {
-        EXPECT_NEAR(this->ref[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref[i], this->results[i], abs_err);
     }
 }
 
@@ -478,7 +478,7 @@ TYPED_TEST(DistanceArrayCoordinates, CalcSelfDistanceArrayTriclinicScalar) {
     //nresults >>= 2;
 
     for (std::size_t i=0; i<nresults; ++i) {
-        EXPECT_NEAR(this->ref[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref[i], this->results[i], abs_err);
     }
 }
 
@@ -499,7 +499,7 @@ TYPED_TEST(CoordinatesIdx, CalcBondsNoBoxIdx) {
     distopia::CalcBondsNoBoxIdx(this->coords, this->a_idx, this->b_idx, this->nidx, this->results);
 
     for (std::size_t i=0; i<this->nidx; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }
 
@@ -517,7 +517,7 @@ TYPED_TEST(CoordinatesIdx, CalcBondsNoBoxIdxSmall) {
     distopia::CalcBondsNoBoxIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->nidx, this->results);
 
     for (std::size_t i=0; i<this->nidx; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }
 
@@ -536,7 +536,7 @@ TYPED_TEST(CoordinatesIdx, CalcBondsOrthoIdx) {
     distopia::CalcBondsOrthoIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->nidx, this->box, this->results);
 
     for (std::size_t i=0; i<this->nidx; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }
 
@@ -555,7 +555,7 @@ TYPED_TEST(CoordinatesIdx, CalcBondsTriclinicIdx) {
     distopia::CalcBondsTriclinicIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->nidx, this->triclinic_box, this->results);
 
     for (std::size_t i=0; i<this->nidx; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }
 
@@ -573,7 +573,7 @@ TYPED_TEST(CoordinatesIdx, CalcAnglesNoBoxIdx) {
     distopia::CalcAnglesNoBoxIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->c_idx, this->nidx, this->results);
 
     for (std::size_t i=0; i<this->nidx; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }
 
@@ -591,7 +591,7 @@ TYPED_TEST(CoordinatesIdx, CalcAnglesOrthoIdx) {
     distopia::CalcAnglesOrthoIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->c_idx, this->nidx, this->box, this->results);
 
     for (std::size_t i=0; i<this->nidx; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }
 
@@ -609,7 +609,7 @@ TYPED_TEST(CoordinatesIdx, CalcAnglesTriclinicIdx) {
     distopia::CalcAnglesTriclinicIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->c_idx, this->nidx, this->triclinic_box, this->results);
 
     for (std::size_t i=0; i<this->nidx; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }
 
@@ -627,7 +627,7 @@ TYPED_TEST(CoordinatesIdx, CalcDihedralsNoBoxIdx) {
     distopia::CalcDihedralsNoBoxIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->c_idx, this->d_idx, this->nidx, this->results);
 
     for (std::size_t i=0; i<this->nidx; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }
 
@@ -645,7 +645,7 @@ TYPED_TEST(CoordinatesIdx, CalcDihedralsOrthoIdx) {
     distopia::CalcDihedralsOrthoIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->c_idx, this->d_idx, this->nidx, this->box, this->results);
 
     for (std::size_t i=0; i<this->nidx; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }
 
@@ -663,7 +663,7 @@ TYPED_TEST(CoordinatesIdx, CalcDihedralsTriclinicIdx) {
     distopia::CalcDihedralsTriclinicIdx<TypeParam>(this->coords, this->a_idx, this->b_idx, this->c_idx, this->d_idx, this->nidx, this->triclinic_box, this->results);
 
     for (std::size_t i=0; i<this->nidx; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }
 
@@ -682,7 +682,7 @@ TYPED_TEST(CoordinatesIdx, DistanceArrayNoBoxIdx) {
 
     size_t n_results = nidx * nidx;
     for (std::size_t i=0; i<n_results; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 
 }
@@ -702,7 +702,7 @@ TYPED_TEST(CoordinatesIdx, DistanceArrayOrthoIdx) {
 
     size_t n_results = nidx * nidx;
     for (std::size_t i=0; i<n_results; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 
 }
@@ -722,7 +722,7 @@ TYPED_TEST(CoordinatesIdx, DistanceArrayTriclinicIdx) {
 
     size_t n_results = nidx * nidx;
     for (std::size_t i=0; i<n_results; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 
 }
@@ -743,7 +743,7 @@ TYPED_TEST(CoordinatesIdx, SelfDistanceArrayNoBoxIdx) {
 
     size_t n_results = nidx * (nidx-1) / 2;
     for (std::size_t i=0; i<n_results; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }
 
@@ -763,7 +763,7 @@ TYPED_TEST(CoordinatesIdx, SelfDistanceArrayOrthoIdx) {
 
     size_t n_results = nidx * (nidx-1) / 2;
     for (std::size_t i=0; i<n_results; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }
 
@@ -783,6 +783,6 @@ TYPED_TEST(CoordinatesIdx, SelfDistanceArrayTriclinicIdx) {
 
     size_t n_results = nidx * (nidx-1) / 2;
     for (std::size_t i=0; i<n_results; i++) {
-        EXPECT_NEAR(this->ref_results[i], this->results[i], abs_err);
+        EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
     }
 }

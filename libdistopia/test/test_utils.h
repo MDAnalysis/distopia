@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+
 // creates nrandom floating points between pos and neg limit
 template <typename T>
 void RandomFloatingPoint(T *target, const int nrandom, const int neglimit,
@@ -35,20 +36,24 @@ void RandomInt(std::size_t *target, const int nrandom, const int neglimit,
 
 inline void EXPECT_SCALAR_EQ(float result, float ref)
 {
+
     EXPECT_THAT(result, ::testing::NanSensitiveFloatEq(ref));
 }
 
 inline void EXPECT_SCALAR_EQ(double result, double ref)
 {
+
     EXPECT_THAT(result, ::testing::NanSensitiveDoubleEq(ref));
 }
 
 inline void EXPECT_SCALAR_NEAR(float result, float ref, float tol)
 {
+
     EXPECT_THAT(result, ::testing::NanSensitiveFloatNear(ref, tol));
 }
 inline void EXPECT_SCALAR_NEAR(double result, double ref, float tol)
 {
+
     EXPECT_THAT(result, ::testing::NanSensitiveDoubleNear(ref, tol));
 }
 
@@ -69,6 +74,8 @@ void pretty_print_matrix(T *matrix, int rows, int cols)
     // restore the default precision
     std::cout.precision(6);
 }
+
+
 
 
 
