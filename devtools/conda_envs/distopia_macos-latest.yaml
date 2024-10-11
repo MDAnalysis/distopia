@@ -11,5 +11,6 @@ dependencies:
 - ninja
 - pytest
 - scikit-build
-- compilers
+- gcc
+- gxx
 - libxcrypt
