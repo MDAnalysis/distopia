@@ -492,13 +492,13 @@ namespace distopia {
             y = y / vb_norm;
 
             // find  where x and y are both zero, and set result to NAN
-            auto mask = hn::And(hn::Equal(x, hn::Zero(d)), hn::Equal(y, hn::Zero(d)));
+            auto mask = hn::And(hn::Eq(x, hn::Zero(d)), hn::Eq(y, hn::Zero(d)));
 
-            res =  hn::Neg(hn::Atan2(d, y, x));
+            auto res =  hn::Neg(hn::Atan2(d, y, x));
             // apply mask to set NAN where x and y are both zero
-            res = hn::IfThenElse(mask, hn::Set(d, NAN), res);
+            auto fin = hn::IfThenElse(mask, hn::Set(d, NAN), res);
 
-            return res;
+            return fin;
         }
 
         template <typename T, typename B>
