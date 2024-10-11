@@ -488,11 +488,17 @@ namespace distopia {
             y = hn::MulAdd(xp_y, rbc_y, y);
             y = hn::MulAdd(xp_z, rbc_z, y);
             
-            
 
             y = y / vb_norm;
 
-            return   hn::Neg(hn::Atan2(d, y, x));
+            // find  where x and y are both zero, and set result to NAN
+            auto mask = hn::And(hn::Equal(x, hn::Zero(d)), hn::Equal(y, hn::Zero(d)));
+
+            res =  hn::Neg(hn::Atan2(d, y, x));
+            // apply mask to set NAN where x and y are both zero
+            res = hn::IfThenElse(mask, hn::Set(d, NAN), res);
+
+            return res;
         }
 
         template <typename T, typename B>
