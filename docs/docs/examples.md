@@ -12,11 +12,12 @@ First we construct some random coordinates using numpy and calculate distances b
 
 ```python
 import numpy as np
+import distopia
 
 # make N x 3 coordinate arrays
 N = 10000
-coordinates0 = np.random(3 * N, dtype=np.float32).reshape(N, 3)
-coordinates1 = np.random(3 * N, dtype=np.float32).reshape(N, 3)
+coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+coordinates1 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 result = distopia.calc_bonds_no_box(coordinates0, coordinates1)
 
 # alternatively we can pass in a buffer to use for the results.
@@ -30,12 +31,13 @@ Using periodic boundary conditions is very similar. For orthorhombic boxes you o
 
 ```python
 import numpy as np
+import distopia
 
 # make N x 3 coordinate arrays
 N = 10000
-coordinates0 = np.random(3 * N, dtype=np.float32).reshape(N, 3)
-coordinates1 = np.random(3 * N, dtype=np.float32).reshape(N, 3)
-box = np.ararray([10, 10, 10])
+coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+coordinates1 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+box = np.asarray([10, 10, 10]).astype(np.float32)
 result = distopia.calc_bonds_ortho(coordinates0, coordinates1, box)
 ```
 
@@ -44,8 +46,14 @@ result = distopia.calc_bonds_ortho(coordinates0, coordinates1, box)
 For triclinic boxes the box matrix must be provided in 3x3 matrix form. 
 
 ```python
-box = np.asarray([[10, 0, 0], [0, 10, 0], [0, 0, 10]], dtype=np.float32)
-result = distopia.calc_bonds_ortho(coordinates0, coordinates1, box)
+import numpy as np
+import distopia
+
+N = 10000
+coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+coordinates1 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+box = np.asarray([[10, 0, 0], [0, 10, 0], [0, 0, 10]]).astype(np.float32)
+result = distopia.calc_bonds_triclinic(coordinates0, coordinates1, box)
 ```
 
 ### Note
@@ -58,12 +66,13 @@ Angles function in a similar way to distances, but requiring one more coordinate
 
 ```python
 import numpy as np
+import distopia
 
 # make N x 3 coordinate arrays
 N = 10000
-coordinates0 = np.random(3 * N, dtype=np.float32).reshape(N, 3)
-coordinates1 = np.random(3 * N, dtype=np.float32).reshape(N, 3)
-coordinates2 = np.random(3 * N, dtype=np.float32).reshape(N, 3)
+coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+coordinates1 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+coordinates2 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 result = distopia.calc_angles_no_box(coordinates0, coordinates1, coordinates2)
 ```
 
@@ -74,13 +83,14 @@ Dihedrals require 4 coordinates
 
 ```python
 import numpy as np
+import distopia
 
 # make N x 3 coordinate arrays
 N = 10000
-coordinates0 = np.random(3 * N, dtype=np.float32).reshape(N, 3)
-coordinates1 = np.random(3 * N, dtype=np.float32).reshape(N, 3)
-coordinates2 = np.random(3 * N, dtype=np.float32).reshape(N, 3)
-coordinates3 = np.random(3 * N, dtype=np.float32).reshape(N, 3)
+coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+coordinates1 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+coordinates2 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+coordinates3 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 result = distopia.calc_dihedrals_no_box(coordinates0, coordinates1, coordinates2, coordinates3)
 ```
 
@@ -92,12 +102,13 @@ You can also do pairwise and self-pairwise distance arrays with `distopia`.
 
 ```python
 import numpy as np
+import distopia
 
 # make N x 3 and M x 3 coordinate arrays
 N = 10000
 M = 1000
-coordinates0 = np.random(3 * N, dtype=np.float32).reshape(N, 3)
-coordinates1 = np.random(3 * M, dtype=np.float32).reshape(M, 3)
+coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+coordinates1 = np.random.rand(3 * M).reshape(M, 3).astype(np.float32)
 result = distopia.calc_distance_array_no_box(coordinates0, coordinates1)
 result # -> will be NxM
 

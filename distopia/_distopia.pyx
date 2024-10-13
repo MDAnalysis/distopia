@@ -621,7 +621,6 @@ def calc_distance_array_no_box(
 
     dims[0] = <ssize_t > nvals0 * nvals1
 
-    _check_shapes(coords0, coords1)
 
     if results is None:
         if floating is float:
@@ -671,7 +670,6 @@ def calc_distance_array_ortho(
 
     dims[0] = <ssize_t > nvals0 * nvals1
 
-    _check_shapes(coords0, coords1)
 
     if results is None:
         if floating is float:
@@ -723,7 +721,7 @@ def calc_distance_array_triclinic(
 
     dims[0] = <ssize_t > nvals0 * nvals1
 
-    _check_shapes(coords0, coords1)
+
 
     if results is None:
         if floating is float:
