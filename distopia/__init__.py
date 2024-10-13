@@ -1,4 +1,3 @@
-from ._version import __version__
 
 from ._distopia import (
     calc_bonds_ortho,
@@ -34,5 +33,4 @@ __all__ = [
     'calc_self_distance_array_no_box',
     'calc_self_distance_array_ortho',
     'calc_self_distance_array_triclinic',
-    '__version__',
 ]

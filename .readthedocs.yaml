@@ -8,7 +8,10 @@ version: 2
 build:
   os: ubuntu-22.04
   tools:
-    python: "3.12"
+    python: "mambaforge-22.9"
+
+conda:
+  environment: devtools/conda_envs/distopia_ubuntu-latest.yaml
 
 mkdocs:
   configuration: docs/mkdocs.yml
@@ -16,4 +19,6 @@ mkdocs:
 # Optionally declare the Python requirements required to build your docs
 python:
   install:
+  - method: pip
+    path: .
   - requirements: docs/requirements.txt
