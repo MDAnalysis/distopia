@@ -39,5 +39,3 @@ method = "git"
 match = ["*"]
 default-tag = "0.0.0"
 
-[tool.versioningit.write]
-file = "distopia/_version.py"

@@ -5,7 +5,10 @@ theme:
 
 nav:
   - Home: index.md
+  - Building and Testing: building_and_testing.md
+  - Examples: examples.md
   - API: api.md
+
 
 markdown_extensions:
   - admonition

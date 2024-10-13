@@ -1,6 +1,6 @@
 # Distopia
 
-Distopia is a package to rapidly calculate distances, angles and dihedrals under periodic boundary conditions. Explicit SIMD vectorisation allows awesome speedups over autovectorised code (up to 10x). The distopia package consists of consists of the python layer (distopia) and a C++ library (libdistopia) that does the heavy lifting.
+Distopia is a package to rapidly calculate distances, angles and dihedrals under periodic boundary conditions in single and double precision. Explicit SIMD vectorisation allows awesome speedups over autovectorised code (up to 10x). The distopia package consists of consists of the python layer (distopia) and a C++ library (libdistopia) that does the heavy lifting.
 
 Distopia can be used out of the box by building the library using the instructions in Building and testing distopia.
 
