@@ -15,5 +15,5 @@ We currently support x86_64 and ARM with the Clang and GCC family of compilers. 
 
 ## Participating
 
-Ask questions on the mdnalysis-discussion mailing list and be part of the conversation. You can also join the MDAnalysis Discord Server to talk with other users and developers. In order to join our Discord server, use the following [invitation](https://discord.com/invite/fXTSfDJyxE). Please report bugs or enhancement requests through the Issue Tracker. Distopia is open source and welcomes your contributions. Fork the repository on GitHub and submit a pull request!
+Ask questions on the mdnalysis-discussion mailing list and be part of the conversation. You can also join the MDAnalysis Discord Server to talk with other users and developers. In order to join our Discord server, use the following [invitation](https://discord.com/invite/fXTSfDJyxE). Please report bugs or enhancement requests through the [Issue Tracker](https://github.com/MDAnalysis/distopia/issues). Distopia is open source and welcomes your contributions. Fork the repository on GitHub and submit a pull request!
 
