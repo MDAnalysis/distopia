@@ -1,0 +1,47 @@
+name: docs
+
+on:
+  push:
+    branches:
+    - main
+
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  pip-install-docs:
+    # A pure Python install, which relies purely on pyproject.toml contents
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # for now windows pip install builds seem to fail for some reason
+        os: [ubuntu-latest]
+        python-version: ['3.10']
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: check_env
+      run: |
+        which python
+        python -m pip list
+
+    - name: build
+      run: python -m pip install . -vvv
+
+    - name: make docs with mkdocs
+      run: |
+        python -m pip install docs/requirements.txt
+        cd docs
+        mkdocs build
+        mkdocs gh-deploy
+
