@@ -34,5 +34,4 @@ __all__ = [
     'calc_self_distance_array_no_box',
     'calc_self_distance_array_ortho',
     'calc_self_distance_array_triclinic',
-    '__version__',
 ]
