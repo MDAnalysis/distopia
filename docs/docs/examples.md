@@ -119,16 +119,17 @@ result = distopia.calc_distance_array_no_box(coordinates0, coordinates1, results
 
 ### Self-pairwise distances
 
-Self distance arrays are similar but use only a single coordinate producing an NxN array. 
+Self distance arrays are similar but use only a single coordinate producing an NxN array with treh
 
 ```python
 import numpy as np
+import distopia
 
-# make N x 3 and M x 3 coordinate arrays
+# make N x 3 coordinate array
 N = 10000
-coordinates0 = np.random(3 * N, dtype=np.float32).reshape(N, 3)
+coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 result = distopia.calc_self_distance_array_no_box(coordinates0)
-result # -> will be NxN
+result # -> will be NxN with result
 ```
 
 Please raise any questions or issues on the issue tracker. 

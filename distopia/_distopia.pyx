@@ -756,19 +756,21 @@ def calc_self_distance_array_no_box(
     coords0, float32 or float64 array
       must be same length and dtype
     results: float32 or float64 array (optional)
-        array to store results in, must be a single dimension of length NxN where N is the length of coords0
+        array to store results in, must be a single dimension of length N*(N-1)/2 where N is the length of coords0
     
     Returns
     -------
     distances : np.array
-      NxN array of distances
+      N*(N-1)/2 array of distances, a flattened upper triangle of the full NxN matrix with the diagonal removed
     """
     cdef floating[::1] results_view
     cdef size_t nvals0 = coords0.shape[0]
 
     cdef cnp.npy_intp[1] dims
 
-    dims[0] = <ssize_t > nvals0 * nvals0
+    cdef ssize_t final_size = nvals0 * (nvals0 -1) // 2 
+
+    dims[0] = <ssize_t > final_size
 
 
     if results is None:
@@ -778,7 +780,7 @@ def calc_self_distance_array_no_box(
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
 
     else:
-        _check_results(results, nvals0)
+        _check_results(results, final_size)
 
     results_view = results
 
@@ -786,7 +788,7 @@ def calc_self_distance_array_no_box(
                                nvals0,
                                &results_view[0])
 
-    return np.array(results).reshape(coords0.shape[0], coords0.shape[0])
+    return np.array(results)
 
 
 
@@ -806,20 +808,21 @@ def calc_self_distance_array_ortho(
     box : float32 or float64 array
         periodic boundary dimensions, in 3x3 format
     results: float32 or float64 array (optional)
-        array to store results in, must be a single dimension of length NxN where N is the length of coords0
+        array to store results in, must be a single dimension of length N*(N-1)/2 where N is the length of coords0
     
     Returns
     -------
     distances : np.array
-      NxN array of distances
+      N*(N-1)/2 array of distances, a flattened upper triangle of the full NxN matrix with the diagonal removed
     """
     cdef floating[::1] results_view
     cdef size_t nvals0 = coords0.shape[0]
 
     cdef cnp.npy_intp[1] dims
 
-    dims[0] = <ssize_t > nvals0 * nvals0
+    cdef ssize_t final_size = nvals0 * (nvals0 -1) // 2 
 
+    dims[0] = <ssize_t > final_size
 
     if results is None:
         if floating is float:
@@ -828,7 +831,7 @@ def calc_self_distance_array_ortho(
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
 
     else:
-        _check_results(results, nvals0)
+        _check_results(results, final_size)
 
     results_view = results
 
@@ -837,7 +840,7 @@ def calc_self_distance_array_ortho(
                                &box[0],
                                &results_view[0])
 
-    return np.array(results).reshape(coords0.shape[0], coords0.shape[0])
+    return np.array(results)
 
 
 @cython.boundscheck(False)
@@ -860,14 +863,16 @@ def calc_self_distance_array_triclinic(
     Returns
     -------
     distances : np.array
-      NxN array of distances
+      N*(N-1)/2 array of distances, a flattened upper triangle of the full NxN matrix with the diagonal removed
     """
     cdef floating[::1] results_view
     cdef size_t nvals0 = coords0.shape[0]
 
     cdef cnp.npy_intp[1] dims
 
-    dims[0] = <ssize_t > nvals0 * nvals0
+    cdef ssize_t final_size = nvals0 * (nvals0 -1) // 2 
+
+    dims[0] = <ssize_t > final_size
 
 
     if results is None:
@@ -877,7 +882,7 @@ def calc_self_distance_array_triclinic(
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
 
     else:
-        _check_results(results, nvals0)
+        _check_results(results, final_size)
 
     results_view = results
 
@@ -886,4 +891,4 @@ def calc_self_distance_array_triclinic(
                                &box[0][0],
                                &results_view[0])
 
-    return np.array(results).reshape(coords0.shape[0], coords0.shape[0])
+    return np.array(results)
