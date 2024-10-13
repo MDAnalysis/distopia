@@ -119,7 +119,7 @@ result = distopia.calc_distance_array_no_box(coordinates0, coordinates1, results
 
 ### Self-pairwise distances
 
-Self distance arrays are similar but use only a single coordinate producing an NxN array with treh
+Self distance arrays are similar but use only a single coordinate producing an N*(N-1)/2 array of distances, a flattened upper triangle of the full NxN matrix with the diagonal removed.
 
 ```python
 import numpy as np
@@ -131,5 +131,20 @@ coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 result = distopia.calc_self_distance_array_no_box(coordinates0)
 result # -> will be NxN with result
 ```
+
+To recover the full NxN matrix use the following
+
+```python
+distance_matrix = np.zeros((N,N))
+k = 0
+for i in range(N):
+    for j in range(i + 1, N):
+        distance_matrix[i, j] = result[k]
+        k += 1
+```
+
+
+
+## Questions
 
 Please raise any questions or issues on the issue tracker. 
