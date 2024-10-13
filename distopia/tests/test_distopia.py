@@ -191,50 +191,45 @@ class TestDihedrals:
 class TestDistanceArray:
 
 
-    def test_no_box_bad_result_or_input_shape(self):
+    def test_no_box_bad_result(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         with pytest.raises(ValueError, match="results must be"):
             distopia.calc_distance_array_no_box(c0, c1, results=np.empty(1, dtype=np.float32))
-        with pytest.raises(ValueError, match="All input arrays must"):
-            distopia.calc_distance_array_no_box(c0, c1[:-1])
 
-    def test_ortho_bad_result_or_input_shape(self):
+    def test_ortho_bad_result(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         box = np.array([10, 10, 10], dtype=np.float32)
         with pytest.raises(ValueError, match="results must be"):
             distopia.calc_distance_array_ortho(c0, c1, box, results=np.empty(1, dtype=np.float32))
-        with pytest.raises(ValueError, match="All input arrays must"):
-            distopia.calc_distance_array_ortho(c0, c1[:-1], box)
         
 
-    def test_triclinic_bad_result_or_input_shape(self):
+    def test_triclinic_bad_result(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         box = np.array([[10, 0, 0], [0, 10, 0], [0, 0, 10]], dtype=np.float32)
         with pytest.raises(ValueError, match="results must be"):
             distopia.calc_distance_array_triclinic(c0, c1, box, results=np.empty(1, dtype=np.float32))
-        with pytest.raises(ValueError, match="All input arrays must"):
-            distopia.calc_distance_array_triclinic(c0, c1[:-1], box)
+
 
 
 
 class TestSelfDistanceArray:
 
     def test_no_box_bad_result(self):
-        c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
+        c0 = np.zeros(12, dtype=np.float32).reshape(4, 3)
         with pytest.raises(ValueError, match="results must be"):
             distopia.calc_self_distance_array_no_box(c0, results=np.empty(1, dtype=np.float32))
 
     def test_ortho_bad_result(self):
-        c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
+        c0 = np.zeros(12, dtype=np.float32).reshape(4, 3)
         box = np.array([10, 10, 10], dtype=np.float32)
         with pytest.raises(ValueError, match="results must be"):
             distopia.calc_self_distance_array_ortho(c0, box, results=np.empty(1, dtype=np.float32))
     
     def test_triclinic_bad_result(self):
-        c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
+        c0 = np.zeros(12, dtype=np.float32).reshape(4, 3)
         box = np.array([[10, 0, 0], [0, 10, 0], [0, 0, 10]], dtype=np.float32)
         with pytest.raises(ValueError, match="results must be"):
             distopia.calc_self_distance_array_triclinic(c0, box, results=np.empty(1, dtype=np.float32))
