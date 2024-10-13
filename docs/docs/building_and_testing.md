@@ -32,3 +32,13 @@ Testing for the `libdistopia` C++ layer is done with `googletest` executables. F
 python setup.py build
 ctest --test-dir _skbuild/*/cmake-build/libdistopia
 ```
+
+## Benchmarking
+
+Automated benchmarks for `libdistopia` are available, written using `googlebench`. Similarly to testing first do a build of the library, and then execute the benchmarking binary.
+
+```bash
+python setup.py build
+cd _skbuild/<platform>/cmake-build/libdistopia
+./bench
+```
