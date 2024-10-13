@@ -147,4 +147,4 @@ for i in range(N):
 
 ## Questions
 
-Please raise any questions or issues on the issue tracker. 
+Please raise any questions or issues on the [issue tracker]((https://github.com/MDAnalysis/distopia/issues)). 
