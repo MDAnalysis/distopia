@@ -58,6 +58,14 @@ inline void EXPECT_SCALAR_NEAR(double result, double ref, float tol)
 }
 
 
+// isnear 
+
+bool isnear(float a, float b, float tol)
+{
+    return std::abs(a - b) < tol;
+}
+
+
 template <typename T>
 void pretty_print_matrix(T *matrix, int rows, int cols)
 {

@@ -15,8 +15,8 @@ typedef Types<float, double> ScalarTypes;
 
 // constants
 constexpr int BOXSIZE = 30;
-constexpr int NRESULTS = 10;
-constexpr int NINDICIES = 5;
+constexpr int NRESULTS = 250;
+constexpr int NINDICIES = 100;
 constexpr double abs_err = 1.0e-4;
 
 
@@ -503,6 +503,11 @@ TYPED_TEST(CoordinatesIdx, CalcBondsNoBoxIdx) {
 
     for (std::size_t i=0; i<this->nidx; i++) {
         EXPECT_SCALAR_NEAR(this->ref_results[i], this->results[i], abs_err);
+    }
+
+    // print 
+    for (std::size_t i=0; i<this->nidx; i++) {
+        std::cout << "i: " << i << " res: " << this->results[i] << " ressq: " <<  std::pow(this->results[i], 2) << " ref: " << this->ref_results[i] << " refsq: " << std::pow(this->ref_results[i], 2) << " near: " << isnear(this->results[i], this->ref_results[i], abs_err) << std::endl;
     }
 
 }

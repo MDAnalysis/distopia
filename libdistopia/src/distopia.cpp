@@ -54,7 +54,7 @@ namespace distopia {
                 acc = hn::MulAdd(dx, dx, acc);
                 acc = hn::MulAdd(dy, dy, acc);
                 acc = hn::MulAdd(dz, dz, acc);
-
+                hn::Print(d, "rsq", acc);
                 return hn::Sqrt(acc);
             }
         };
@@ -492,7 +492,7 @@ namespace distopia {
 
             y = y / vb_norm;
 
-            return   hn::Neg(hn::Atan2(d, y, x));
+            return hn::Neg(hn::Atan2(d, y, x));
         }
 
         template <typename T, typename B>

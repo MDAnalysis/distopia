@@ -607,7 +607,10 @@ static void _calc_bond_distance(ScalarToCoordinateT<T>* atom1, ScalarToCoordinat
     dx[1] = atom1[i][1] - atom2[i][1];
     dx[2] = atom1[i][2] - atom2[i][2];
     T rsq = (dx[0]*dx[0])+(dx[1]*dx[1])+(dx[2]*dx[2]);
+    std::cout << "rsq = " << rsq << std::endl;
+
     *(distances+i) = sqrt(rsq);
+    std::cout << "distances[" << i << "] = " << sqrt(rsq) << std::endl;
   }
 }
 
