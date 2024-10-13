@@ -184,7 +184,7 @@ def calc_bonds_no_box(floating[:, ::1] coords0,
 
     Returns
     -------
-    distances : float32 or float64 array
+    distances : np.array
       same length and dtype as coords0/coords1
     """
     cdef floating[::1] results_view
@@ -229,7 +229,7 @@ def  calc_bonds_ortho(floating[:, ::1] coords0,
 
     Returns
     -------
-    distances : np array
+    distances : np.array
       same length and dtype as coords0/coords1
     """
     cdef floating[::1] results_view
@@ -276,7 +276,7 @@ def  calc_bonds_triclinic(floating[:, ::1] coords0,
 
     Returns
     -------
-    distances : np array
+    distances : np.array
       same length and dtype as coords0/coords1
     """
     cdef floating[::1] results_view
@@ -417,7 +417,7 @@ def calc_angles_triclinic(
     
     Returns
     -------
-    angles : np array
+    angles : np.array
         same length and dtype as coords0/coords1/coords2
     """
     cdef floating[::1] results_view
@@ -464,7 +464,7 @@ def calc_dihedrals_no_box(
     
     Returns
     -------
-    dihedrals : np array
+    dihedrals : np.array
       same length and dtype as coords0/coords1/coords2/coords3
     """
     cdef floating[::1] results_view
@@ -514,7 +514,7 @@ def calc_dihedrals_ortho(
     
     Returns
     -------
-    dihedrals : np array
+    dihedrals : np.array
       same length and dtype as coords0/coords1/coords2/coords3
     """
     cdef floating[::1] results_view
@@ -564,7 +564,7 @@ def calc_dihedrals_triclinic(
     
     Returns
     -------
-    dihedrals : np array
+    dihedrals : np.array
       same length and dtype as coords0/coords1/coords2/coords3
     """
     cdef floating[::1] results_view
@@ -610,7 +610,7 @@ def calc_distance_array_no_box(
     
     Returns
     -------
-    distances : np array
+    distances : np.array
       MxN array of distances
     """
 
@@ -661,7 +661,7 @@ def calc_distance_array_ortho(
     
     Returns
     -------
-    distances : np array
+    distances : np.array
       MxN array of distances
     """
     cdef floating[::1] results_view
@@ -712,7 +712,7 @@ def calc_distance_array_triclinic(
     
     Returns
     -------
-    distances : np array
+    distances : np.array
       MxN array of distances
     """
     cdef floating[::1] results_view
@@ -751,21 +751,19 @@ def calc_distance_array_triclinic(
 def calc_self_distance_array_no_box(
      floating[:, ::1] coords0,
      floating[::1] results=None):
-    """Calculate pairwise distance matrix between coordinates under triclinic boundary conditions
+    """Calculate self-pairwise distance matrix between coordinates with no periodic boundary conditions
 
     Parameters
     ----------
-    coords0, coords1 : float32 or float64 array
+    coords0, float32 or float64 array
       must be same length and dtype
-    box : float32 or float64 array
-        periodic boundary dimensions, in 3x3 format
     results: float32 or float64 array (optional)
-        array to store results in, must be a single dimension of length MxN where M is the length of coords0 and N is the length of coords1
+        array to store results in, must be a single dimension of length NxN where N is the length of coords0
     
     Returns
     -------
-    distances : np array
-      MxN array of distances
+    distances : np.array
+      NxN array of distances
     """
     cdef floating[::1] results_view
     cdef size_t nvals0 = coords0.shape[0]
@@ -801,21 +799,21 @@ def calc_self_distance_array_ortho(
      floating[:, ::1] coords0,
      floating[::1] box,
      floating[::1] results=None):
-    """Calculate pairwise distance matrix between coordinates under triclinic boundary conditions
+    """Calculate self-pairwise distance matrix between coordinates under orthorhombic periodic boundary conditions
 
     Parameters
     ----------
-    coords0, coords1 : float32 or float64 array
+    coords0: float32 or float64 array
       must be same length and dtype
     box : float32 or float64 array
         periodic boundary dimensions, in 3x3 format
     results: float32 or float64 array (optional)
-        array to store results in, must be a single dimension of length MxN where M is the length of coords0 and N is the length of coords1
+        array to store results in, must be a single dimension of length NxN where N is the length of coords0
     
     Returns
     -------
-    distances : np array
-      MxN array of distances
+    distances : np.array
+      NxN array of distances
     """
     cdef floating[::1] results_view
     cdef size_t nvals0 = coords0.shape[0]
@@ -850,7 +848,7 @@ def calc_self_distance_array_triclinic(
      floating[:, ::1] coords0,
      floating[:, ::1] box,
      floating[::1] results=None):
-    """Calculate pairwise distance matrix between coordinates under triclinic boundary conditions
+    """Calculate self-pairwise distance matrix between coordinates under triclinic boundary conditions
 
     Parameters
     ----------
@@ -859,12 +857,12 @@ def calc_self_distance_array_triclinic(
     box : float32 or float64 array
         periodic boundary dimensions, in 3x3 format
     results: float32 or float64 array (optional)
-        array to store results in, must be a single dimension of length MxN where M is the length of coords0 and N is the length of coords1
+        array to store results in, must be a single dimension of length NxN where M is the length of coords0
     
     Returns
     -------
-    distances : np array
-      MxN array of distances
+    distances : np.array
+      NxN array of distances
     """
     cdef floating[::1] results_view
     cdef size_t nvals0 = coords0.shape[0]

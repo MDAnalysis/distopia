@@ -1,4 +1,13 @@
-site_name: My Docs
+site_name: Distopia
 site_url: https://distopia.readthedocs.io/en/latest/
 theme:
   name: material
+
+nav:
+  - Home: index.md
+  - API: api.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - mkautodoc
