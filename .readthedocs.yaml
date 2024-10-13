@@ -11,7 +11,7 @@ build:
     python: "mambaforge-22.9"
 
 conda:
-  environment: devtools/conda-envs/asapdiscovery-ubuntu-latest.yml
+  environment: devtools/conda_envs/asapdiscovery-ubuntu-latest.yml
 
 mkdocs:
   configuration: docs/mkdocs.yml
