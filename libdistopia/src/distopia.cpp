@@ -488,11 +488,17 @@ namespace distopia {
             y = hn::MulAdd(xp_y, rbc_y, y);
             y = hn::MulAdd(xp_z, rbc_z, y);
             
-            
 
             y = y / vb_norm;
 
-            return   hn::Neg(hn::Atan2(d, y, x));
+            // find  where x and y are both zero, and set result to NAN
+            auto mask = hn::And(hn::Eq(x, hn::Zero(d)), hn::Eq(y, hn::Zero(d)));
+
+            auto res =  hn::Neg(hn::Atan2(d, y, x));
+            // apply mask to set NAN where x and y are both zero
+            auto fin = hn::IfThenElse(mask, hn::Set(d, NAN), res);
+
+            return fin;
         }
 
         template <typename T, typename B>
@@ -1607,74 +1613,132 @@ namespace distopia {
     }
     HWY_DLLEXPORT template <> void CalcBondsNoBoxIdx(const float *coords, const int *a_idx, const int *b_idx,
                                                      int n, float *out) {
+
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcBondsNoBoxIdxSingle(coords, a_idx, b_idx, n, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcBondsNoBoxIdxSingle)(coords, a_idx, b_idx, n, out);
     }
     HWY_DLLEXPORT template <> void CalcBondsNoBoxIdx(const double *coords, const int *a_idx, const int *b_idx,
                                                      int n, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcBondsNoBoxIdxDouble(coords, a_idx, b_idx, n, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcBondsNoBoxIdxDouble)(coords, a_idx, b_idx, n, out);
     }
     HWY_DLLEXPORT template <> void CalcBondsOrthoIdx(const float *coords, const int *a_idx, const int *b_idx,
                                                      int n, const float *box, float *out) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcBondsOrthoIdxSingle(coords, a_idx, b_idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcBondsOrthoIdxSingle)(coords, a_idx, b_idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcBondsOrthoIdx(const double *coords, const int *a_idx, const int *b_idx,
                                                      int n, const double *box, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcBondsOrthoIdxDouble(coords, a_idx, b_idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcBondsOrthoIdxDouble)(coords, a_idx, b_idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcBondsTriclinicIdx(const float *coords, const int *a_idx, const int *b_idx,
                                                          int n, const float *box, float *out) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcBondsTriclinicIdxSingle(coords, a_idx, b_idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcBondsTriclinicIdxSingle)(coords, a_idx, b_idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcBondsTriclinicIdx(const double *coords, const int *a_idx, const int *b_idx,
                                                          int n, const double *box, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcBondsTriclinicIdxDouble(coords, a_idx, b_idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcBondsTriclinicIdxDouble)(coords, a_idx, b_idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcAnglesNoBoxIdx(const float *coords, const int *a_idx, const int *b_idx, const int *c_idx,
                                                       int n, float *out) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcAnglesNoBoxIdxSingle(coords, a_idx, b_idx, c_idx, n, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcAnglesNoBoxIdxSingle)(coords, a_idx, b_idx, c_idx, n, out);
     }
     HWY_DLLEXPORT template <> void CalcAnglesNoBoxIdx(const double *coords, const int *a_idx, const int *b_idx, const int *c_idx,
                                                       int n, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcAnglesNoBoxIdxDouble(coords, a_idx, b_idx, c_idx, n, out);
+        }
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcAnglesNoBoxIdxDouble(coords, a_idx, b_idx, c_idx, n, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcAnglesNoBoxIdxDouble)(coords, a_idx, b_idx, c_idx, n, out);
     }
     HWY_DLLEXPORT template <> void CalcAnglesOrthoIdx(const float *coords, const int *a_idx, const int *b_idx, const int *c_idx,
                                                       int n, const float *box, float *out) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcAnglesOrthoIdxSingle(coords, a_idx, b_idx, c_idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcAnglesOrthoIdxSingle)(coords, a_idx, b_idx, c_idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcAnglesOrthoIdx(const double *coords, const int *a_idx, const int *b_idx, const int *c_idx,
                                                       int n, const double *box, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcAnglesOrthoIdxDouble(coords, a_idx, b_idx, c_idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcAnglesOrthoIdxDouble)(coords, a_idx, b_idx, c_idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcAnglesTriclinicIdx(const float *coords, const int *a_idx, const int *b_idx, const int *c_idx,
                                                           int n, const float *box, float *out) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcAnglesTriclinicIdxSingle(coords, a_idx, b_idx, c_idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcAnglesTriclinicIdxSingle)(coords, a_idx, b_idx, c_idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcAnglesTriclinicIdx(const double *coords, const int *a_idx, const int *b_idx, const int *c_idx,
                                                           int n, const double *box, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcAnglesTriclinicIdxDouble(coords, a_idx, b_idx, c_idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcAnglesTriclinicIdxDouble)(coords, a_idx, b_idx, c_idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDihedralsNoBoxIdx(const float *coords, const int *a_idx, const int *b_idx, const int *c_idx, const int *d_idx,
                                                          int n, float *out) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcDihedralsNoBoxIdxSingle(coords, a_idx, b_idx, c_idx, d_idx, n, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDihedralsNoBoxIdxSingle)(coords, a_idx, b_idx, c_idx, d_idx, n, out);
     }
     HWY_DLLEXPORT template <> void CalcDihedralsNoBoxIdx(const double *coords, const int *a_idx, const int *b_idx, const int *c_idx, const int *d_idx,
                                                          int n, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcDihedralsNoBoxIdxDouble(coords, a_idx, b_idx, c_idx, d_idx, n, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDihedralsNoBoxIdxDouble)(coords, a_idx, b_idx, c_idx, d_idx, n, out);
     }
     HWY_DLLEXPORT template <> void CalcDihedralsOrthoIdx(const float *coords, const int *a_idx, const int *b_idx, const int *c_idx, const int *d_idx,
                                                          int n, const float *box, float *out) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcDihedralsOrthoIdxSingle(coords, a_idx, b_idx, c_idx, d_idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDihedralsOrthoIdxSingle)(coords, a_idx, b_idx, c_idx, d_idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDihedralsOrthoIdx(const double *coords, const int *a_idx, const int *b_idx, const int *c_idx, const int *d_idx,
                                                          int n, const double *box, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcDihedralsOrthoIdxDouble(coords, a_idx, b_idx, c_idx, d_idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDihedralsOrthoIdxDouble)(coords, a_idx, b_idx, c_idx, d_idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDihedralsTriclinicIdx(const float *coords, const int *a_idx, const int *b_idx, const int *c_idx, const int *d_idx,
                                                              int n, const float *box, float *out) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcDihedralsTriclinicIdxSingle(coords, a_idx, b_idx, c_idx, d_idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDihedralsTriclinicIdxSingle)(coords, a_idx, b_idx, c_idx, d_idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDihedralsTriclinicIdx(const double *coords, const int *a_idx, const int *b_idx, const int *c_idx, const int *d_idx,
                                                              int n, const double *box, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcDihedralsTriclinicIdxDouble(coords, a_idx, b_idx, c_idx, d_idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcDihedralsTriclinicIdxDouble)(coords, a_idx, b_idx, c_idx, d_idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayNoBoxIdx(const float *coords, const int *a_idx, const int *b_idx, int na, int nb, float *out) {
@@ -1684,7 +1748,7 @@ namespace distopia {
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxIdxSingle)(coords, a_idx, b_idx, na, nb, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayNoBoxIdx(const double *coords, const int *a_idx, const int *b_idx, int na, int nb, double *out) {
-        if (nb < GetNFloatLanes()) {
+        if (nb < GetNDoubleLanes()) {
             return distopia::N_SCALAR::CalcDistanceArrayNoBoxIdxDouble(coords, a_idx, b_idx, na, nb, out);
         }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayNoBoxIdxDouble)(coords, a_idx, b_idx, na, nb, out);
@@ -1696,7 +1760,7 @@ namespace distopia {
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayOrthoIdxSingle)(coords, a_idx, b_idx, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayOrthoIdx(const double *coords, const int *a_idx, const int *b_idx, int na, int nb, const double *box, double *out) {
-        if (nb < GetNFloatLanes()) {
+        if (nb < GetNDoubleLanes()) {
             return distopia::N_SCALAR::CalcDistanceArrayOrthoIdxDouble(coords, a_idx, b_idx, na, nb, box, out);
         }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayOrthoIdxDouble)(coords, a_idx, b_idx, na, nb, box, out);
@@ -1708,27 +1772,45 @@ namespace distopia {
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicIdxSingle)(coords, a_idx, b_idx, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcDistanceArrayTriclinicIdx(const double *coords, const int *a_idx, const int *b_idx, int na, int nb, const double *box, double *out) {
-        if (nb < GetNFloatLanes()) {
+        if (nb < GetNDoubleLanes()) {
             return distopia::N_SCALAR::CalcDistanceArrayTriclinicIdxDouble(coords, a_idx, b_idx, na, nb, box, out);
         }
         return HWY_DYNAMIC_DISPATCH(CalcDistanceArrayTriclinicIdxDouble)(coords, a_idx, b_idx, na, nb, box, out);
     }
     HWY_DLLEXPORT template <> void CalcSelfDistanceArrayNoBoxIdx(const float *coords, const int *idx, int n, float *out) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcSelfDistanceArrayNoBoxIdxSingle(coords, idx, n, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayNoBoxIdxSingle)(coords, idx, n, out);
     }
     HWY_DLLEXPORT template <> void CalcSelfDistanceArrayNoBoxIdx(const double *coords, const int *idx, int n, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcSelfDistanceArrayNoBoxIdxDouble(coords, idx, n, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayNoBoxIdxDouble)(coords, idx, n, out);
     }
     HWY_DLLEXPORT template <> void CalcSelfDistanceArrayOrthoIdx(const float *coords, const int *idx, int n, const float *box, float *out) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcSelfDistanceArrayOrthoIdxSingle(coords, idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayOrthoIdxSingle)(coords, idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcSelfDistanceArrayOrthoIdx(const double *coords, const int *idx, int n, const double *box, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcSelfDistanceArrayOrthoIdxDouble(coords, idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayOrthoIdxDouble)(coords, idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcSelfDistanceArrayTriclinicIdx(const float *coords, const int *idx, int n, const float *box, float *out) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::CalcSelfDistanceArrayTriclinicIdxSingle(coords, idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayTriclinicIdxSingle)(coords, idx, n, box, out);
     }
     HWY_DLLEXPORT template <> void CalcSelfDistanceArrayTriclinicIdx(const double *coords, const int *idx, int n, const double *box, double *out) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::CalcSelfDistanceArrayTriclinicIdxDouble(coords, idx, n, box, out);
+        }
         return HWY_DYNAMIC_DISPATCH(CalcSelfDistanceArrayTriclinicIdxDouble)(coords, idx, n, box, out);
     }
 
