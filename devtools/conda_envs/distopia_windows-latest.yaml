@@ -12,3 +12,4 @@ dependencies:
 - pytest
 - scikit-build
 - m2w64-gcc
+- versioningit
