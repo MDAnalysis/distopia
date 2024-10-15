@@ -14,3 +14,4 @@ dependencies:
 - clang <=15.0
 - clangxx <=15.0
 - libxcrypt
+- versioningit
