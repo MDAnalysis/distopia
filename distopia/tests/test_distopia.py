@@ -195,14 +195,14 @@ class TestDistanceArray:
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         with pytest.raises(ValueError, match="results must be"):
-            distopia.calc_distance_array_no_box(c0, c1, results=np.empty(1, dtype=np.float32))
+            distopia.calc_distance_array_no_box(c0, c1, results=np.empty((1,1), dtype=np.float32))
 
     def test_ortho_bad_result(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         box = np.array([10, 10, 10], dtype=np.float32)
         with pytest.raises(ValueError, match="results must be"):
-            distopia.calc_distance_array_ortho(c0, c1, box, results=np.empty(1, dtype=np.float32))
+            distopia.calc_distance_array_ortho(c0, c1, box, results=np.empty((1,1), dtype=np.float32))
         
 
     def test_triclinic_bad_result(self):
@@ -210,9 +210,20 @@ class TestDistanceArray:
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         box = np.array([[10, 0, 0], [0, 10, 0], [0, 0, 10]], dtype=np.float32)
         with pytest.raises(ValueError, match="results must be"):
-            distopia.calc_distance_array_triclinic(c0, c1, box, results=np.empty(1, dtype=np.float32))
+            distopia.calc_distance_array_triclinic(c0, c1, box, results=np.empty((1,1), dtype=np.float32))
 
 
+    def test_distance_array_arange(self):
+        c0 = np.ones(9, dtype=np.float32).reshape(3, 3)
+        c1 = np.ones(9, dtype=np.float32).reshape(3, 3)
+        results = distopia.calc_distance_array_no_box(c0, c1)
+        assert_almost_equal(results, np.zeros((3,3), dtype=np.float32))
+
+    def test_distance_array_results(self):
+        c0 = np.ones(9, dtype=np.float32).reshape(3, 3)
+        c1 = np.ones(9, dtype=np.float32).reshape(3, 3)
+        results = distopia.calc_distance_array_no_box(c0, c1, results=np.empty((3,3), dtype=np.float32))
+        assert_almost_equal(results, np.zeros((3,3), dtype=np.float32))
 
 
 class TestSelfDistanceArray:
@@ -234,6 +245,17 @@ class TestSelfDistanceArray:
         with pytest.raises(ValueError, match="results must be"):
             distopia.calc_self_distance_array_triclinic(c0, box, results=np.empty(1, dtype=np.float32))
 
+    def test_self_distance_ones(self):
+        c0 = np.ones(9, dtype=np.float32).reshape(3, 3)
+        results = distopia.calc_self_distance_array_no_box(c0)
+        assert_almost_equal(results, np.zeros(3, dtype=np.float32))
+
+
+    def test_self_distance_ones_result(self):
+        c0 = np.ones(9, dtype=np.float32).reshape(3, 3)
+        # n(n-1) //2
+        results = distopia.calc_self_distance_array_no_box(c0, results=np.empty(3, dtype=np.float32))
+        assert_almost_equal(results, np.zeros(3, dtype=np.float32))
 
 class TestMDA:
     """
