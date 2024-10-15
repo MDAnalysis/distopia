@@ -498,6 +498,11 @@ namespace distopia {
             // apply mask to set NAN where x and y are both zero
             auto fin = hn::IfThenElse(mask, hn::Set(d, NAN), res);
 
+
+            // check where it is exactly -np.pi and set to np.pi for compliance with mda code
+            // auto mask2 = hn::Eq(fin, hn::Set(d, -M_PI));
+            // fin = hn::IfThenElse(mask2, hn::Set(d, M_PI), fin);
+
             return fin;
         }
 
