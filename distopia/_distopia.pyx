@@ -612,19 +612,20 @@ def calc_distance_array_no_box(
       MxN array of distances
     """
 
-    cdef floating[::1] results_view
+    cdef floating[:, ::1] results_view
     cdef size_t nvals0 = coords0.shape[0]
     cdef size_t nvals1 = coords1.shape[0]
-    cdef cnp.npy_intp[1] dims
+    cdef cnp.npy_intp[2] dims
 
-    dims[0] = <ssize_t > nvals0 * nvals1
+    dims[0] = <ssize_t > nvals0 
+    dims[1] = <ssize_t> nvals1
 
 
     if results is None:
         if floating is float:
-            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+            results = cnp.PyArray_EMPTY(2, dims, cnp.NPY_FLOAT32, 0)
         else:
-            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+            results = cnp.PyArray_EMPTY(2, dims, cnp.NPY_FLOAT64, 0)
 
     else:
         _check_results_darray(results, nvals0, nvals1)
@@ -634,7 +635,7 @@ def calc_distance_array_no_box(
 
     CalcDistanceArrayNoBox(&coords0[0][0], &coords1[0][0],
                            nvals0, nvals1,
-                           &results_view[0])
+                           &results_view[0][0])
 
     return np.array(results).reshape(coords0.shape[0], coords1.shape[0])
 
@@ -661,19 +662,19 @@ def calc_distance_array_ortho(
     distances : np.array
       MxN array of distances
     """
-    cdef floating[::1] results_view
+    cdef floating[:, ::1] results_view
     cdef size_t nvals0 = coords0.shape[0]
     cdef size_t nvals1 = coords1.shape[0]
-    cdef cnp.npy_intp[1] dims
+    cdef cnp.npy_intp[2] dims
 
-    dims[0] = <ssize_t > nvals0 * nvals1
-
+    dims[0] = <ssize_t > nvals0 
+    dims[1] = <ssize_t> nvals1
 
     if results is None:
         if floating is float:
-            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+            results = cnp.PyArray_EMPTY(2, dims, cnp.NPY_FLOAT32, 0)
         else:
-            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+            results = cnp.PyArray_EMPTY(2, dims, cnp.NPY_FLOAT64, 0)
 
     else:
         _check_results_darray(results, nvals0, nvals1)
@@ -683,7 +684,7 @@ def calc_distance_array_ortho(
     CalcDistanceArrayOrtho(&coords0[0][0], &coords1[0][0],
                            nvals0, nvals1,
                            &box[0],
-                           &results_view[0])
+                           &results_view[0][0])
 
     return np.array(results).reshape(coords0.shape[0], coords1.shape[0])
 
@@ -711,21 +712,21 @@ def calc_distance_array_triclinic(
     distances : np.array
       MxN array of distances
     """
-    cdef floating[::1] results_view
+    cdef floating[:, ::1] results_view
     cdef size_t nvals0 = coords0.shape[0]
     cdef size_t nvals1 = coords1.shape[0]
+    cdef cnp.npy_intp[2] dims
 
-    cdef cnp.npy_intp[1] dims
-
-    dims[0] = <ssize_t > nvals0 * nvals1
+    dims[0] = <ssize_t > nvals0 
+    dims[1] = <ssize_t> nvals1
 
 
 
     if results is None:
         if floating is float:
-            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+            results = cnp.PyArray_EMPTY(2, dims, cnp.NPY_FLOAT32, 0)
         else:
-            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+            results = cnp.PyArray_EMPTY(2, dims, cnp.NPY_FLOAT64, 0)
 
     else:
         _check_results_darray(results, nvals0, nvals1)
@@ -735,7 +736,7 @@ def calc_distance_array_triclinic(
     CalcDistanceArrayTriclinic(&coords0[0][0], &coords1[0][0],
                                nvals0, nvals1,
                                &box[0][0],
-                               &results_view[0])
+                               &results_view[0][0])
 
     return np.array(results).reshape(coords0.shape[0], coords1.shape[0])
 
