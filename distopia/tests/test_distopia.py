@@ -343,7 +343,7 @@ class TestMDA:
         assert_equal(len(dihedrals), 4, err_msg="calc_dihedrals results have wrong length")
         assert np.isnan(dihedrals[0]), "Zero length dihedral failed"
         assert np.isnan(dihedrals[1]), "Straight line dihedral failed"
-        assert_almost_equal(dihedrals[2], np.pi, self.prec, err_msg="180 degree dihedral failed")
+        assert_almost_equal(dihedrals[2], -np.pi, self.prec, err_msg="180 degree dihedral failed") # np.pi in MDAnalysis
         assert_almost_equal(dihedrals[3], -0.50714064, self.prec,
                             err_msg="arbitrary dihedral angle failed")
         
