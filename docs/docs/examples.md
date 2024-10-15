@@ -113,7 +113,7 @@ result = distopia.calc_distance_array_no_box(coordinates0, coordinates1)
 result # -> will be NxM
 
 # passing in a result buffer is also possible for distance arrays 
-buffer = np.empty(N*M, dtype=np.float32)
+buffer = np.empty((N,M), dtype=np.float32)
 result = distopia.calc_distance_array_no_box(coordinates0, coordinates1, results=buffer)
 ```
 

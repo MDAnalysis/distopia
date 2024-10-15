@@ -150,10 +150,10 @@ def _check_results(results, nvals):
 
 def  _check_results_darray(results, nvals0 , nvals1 ):
     """Check that results is the right shape"""
-    if results.ndim > 1:
-        raise ValueError("results must be a 1D array")
-    if results.shape[0] != nvals0 * nvals1:
-        raise ValueError(f"results must be a flattened 2D array of length MxN ({ nvals0, nvals1} -> {nvals0 *nvals1}), you provided {results.shape[0]}")
+    if results.ndim > 2:
+        raise ValueError("results must be a 2D array")
+    if results.shape[0] != nvals0 or results.shape[1] != nvals1:
+        raise ValueError(f"results must be a 2D array of length MxN ({ nvals0, nvals1}), you provided {results.shape}")
 
 
 def  _check_shapes(*args):
@@ -162,8 +162,6 @@ def  _check_shapes(*args):
     if not all(thing.shape == s1 for thing in args[1:]):
         raise ValueError("All input arrays must be the same length, you provided "
                          f"{', '.join(str(t.shape) for t in args)}")
-    
-    
     
     
 
@@ -598,7 +596,7 @@ def calc_dihedrals_triclinic(
 def calc_distance_array_no_box(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
-     floating[::1] results=None):
+     floating[:, ::1] results=None):
     """Calculate pairwise distance matrix between coordinates with no periodic boundary conditions
 
     Parameters
@@ -606,7 +604,7 @@ def calc_distance_array_no_box(
     coords0, coords1 : float32 or float64 array
       must be same length and dtype
     results: float32 or float64 array (optional)
-        array to store results in, must be a single dimension of length MxN where M is the length of coords0 and N is the length of coords1
+        array to store results in, must be of length MxN where M is the length of coords0 and N is the length of coords1
     
     Returns
     -------
@@ -614,19 +612,20 @@ def calc_distance_array_no_box(
       MxN array of distances
     """
 
-    cdef floating[::1] results_view
+    cdef floating[:, ::1] results_view
     cdef size_t nvals0 = coords0.shape[0]
     cdef size_t nvals1 = coords1.shape[0]
-    cdef cnp.npy_intp[1] dims
+    cdef cnp.npy_intp[2] dims
 
-    dims[0] = <ssize_t > nvals0 * nvals1
+    dims[0] = <ssize_t > nvals0 
+    dims[1] = <ssize_t> nvals1
 
 
     if results is None:
         if floating is float:
-            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+            results = cnp.PyArray_EMPTY(2, dims, cnp.NPY_FLOAT32, 0)
         else:
-            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+            results = cnp.PyArray_EMPTY(2, dims, cnp.NPY_FLOAT64, 0)
 
     else:
         _check_results_darray(results, nvals0, nvals1)
@@ -636,7 +635,7 @@ def calc_distance_array_no_box(
 
     CalcDistanceArrayNoBox(&coords0[0][0], &coords1[0][0],
                            nvals0, nvals1,
-                           &results_view[0])
+                           &results_view[0][0])
 
     return np.array(results).reshape(coords0.shape[0], coords1.shape[0])
 
@@ -646,7 +645,7 @@ def calc_distance_array_ortho(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[::1] box,
-     floating[::1] results=None):
+     floating[:, ::1] results=None):
     """Calculate pairwise distance matrix between coordinates under orthorhombic boundary conditions
 
     Parameters
@@ -656,26 +655,26 @@ def calc_distance_array_ortho(
     box : float32 or float64 array
         orthorhombic periodic boundary dimensions in [L, L, L] format
     results: float32 or float64 array (optional)
-        array to store results in, must be a single dimension of length MxN where M is the length of coords0 and N is the length of coords1
+        array to store results in, must be  of length MxN where M is the length of coords0 and N is the length of coords1
     
     Returns
     -------
     distances : np.array
       MxN array of distances
     """
-    cdef floating[::1] results_view
+    cdef floating[:, ::1] results_view
     cdef size_t nvals0 = coords0.shape[0]
     cdef size_t nvals1 = coords1.shape[0]
-    cdef cnp.npy_intp[1] dims
+    cdef cnp.npy_intp[2] dims
 
-    dims[0] = <ssize_t > nvals0 * nvals1
-
+    dims[0] = <ssize_t > nvals0 
+    dims[1] = <ssize_t> nvals1
 
     if results is None:
         if floating is float:
-            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+            results = cnp.PyArray_EMPTY(2, dims, cnp.NPY_FLOAT32, 0)
         else:
-            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+            results = cnp.PyArray_EMPTY(2, dims, cnp.NPY_FLOAT64, 0)
 
     else:
         _check_results_darray(results, nvals0, nvals1)
@@ -685,7 +684,7 @@ def calc_distance_array_ortho(
     CalcDistanceArrayOrtho(&coords0[0][0], &coords1[0][0],
                            nvals0, nvals1,
                            &box[0],
-                           &results_view[0])
+                           &results_view[0][0])
 
     return np.array(results).reshape(coords0.shape[0], coords1.shape[0])
 
@@ -696,7 +695,7 @@ def calc_distance_array_triclinic(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[:, ::1] box,
-     floating[::1] results=None):
+     floating[:, ::1] results=None):
     """Calculate pairwise distance matrix between coordinates under triclinic boundary conditions
 
     Parameters
@@ -706,28 +705,28 @@ def calc_distance_array_triclinic(
     box : float32 or float64 array
         periodic boundary dimensions, in 3x3 format
     results: float32 or float64 array (optional)
-        array to store results in, must be a single dimension of length MxN where M is the length of coords0 and N is the length of coords1
+        array to store results in, must be of length MxN where M is the length of coords0 and N is the length of coords1
     
     Returns
     -------
     distances : np.array
       MxN array of distances
     """
-    cdef floating[::1] results_view
+    cdef floating[:, ::1] results_view
     cdef size_t nvals0 = coords0.shape[0]
     cdef size_t nvals1 = coords1.shape[0]
+    cdef cnp.npy_intp[2] dims
 
-    cdef cnp.npy_intp[1] dims
-
-    dims[0] = <ssize_t > nvals0 * nvals1
+    dims[0] = <ssize_t > nvals0 
+    dims[1] = <ssize_t> nvals1
 
 
 
     if results is None:
         if floating is float:
-            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+            results = cnp.PyArray_EMPTY(2, dims, cnp.NPY_FLOAT32, 0)
         else:
-            results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+            results = cnp.PyArray_EMPTY(2, dims, cnp.NPY_FLOAT64, 0)
 
     else:
         _check_results_darray(results, nvals0, nvals1)
@@ -737,7 +736,7 @@ def calc_distance_array_triclinic(
     CalcDistanceArrayTriclinic(&coords0[0][0], &coords1[0][0],
                                nvals0, nvals1,
                                &box[0][0],
-                               &results_view[0])
+                               &results_view[0][0])
 
     return np.array(results).reshape(coords0.shape[0], coords1.shape[0])
 
