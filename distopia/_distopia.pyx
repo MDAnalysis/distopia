@@ -150,10 +150,10 @@ def _check_results(results, nvals):
 
 def  _check_results_darray(results, nvals0 , nvals1 ):
     """Check that results is the right shape"""
-    if results.ndim > 1:
-        raise ValueError("results must be a 1D array")
-    if results.shape[0] != nvals0 * nvals1:
-        raise ValueError(f"results must be a flattened 2D array of length MxN ({ nvals0, nvals1} -> {nvals0 *nvals1}), you provided {results.shape[0]}")
+    if results.ndim > 2:
+        raise ValueError("results must be a 2D array")
+    if results.shape[0] != nvals0 or results.shape[1] != nvals1:
+        raise ValueError(f"results must be a 2D array of length MxN ({ nvals0, nvals1}), you provided {results.shape}")
 
 
 def  _check_shapes(*args):
@@ -162,8 +162,6 @@ def  _check_shapes(*args):
     if not all(thing.shape == s1 for thing in args[1:]):
         raise ValueError("All input arrays must be the same length, you provided "
                          f"{', '.join(str(t.shape) for t in args)}")
-    
-    
     
     
 
@@ -598,7 +596,7 @@ def calc_dihedrals_triclinic(
 def calc_distance_array_no_box(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
-     floating[::1] results=None):
+     floating[:, ::1] results=None):
     """Calculate pairwise distance matrix between coordinates with no periodic boundary conditions
 
     Parameters
@@ -606,7 +604,7 @@ def calc_distance_array_no_box(
     coords0, coords1 : float32 or float64 array
       must be same length and dtype
     results: float32 or float64 array (optional)
-        array to store results in, must be a single dimension of length MxN where M is the length of coords0 and N is the length of coords1
+        array to store results in, must be of length MxN where M is the length of coords0 and N is the length of coords1
     
     Returns
     -------
@@ -646,7 +644,7 @@ def calc_distance_array_ortho(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[::1] box,
-     floating[::1] results=None):
+     floating[:, ::1] results=None):
     """Calculate pairwise distance matrix between coordinates under orthorhombic boundary conditions
 
     Parameters
@@ -656,7 +654,7 @@ def calc_distance_array_ortho(
     box : float32 or float64 array
         orthorhombic periodic boundary dimensions in [L, L, L] format
     results: float32 or float64 array (optional)
-        array to store results in, must be a single dimension of length MxN where M is the length of coords0 and N is the length of coords1
+        array to store results in, must be  of length MxN where M is the length of coords0 and N is the length of coords1
     
     Returns
     -------
@@ -696,7 +694,7 @@ def calc_distance_array_triclinic(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[:, ::1] box,
-     floating[::1] results=None):
+     floating[:, ::1] results=None):
     """Calculate pairwise distance matrix between coordinates under triclinic boundary conditions
 
     Parameters
@@ -706,7 +704,7 @@ def calc_distance_array_triclinic(
     box : float32 or float64 array
         periodic boundary dimensions, in 3x3 format
     results: float32 or float64 array (optional)
-        array to store results in, must be a single dimension of length MxN where M is the length of coords0 and N is the length of coords1
+        array to store results in, must be of length MxN where M is the length of coords0 and N is the length of coords1
     
     Returns
     -------
