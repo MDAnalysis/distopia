@@ -98,3 +98,35 @@ jobs:
       # run python API tests
       run: pytest distopia/tests
 
+
+  external_hwy_no_test:
+    # A conda install, which relies purely on pyproject.toml contents
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ['3.10', '3.11', '3.12']
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - uses: mamba-org/setup-micromamba@v1
+      with:
+        environment-file: devtools/conda_envs/distopia_${{ matrix.os }}.yaml
+        environment-name: distopia
+        create-args: >-
+          python==${{ matrix.python-version }}
+
+    - name: install highwayhash
+      run: micromamba install -c conda-forge libwhy
+    
+    - name: check_env
+      run: |
+        which python
+        python -m pip list
+
+    - name: build
+      run: python setup.py build -- -DDISTOPIA_BUILD_TESTS=OFF -DDISTOPIA_USE_EXTERNAL_HWY=ON
