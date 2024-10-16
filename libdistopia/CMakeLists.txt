@@ -7,7 +7,7 @@ set(HWY_ENABLE_TESTS OFF CACHE BOOL "Enable HWY tests" FORCE)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 
-add_library(libdistopia)
+add_library(libdistopia SHARED)
 target_sources(libdistopia PRIVATE "src/distopia.cpp")
 # needed for M_PI symbol on Win
 target_compile_definitions(libdistopia PUBLIC -D_USE_MATH_DEFINES)
