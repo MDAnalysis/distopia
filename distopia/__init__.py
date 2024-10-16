@@ -1,5 +1,5 @@
 
-from ._distopia import (
+from .pydistopia import (
     calc_bonds_ortho,
     calc_bonds_no_box,
     calc_bonds_triclinic,
