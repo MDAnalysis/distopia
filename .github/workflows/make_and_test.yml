@@ -120,8 +120,8 @@ jobs:
         create-args: >-
           python==${{ matrix.python-version }}
 
-    - name: install highwayhash
-      run: micromamba install -c conda-forge libwhy
+    - name: install libhwy
+      run: micromamba install -c conda-forge libhwy
     
     - name: check_env
       run: |
