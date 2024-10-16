@@ -18,27 +18,27 @@ include_directories(${PROJECT_SOURCE_DIR}/libdistopia/include)
 option(DISTOPIA_USE_EXTERNAL_HWY "Use external HWY" OFF)
 option(DISTOPIA_BUILD_TESTS "Build tests" ON)
 
-# use, i.e. don't skip the full RPATH for the build tree
-set(CMAKE_SKIP_BUILD_RPATH FALSE)
+# # use, i.e. don't skip the full RPATH for the build tree
+# set(CMAKE_SKIP_BUILD_RPATH FALSE)
 
-# use RPATH on MACOS
-set(CMAKE_MACOSX_RPATH ON)
+# # use RPATH on MACOS
+# set(CMAKE_MACOSX_RPATH ON)
 
-# when building, don't use the install RPATH already
-# (but later on when installing)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+# # when building, don't use the install RPATH already
+# # (but later on when installing)
+# set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/distopia")
+# set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/distopia")
 
-# add the automatically determined parts of the RPATH
-# which point to directories outside the build tree to the install RPATH
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+# # add the automatically determined parts of the RPATH
+# # which point to directories outside the build tree to the install RPATH
+# set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# the RPATH to be used when installing, but only if it's not a system directory
-list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/distopia" isSystemDir)
-if("${isSystemDir}" STREQUAL "-1")
-    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/distopia")
-endif("${isSystemDir}" STREQUAL "-1")
+# # the RPATH to be used when installing, but only if it's not a system directory
+# list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/distopia" isSystemDir)
+# if("${isSystemDir}" STREQUAL "-1")
+#     set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/distopia")
+# endif("${isSystemDir}" STREQUAL "-1")
 
 # distopia c++ library
 add_subdirectory(libdistopia)
