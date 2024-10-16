@@ -1,0 +1,26 @@
+include setup.py
+include README.md
+include LICENSE.txt
+include CMakeLists.txt
+include requirements.txt
+include pyproject.toml
+include setup.cfg
+global-include CMakeLists.txt
+global-include *.pyx
+global-include *.pxd
+global-include *.c
+global-include *.h
+global-include *.cpp
+global-include *.cc
+recursive-include distopia *
+recursive-include libdistopia *
+recursive-include docs * 
+prune _skbuild
+prune docs/doxygen_build
+prune docs/_build
+recursive-exclude */__pycache__ *
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.pyd
+global-exclude *~
+global-exclude .git
