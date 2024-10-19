@@ -34,3 +34,6 @@ __all__ = [
     'calc_self_distance_array_ortho',
     'calc_self_distance_array_triclinic',
 ]
+
+from importlib.metadata import version
+__version__ = version("distopia")
