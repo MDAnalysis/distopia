@@ -6,12 +6,15 @@ from numpy.testing import assert_allclose, assert_almost_equal, assert_equal
 
 
 
-
 def convert_ndarray(*args, dtype):
     if len(args) == 1:
         return np.asarray(args[0], dtype=dtype)
     else:
         return (np.asarray(a, dtype=dtype) for a in args)
+
+
+def test_version():
+    assert distopia.__version__
 
 class TestDistances:
     def arange_input(self, N, dtype):
