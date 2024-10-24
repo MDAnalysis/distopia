@@ -205,7 +205,7 @@ def calc_bonds_no_box(floating[:, ::1] coords0,
 
     CalcBondsNoBox(& coords0[0][0], & coords1[0][0], nvals, & results_view[0])
 
-    return np.array(results)
+    return results
 
 
 @cython.boundscheck(False)
@@ -252,7 +252,7 @@ def  calc_bonds_ortho(floating[:, ::1] coords0,
 
     CalcBondsOrtho(& coords0[0][0], & coords1[0][0], nvals, & box[0], & results_view[0])
 
-    return np.array(results)
+    return results
 
 
 @cython.boundscheck(False)
@@ -298,7 +298,7 @@ def  calc_bonds_triclinic(floating[:, ::1] coords0,
 
     CalcBondsTriclinic(& coords0[0][0], & coords1[0][0], nvals, & box[0][0], & results_view[0])
 
-    return np.array(results)
+    return results
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
