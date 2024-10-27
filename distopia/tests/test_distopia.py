@@ -65,8 +65,17 @@ class TestDistances:
         box = np.asarray([[30, 0, 0], [-2.6146722, 29.885841, 0], [-10.260604, 9.402112, 26.576687]], dtype=dtype)
         result = distopia.calc_bonds_triclinic(c0, c1, box, results=result_buffer)
         assert_allclose(result, np.zeros(N))
-        # check dtype of result
-        assert result.dtype == dtype
+
+    def test_calc_bonds_inplace_results(self):
+        N = 100
+        dtype = np.float32
+        c0 = self.arange_input(N, dtype) 
+        c1 = self.arange_input(N, dtype) + 1
+        result_buffer = np.empty(N, dtype=dtype)
+        result = distopia.calc_bonds_no_box(c0, c1,  results=result_buffer)
+        assert_allclose(result, result_buffer)
+        assert_allclose(result, np.linalg.norm(c0 - c1, axis=1))
+
 
 
 
@@ -193,6 +202,12 @@ class TestDihedrals:
 
 class TestDistanceArray:
 
+    def result_shim(self, make_arr, X, Y, dtype):
+        if not make_arr:
+            return None
+        else:
+            return np.empty((X, Y), dtype=dtype)
+
 
     def test_no_box_bad_result(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
@@ -216,20 +231,58 @@ class TestDistanceArray:
             distopia.calc_distance_array_triclinic(c0, c1, box, results=np.empty((1,1), dtype=np.float32))
 
 
-    def test_distance_array_arange(self):
-        c0 = np.ones(9, dtype=np.float32).reshape(3, 3)
-        c1 = np.ones(9, dtype=np.float32).reshape(3, 3)
-        results = distopia.calc_distance_array_no_box(c0, c1)
-        assert_almost_equal(results, np.zeros((3,3), dtype=np.float32))
+    @pytest.mark.parametrize("X, Y", ((0, 0), (10, 20), (1000, 100), (200, 1000)))
+    @pytest.mark.parametrize("dtype", (np.float32, np.float64))
+    @pytest.mark.parametrize("use_result_buffer", (True, False))
+    def test_distance_array_const(self, X, Y, dtype, use_result_buffer):
+        result_buffer = self.result_shim(use_result_buffer, X, Y, dtype)
+        c0 = np.ones(3 * X, dtype=dtype).reshape(X, 3) * 2
+        c1 = np.ones(3 * Y, dtype=dtype).reshape(Y, 3) * 3
+        results = distopia.calc_distance_array_no_box(c0, c1, results=result_buffer)
+        # equilateral triangle, edge is 3**(1/2)
+        expected = np.ones((X, Y), dtype=dtype) * 3**(1/2)
+        assert_almost_equal(results, expected)
 
-    def test_distance_array_results(self):
-        c0 = np.ones(9, dtype=np.float32).reshape(3, 3)
-        c1 = np.ones(9, dtype=np.float32).reshape(3, 3)
-        results = distopia.calc_distance_array_no_box(c0, c1, results=np.empty((3,3), dtype=np.float32))
-        assert_almost_equal(results, np.zeros((3,3), dtype=np.float32))
+
+    @pytest.mark.parametrize("X, Y", ((0, 0), (10, 20), (1000, 100), (200, 1000)))
+    @pytest.mark.parametrize("dtype", (np.float32, np.float64))
+    @pytest.mark.parametrize("use_result_buffer", (True, False))
+    def test_distance_array_const_ortho(self, X, Y, dtype, use_result_buffer):
+        result_buffer = self.result_shim(use_result_buffer, X, Y, dtype)
+        c0 = np.ones(3 * X, dtype=dtype).reshape(X, 3) * 2
+        c1 = np.ones(3 * Y, dtype=dtype).reshape(Y, 3) * 3
+        box = np.array([2.5, 2.5, 2.5], dtype=dtype)
+        results = distopia.calc_distance_array_ortho(c0, c1, box=box,  results=result_buffer)
+        # equilateral triangle, edge is 3**(1/2)
+        expected = np.ones((X, Y), dtype=dtype) * 3**(1/2)
+        assert_almost_equal(results, expected)
+
+
+
+    @pytest.mark.parametrize("X, Y", ((0, 0), (10, 20), (1000, 100), (200, 1000)))
+    @pytest.mark.parametrize("dtype", (np.float32, np.float64))
+    @pytest.mark.parametrize("use_result_buffer", (True, False))
+    def test_distance_const_tric(self, X, Y, dtype, use_result_buffer):
+        result_buffer = self.result_shim(use_result_buffer, X, Y, dtype)
+        c0 = np.ones(3 * X, dtype=dtype).reshape(X, 3) * 2
+        c1 = np.ones(3 * Y, dtype=dtype).reshape(Y, 3) * 3
+        box = np.array([[2.5, 0, 0], [0, 2.5, 0], [0, 0, 2.5]], dtype=dtype)
+        results = distopia.calc_distance_array_triclinic(c0, c1, box=box,  results=result_buffer)
+        # equilateral triangle, edge is 3**(1/2)
+        expected = np.ones((X, Y), dtype=dtype) * 3**(1/2)
+        assert_almost_equal(results, expected)
 
 
 class TestSelfDistanceArray:
+
+
+    def result_shim(self, make_arr, N, dtype):
+        if not make_arr:
+            return None
+        else:
+            size = N * (N - 1) // 2  # reduced triangular matrix
+            return np.empty(size, dtype=dtype)
+
 
     def test_no_box_bad_result(self):
         c0 = np.zeros(12, dtype=np.float32).reshape(4, 3)
@@ -248,17 +301,41 @@ class TestSelfDistanceArray:
         with pytest.raises(ValueError, match="results must be"):
             distopia.calc_self_distance_array_triclinic(c0, box, results=np.empty(1, dtype=np.float32))
 
-    def test_self_distance_ones(self):
-        c0 = np.ones(9, dtype=np.float32).reshape(3, 3)
-        results = distopia.calc_self_distance_array_no_box(c0)
-        assert_almost_equal(results, np.zeros(3, dtype=np.float32))
+
+    @pytest.mark.parametrize("N", (0, 10, 1000, 10000))
+    @pytest.mark.parametrize("dtype", (np.float32, np.float64))
+    @pytest.mark.parametrize("use_result_buffer", (True, False))
+    def test_self_distance_const(self, N, dtype, use_result_buffer):
+        result_buffer = self.result_shim(use_result_buffer, N, dtype)
+        c0 = np.ones(3 * N, dtype=dtype).reshape(N, 3)
+        expected_size = N * (N - 1) // 2
+        results = distopia.calc_self_distance_array_no_box(c0, results=result_buffer)
+        assert_almost_equal(results, np.zeros(expected_size, dtype=dtype))
 
 
-    def test_self_distance_ones_result(self):
-        c0 = np.ones(9, dtype=np.float32).reshape(3, 3)
-        # n(n-1) //2
-        results = distopia.calc_self_distance_array_no_box(c0, results=np.empty(3, dtype=np.float32))
-        assert_almost_equal(results, np.zeros(3, dtype=np.float32))
+
+    @pytest.mark.parametrize("N", (0, 10, 1000, 10000))
+    @pytest.mark.parametrize("dtype", (np.float32, np.float64))
+    @pytest.mark.parametrize("use_result_buffer", (True, False))
+    def test_self_distance_const_ortho(self, N, dtype, use_result_buffer):
+        result_buffer = self.result_shim(use_result_buffer, N, dtype)
+        c0 = np.ones(3 * N, dtype=dtype).reshape(N, 3)
+        expected_size = N * (N - 1) // 2
+        box = np.array([10, 10, 10], dtype=dtype)
+        results = distopia.calc_self_distance_array_ortho(c0, box=box, results=result_buffer)
+        assert_almost_equal(results, np.zeros(expected_size, dtype=dtype))
+
+
+    @pytest.mark.parametrize("N", (0, 10, 1000, 10000))
+    @pytest.mark.parametrize("dtype", (np.float32, np.float64))
+    @pytest.mark.parametrize("use_result_buffer", (True, False))
+    def test_self_distance_const_tric(self, N, dtype, use_result_buffer):
+        result_buffer = self.result_shim(use_result_buffer, N, dtype)
+        c0 = np.ones(3 * N, dtype=dtype).reshape(N, 3)
+        expected_size = N * (N - 1) // 2
+        box = np.array([[10, 0, 0], [0, 10, 0], [0, 0, 10]], dtype=dtype)
+        results = distopia.calc_self_distance_array_triclinic(c0, box=box, results=result_buffer)
+        assert_almost_equal(results, np.zeros(expected_size, dtype=dtype))
 
 class TestMDA:
     """

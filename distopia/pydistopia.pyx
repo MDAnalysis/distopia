@@ -771,6 +771,9 @@ def calc_self_distance_array_no_box(
 
     dims[0] = <ssize_t > final_size
 
+    # return early, will seg
+    if nvals0 == 0:
+        return np.array([])
 
     if results is None:
         if floating is float:
@@ -823,6 +826,11 @@ def calc_self_distance_array_ortho(
 
     dims[0] = <ssize_t > final_size
 
+
+    # return early, will seg
+    if nvals0 == 0:
+        return np.array([])
+
     if results is None:
         if floating is float:
             results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
@@ -873,6 +881,10 @@ def calc_self_distance_array_triclinic(
 
     dims[0] = <ssize_t > final_size
 
+
+    # return early, will seg
+    if nvals0 == 0:
+        return np.array([])
 
     if results is None:
         if floating is float:
