@@ -247,10 +247,83 @@ public:
         nresults * state.iterations(),
         benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
   }
+
+
+  void BM_calc_dihedrals_MDA(benchmark::State &state) {
+    using ctype = ScalarToCoordinateT<T>;
+
+    for (auto _ : state) {
+    _calc_dihedral((ctype*)coords0, (ctype*)coords1,
+                   (ctype*)coords2, (ctype*)coords3, nresults, results);
+    }
+    state.SetItemsProcessed(nresults * state.iterations());
+    state.counters["Per Result"] = benchmark::Counter(
+        nresults * state.iterations(),
+        benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+  }
+
+  void BM_calc_dihedrals(benchmark::State &state) {
+    for (auto _ : state) {
+        distopia::CalcDihedralsNoBox(coords0, coords1, coords2, coords3, nresults, results);
+    }
+    state.SetItemsProcessed(nresults * state.iterations());
+    state.counters["Per Result"] = benchmark::Counter(
+        nresults * state.iterations(),
+        benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+  }
+
+  void BM_calc_dihedrals_ortho(benchmark::State &state) {
+    for (auto _ : state) {
+        distopia::CalcDihedralsOrtho(coords0, coords1, coords2, coords3, nresults, box, results);
+    }
+    state.SetItemsProcessed(nresults * state.iterations());
+    state.counters["Per Result"] = benchmark::Counter(
+        nresults * state.iterations(),
+        benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+  }
+
+  void BM_calc_dihedrals_triclinic(benchmark::State &state) {
+    for (auto _ : state) {
+        distopia::CalcDihedralsTriclinic(coords0, coords1, coords2, coords3, nresults, triclinic_box, results);
+    }
+    state.SetItemsProcessed(nresults * state.iterations());
+    state.counters["Per Result"] = benchmark::Counter(
+        nresults * state.iterations(),
+        benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+  }
+
+  void BM_calc_dihedrals_ortho_MDA(benchmark::State &state) {
+    using ctype = ScalarToCoordinateT<T>;
+
+    for (auto _ : state) {
+    _calc_dihedral_ortho((ctype*)coords0, (ctype*)coords1,
+                         (ctype*)coords2, (ctype*)coords3, nresults, box, results);
+    }
+    state.SetItemsProcessed(nresults * state.iterations());
+    state.counters["Per Result"] = benchmark::Counter(
+        nresults * state.iterations(),
+        benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+  }
+
+  void BM_calc_dihedrals_triclinic_MDA(benchmark::State &state) {
+    using ctype = ScalarToCoordinateT<T>;
+
+    for (auto _ : state) {
+    _calc_dihedral_triclinic((ctype*)coords0, (ctype*)coords1,
+                            (ctype*)coords2, (ctype*)coords3, nresults, triclinic_box, results);
+    }
+    state.SetItemsProcessed(nresults * state.iterations());
+    state.counters["Per Result"] = benchmark::Counter(
+        nresults * state.iterations(),
+        benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+  }
+
 };
 
 
-// calc_bonds
+// BONDS
+
+// calc_bonds_ortho
 
 
 BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsFloat,
@@ -332,8 +405,6 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcBondsTriclinicOutBoxDouble,
 
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcBondsTriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
-
-// MDA functions
 
 // calc_bonds
 
@@ -494,6 +565,92 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcAnglesMDATriclinicOutBoxDouble
 BENCHMARK_REGISTER_F(CoordinatesBench, CalcAnglesMDATriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
+// DIHERALS
+
+
+// calc_dihedrals
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsFloat,
+                            float)
+(benchmark::State &state) { BM_calc_dihedrals(state); }
+
+
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsDouble,
+                            double)
+(benchmark::State &state) { BM_calc_dihedrals(state); }
+
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsMDAFloat,
+                            float)
+(benchmark::State &state) { BM_calc_dihedrals_MDA(state); }
+
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsMDAFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsMDADouble,
+                            double)
+(benchmark::State &state) { BM_calc_dihedrals_MDA(state); }
+
+
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsMDADouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+
+// calc_dihedrals_ortho
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsOrthoOutBoxFloat,
+                            float)
+(benchmark::State &state) { BM_calc_dihedrals_ortho(state); }
+
+
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsOrthoOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsOrthoOutBoxDouble,
+                            double)
+(benchmark::State &state) { BM_calc_dihedrals_ortho(state); }
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsMDAOrthoOutBoxFloat,
+                            float)
+(benchmark::State &state) { BM_calc_dihedrals_ortho_MDA(state); }
+
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsMDAOrthoOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsMDAOrthoOutBoxDouble,
+                            double)
+(benchmark::State &state) { BM_calc_dihedrals_ortho_MDA(state); }
+
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsMDAOrthoOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+// calc_dihedrals_triclinic
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsTriclinicOutBoxFloat,
+                            float)
+(benchmark::State &state) { BM_calc_dihedrals_triclinic(state); }
+
+
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsTriclinicOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsTriclinicOutBoxDouble,
+                            double)
+(benchmark::State &state) { BM_calc_dihedrals_triclinic(state); }
+
+
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsTriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsMDATriclinicOutBoxFloat,
+                            float)
+(benchmark::State &state) { BM_calc_dihedrals_triclinic_MDA(state); }
+
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsMDATriclinicOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsMDATriclinicOutBoxDouble,
+                            double)
+(benchmark::State &state) { BM_calc_dihedrals_triclinic_MDA(state); }
+
+BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsMDATriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 
