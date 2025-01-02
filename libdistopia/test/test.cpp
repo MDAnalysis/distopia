@@ -25,7 +25,7 @@ TYPED_TEST_SUITE(DistancesTest, ScalarTypes);
 TYPED_TEST(DistancesTest, NoBoxKnownValues0)
 {
     // larger than the maximum possible vector size (16) and an
-    // odd number for overhang on first loop, see CalcBondsInner.
+    // odd number for overhang on first loop, see CalcDistancesInner.
     constexpr std::size_t N = 17;
     TypeParam coords0[3 * N];
     TypeParam coords1[3 * N];
@@ -36,7 +36,7 @@ TYPED_TEST(DistancesTest, NoBoxKnownValues0)
     // {1,2,3}, {4,5,6} ...
     std::iota(std::begin(coords1), std::end(coords1), 1);
 
-    distopia::CalcBondsNoBox(coords0, coords1, N, out);
+    distopia::CalcDistancesNoBox(coords0, coords1, N, out);
 
     // result for every item should be sqrt(3)
     TypeParam result = std::sqrt(3);
@@ -60,7 +60,7 @@ TYPED_TEST(DistancesTest, NoBoxKnownValuesPartial)
     // {1,2,3}, {4,5,6} ...
     std::iota(std::begin(coords1), std::end(coords1), 1);
 
-    distopia::CalcBondsNoBox(coords0, coords1, N, out);
+    distopia::CalcDistancesNoBox(coords0, coords1, N, out);
 
     // result for every item should be sqrt(3)
     TypeParam result = std::sqrt(3);
@@ -87,7 +87,7 @@ TYPED_TEST(DistancesTest, NoBoxKnownValues1)
         ref[i] = i;
     }
 
-    distopia::CalcBondsNoBox(coords0, coords1, N, out);
+    distopia::CalcDistancesNoBox(coords0, coords1, N, out);
 
     for (int i = 0; i < N; i++)
     {
@@ -96,7 +96,7 @@ TYPED_TEST(DistancesTest, NoBoxKnownValues1)
 }
 
 
-TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0)
+TYPED_TEST(DistancesTest, CalcDistancesOrthoBoxKnownValues0)
 {
     constexpr int N = 18;
     TypeParam coords0[3 * N] = {0};
@@ -110,7 +110,7 @@ TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0)
     TypeParam box[3] = {8, 8, 8};
     TypeParam ref[N] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
 
-    distopia::CalcBondsOrtho(coords0, coords1, N, box, out);
+    distopia::CalcDistancesOrtho(coords0, coords1, N, box, out);
 
     for (int i = 0; i < N; i++)
     {
@@ -119,7 +119,7 @@ TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0)
 }
 
 
-TYPED_TEST(DistancesTest, CalcBondsTriclinicKnownValues0) {
+TYPED_TEST(DistancesTest, CalcDistancesTriclinicKnownValues0) {
     constexpr int N = 18;
     TypeParam coords0[3 * N] = {0};
     TypeParam coords1[3 * N] = {0};
@@ -132,7 +132,7 @@ TYPED_TEST(DistancesTest, CalcBondsTriclinicKnownValues0) {
     TypeParam box[9] = {8, 0, 0, 0, 8, 0, 0, 0, 8};
     TypeParam ref[N] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
 
-    distopia::CalcBondsTriclinic(coords0, coords1, N, box, out);
+    distopia::CalcDistancesTriclinic(coords0, coords1, N, box, out);
 
     for (int i = 0; i < N; i++)
     {

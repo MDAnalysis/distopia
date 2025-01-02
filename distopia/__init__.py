@@ -1,8 +1,8 @@
 
 from .pydistopia import (
-    calc_bonds_ortho,
-    calc_bonds_no_box,
-    calc_bonds_triclinic,
+    calc_distances_ortho,
+    calc_distances_no_box,
+    calc_distances_triclinic,
     calc_angles_no_box,
     calc_angles_ortho,
     calc_angles_triclinic,
@@ -18,9 +18,9 @@ from .pydistopia import (
 )
 
 __all__ = [
-    'calc_bonds_ortho',
-    'calc_bonds_no_box',
-    'calc_bonds_triclinic',
+    'calc_distances_ortho',
+    'calc_distances_no_box',
+    'calc_distances_triclinic',
     'calc_angles_no_box',
     'calc_angles_ortho',
     'calc_angles_triclinic',

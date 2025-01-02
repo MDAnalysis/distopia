@@ -16,9 +16,9 @@
 
 
 namespace distopia {
-    template <typename T> void CalcBondsNoBox(const T *a, const T *b, int n, T *out);
-    template <typename T> void CalcBondsOrtho(const T *a, const T *b, int n, const T *box, T *out);
-    template <typename T> void CalcBondsTriclinic(const T *a, const T *b, int n, const T *box, T *out);
+    template <typename T> void CalcDistancesNoBox(const T *a, const T *b, int n, T *out);
+    template <typename T> void CalcDistancesOrtho(const T *a, const T *b, int n, const T *box, T *out);
+    template <typename T> void CalcDistancesTriclinic(const T *a, const T *b, int n, const T *box, T *out);
     template <typename T> void CalcAnglesNoBox(const T *a, const T *b, const T *c, int n, T *out);
     template <typename T> void CalcAnglesOrtho(const T *a, const T *b, const T *c, int n, const T *box, T *out);
     template <typename T> void CalcAnglesTriclinic(const T *a, const T *b, const T *c, int n, const T *box, T *out);
@@ -31,9 +31,9 @@ namespace distopia {
     template <typename T> void CalcSelfDistanceArrayNoBox(const T *a, int n, T *out);
     template <typename T> void CalcSelfDistanceArrayOrtho(const T *a, int n, const T *box, T *out);
     template <typename T> void CalcSelfDistanceArrayTriclinic(const T *a, int n, const T *box, T *out);
-    template <typename T> void CalcBondsNoBoxIdx(const T *coords, const int *a_idx, const int *b_idx, int n, T *out);
-    template <typename T> void CalcBondsOrthoIdx(const T *coords, const int *a_idx, const int *b_idx, int n, const T *box, T *out);
-    template <typename T> void CalcBondsTriclinicIdx(const T *coords, const int *a_idx, const int *b_idx, int n, const T *box, T *out);
+    template <typename T> void CalcDistancesNoBoxIdx(const T *coords, const int *a_idx, const int *b_idx, int n, T *out);
+    template <typename T> void CalcDistancesOrthoIdx(const T *coords, const int *a_idx, const int *b_idx, int n, const T *box, T *out);
+    template <typename T> void CalcDistancesTriclinicIdx(const T *coords, const int *a_idx, const int *b_idx, int n, const T *box, T *out);
     template <typename T> void CalcAnglesNoBoxIdx(const T *coords, const int *a_idx, const int *b_idx, const int *c_idx, int n, T *out);
     template <typename T> void CalcAnglesOrthoIdx(const T *coords, const int *a_idx, const int *b_idx, const int *c_idx, int n, const T *box, T *out);
     template <typename T> void CalcAnglesTriclinicIdx(const T *coords, const int *a_idx, const int *b_idx, const int *c_idx, int n, const T *box, T *out);
