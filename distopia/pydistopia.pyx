@@ -20,20 +20,20 @@ cdef extern from "distopia.h" namespace "distopia" nogil:
     int GetNFloatLanes();
     int GetNDoubleLanes();
 
-    void CalcBondsNoBox[T](
+    void CalcDistancesNoBox[T](
         const T *coords0,
         const T *coords1,
         size_t n,
         T *output
     )
-    void CalcBondsOrtho[T](
+    void CalcDistancesOrtho[T](
         const T *coords0,
         const T *coords1,
         size_t n,
         const T *box,
         T *output
     )
-    void CalcBondsTriclinic[T](
+    void CalcDistancesTriclinic[T](
         const T *coords0,
         const T *coords1,
         size_t n,
@@ -168,7 +168,7 @@ def  _check_shapes(*args):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def calc_bonds_no_box(floating[:, ::1] coords0,
+def calc_distances_no_box(floating[:, ::1] coords0,
                       floating[:, ::1] coords1,
                       results=None):
     """Calculate pairwise distances between coords0 and coords1 with no periodic boundary conditions
@@ -203,14 +203,14 @@ def calc_bonds_no_box(floating[:, ::1] coords0,
 
     results_view = results
 
-    CalcBondsNoBox(& coords0[0][0], & coords1[0][0], nvals, & results_view[0])
+    CalcDistancesNoBox(& coords0[0][0], & coords1[0][0], nvals, & results_view[0])
 
     return np.array(results)
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def  calc_bonds_ortho(floating[:, ::1] coords0,
+def  calc_distances_ortho(floating[:, ::1] coords0,
                       floating[:, ::1] coords1,
                       floating[::1] box,
                       floating[::1] results=None):
@@ -250,14 +250,14 @@ def  calc_bonds_ortho(floating[:, ::1] coords0,
 
     results_view = results
 
-    CalcBondsOrtho(& coords0[0][0], & coords1[0][0], nvals, & box[0], & results_view[0])
+    CalcDistancesOrtho(& coords0[0][0], & coords1[0][0], nvals, & box[0], & results_view[0])
 
     return np.array(results)
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def  calc_bonds_triclinic(floating[:, ::1] coords0,
+def  calc_distances_triclinic(floating[:, ::1] coords0,
                           floating[:, ::1] coords1,
                           floating[:, ::1] box,
                           floating[::1] results=None):
@@ -296,7 +296,7 @@ def  calc_bonds_triclinic(floating[:, ::1] coords0,
 
     results_view = results
 
-    CalcBondsTriclinic(& coords0[0][0], & coords1[0][0], nvals, & box[0][0], & results_view[0])
+    CalcDistancesTriclinic(& coords0[0][0], & coords1[0][0], nvals, & box[0][0], & results_view[0])
 
     return np.array(results)
 

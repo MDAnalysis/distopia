@@ -2,13 +2,13 @@
 
 ## API documentation for the `distopia` python layer
 
-::: distopia.calc_bonds_no_box
+::: distopia.calc_distances_no_box
     :docstring:
 
-::: distopia.calc_bonds_ortho
+::: distopia.calc_distances_ortho
     :docstring:
 
-::: distopia.calc_bonds_triclinic
+::: distopia.calc_distances_triclinic
     :docstring:
 
 ::: distopia.calc_angles_no_box
