@@ -30,12 +30,12 @@ class TestDistances:
     @pytest.mark.parametrize("box", ([10, 10, 10], [100, 20, 10]))
     @pytest.mark.parametrize("N", (0, 10, 1000, 10000))
     @pytest.mark.parametrize("use_result_buffer", (True, False))
-    def test_calc_bonds_ortho_all_zero(self, N, box, use_result_buffer, dtype):
+    def test_calc_distances_ortho_all_zero(self, N, box, use_result_buffer, dtype):
         c0 = self.arange_input(N, dtype)
         c1 = self.arange_input(N, dtype)
         result_buffer = self.result_shim(use_result_buffer, N, dtype)
         box = np.asarray(box, dtype=dtype)
-        result = distopia.calc_bonds_ortho(
+        result = distopia.calc_distances_ortho(
             c0, c1, box, results=result_buffer
         )
         assert_allclose(result, np.zeros(N))
@@ -45,11 +45,11 @@ class TestDistances:
     @pytest.mark.parametrize("dtype", (np.float32, np.float64))
     @pytest.mark.parametrize("N", (0, 10, 1000, 10000))
     @pytest.mark.parametrize("use_result_buffer", (True, False))
-    def test_calc_bonds_nobox_all_zero(self, N, use_result_buffer, dtype):
+    def test_calc_distances_nobox_all_zero(self, N, use_result_buffer, dtype):
         c0 = self.arange_input(N, dtype)
         c1 = self.arange_input(N, dtype)
         result_buffer = self.result_shim(use_result_buffer, N, dtype)
-        result = distopia.calc_bonds_no_box(c0, c1, results=result_buffer)
+        result = distopia.calc_distances_no_box(c0, c1, results=result_buffer)
         assert_allclose(result, np.zeros(N))
         # check dtype of result
         assert result.dtype == dtype
@@ -58,21 +58,21 @@ class TestDistances:
     @pytest.mark.parametrize("dtype", (np.float32, np.float64))
     @pytest.mark.parametrize("N", (0, 10, 1000, 10000))
     @pytest.mark.parametrize("use_result_buffer", (True, False))
-    def test_calc_bonds_triclinic_all_zero(self, N, use_result_buffer, dtype):
+    def test_calc_distances_triclinic_all_zero(self, N, use_result_buffer, dtype):
         c0 = self.arange_input(N, dtype)
         c1 = self.arange_input(N, dtype)
         result_buffer = self.result_shim(use_result_buffer, N, dtype)
         box = np.asarray([[30, 0, 0], [-2.6146722, 29.885841, 0], [-10.260604, 9.402112, 26.576687]], dtype=dtype)
-        result = distopia.calc_bonds_triclinic(c0, c1, box, results=result_buffer)
+        result = distopia.calc_distances_triclinic(c0, c1, box, results=result_buffer)
         assert_allclose(result, np.zeros(N))
 
-    def test_calc_bonds_inplace_results(self):
+    def test_calc_distances_inplace_results(self):
         N = 100
         dtype = np.float32
         c0 = self.arange_input(N, dtype) 
         c1 = self.arange_input(N, dtype) + 1
         result_buffer = np.empty(N, dtype=dtype)
-        result = distopia.calc_bonds_no_box(c0, c1,  results=result_buffer)
+        result = distopia.calc_distances_no_box(c0, c1,  results=result_buffer)
         assert_allclose(result, result_buffer)
         assert_allclose(result, np.linalg.norm(c0 - c1, axis=1))
 
@@ -83,27 +83,27 @@ class TestDistances:
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         with pytest.raises(ValueError, match="results must be"):
-            distopia.calc_bonds_no_box(c0, c1, results=np.empty(1, dtype=np.float32))
+            distopia.calc_distances_no_box(c0, c1, results=np.empty(1, dtype=np.float32))
         with pytest.raises(ValueError, match="All input arrays must"):
-            distopia.calc_bonds_no_box(c0, c1[:-1])
+            distopia.calc_distances_no_box(c0, c1[:-1])
 
     def test_ortho_bad_result_or_input_shape(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         box = np.array([10, 10, 10], dtype=np.float32)
         with pytest.raises(ValueError, match="results must be"):
-            distopia.calc_bonds_ortho(c0, c1, box, results=np.empty(1, dtype=np.float32))
+            distopia.calc_distances_ortho(c0, c1, box, results=np.empty(1, dtype=np.float32))
         with pytest.raises(ValueError, match="All input arrays must"):
-            distopia.calc_bonds_ortho(c0, c1[:-1], box)
+            distopia.calc_distances_ortho(c0, c1[:-1], box)
 
     def test_triclinic_bad_result_or_input_shape(self):
         c0 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         c1 = np.zeros(6, dtype=np.float32).reshape(2, 3)
         box = np.array([[10, 0, 0], [0, 10, 0], [0, 0, 10]], dtype=np.float32)
         with pytest.raises(ValueError, match="results must be"):
-            distopia.calc_bonds_triclinic(c0, c1, box, results=np.empty(1, dtype=np.float32))
+            distopia.calc_distances_triclinic(c0, c1, box, results=np.empty(1, dtype=np.float32))
         with pytest.raises(ValueError, match="All input arrays must"):
-            distopia.calc_bonds_triclinic(c0, c1[:-1], box)
+            distopia.calc_distances_triclinic(c0, c1[:-1], box)
         
 
 
@@ -371,13 +371,13 @@ class TestMDA:
         a, b, c, d = convert_ndarray(a, b, c, d, dtype=dtype)
         box_bonds = convert_ndarray(box_bonds, dtype=dtype)
 
-        dists = distopia.calc_bonds_no_box(a, b)
-        assert_equal(len(dists), 4, err_msg="calc_bonds results have wrong length")
-        dists_pbc = distopia.calc_bonds_ortho(a, b, box_bonds)
+        dists = distopia.calc_distances_no_box(a, b)
+        assert_equal(len(dists), 4, err_msg="calc_distances results have wrong length")
+        dists_pbc = distopia.calc_distances_ortho(a, b, box_bonds)
         #tests 0 length
-        assert_almost_equal(dists[0], 0.0, self.prec, err_msg="Zero length calc_bonds fail")
+        assert_almost_equal(dists[0], 0.0, self.prec, err_msg="Zero length calc_distances fail")
         assert_almost_equal(dists[1], 1.7320508075688772, self.prec,
-                            err_msg="Standard length calc_bonds fail")  # arbitrary length check
+                            err_msg="Standard length calc_distances fail")  # arbitrary length check
         # PBC checks, 2 without, 2 with
         assert_almost_equal(dists[2], 11.0, self.prec,
                             err_msg="PBC check #1 w/o box")  # pbc check 1, subtract single box length
@@ -392,9 +392,9 @@ class TestMDA:
     @pytest.mark.parametrize("dtype", (np.float32, np.float64))
     def test_bonds_triclinic(self, triclinic_box, dtype, positions):
         a, b, c, d = positions
-        dists = distopia.calc_bonds_triclinic(a, b, triclinic_box)
+        dists = distopia.calc_distances_triclinic(a, b, triclinic_box)
         reference = np.array([0.0, 1.7320508, 1.4142136, 2.82842712])
-        assert_almost_equal(dists, reference, self.prec, err_msg="calc_bonds with triclinic box failed")
+        assert_almost_equal(dists, reference, self.prec, err_msg="calc_distances with triclinic box failed")
 
 
 
