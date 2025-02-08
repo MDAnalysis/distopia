@@ -1037,33 +1037,21 @@ namespace distopia {
             }
         }
 
-        void DistancesNoBoxDouble(const double *a, const double *b, int n, double *out) {
-            hn::ScalableTag<double> d;
+        template<typename T>
+        void DistancesNoBoxHwy(const T *a, const T *b, int n, T *out) {
+            hn::ScalableTag<T> d;
             const NoBox vbox(d);
             Distances(a, b, n, out, vbox);
         }
-        void DistancesNoBoxSingle(const float *a, const float *b, int n, float *out) {
-            hn::ScalableTag<float> d;
-            const NoBox vbox(d);
-            Distances(a, b, n, out, vbox);
-        }
-        void DistancesOrthoDouble(const double *a, const double *b, int n, const double *box, double *out) {
-            hn::ScalableTag<double> d;
+        template<typename T>
+        void DistancesOrthoHwy(const T *a, const T *b, int n, const T *box, T *out) {
+            hn::ScalableTag<T> d;
             const OrthogonalBox vbox(d, box);
             Distances(a, b, n, out, vbox);
         }
-        void DistancesOrthoSingle(const float *a, const float *b, int n, const float *box, float *out) {
-            hn::ScalableTag<float> d;
-            const OrthogonalBox vbox(d, box);
-            Distances(a, b, n, out, vbox);
-        }
-        void DistancesTriclinicDouble(const double *a, const double *b, int n, const double *box, double *out) {
-            hn::ScalableTag<double> d;
-            const TriclinicBox vbox(d, box);
-            Distances(a, b, n, out, vbox);
-        }
-        void DistancesTriclinicSingle(const float *a, const float *b, int n, const float *box, float *out) {
-            hn::ScalableTag<float> d;
+        template<typename T>
+        void DistancesTriclinicHwy(const T *a, const T *b, int n, const T *box, T *out) {
+            hn::ScalableTag<T> d;
             const TriclinicBox vbox(d, box);
             Distances(a, b, n, out, vbox);
         }
@@ -1419,12 +1407,6 @@ HWY_AFTER_NAMESPACE();
 #if HWY_ONCE
 
 namespace distopia {
-    HWY_EXPORT(DistancesNoBoxDouble);
-    HWY_EXPORT(DistancesNoBoxSingle);
-    HWY_EXPORT(DistancesOrthoDouble);
-    HWY_EXPORT(DistancesOrthoSingle);
-    HWY_EXPORT(DistancesTriclinicDouble);
-    HWY_EXPORT(DistancesTriclinicSingle);
     HWY_EXPORT(AnglesNoBoxDouble);
     HWY_EXPORT(AnglesNoBoxSingle);
     HWY_EXPORT(AnglesOrthoDouble);
@@ -1488,25 +1470,25 @@ namespace distopia {
      int GetNDoubleLanes() {
         return HWY_DYNAMIC_DISPATCH(GetNDoubleLanes)();
     }
-     template <> void DistancesNoBox(const float* a, const float* b, int n, float* out) {
+    template <> void DistancesNoBox(const float* a, const float* b, int n, float *out) {
         // TODO: Could instead put small problem handling here, if n<16 manually dispatch to non-vector route
         //       Would benefit the codepath in all vector versions
-        return HWY_DYNAMIC_DISPATCH(DistancesNoBoxSingle)(a, b, n, out);
+        HWY_EXPORT_AND_DYNAMIC_DISPATCH_T(DistancesNoBoxHwy<float>)(a, b, n, out);
     }
-     template <> void DistancesNoBox(const double* a, const double* b, int n, double* out) {
-        return HWY_DYNAMIC_DISPATCH(DistancesNoBoxDouble)(a, b, n, out);
+    template <> void DistancesNoBox(const double* a, const double* b, int n, double *out) {
+        HWY_EXPORT_AND_DYNAMIC_DISPATCH_T(DistancesNoBoxHwy<double>)(a, b, n, out);
     }
-     template <> void DistancesOrtho(const float* a, const float* b, int n, const float *box, float* out) {
-        return HWY_DYNAMIC_DISPATCH(DistancesOrthoSingle)(a, b, n, box, out);
+    template <> void DistancesOrtho(const float* a, const float* b, int n, const float *box, float* out) {
+        HWY_EXPORT_AND_DYNAMIC_DISPATCH_T(DistancesOrthoHwy<float>)(a, b, n, box, out);
     }
      template <> void DistancesOrtho(const double* a, const double* b, int n, const double *box, double* out) {
-        return HWY_DYNAMIC_DISPATCH(DistancesOrthoDouble)(a, b, n, box, out);
+         HWY_EXPORT_AND_DYNAMIC_DISPATCH_T(DistancesOrthoHwy<double>)(a, b, n, box, out);
     }
      template <> void DistancesTriclinic(const float* a, const float* b, int n, const float *box, float* out) {
-        return HWY_DYNAMIC_DISPATCH(DistancesTriclinicSingle)(a, b, n, box, out);
+         HWY_EXPORT_AND_DYNAMIC_DISPATCH_T(DistancesTriclinicHwy<float>)(a, b, n, box, out);
     }
      template <> void DistancesTriclinic(const double* a, const double* b, int n, const double *box, double* out) {
-        return HWY_DYNAMIC_DISPATCH(DistancesTriclinicDouble)(a, b, n, box, out);
+         HWY_EXPORT_AND_DYNAMIC_DISPATCH_T(DistancesTriclinicHwy<double>)(a, b, n, box, out);
     }
      template <> void AnglesNoBox(const float *a, const float *b, const float *c, int n, float *out) {
         return HWY_DYNAMIC_DISPATCH(AnglesNoBoxSingle)(a, b, c, n, out);
