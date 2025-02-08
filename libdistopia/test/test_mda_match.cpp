@@ -6,7 +6,7 @@
 #include "distopia.h"
 #include "test_utils.h"
 #include "test_fixtures.h"
-#include "compare/distances.h"
+#include "compare/calc_distances.h"
 
 using testing::Types;
 typedef Types<float, double> ScalarTypes;
