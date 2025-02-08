@@ -20,42 +20,34 @@ cdef extern from "distopia.h" namespace "distopia" nogil:
     int GetNFloatLanes();
     int GetNDoubleLanes();
 
-    void CalcDistancesNoBox[T](
+    void DistancesNoBox[T](
         const T *coords0,
         const T *coords1,
         size_t n,
         T *output
     )
-    void CalcDistancesOrtho[T](
-        const T *coords0,
-        const T *coords1,
-        size_t n,
-        const T *box,
-        T *output
-    )
-    void CalcDistancesTriclinic[T](
+    void DistancesOrtho[T](
         const T *coords0,
         const T *coords1,
         size_t n,
         const T *box,
         T *output
     )
-    void CalcAnglesNoBox[T](
+    void DistancesTriclinic[T](
+        const T *coords0,
+        const T *coords1,
+        size_t n,
+        const T *box,
+        T *output
+    )
+    void AnglesNoBox[T](
         const T *coords0,
         const T *coords1,
         const T *coords2,
         size_t n,
         T *out
     )
-    void CalcAnglesOrtho[T](
-        const T *coords0,
-        const T *coords1,
-        const T *coords2,
-        size_t n,
-        const T *box,
-        T *out
-    )
-    void CalcAnglesTriclinic[T](
+    void AnglesOrtho[T](
         const T *coords0,
         const T *coords1,
         const T *coords2,
@@ -63,7 +55,15 @@ cdef extern from "distopia.h" namespace "distopia" nogil:
         const T *box,
         T *out
     )
-    void CalcDihedralsNoBox[T](
+    void AnglesTriclinic[T](
+        const T *coords0,
+        const T *coords1,
+        const T *coords2,
+        size_t n,
+        const T *box,
+        T *out
+    )
+    void DihedralsNoBox[T](
         const T *coords0,
         const T *coords1,
         const T *coords2,
@@ -71,16 +71,7 @@ cdef extern from "distopia.h" namespace "distopia" nogil:
         size_t n,
         T *out
     )
-    void CalcDihedralsOrtho[T](
-        const T *coords0,
-        const T *coords1,
-        const T *coords2,
-        const T *coords3,
-        size_t n,
-        const T *box,
-        T *out
-    )
-    void CalcDihedralsTriclinic[T](
+    void DihedralsOrtho[T](
         const T *coords0,
         const T *coords1,
         const T *coords2,
@@ -89,14 +80,23 @@ cdef extern from "distopia.h" namespace "distopia" nogil:
         const T *box,
         T *out
     )
-    void CalcDistanceArrayNoBox[T](
+    void DihedralsTriclinic[T](
+        const T *coords0,
+        const T *coords1,
+        const T *coords2,
+        const T *coords3,
+        size_t n,
+        const T *box,
+        T *out
+    )
+    void DistanceArrayNoBox[T](
         const T *coords0,
         const T *coords1,
         size_t n0,
         size_t n1,
         T *out,
     )
-    void CalcDistanceArrayOrtho[T](
+    void DistanceArrayOrtho[T](
         const T *coords0,
         const T *coords1,
         size_t n0,
@@ -104,7 +104,7 @@ cdef extern from "distopia.h" namespace "distopia" nogil:
         const T *box,
         T *out,
     )
-    void CalcDistanceArrayTriclinic[T](
+    void DistanceArrayTriclinic[T](
         const T *coords0,
         const T *coords1,
         size_t n0,
@@ -112,18 +112,18 @@ cdef extern from "distopia.h" namespace "distopia" nogil:
         const T *box,
         T *out,
     )
-    void CalcSelfDistanceArrayNoBox[T](
+    void SelfDistanceArrayNoBox[T](
         const T *coords,
         size_t n,
         T *out,
     )
-    void CalcSelfDistanceArrayOrtho[T](
+    void SelfDistanceArrayOrtho[T](
         const T *coords,
         size_t n,
         const T *box,
         T *out,
     )
-    void CalcSelfDistanceArrayTriclinic[T](
+    void SelfDistanceArrayTriclinic[T](
         const T *coords,
         size_t n,
         const T *box,
@@ -171,7 +171,7 @@ def  _check_shapes(*args):
 def calc_distances_no_box(floating[:, ::1] coords0,
                       floating[:, ::1] coords1,
                       results=None):
-    """Calculate pairwise distances between coords0 and coords1 with no periodic boundary conditions
+    """ulate pairwise distances between coords0 and coords1 with no periodic boundary conditions
 
     Parameters
     ----------
@@ -203,7 +203,7 @@ def calc_distances_no_box(floating[:, ::1] coords0,
 
     results_view = results
 
-    CalcDistancesNoBox(& coords0[0][0], & coords1[0][0], nvals, & results_view[0])
+    DistancesNoBox(& coords0[0][0], & coords1[0][0], nvals, & results_view[0])
 
     return np.array(results)
 
@@ -214,7 +214,7 @@ def  calc_distances_ortho(floating[:, ::1] coords0,
                       floating[:, ::1] coords1,
                       floating[::1] box,
                       floating[::1] results=None):
-    """Calculate pairwise distances between coords0 and coords1 under orthorhombic boundary conditions
+    """ulate pairwise distances between coords0 and coords1 under orthorhombic boundary conditions
 
     Parameters
     ----------
@@ -250,7 +250,7 @@ def  calc_distances_ortho(floating[:, ::1] coords0,
 
     results_view = results
 
-    CalcDistancesOrtho(& coords0[0][0], & coords1[0][0], nvals, & box[0], & results_view[0])
+    DistancesOrtho(& coords0[0][0], & coords1[0][0], nvals, & box[0], & results_view[0])
 
     return np.array(results)
 
@@ -261,7 +261,7 @@ def  calc_distances_triclinic(floating[:, ::1] coords0,
                           floating[:, ::1] coords1,
                           floating[:, ::1] box,
                           floating[::1] results=None):
-    """Calculate pairwise distances between coords0 and coords1 under triclinic boundary conditions
+    """ulate pairwise distances between coords0 and coords1 under triclinic boundary conditions
 
     Parameters
     ----------
@@ -296,7 +296,7 @@ def  calc_distances_triclinic(floating[:, ::1] coords0,
 
     results_view = results
 
-    CalcDistancesTriclinic(& coords0[0][0], & coords1[0][0], nvals, & box[0][0], & results_view[0])
+    DistancesTriclinic(& coords0[0][0], & coords1[0][0], nvals, & box[0][0], & results_view[0])
 
     return np.array(results)
 
@@ -307,7 +307,7 @@ def calc_angles_no_box(
      floating[:, ::1] coords1,
      floating[:, ::1] coords2,
      floating[::1] results=None):
-    """Calculate angles between sets of coordinates with no periodic boundary conditions
+    """ulate angles between sets of coordinates with no periodic boundary conditions
 
     Parameters
     ----------
@@ -340,7 +340,7 @@ def calc_angles_no_box(
 
     results_view = results
 
-    CalcAnglesNoBox(&coords0[0][0], &coords1[0][0], &coords2[0][0],
+    AnglesNoBox(&coords0[0][0], &coords1[0][0], &coords2[0][0],
                     nvals, &results_view[0])
 
     return np.array(results)
@@ -354,7 +354,7 @@ def calc_angles_ortho(
      floating[::1] box,
      floating[::1] results=None):
     
-    """Calculate angles between sets of coordinates under orthorhombic boundary conditions
+    """ulate angles between sets of coordinates under orthorhombic boundary conditions
 
     Parameters
     ----------
@@ -389,7 +389,7 @@ def calc_angles_ortho(
 
     results_view = results
 
-    CalcAnglesOrtho(&coords0[0][0], &coords1[0][0], &coords2[0][0],
+    AnglesOrtho(&coords0[0][0], &coords1[0][0], &coords2[0][0],
                     nvals, &box[0], &results_view[0])
 
     return np.array(results)
@@ -402,7 +402,7 @@ def calc_angles_triclinic(
      floating[:, ::1] coords2,
      floating[:, ::1] box,
      floating[::1] results=None):
-    """Calculate angles between sets of coordinates under triclinic boundary conditions
+    """ulate angles between sets of coordinates under triclinic boundary conditions
 
     Parameters
     ----------
@@ -438,7 +438,7 @@ def calc_angles_triclinic(
 
     results_view = results
 
-    CalcAnglesTriclinic(&coords0[0][0], &coords1[0][0], &coords2[0][0],
+    AnglesTriclinic(&coords0[0][0], &coords1[0][0], &coords2[0][0],
                         nvals, &box[0][0], &results_view[0])
 
     return np.array(results)
@@ -451,7 +451,7 @@ def calc_dihedrals_no_box(
      floating[:, ::1] coords2,
      floating[:, ::1] coords3,
      floating[::1] results=None):
-    """Calculate dihedral angles between sets of coordinates with no periodic boundary conditions
+    """ulate dihedral angles between sets of coordinates with no periodic boundary conditions
 
     Parameters
     ----------
@@ -485,7 +485,7 @@ def calc_dihedrals_no_box(
 
     results_view = results
 
-    CalcDihedralsNoBox(&coords0[0][0], &coords1[0][0], &coords2[0][0], &coords3[0][0],
+    DihedralsNoBox(&coords0[0][0], &coords1[0][0], &coords2[0][0], &coords3[0][0],
                        nvals, &results_view[0])
 
     return np.array(results)
@@ -499,7 +499,7 @@ def calc_dihedrals_ortho(
      floating[:, ::1] coords3,
      floating[::1] box,
      floating[::1] results=None):
-    """Calculate dihedral angles between sets of coordinates under orthorhombic boundary conditions
+    """ulate dihedral angles between sets of coordinates under orthorhombic boundary conditions
 
     Parameters
     ----------
@@ -534,7 +534,7 @@ def calc_dihedrals_ortho(
 
     results_view = results
 
-    CalcDihedralsOrtho(&coords0[0][0], &coords1[0][0], &coords2[0][0], &coords3[0][0],
+    DihedralsOrtho(&coords0[0][0], &coords1[0][0], &coords2[0][0], &coords3[0][0],
                        nvals, &box[0], &results_view[0])
 
     return np.array(results)
@@ -549,7 +549,7 @@ def calc_dihedrals_triclinic(
      floating[:, ::1] coords3,
      floating[:, ::1] box,
      floating[::1] results=None):
-    """Calculate dihedral angles between sets of coordinates under triclinic boundary conditions
+    """ulate dihedral angles between sets of coordinates under triclinic boundary conditions
 
     Parameters
     ----------
@@ -585,7 +585,7 @@ def calc_dihedrals_triclinic(
 
     results_view = results
 
-    CalcDihedralsTriclinic(&coords0[0][0], &coords1[0][0], &coords2[0][0], &coords3[0][0],
+    DihedralsTriclinic(&coords0[0][0], &coords1[0][0], &coords2[0][0], &coords3[0][0],
                            nvals, &box[0][0], &results_view[0])
 
     return np.array(results)
@@ -597,7 +597,7 @@ def calc_distance_array_no_box(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[:, ::1] results=None):
-    """Calculate pairwise distance matrix between coordinates with no periodic boundary conditions
+    """ulate pairwise distance matrix between coordinates with no periodic boundary conditions
 
     Parameters
     ----------
@@ -633,7 +633,7 @@ def calc_distance_array_no_box(
 
     results_view = results
 
-    CalcDistanceArrayNoBox(&coords0[0][0], &coords1[0][0],
+    DistanceArrayNoBox(&coords0[0][0], &coords1[0][0],
                            nvals0, nvals1,
                            &results_view[0][0])
 
@@ -646,7 +646,7 @@ def calc_distance_array_ortho(
      floating[:, ::1] coords1,
      floating[::1] box,
      floating[:, ::1] results=None):
-    """Calculate pairwise distance matrix between coordinates under orthorhombic boundary conditions
+    """ulate pairwise distance matrix between coordinates under orthorhombic boundary conditions
 
     Parameters
     ----------
@@ -681,7 +681,7 @@ def calc_distance_array_ortho(
 
     results_view = results
 
-    CalcDistanceArrayOrtho(&coords0[0][0], &coords1[0][0],
+    DistanceArrayOrtho(&coords0[0][0], &coords1[0][0],
                            nvals0, nvals1,
                            &box[0],
                            &results_view[0][0])
@@ -696,7 +696,7 @@ def calc_distance_array_triclinic(
      floating[:, ::1] coords1,
      floating[:, ::1] box,
      floating[:, ::1] results=None):
-    """Calculate pairwise distance matrix between coordinates under triclinic boundary conditions
+    """ulate pairwise distance matrix between coordinates under triclinic boundary conditions
 
     Parameters
     ----------
@@ -733,7 +733,7 @@ def calc_distance_array_triclinic(
 
     results_view = results
 
-    CalcDistanceArrayTriclinic(&coords0[0][0], &coords1[0][0],
+    DistanceArrayTriclinic(&coords0[0][0], &coords1[0][0],
                                nvals0, nvals1,
                                &box[0][0],
                                &results_view[0][0])
@@ -748,7 +748,7 @@ def calc_distance_array_triclinic(
 def calc_self_distance_array_no_box(
      floating[:, ::1] coords0,
      floating[::1] results=None):
-    """Calculate self-pairwise distance matrix between coordinates with no periodic boundary conditions
+    """ulate self-pairwise distance matrix between coordinates with no periodic boundary conditions
 
     Parameters
     ----------
@@ -786,7 +786,7 @@ def calc_self_distance_array_no_box(
 
     results_view = results
 
-    CalcSelfDistanceArrayNoBox(&coords0[0][0],
+    SelfDistanceArrayNoBox(&coords0[0][0],
                                nvals0,
                                &results_view[0])
 
@@ -801,7 +801,7 @@ def calc_self_distance_array_ortho(
      floating[:, ::1] coords0,
      floating[::1] box,
      floating[::1] results=None):
-    """Calculate self-pairwise distance matrix between coordinates under orthorhombic periodic boundary conditions
+    """ulate self-pairwise distance matrix between coordinates under orthorhombic periodic boundary conditions
 
     Parameters
     ----------
@@ -842,7 +842,7 @@ def calc_self_distance_array_ortho(
 
     results_view = results
 
-    CalcSelfDistanceArrayOrtho(&coords0[0][0],
+    SelfDistanceArrayOrtho(&coords0[0][0],
                                nvals0,
                                &box[0],
                                &results_view[0])
@@ -856,7 +856,7 @@ def calc_self_distance_array_triclinic(
      floating[:, ::1] coords0,
      floating[:, ::1] box,
      floating[::1] results=None):
-    """Calculate self-pairwise distance matrix between coordinates under triclinic boundary conditions
+    """ulate self-pairwise distance matrix between coordinates under triclinic boundary conditions
 
     Parameters
     ----------
@@ -897,7 +897,7 @@ def calc_self_distance_array_triclinic(
 
     results_view = results
 
-    CalcSelfDistanceArrayTriclinic(&coords0[0][0],
+    SelfDistanceArrayTriclinic(&coords0[0][0],
                                nvals0,
                                &box[0][0],
                                &results_view[0])

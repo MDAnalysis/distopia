@@ -108,7 +108,7 @@ public:
 
   void BM_calc_distances(benchmark::State &state) {
     for (auto _ : state) {
-        distopia::CalcDistancesNoBox(coords0, coords1, nresults, results);
+        distopia::DistancesNoBox(coords0, coords1, nresults, results);
     }
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
@@ -118,7 +118,7 @@ public:
 
   void BM_calc_distances_ortho(benchmark::State &state) {
     for (auto _ : state) {
-        distopia::CalcDistancesOrtho(coords0, coords1, nresults, box, results);
+        distopia::DistancesOrtho(coords0, coords1, nresults, box, results);
     }
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
@@ -128,7 +128,7 @@ public:
 
   void BM_calc_distances_triclinic(benchmark::State &state) {
       for (auto _ : state) {
-          distopia::CalcDistancesTriclinic(coords0, coords1, nresults, triclinic_box, results);
+          distopia::DistancesTriclinic(coords0, coords1, nresults, triclinic_box, results);
       }
       state.SetItemsProcessed(nresults * state.iterations());
       state.counters["Per Result"] = benchmark::Counter(
@@ -193,7 +193,7 @@ public:
 
   void BM_calc_angles(benchmark::State &state) {
     for (auto _ : state) {
-        distopia::CalcAnglesNoBox(coords0, coords1, coords2, nresults, results);
+        distopia::AnglesNoBox(coords0, coords1, coords2, nresults, results);
     }
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
@@ -203,7 +203,7 @@ public:
 
   void BM_calc_angles_ortho(benchmark::State &state) {
     for (auto _ : state) {
-        distopia::CalcAnglesOrtho(coords0, coords1, coords2, nresults, box, results);
+        distopia::AnglesOrtho(coords0, coords1, coords2, nresults, box, results);
     }
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
@@ -213,7 +213,7 @@ public:
 
   void BM_calc_angles_triclinic(benchmark::State &state) {
     for (auto _ : state) {
-        distopia::CalcAnglesTriclinic(coords0, coords1, coords2, nresults, triclinic_box, results);
+        distopia::AnglesTriclinic(coords0, coords1, coords2, nresults, triclinic_box, results);
     }
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
@@ -264,7 +264,7 @@ public:
 
   void BM_calc_dihedrals(benchmark::State &state) {
     for (auto _ : state) {
-        distopia::CalcDihedralsNoBox(coords0, coords1, coords2, coords3, nresults, results);
+        distopia::DihedralsNoBox(coords0, coords1, coords2, coords3, nresults, results);
     }
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
@@ -274,7 +274,7 @@ public:
 
   void BM_calc_dihedrals_ortho(benchmark::State &state) {
     for (auto _ : state) {
-        distopia::CalcDihedralsOrtho(coords0, coords1, coords2, coords3, nresults, box, results);
+        distopia::DihedralsOrtho(coords0, coords1, coords2, coords3, nresults, box, results);
     }
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
@@ -284,7 +284,7 @@ public:
 
   void BM_calc_dihedrals_triclinic(benchmark::State &state) {
     for (auto _ : state) {
-        distopia::CalcDihedralsTriclinic(coords0, coords1, coords2, coords3, nresults, triclinic_box, results);
+        distopia::DihedralsTriclinic(coords0, coords1, coords2, coords3, nresults, triclinic_box, results);
     }
     state.SetItemsProcessed(nresults * state.iterations());
     state.counters["Per Result"] = benchmark::Counter(
@@ -326,138 +326,138 @@ public:
 // calc_distances_ortho
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesFloat,
                             float)
 (benchmark::State &state) { BM_calc_distances(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DistancesFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesDouble,
                             double)
 (benchmark::State &state) { BM_calc_distances(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DistancesDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 // // calc_distances_ortho
 
-// BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesOrthoInBoxFloat,
+// BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesOrthoInBoxFloat,
 //                             float)
 // (benchmark::State &state) { BM_calc_distances_ortho(state); }
 
-// BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesOrthoInBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+// BENCHMARK_REGISTER_F(CoordinatesBench, DistancesOrthoInBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 
-// BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesOrthoInBoxDouble,
+// BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesOrthoInBoxDouble,
 //                             double)
 // (benchmark::State &state) { BM_calc_distances_ortho(state); }
 
-// BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesOrthoInBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+// BENCHMARK_REGISTER_F(CoordinatesBench, DistancesOrthoInBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesOrthoOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesOrthoOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_distances_ortho(state); }
 
 
 // coords can be +- 5 over boxlength
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesOrthoOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DistancesOrthoOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesOrthoOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesOrthoOutBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_distances_ortho(state); }
 
 // coords can be +- 5 over boxlength
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesOrthoOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DistancesOrthoOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 // calc_distances_triclinic
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesTriclinicInBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesTriclinicInBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_distances_triclinic(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesTriclinicInBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DistancesTriclinicInBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesTriclinicInBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesTriclinicInBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_distances_triclinic(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesTriclinicInBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DistancesTriclinicInBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesTriclinicOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesTriclinicOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_distances_triclinic(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesTriclinicOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DistancesTriclinicOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesTriclinicOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesTriclinicOutBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_distances_triclinic(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesTriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DistancesTriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 // calc_distances
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesMDAFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesMDAFloat,
                             float)
 (benchmark::State &state) { BM_calc_distances_MDA(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesMDAFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DistancesMDAFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesMDADouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesMDADouble,
                             double)
 (benchmark::State &state) { BM_calc_distances_MDA(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesMDADouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DistancesMDADouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 // calc_distances_ortho
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesMDAOrthoOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesMDAOrthoOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_distances_ortho_MDA(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesMDAOrthoOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});;
+BENCHMARK_REGISTER_F(CoordinatesBench, DistancesMDAOrthoOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});;
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesMDAOrthoOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesMDAOrthoOutBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_distances_ortho_MDA(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesMDAOrthoOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DistancesMDAOrthoOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
   
 // calc_distances_triclinic
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesMDATriclinicOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesMDATriclinicOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_distances_triclinic_MDA(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesMDATriclinicOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DistancesMDATriclinicOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDistancesMDATriclinicOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DistancesMDATriclinicOutBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_distances_triclinic_MDA(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesMDATriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DistancesMDATriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 
@@ -467,102 +467,102 @@ BENCHMARK_REGISTER_F(CoordinatesBench, CalcDistancesMDATriclinicOutBoxDouble)->R
 
 // calc_angles
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcAnglesFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, AnglesFloat,
                             float)
 (benchmark::State &state) { BM_calc_angles(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcAnglesFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, AnglesFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcAnglesDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, AnglesDouble,
                             double)
 (benchmark::State &state) { BM_calc_angles(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcAnglesDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, AnglesDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcAnglesMDAFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, AnglesMDAFloat,
                             float)
 (benchmark::State &state) { BM_calc_angles_MDA(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcAnglesMDAFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, AnglesMDAFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcAnglesMDADouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, AnglesMDADouble,
                             double)
 (benchmark::State &state) { BM_calc_angles_MDA(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcAnglesMDADouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, AnglesMDADouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 
 // calc_angles_ortho
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcAnglesOrthoOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, AnglesOrthoOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_angles_ortho(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcAnglesOrthoOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, AnglesOrthoOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcAnglesOrthoOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, AnglesOrthoOutBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_angles_ortho(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcAnglesOrthoOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, AnglesOrthoOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcAnglesMDAOrthoOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, AnglesMDAOrthoOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_angles_ortho_MDA(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcAnglesMDAOrthoOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, AnglesMDAOrthoOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcAnglesMDAOrthoOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, AnglesMDAOrthoOutBoxDouble,
                             double)
 
 (benchmark::State &state) { BM_calc_angles_ortho_MDA(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcAnglesMDAOrthoOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, AnglesMDAOrthoOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 // calc_angles_triclinic
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcAnglesTriclinicOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, AnglesTriclinicOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_angles_triclinic(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcAnglesTriclinicOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, AnglesTriclinicOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcAnglesTriclinicOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, AnglesTriclinicOutBoxDouble,
                             double)
 
 (benchmark::State &state) { BM_calc_angles_triclinic(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcAnglesTriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, AnglesTriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcAnglesMDATriclinicOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, AnglesMDATriclinicOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_angles_triclinic_MDA(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcAnglesMDATriclinicOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, AnglesMDATriclinicOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcAnglesMDATriclinicOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, AnglesMDATriclinicOutBoxDouble,
                             double)
 
 (benchmark::State &state) { BM_calc_angles_triclinic_MDA(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcAnglesMDATriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, AnglesMDATriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 // DIHERALS
@@ -570,87 +570,87 @@ BENCHMARK_REGISTER_F(CoordinatesBench, CalcAnglesMDATriclinicOutBoxDouble)->Rang
 
 // calc_dihedrals
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DihedralsFloat,
                             float)
 (benchmark::State &state) { BM_calc_dihedrals(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DihedralsFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DihedralsDouble,
                             double)
 (benchmark::State &state) { BM_calc_dihedrals(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DihedralsDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsMDAFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DihedralsMDAFloat,
                             float)
 (benchmark::State &state) { BM_calc_dihedrals_MDA(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsMDAFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DihedralsMDAFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsMDADouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DihedralsMDADouble,
                             double)
 (benchmark::State &state) { BM_calc_dihedrals_MDA(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsMDADouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DihedralsMDADouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 // calc_dihedrals_ortho
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsOrthoOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DihedralsOrthoOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_dihedrals_ortho(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsOrthoOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DihedralsOrthoOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsOrthoOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DihedralsOrthoOutBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_dihedrals_ortho(state); }
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsMDAOrthoOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DihedralsMDAOrthoOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_dihedrals_ortho_MDA(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsMDAOrthoOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DihedralsMDAOrthoOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsMDAOrthoOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DihedralsMDAOrthoOutBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_dihedrals_ortho_MDA(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsMDAOrthoOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DihedralsMDAOrthoOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 // calc_dihedrals_triclinic
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsTriclinicOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DihedralsTriclinicOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_dihedrals_triclinic(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsTriclinicOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DihedralsTriclinicOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsTriclinicOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DihedralsTriclinicOutBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_dihedrals_triclinic(state); }
 
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsTriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DihedralsTriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsMDATriclinicOutBoxFloat,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DihedralsMDATriclinicOutBoxFloat,
                             float)
 (benchmark::State &state) { BM_calc_dihedrals_triclinic_MDA(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsMDATriclinicOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DihedralsMDATriclinicOutBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
-BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, CalcDihedralsMDATriclinicOutBoxDouble,
+BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DihedralsMDATriclinicOutBoxDouble,
                             double)
 (benchmark::State &state) { BM_calc_dihedrals_triclinic_MDA(state); }
 
-BENCHMARK_REGISTER_F(CoordinatesBench, CalcDihedralsMDATriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+BENCHMARK_REGISTER_F(CoordinatesBench, DihedralsMDATriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 
