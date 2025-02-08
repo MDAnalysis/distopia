@@ -10,7 +10,7 @@
 #include <random>
 
 #include "distopia.h"
-#include "compare/distances.h"
+#include "compare/calc_distances.h"
 
 
 #define BOXSIZE 30
