@@ -2,48 +2,48 @@
 
 ## API documentation for the `distopia` python layer
 
-::: distopia.calc_distances_no_box
+::: distopia.distances_no_box
     :docstring:
 
-::: distopia.calc_distances_ortho
+::: distopia.distances_ortho
     :docstring:
 
-::: distopia.calc_distances_triclinic
+::: distopia.distances_triclinic
     :docstring:
 
-::: distopia.calc_angles_no_box
+::: distopia.angles_no_box
     :docstring:
 
-::: distopia.calc_angles_ortho
+::: distopia.angles_ortho
     :docstring:
 
-::: distopia.calc_angles_triclinic
+::: distopia.angles_triclinic
     :docstring:
 
-::: distopia.calc_dihedrals_no_box
+::: distopia.dihedrals_no_box
     :docstring:
 
 
-::: distopia.calc_dihedrals_ortho
+::: distopia.dihedrals_ortho
     :docstring:
 
-::: distopia.calc_dihedrals_triclinic
+::: distopia.dihedrals_triclinic
     :docstring:
 
-::: distopia.calc_distance_array_no_box
+::: distopia.distance_array_no_box
     :docstring:
 
-::: distopia.calc_distance_array_ortho
+::: distopia.distance_array_ortho
     :docstring:
 
-::: distopia.calc_distance_array_triclinic
+::: distopia.distance_array_triclinic
     :docstring:
 
-::: distopia.calc_self_distance_array_no_box
+::: distopia.self_distance_array_no_box
     :docstring:
 
-::: distopia.calc_self_distance_array_ortho
+::: distopia.self_distance_array_ortho
     :docstring:
 
-::: distopia.calc_self_distance_array_triclinic
+::: distopia.self_distance_array_triclinic
     :docstring:

@@ -6,7 +6,7 @@
 #include "distopia.h"
 #include "test_utils.h"
 #include "test_fixtures.h"
-#include "compare/calc_distances.h"
+#include "compare/distances.h"
 
 using testing::Types;
 typedef Types<float, double> ScalarTypes;
@@ -31,7 +31,7 @@ TYPED_TEST(CoordinatesTest, DistancesOrthoMatchesMDA)
 
     using ctype = ScalarToCoordinateT<TypeParam>;
 
-    _calc_bond_distance_ortho((ctype*)this->coords0,
+    _bond_distance_ortho((ctype*)this->coords0,
                               (ctype*)this->coords1, this->nresults,
                               this->box, this->ref);
     distopia::DistancesOrtho(this->coords0, this->coords1, this->nresults, this->box,
@@ -50,7 +50,7 @@ TYPED_TEST(CoordinatesTest, DistancesNoBoxMatchesMDA)
 
   using ctype = ScalarToCoordinateT<TypeParam>;
 
-  _calc_bond_distance((ctype*)this->coords0, (ctype*)this->coords1,
+  _bond_distance((ctype*)this->coords0, (ctype*)this->coords1,
                       this->nresults, this->ref);
   distopia::DistancesNoBox(this->coords0, this->coords1, this->nresults, this->results);
 
@@ -86,7 +86,7 @@ TYPED_TEST(CoordinatesTest, DistancesTriclinicMatchesMDA)
 
   distopia::DistancesTriclinic(this->coords0, this->coords1, this->nresults, this->triclinic_box, this->results);
 
-  _calc_bond_distance_triclinic((ctype*)this->coords0, (ctype*)this->coords1,
+  _bond_distance_triclinic((ctype*)this->coords0, (ctype*)this->coords1,
                       this->nresults, this->triclinic_box, this->ref);
 
 
@@ -104,7 +104,7 @@ TYPED_TEST(CoordinatesTest, AnglesOrthoMatchesMDA)
 
   using ctype = ScalarToCoordinateT<TypeParam>;
 
-  _calc_angle_ortho((ctype*)this->coords0, (ctype*)this->coords1,
+  _angle_ortho((ctype*)this->coords0, (ctype*)this->coords1,
                              (ctype*)this->coords2, this->nresults, this->box, this->ref);
   distopia::AnglesOrtho(this->coords0, this->coords1, this->coords2, this->nresults, this->box,
                  this->results);
@@ -122,7 +122,7 @@ TYPED_TEST(CoordinatesTest, AnglesNoBoxMatchesMDA)
 
   using ctype = ScalarToCoordinateT<TypeParam>;
 
-  _calc_angle((ctype*)this->coords0, (ctype*)this->coords1, (ctype*)this->coords2,
+  _angle((ctype*)this->coords0, (ctype*)this->coords1, (ctype*)this->coords2,
                       this->nresults, this->ref);
   distopia::AnglesNoBox(this->coords0, this->coords1, this->coords2, this->nresults, this->results);
 
@@ -152,7 +152,7 @@ TYPED_TEST(CoordinatesTest, AnglesTriclinicMatchesMDA)
     distopia::AnglesTriclinic(this->coords0, this->coords1, this->coords2,
                                   this->nresults, this->triclinic_box, this->results);
 
-    _calc_angle_triclinic((ctype*)this->coords0, (ctype*)this->coords1, (ctype*)this->coords2,
+    _angle_triclinic((ctype*)this->coords0, (ctype*)this->coords1, (ctype*)this->coords2,
                           this->nresults, this->triclinic_box, this->ref);
 
     for (std::size_t i = 0; i < this->nresults; i++)
@@ -168,7 +168,7 @@ TYPED_TEST(CoordinatesTest, DihedralsOrthoMatchesMDA)
 
   using ctype = ScalarToCoordinateT<TypeParam>;
 
-  _calc_dihedral_ortho((ctype*)this->coords0, (ctype*)this->coords1,
+  _dihedral_ortho((ctype*)this->coords0, (ctype*)this->coords1,
                              (ctype*)this->coords2, (ctype*)this->coords3, this->nresults, this->box, this->ref);
   distopia::DihedralsOrtho(this->coords0, this->coords1, this->coords2, this->coords3, this->nresults, this->box, this->results);
 
@@ -185,7 +185,7 @@ TYPED_TEST(CoordinatesTest, DihedralsNoBoxMatchesMDA)
 
   using ctype = ScalarToCoordinateT<TypeParam>;
 
-  _calc_dihedral((ctype*)this->coords0, (ctype*)this->coords1, (ctype*)this->coords2,
+  _dihedral((ctype*)this->coords0, (ctype*)this->coords1, (ctype*)this->coords2,
                       (ctype*)this->coords3, this->nresults, this->ref);
   distopia::DihedralsNoBox(this->coords0, this->coords1, this->coords2, this->coords3, this->nresults, this->results);
 
@@ -216,7 +216,7 @@ TYPED_TEST(CoordinatesTest, DihedralsTriclinicMatchesMDA)
     distopia::DihedralsTriclinic(this->coords0, this->coords1, this->coords2, this->coords3,
                                      this->nresults, this->triclinic_box, this->results);
 
-    _calc_dihedral_triclinic((ctype*)this->coords0, (ctype*)this->coords1, (ctype*)this->coords2,
+    _dihedral_triclinic((ctype*)this->coords0, (ctype*)this->coords1, (ctype*)this->coords2,
                              (ctype*)this->coords3, this->nresults, this->triclinic_box, this->ref);
 
     for (std::size_t i = 0; i < this->nresults; i++)
@@ -232,7 +232,7 @@ TYPED_TEST(DistanceArrayCoordinates, DistanceArrayOrthoMatchesMDA) {
 
     using ctype = ScalarToCoordinateT<TypeParam>;
 
-    _calc_distance_array_ortho((ctype*)this->coordsA, this->ncoordsA,
+    _distance_array_ortho((ctype*)this->coordsA, this->ncoordsA,
                               (ctype*)this->coordsB, this->ncoordsB,
                               this->box, this->ref);
 
@@ -252,7 +252,7 @@ TYPED_TEST(DistanceArrayCoordinates, DistanceArrayOrthoMatchesMDAWide) {
 
     using ctype = ScalarToCoordinateT<TypeParam>;
 
-    _calc_distance_array_ortho((ctype*)this->coordsA, this->ncoordsA,
+    _distance_array_ortho((ctype*)this->coordsA, this->ncoordsA,
                               (ctype*)this->coordsB, this->ncoordsB,
                               this->box, this->ref);
 
@@ -273,7 +273,7 @@ TYPED_TEST(DistanceArrayCoordinates, DistanceArrayOrthoMatchesMDAScalarPath) {
 
     using ctype = ScalarToCoordinateT<TypeParam>;
 
-    _calc_distance_array_ortho((ctype*)this->coordsA, this->ncoordsA,
+    _distance_array_ortho((ctype*)this->coordsA, this->ncoordsA,
                               (ctype*)this->coordsB, this->ncoordsB,
                               this->box, this->ref);
 
@@ -291,7 +291,7 @@ TYPED_TEST(DistanceArrayCoordinates, DistanceArrayNoBoxMatchesMDA) {
 
     using ctype = ScalarToCoordinateT<TypeParam>;
 
-    _calc_distance_array((ctype*)this->coordsA, this->ncoordsA,
+    _distance_array((ctype*)this->coordsA, this->ncoordsA,
                                (ctype*)this->coordsB, this->ncoordsB,
                                this->ref);
 
@@ -311,7 +311,7 @@ TYPED_TEST(DistanceArrayCoordinates, DistanceArrayNoBoxMatchesMDAScalarPath) {
 
     using ctype = ScalarToCoordinateT<TypeParam>;
 
-    _calc_distance_array((ctype*)this->coordsA, this->ncoordsA,
+    _distance_array((ctype*)this->coordsA, this->ncoordsA,
                                (ctype*)this->coordsB, this->ncoordsB,
                                this->ref);
 
@@ -332,7 +332,7 @@ TYPED_TEST(DistanceArrayCoordinates, DistanceArrayTriclinicMatchesMDA) {
     distopia::DistanceArrayTriclinic(this->coordsA, this->coordsB, this->ncoordsA, this->ncoordsB,
                                      this->triclinic_box, this->results);
 
-    _calc_distance_array_triclinic((ctype*)this->coordsA, this->ncoordsA,
+    _distance_array_triclinic((ctype*)this->coordsA, this->ncoordsA,
                                (ctype*)this->coordsB, this->ncoordsB,
                                this->triclinic_box, this->ref);
 
@@ -352,7 +352,7 @@ TYPED_TEST(DistanceArrayCoordinates, DistanceArrayTriclinicMatchesMDAScalarPath)
     distopia::DistanceArrayTriclinic(this->coordsA, this->coordsB, this->ncoordsA, this->ncoordsB,
                                      this->triclinic_box, this->results);
 
-    _calc_distance_array_triclinic((ctype*)this->coordsA, this->ncoordsA,
+    _distance_array_triclinic((ctype*)this->coordsA, this->ncoordsA,
                                (ctype*)this->coordsB, this->ncoordsB,
                                this->triclinic_box, this->ref);
 
@@ -371,7 +371,7 @@ TYPED_TEST(DistanceArrayCoordinates, SelfDistanceArrayNoBox) {
 
     distopia::SelfDistanceArrayNoBox(this->coordsA, this->ncoordsA, this->results);
 
-    _calc_self_distance_array((ctype*)this->coordsA, this->ncoordsA, this->ref);
+    _self_distance_array((ctype*)this->coordsA, this->ncoordsA, this->ref);
 
     size_t nresults = nvals * (nvals-1) / 2;
     //nresults >>= 2;
@@ -391,7 +391,7 @@ TYPED_TEST(DistanceArrayCoordinates, SelfDistanceArrayOrtho) {
 
     distopia::SelfDistanceArrayOrtho(this->coordsA, this->ncoordsA, this->box, this->results);
 
-    _calc_self_distance_array_ortho((ctype*)this->coordsA, this->ncoordsA, this->box, this->ref);
+    _self_distance_array_ortho((ctype*)this->coordsA, this->ncoordsA, this->box, this->ref);
 
     size_t nresults = nvals * (nvals-1) / 2;
     //nresults >>= 2;
@@ -411,7 +411,7 @@ TYPED_TEST(DistanceArrayCoordinates, SelfDistanceArrayTriclinic) {
 
     distopia::SelfDistanceArrayTriclinic(this->coordsA, this->ncoordsA, this->triclinic_box, this->results);
 
-    _calc_self_distance_array_triclinic((ctype*)this->coordsA, this->ncoordsA, this->triclinic_box, this->ref);
+    _self_distance_array_triclinic((ctype*)this->coordsA, this->ncoordsA, this->triclinic_box, this->ref);
 
     size_t nresults = nvals * (nvals-1) / 2;
     //nresults >>= 2;
@@ -431,7 +431,7 @@ TYPED_TEST(DistanceArrayCoordinates, SelfDistanceArrayNoBoxScalar) {
 
     distopia::SelfDistanceArrayNoBox(this->coordsA, this->ncoordsA, this->results);
 
-    _calc_self_distance_array((ctype*)this->coordsA, this->ncoordsA, this->ref);
+    _self_distance_array((ctype*)this->coordsA, this->ncoordsA, this->ref);
 
     size_t nresults = nvals * (nvals-1) / 2;
     //nresults >>= 2;
@@ -451,7 +451,7 @@ TYPED_TEST(DistanceArrayCoordinates, SelfDistanceArrayOrthoScalar) {
 
     distopia::SelfDistanceArrayOrtho(this->coordsA, this->ncoordsA, this->box, this->results);
 
-    _calc_self_distance_array_ortho((ctype*)this->coordsA, this->ncoordsA, this->box, this->ref);
+    _self_distance_array_ortho((ctype*)this->coordsA, this->ncoordsA, this->box, this->ref);
 
     size_t nresults = nvals * (nvals-1) / 2;
     //nresults >>= 2;
@@ -471,7 +471,7 @@ TYPED_TEST(DistanceArrayCoordinates, SelfDistanceArrayTriclinicScalar) {
 
     distopia::SelfDistanceArrayTriclinic(this->coordsA, this->ncoordsA, this->triclinic_box, this->results);
 
-    _calc_self_distance_array_triclinic((ctype*)this->coordsA, this->ncoordsA, this->triclinic_box, this->ref);
+    _self_distance_array_triclinic((ctype*)this->coordsA, this->ncoordsA, this->triclinic_box, this->ref);
 
     size_t nresults = nvals * (nvals-1) / 2;
     //nresults >>= 2;

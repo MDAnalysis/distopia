@@ -410,7 +410,7 @@ static void _triclinic_pbc(ScalarToCoordinateT<T>* coords, uint64_t numcoords, U
 }
 
 template <typename T>
-static void _calc_distance_array(ScalarToCoordinateT<T>* ref, uint64_t numref, ScalarToCoordinateT<T>* conf,
+static void _distance_array(ScalarToCoordinateT<T>* ref, uint64_t numref, ScalarToCoordinateT<T>* conf,
                                  uint64_t numconf, T* distances)
 {
 #ifdef PARALLEL
@@ -429,7 +429,7 @@ static void _calc_distance_array(ScalarToCoordinateT<T>* ref, uint64_t numref, S
 }
 
 template <typename T, typename U>
-static void _calc_distance_array_ortho(ScalarToCoordinateT<T>* ref, uint64_t numref, ScalarToCoordinateT<T>* conf,
+static void _distance_array_ortho(ScalarToCoordinateT<T>* ref, uint64_t numref, ScalarToCoordinateT<T>* conf,
                                        uint64_t numconf, U* box, T* distances)
 {
   U inverse_box[3];
@@ -455,7 +455,7 @@ static void _calc_distance_array_ortho(ScalarToCoordinateT<T>* ref, uint64_t num
 }
 
 template <typename T, typename U>
-static void _calc_distance_array_triclinic(ScalarToCoordinateT<T>* ref, uint64_t numref,
+static void _distance_array_triclinic(ScalarToCoordinateT<T>* ref, uint64_t numref,
                                            ScalarToCoordinateT<T>* conf, uint64_t numconf,
                                            U* box, T* distances)
 {
@@ -480,7 +480,7 @@ static void _calc_distance_array_triclinic(ScalarToCoordinateT<T>* ref, uint64_t
 }
 
 template <typename T>
-static void _calc_self_distance_array(ScalarToCoordinateT<T>* ref, uint64_t numref,
+static void _self_distance_array(ScalarToCoordinateT<T>* ref, uint64_t numref,
                                       T* distances)
 {
     uint64_t distpos = 0;
@@ -505,7 +505,7 @@ static void _calc_self_distance_array(ScalarToCoordinateT<T>* ref, uint64_t numr
 }
 
 template <typename T, typename U>
-static void _calc_self_distance_array_ortho(ScalarToCoordinateT<T>* ref, uint64_t numref,
+static void _self_distance_array_ortho(ScalarToCoordinateT<T>* ref, uint64_t numref,
                                             U* box, T* distances)
 {
   U inverse_box[3];
@@ -541,7 +541,7 @@ static void _calc_self_distance_array_ortho(ScalarToCoordinateT<T>* ref, uint64_
 
 
 template <typename T, typename U>
-static void _calc_self_distance_array_triclinic(ScalarToCoordinateT<T>* ref, uint64_t numref,
+static void _self_distance_array_triclinic(ScalarToCoordinateT<T>* ref, uint64_t numref,
                                                 U* box, T *distances)
 {
   _triclinic_pbc<T, U>(ref, numref, box);
@@ -595,7 +595,7 @@ void _coord_transform(ScalarToCoordinateT<T>* coords, uint64_t numCoords, U* box
 }
 
 template <typename T>
-static void _calc_bond_distance(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
+static void _bond_distance(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
                                 uint64_t numatom, T* distances)
 {
 #ifdef PARALLEL
@@ -612,7 +612,7 @@ static void _calc_bond_distance(ScalarToCoordinateT<T>* atom1, ScalarToCoordinat
 }
 
 template <typename T, typename U>
-static void _calc_bond_distance_ortho(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
+static void _bond_distance_ortho(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
                                       uint64_t numatom, U* box, T* distances)
 {
   U inverse_box[3];
@@ -637,7 +637,7 @@ static void _calc_bond_distance_ortho(ScalarToCoordinateT<T>* atom1, ScalarToCoo
 }
 
 template <typename T, typename U>
-static void _calc_bond_distance_triclinic(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
+static void _bond_distance_triclinic(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
                                           uint64_t numatom, U* box,
                                           T* distances)
 {
@@ -660,7 +660,7 @@ static void _calc_bond_distance_triclinic(ScalarToCoordinateT<T>* atom1, ScalarT
 }
 
 template <typename T>
-static void _calc_angle(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
+static void _angle(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
                         ScalarToCoordinateT<T>* atom3, uint64_t numatom, T* angles)
 {
 #ifdef PARALLEL
@@ -690,7 +690,7 @@ static void _calc_angle(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* a
 }
 
 template <typename T, typename U>
-static void _calc_angle_ortho(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
+static void _angle_ortho(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
                               ScalarToCoordinateT<T>* atom3, uint64_t numatom,
                               U* box, T* angles)
 {
@@ -734,7 +734,7 @@ static void _calc_angle_ortho(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT
 
 
 template <typename T, typename U>
-static void _calc_angle_triclinic(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
+static void _angle_triclinic(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
                                   ScalarToCoordinateT<T>* atom3, uint64_t numatom,
                                   U* box, T* angles)
 {
@@ -773,7 +773,7 @@ static void _calc_angle_triclinic(ScalarToCoordinateT<T>* atom1, ScalarToCoordin
 
 
 template <typename T>
-static void _calc_dihedral_angle(T* va, T* vb, T* vc, T* result)
+static void _dihedral_angle(T* va, T* vb, T* vc, T* result)
 {
   // Returns atan2 from vectors va, vb, vc
   T n1[3], n2[3];
@@ -812,7 +812,7 @@ static void _calc_dihedral_angle(T* va, T* vb, T* vc, T* result)
 
 
 template <typename T>
-static void _calc_dihedral(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
+static void _dihedral(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
                            ScalarToCoordinateT<T>* atom3, ScalarToCoordinateT<T>* atom4,
                            uint64_t numatom, T* angles)
 {
@@ -835,13 +835,13 @@ static void _calc_dihedral(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>
     vc[1] = atom4[i][1] - atom3[i][1];
     vc[2] = atom4[i][2] - atom3[i][2];
 
-    _calc_dihedral_angle<T>(va, vb, vc, angles + i);
+    _dihedral_angle<T>(va, vb, vc, angles + i);
   }
 }
 
 
 template <typename T, typename U>
-static void _calc_dihedral_ortho(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
+static void _dihedral_ortho(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
                                  ScalarToCoordinateT<T>* atom3, ScalarToCoordinateT<T>* atom4,
                                  uint64_t numatom, U* box, T* angles)
 {
@@ -873,12 +873,12 @@ static void _calc_dihedral_ortho(ScalarToCoordinateT<T>* atom1, ScalarToCoordina
     vc[2] = atom4[i][2] - atom3[i][2];
     minimum_image(vc, box, inverse_box);
 
-    _calc_dihedral_angle<T>(va, vb, vc, angles + i);
+    _dihedral_angle<T>(va, vb, vc, angles + i);
   }
 }
 
 template <typename T, typename U>
-static void _calc_dihedral_triclinic(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
+static void _dihedral_triclinic(ScalarToCoordinateT<T>* atom1, ScalarToCoordinateT<T>* atom2,
                                      ScalarToCoordinateT<T>* atom3, ScalarToCoordinateT<T>* atom4,
                                      uint64_t numatom, U* box, T* angles)
 {
@@ -909,7 +909,7 @@ static void _calc_dihedral_triclinic(ScalarToCoordinateT<T>* atom1, ScalarToCoor
     vc[2] = atom4[i][2] - atom3[i][2];
     minimum_image_triclinic(vc, box);
 
-    _calc_dihedral_angle<T>(va, vb, vc, angles + i);
+    _dihedral_angle<T>(va, vb, vc, angles + i);
   }
 }
 

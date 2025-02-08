@@ -18,11 +18,11 @@ import distopia
 N = 10000
 coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 coordinates1 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
-result = distopia.calc_distances_no_box(coordinates0, coordinates1)
+result = distopia.distances_no_box(coordinates0, coordinates1)
 
 # alternatively we can pass in a buffer to use for the results.
 buffer = np.empty(N, dtype=np.float32)
-result = distopia.calc_distances_no_box(coordinates0, coordinates1, results=buffer)
+result = distopia.distances_no_box(coordinates0, coordinates1, results=buffer)
 ```
 
 ### Orthorhombic periodic boundary conditions
@@ -38,7 +38,7 @@ N = 10000
 coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 coordinates1 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 box = np.asarray([10, 10, 10]).astype(np.float32)
-result = distopia.calc_distances_ortho(coordinates0, coordinates1, box)
+result = distopia.distances_ortho(coordinates0, coordinates1, box)
 ```
 
 ### Triclinic periodic boundary conditions
@@ -53,7 +53,7 @@ N = 10000
 coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 coordinates1 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 box = np.asarray([[10, 0, 0], [0, 10, 0], [0, 0, 10]]).astype(np.float32)
-result = distopia.calc_distances_triclinic(coordinates0, coordinates1, box)
+result = distopia.distances_triclinic(coordinates0, coordinates1, box)
 ```
 
 ### Note
@@ -73,7 +73,7 @@ N = 10000
 coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 coordinates1 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 coordinates2 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
-result = distopia.calc_angles_no_box(coordinates0, coordinates1, coordinates2)
+result = distopia.angles_no_box(coordinates0, coordinates1, coordinates2)
 ```
 
 
@@ -91,7 +91,7 @@ coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 coordinates1 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 coordinates2 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 coordinates3 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
-result = distopia.calc_dihedrals_no_box(coordinates0, coordinates1, coordinates2, coordinates3)
+result = distopia.dihedrals_no_box(coordinates0, coordinates1, coordinates2, coordinates3)
 ```
 
 ## Distance arrays
@@ -109,12 +109,12 @@ N = 10000
 M = 1000
 coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
 coordinates1 = np.random.rand(3 * M).reshape(M, 3).astype(np.float32)
-result = distopia.calc_distance_array_no_box(coordinates0, coordinates1)
+result = distopia.distance_array_no_box(coordinates0, coordinates1)
 result # -> will be NxM
 
 # passing in a result buffer is also possible for distance arrays 
 buffer = np.empty((N,M), dtype=np.float32)
-result = distopia.calc_distance_array_no_box(coordinates0, coordinates1, results=buffer)
+result = distopia.distance_array_no_box(coordinates0, coordinates1, results=buffer)
 ```
 
 ### Self-pairwise distances
@@ -128,7 +128,7 @@ import distopia
 # make N x 3 coordinate array
 N = 10000
 coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
-result = distopia.calc_self_distance_array_no_box(coordinates0)
+result = distopia.self_distance_array_no_box(coordinates0)
 result # -> will be NxN with result
 ```
 

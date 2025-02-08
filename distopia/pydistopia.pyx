@@ -168,7 +168,7 @@ def  _check_shapes(*args):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def calc_distances_no_box(floating[:, ::1] coords0,
+def distances_no_box(floating[:, ::1] coords0,
                       floating[:, ::1] coords1,
                       results=None):
     """ulate pairwise distances between coords0 and coords1 with no periodic boundary conditions
@@ -210,7 +210,7 @@ def calc_distances_no_box(floating[:, ::1] coords0,
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def  calc_distances_ortho(floating[:, ::1] coords0,
+def  distances_ortho(floating[:, ::1] coords0,
                       floating[:, ::1] coords1,
                       floating[::1] box,
                       floating[::1] results=None):
@@ -257,7 +257,7 @@ def  calc_distances_ortho(floating[:, ::1] coords0,
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def  calc_distances_triclinic(floating[:, ::1] coords0,
+def  distances_triclinic(floating[:, ::1] coords0,
                           floating[:, ::1] coords1,
                           floating[:, ::1] box,
                           floating[::1] results=None):
@@ -302,7 +302,7 @@ def  calc_distances_triclinic(floating[:, ::1] coords0,
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def calc_angles_no_box(
+def angles_no_box(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[:, ::1] coords2,
@@ -347,7 +347,7 @@ def calc_angles_no_box(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def calc_angles_ortho(
+def angles_ortho(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[:, ::1] coords2,
@@ -396,7 +396,7 @@ def calc_angles_ortho(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def calc_angles_triclinic(
+def angles_triclinic(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[:, ::1] coords2,
@@ -445,7 +445,7 @@ def calc_angles_triclinic(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def calc_dihedrals_no_box(
+def dihedrals_no_box(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[:, ::1] coords2,
@@ -492,7 +492,7 @@ def calc_dihedrals_no_box(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def calc_dihedrals_ortho(
+def dihedrals_ortho(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[:, ::1] coords2,
@@ -542,7 +542,7 @@ def calc_dihedrals_ortho(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def calc_dihedrals_triclinic(
+def dihedrals_triclinic(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[:, ::1] coords2,
@@ -593,7 +593,7 @@ def calc_dihedrals_triclinic(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def calc_distance_array_no_box(
+def distance_array_no_box(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[:, ::1] results=None):
@@ -641,7 +641,7 @@ def calc_distance_array_no_box(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def calc_distance_array_ortho(
+def distance_array_ortho(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[::1] box,
@@ -691,7 +691,7 @@ def calc_distance_array_ortho(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def calc_distance_array_triclinic(
+def distance_array_triclinic(
      floating[:, ::1] coords0,
      floating[:, ::1] coords1,
      floating[:, ::1] box,
@@ -745,7 +745,7 @@ def calc_distance_array_triclinic(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def calc_self_distance_array_no_box(
+def self_distance_array_no_box(
      floating[:, ::1] coords0,
      floating[::1] results=None):
     """ulate self-pairwise distance matrix between coordinates with no periodic boundary conditions
@@ -797,7 +797,7 @@ def calc_self_distance_array_no_box(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def calc_self_distance_array_ortho(
+def self_distance_array_ortho(
      floating[:, ::1] coords0,
      floating[::1] box,
      floating[::1] results=None):
@@ -852,7 +852,7 @@ def calc_self_distance_array_ortho(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def calc_self_distance_array_triclinic(
+def self_distance_array_triclinic(
      floating[:, ::1] coords0,
      floating[:, ::1] box,
      floating[::1] results=None):
