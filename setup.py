@@ -13,8 +13,8 @@ setup(
     name="distopia",
     packages=['distopia'],
     cmake_args=['-DBUILD_PYTHON=ON'],
-    python_requires=">=3.9",
+    python_requires=">=3.11",
     install_requires=[
-        "numpy>=1.20.0"
+        "numpy>=1.26.0"
     ],
 )
