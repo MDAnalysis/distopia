@@ -21,7 +21,7 @@ dependencies = [
     "cython",
     "numpy",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 
 
 [tool.setuptools]
