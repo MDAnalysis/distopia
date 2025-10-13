@@ -11,7 +11,7 @@ dependencies:
 - ninja
 - pytest
 - scikit-build
-- clang <=15.0
-- clangxx <=15.0
+- clang 
+- clangxx
 - libxcrypt
 - versioningit
