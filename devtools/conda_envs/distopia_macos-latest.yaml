@@ -5,13 +5,13 @@ dependencies:
 - cmake
 - make
 - pip
-- python >=3.9
+- python >=3.11
 - cython
 - numpy
 - ninja
 - pytest
 - scikit-build
-- clang <=15.0
-- clangxx <=15.0
+- clang 
+- clangxx
 - libxcrypt
 - versioningit

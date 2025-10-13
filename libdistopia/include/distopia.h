@@ -11,6 +11,8 @@
 
 // set EMU 128 to broken so that HWY_SCALAR is the baseline dispatch target
 #define HWY_BROKEN_EMU128 1
+#define HWY_DISABLE_TARGETS (HWY_SVE | HWY_SVE2)
+
 // compile all attainable targets
 #define HWY_COMPILE_ALL_ATTAINABLE
 
