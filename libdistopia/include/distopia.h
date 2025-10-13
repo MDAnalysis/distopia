@@ -11,9 +11,7 @@
 
 // set EMU 128 to broken so that HWY_SCALAR is the baseline dispatch target
 #define HWY_BROKEN_EMU128 1
-#define HWY_BROKEN_SVE 1 // disable SVE as doesn't allow sizeless vectors in structs
-#define HWY_BROKEN_SVE2 1 // disable SVE2 as doesn't allow sizeless vectors in structs
-#define HWY_BROKEN_MSVC 1 // MSVC just refuses to compile all together
+#define HWY_DISABLE_TARGETS (HWY_SVE | HWY_SVE2)
 
 // compile all attainable targets
 #define HWY_COMPILE_ALL_ATTAINABLE
