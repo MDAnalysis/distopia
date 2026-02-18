@@ -112,6 +112,12 @@ namespace distopia {
 
                 return hn::Sqrt(acc);
             }
+
+            void MinimizeVectorsInPrimaryUnitCell(V &vx,
+                                                    V &vy,
+                                                    V &vz) const {
+                MinimiseVectors(vx, vy, vz);
+            }
         };
 
         template <class D, typename T = hn::TFromD<D>, typename V = hn::VFromD<D>>
@@ -257,6 +263,13 @@ namespace distopia {
                 acc = hn::Sqrt(acc);
 
                 return acc;
+            }
+
+            void MinimizeVectorsInPrimaryUnitCell(V &vx,
+                                                    V &vy,
+                                                    V &vz) const {
+                ShiftIntoPrimaryUnitCell(vx, vy, vz);
+                MinimiseVectors(vx, vy, vz);
             }
         };
 
@@ -1037,6 +1050,31 @@ namespace distopia {
             }
         }
 
+        template <typename T, typename B>
+        void MinimizeVectors(const T *coords, int n, T *output, B &box) {
+            const hn::ScalableTag<T> d;
+            int nlanes = hn::Lanes(d);
+
+            auto a_x = hn::Undefined(d);
+            auto a_y = hn::Undefined(d);
+            auto a_z = hn::Undefined(d);
+
+            const T *a_src;
+            T *dst;
+
+            a_src = &coords[0];
+            dst = output;
+
+            for (int i=0; i<n; i += nlanes) {
+                // to deal with end of loop, can't load starting further than a[n - nlanes] so clip i to that
+                size_t p = HWY_MAX(HWY_MIN(i, n - nlanes), 0);
+
+                hn::LoadInterleaved3(d, a_src + 3 * p, a_x, a_y, a_z);
+                box.MinimizeVectorsInPrimaryUnitCell(a_x, a_y, a_z);
+                hn::StoreInterleaved3(a_x, a_y, a_z, d, dst + 3 * p);
+            }
+        }
+
         template<typename T>
         void DistancesNoBoxHwy(const T *a, const T *b, int n, T *out) {
             hn::ScalableTag<T> d;
@@ -1247,6 +1285,18 @@ namespace distopia {
             const TriclinicBox vbox(d, box);
 
             SelfDistanceArrayIdx(coords, idx, n, out, vbox);
+        }
+        template<typename T>
+        void MinimizeVectorsOrthoHwy(const T *coords, int n, const T *box, T *output) {
+            hn::ScalableTag<T> d;
+            const OrthogonalBox vbox(d, box);
+            MinimizeVectors(coords, n, output, vbox);
+        }
+        template<typename T>
+        void MinimizeVectorsTriclinicHwy(const T *coords, int n, const T *box, T *output) {
+            hn::ScalableTag<T> d;
+            const TriclinicBox vbox(d, box);
+            MinimizeVectors(coords, n, output, vbox);
         }
 
         int GetNFloatLanes() {
@@ -1601,6 +1651,30 @@ namespace distopia {
             return distopia::N_SCALAR::SelfDistanceArrayTriclinicIdxHwy<double>(coords, idx, n, box, out);
         }
         HWY_EXPORT_AND_DYNAMIC_DISPATCH_T(SelfDistanceArrayTriclinicIdxHwy<double>)(coords, idx, n, box, out);
+    }
+    template <> void MinimizeVectorsOrtho(const float *vectors, int n, const float* box, float *output) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::MinimizeVectorsOrthoHwy<float>(vectors, n, box, output);
+        }
+        HWY_EXPORT_AND_DYNAMIC_DISPATCH_T(MinimizeVectorsOrthoHwy<float>)(vectors, n, box, output);
+    }
+     template <> void MinimizeVectorsOrtho(const double *vectors, int n, const double *box, double *output) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::MinimizeVectorsOrthoHwy<double>(vectors, n, box, output);
+        }
+        HWY_EXPORT_AND_DYNAMIC_DISPATCH_T(MinimizeVectorsOrthoHwy<double>)(vectors, n, box, output);
+    }
+    template <> void MinimizeVectorsTriclinic(const float *vectors, int n, const float* box, float *output) {
+        if (n < GetNFloatLanes()) {
+            return distopia::N_SCALAR::MinimizeVectorsTriclinicHwy<float>(vectors, n, box, output);
+        }
+        HWY_EXPORT_AND_DYNAMIC_DISPATCH_T(MinimizeVectorsTriclinicHwy<float>)(vectors, n, box, output);
+    }
+     template <> void MinimizeVectorsTriclinic(const double *vectors, int n, const double *box, double *output) {
+        if (n < GetNDoubleLanes()) {
+            return distopia::N_SCALAR::MinimizeVectorsTriclinicHwy<double>(vectors, n, box, output);
+        }
+        HWY_EXPORT_AND_DYNAMIC_DISPATCH_T(MinimizeVectorsTriclinicHwy<double>)(vectors, n, box, output);
     }
 
     std::vector<std::string> DistopiaSupportedAndGeneratedTargets() {
