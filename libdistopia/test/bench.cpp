@@ -11,6 +11,7 @@
 
 #include "distopia.h"
 #include "compare/calc_distances.h"
+#include "compare/calc_distances.hpp"
 
 
 #define BOXSIZE 30
@@ -652,6 +653,135 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DihedralsMDATriclinicOutBoxDouble,
 
 BENCHMARK_REGISTER_F(CoordinatesBench, DihedralsMDATriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
+
+
+template <typename T> class MinimizeVectorsBench : public benchmark::Fixture {
+public:
+    // members
+    size_t ncoords;
+    size_t nelements;
+    T* coords0 = nullptr;
+    T* coords1 = nullptr;
+    T* vectors = nullptr;
+    T* output = nullptr;
+    T box[3];
+    T triclinic_box[9];
+
+    void SetUp(benchmark::State &state) override {
+        ncoords = static_cast<std::size_t>(state.range(0));
+        InitCoords(state.range(0), BOXSIZE, state.range(1));
+    }
+
+    // coordinates range from 0 - delta to BOXSIZE + delta
+    void InitCoords(const size_t n_coords, const double boxsize, const double delta) {
+        ncoords = n_coords;
+        nelements = ncoords * 3;
+        coords0 = new T[nelements];
+        coords1 = new T[nelements];
+        vectors = new T[nelements];
+        output = new T[nelements];
+
+        RandomFloatingPoint<T>(coords0, nelements, 0 - delta, boxsize + delta);
+        RandomFloatingPoint<T>(coords1, nelements, 0 - delta, boxsize + delta);
+
+        for (size_t i = 0; i < nelements; ++i) {
+           vectors[i] = coords1[i] - coords0[i];
+        }
+
+        box[0] = boxsize;
+        box[1] = boxsize;
+        box[2] = boxsize;
+
+        triclinic_box[0] = boxsize;
+        triclinic_box[1] = triclinic_box[2] = 0.0;
+        triclinic_box[3] = boxsize / 5.0;
+        triclinic_box[4] = boxsize;
+        triclinic_box[5] = 0.0;
+        triclinic_box[6] = triclinic_box[7] = boxsize / 5.0;
+        triclinic_box[8] = boxsize;
+    }
+
+    void TearDown(const ::benchmark::State &state) override {
+        delete[] coords0;
+        delete[] coords1;
+        delete[] vectors;
+        delete[] output;
+    }
+
+    void BM_minimize_vectors_ortho_MDA(benchmark::State &state) {
+        for (auto _ : state) {
+            _calc_minimize_vectors_ortho(vectors, ncoords, box, output);
+        }
+        state.SetItemsProcessed(ncoords * state.iterations());
+        state.counters["Per Vector"] = benchmark::Counter(
+            ncoords * state.iterations(),
+            benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+
+    void BM_minimize_vectors_ortho(benchmark::State &state) {
+        for (auto _ : state) {
+            distopia::MinimizeVectorsOrtho(vectors, ncoords, box, output);
+        }
+        state.SetItemsProcessed(ncoords * state.iterations());
+        state.counters["Per Vector"] = benchmark::Counter(
+            ncoords * state.iterations(),
+            benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+
+    void BM_minimize_vectors_triclinic_MDA(benchmark::State &state) {
+      for (auto _ : state) {
+          _calc_minimize_vectors_triclinic(vectors, ncoords, triclinic_box, output);
+      }
+      state.SetItemsProcessed(ncoords * state.iterations());
+      state.counters["Per Vector"] = benchmark::Counter(
+          ncoords * state.iterations(),
+          benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+
+    void BM_minimize_vectors_triclinic(benchmark::State &state) {
+      for (auto _ : state) {
+          distopia::MinimizeVectorsTriclinic(vectors, ncoords, triclinic_box, output);
+      }
+      state.SetItemsProcessed(ncoords * state.iterations());
+      state.counters["Per Vector"] = benchmark::Counter(
+          ncoords * state.iterations(),
+          benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+};
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(MinimizeVectorsBench, MinimizeVectorsMDAOrthoFloat, float)
+(benchmark::State &state) { BM_minimize_vectors_ortho_MDA(state); }
+BENCHMARK_REGISTER_F(MinimizeVectorsBench, MinimizeVectorsMDAOrthoFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(MinimizeVectorsBench, MinimizeVectorsMDAOrthoDouble, double)
+(benchmark::State &state) { BM_minimize_vectors_ortho_MDA(state); }
+BENCHMARK_REGISTER_F(MinimizeVectorsBench, MinimizeVectorsMDAOrthoDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(MinimizeVectorsBench, MinimizeVectorsOrthoFloat, float)
+(benchmark::State &state) { BM_minimize_vectors_ortho(state); }
+BENCHMARK_REGISTER_F(MinimizeVectorsBench, MinimizeVectorsOrthoFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(MinimizeVectorsBench, MinimizeVectorsOrthoDouble, double)
+(benchmark::State &state) { BM_minimize_vectors_ortho(state); }
+BENCHMARK_REGISTER_F(MinimizeVectorsBench, MinimizeVectorsOrthoDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(MinimizeVectorsBench, MinimizeVectorsMDATriclinicFloat, float)
+(benchmark::State &state) { BM_minimize_vectors_triclinic_MDA(state); }
+BENCHMARK_REGISTER_F(MinimizeVectorsBench, MinimizeVectorsMDATriclinicFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(MinimizeVectorsBench, MinimizeVectorsMDATriclinicDouble, double)
+(benchmark::State &state) { BM_minimize_vectors_triclinic_MDA(state); }
+BENCHMARK_REGISTER_F(MinimizeVectorsBench, MinimizeVectorsMDATriclinicDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(MinimizeVectorsBench, MinimizeVectorsTriclinicFloat, float)
+(benchmark::State &state) { BM_minimize_vectors_triclinic(state); }
+BENCHMARK_REGISTER_F(MinimizeVectorsBench, MinimizeVectorsTriclinicFloat)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(MinimizeVectorsBench, MinimizeVectorsTriclinicDouble, double)
+(benchmark::State &state) { BM_minimize_vectors_triclinic(state); }
+BENCHMARK_REGISTER_F(MinimizeVectorsBench, MinimizeVectorsTriclinicDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
 BENCHMARK_MAIN();

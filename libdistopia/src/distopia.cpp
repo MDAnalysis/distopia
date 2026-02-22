@@ -1658,7 +1658,7 @@ namespace distopia {
         }
         HWY_EXPORT_AND_DYNAMIC_DISPATCH_T(MinimizeVectorsOrthoHwy<float>)(vectors, n, box, output);
     }
-     template <> void MinimizeVectorsOrtho(const double *vectors, int n, const double *box, double *output) {
+    template <> void MinimizeVectorsOrtho(const double *vectors, int n, const double *box, double *output) {
         if (n < GetNDoubleLanes()) {
             return distopia::N_SCALAR::MinimizeVectorsOrthoHwy<double>(vectors, n, box, output);
         }
@@ -1670,7 +1670,7 @@ namespace distopia {
         }
         HWY_EXPORT_AND_DYNAMIC_DISPATCH_T(MinimizeVectorsTriclinicHwy<float>)(vectors, n, box, output);
     }
-     template <> void MinimizeVectorsTriclinic(const double *vectors, int n, const double *box, double *output) {
+    template <> void MinimizeVectorsTriclinic(const double *vectors, int n, const double *box, double *output) {
         if (n < GetNDoubleLanes()) {
             return distopia::N_SCALAR::MinimizeVectorsTriclinicHwy<double>(vectors, n, box, output);
         }
