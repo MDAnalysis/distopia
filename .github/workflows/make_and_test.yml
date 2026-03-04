@@ -96,7 +96,7 @@ jobs:
 
     - name: python_test
       # run python API tests
-      run: pytest distopia/tests
+      run: pytest -v -p no:logging distopia/tests
 
 
   external_hwy_no_test:
