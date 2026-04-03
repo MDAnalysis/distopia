@@ -34,13 +34,23 @@ endif()
 if(DISTOPIA_BUILD_TESTS)
 
     set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Enable googlebench tests" FORCE)
+    # Newer Clang warns on __COUNTER__ in #if (C2y extension); googlebench uses -Werror.
+    set(BENCHMARK_ENABLE_WERROR OFF CACHE BOOL "Build googlebench without -Werror" FORCE)
     add_subdirectory("googlebench")
+    # Clang 17+ warns on __COUNTER__ in #if (C2y); -pedantic-errors still makes it fatal for googlebench.
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        target_compile_options(benchmark PRIVATE -Wno-c2y-extensions)
+        target_compile_options(benchmark_main PRIVATE -Wno-c2y-extensions)
+    endif()
 
     add_executable(bench)
     target_sources(bench PRIVATE "test/bench.cpp")
     target_link_libraries(bench PUBLIC benchmark::benchmark)
     target_link_libraries(bench PUBLIC libdistopia)
     target_include_directories(bench PUBLIC  ${CMAKE_CURRENT_LIST_DIR})
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        target_compile_options(bench PRIVATE -Wno-c2y-extensions)
+    endif()
 
 
 
