@@ -1,5 +1,26 @@
 # Building and testing
 
+You can build `distopia` from source.
+
+## Checking out the sources
+Get the latest sources from the repository https://github.com/MDAnalysis/distopia
+```bash
+git clone https://github.com/MDAnalysis/distopia.git
+cd distopia
+```
+
+We also need `highway`, which vendored as a git submodule:
+```bash
+git submodule update --init libdistopia/highway
+```
+
+For testing and benchmarking get `googlebench` and `googletest`:
+```bash
+git submodule update --init libdistopia/googlebench
+git submodule update --init libdistopia/googletest
+```
+
+
 ## Building 
 
 Distopia uses the scikit-build build system. You can build the library easily by first installing the prerequisites.
