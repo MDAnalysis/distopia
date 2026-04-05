@@ -653,5 +653,352 @@ BENCHMARK_TEMPLATE_DEFINE_F(CoordinatesBench, DihedralsMDATriclinicOutBoxDouble,
 BENCHMARK_REGISTER_F(CoordinatesBench, DihedralsMDATriclinicOutBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000000}, {0, 0}, {0, 0}});
 
 
+template <typename T>
+class DistanceArrayCoordinatesBench : public benchmark::Fixture {
+public:
+    int ncoordsA;
+    int ncoordsB;
+    int nresults;
+    T* coordsA = nullptr;
+    T* coordsB = nullptr;
+    T* ref = nullptr;
+    T* results = nullptr;
+    T box[3];
+    T triclinic_box[9];
+
+    void SetUp(benchmark::State &state) override {
+        ncoordsA = static_cast<std::size_t>(state.range(0));
+        ncoordsB = static_cast<std::size_t>(state.range(1));
+
+        InitCoords(state.range(0), state.range(1), BOXSIZE, state.range(2));
+    }
+
+    void InitCoords(int nA, int nB, const double boxsize, const double delta) {
+        ncoordsA = nA;
+        ncoordsB = nB;
+        nresults = nA * nB;
+
+        coordsA = new T[nA * 3];
+        coordsB = new T[nB * 3];
+        ref = new T[nresults];
+        results = new T[nresults];
+
+        RandomFloatingPoint<T>(coordsA, nA * 3, 0 - delta, boxsize + delta);
+        RandomFloatingPoint<T>(coordsB, nB * 3, 0 - delta, boxsize + delta);
+
+        box[0] = boxsize;
+        box[1] = boxsize;
+        box[2] = boxsize;
+
+        triclinic_box[0] = boxsize;  // lx
+        triclinic_box[1] = 0.0;  // must be 0
+        triclinic_box[2] = 0.0;  // "
+        triclinic_box[3] = 0.0;  // xy
+        triclinic_box[4] = boxsize;  // ly
+        triclinic_box[5] = 0.0;  // must be zero
+        triclinic_box[6] = 0.0;  // xz
+        triclinic_box[7] = 0.0;  // yz
+        triclinic_box[8] = boxsize;  // lz
+    }
+
+    void TearDown(const ::benchmark::State &state) override {
+        delete[] coordsA;
+        delete[] coordsB;
+        delete[] ref;
+        delete[] results;
+    }
+
+    void BM_distance_array_MDA(benchmark::State &state) {
+        using ctype = ScalarToCoordinateT<T>;
+
+        for (auto _ : state) {
+            _distance_array((ctype*)coordsA, ncoordsA, (ctype*)coordsB, ncoordsB, ref);
+        }
+        state.SetItemsProcessed(nresults * state.iterations());
+        state.counters["Per Result"] = benchmark::Counter(
+            nresults * state.iterations(),
+            benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+
+    void BM_distance_array(benchmark::State &state) {
+        for (auto _ : state) {
+            distopia::DistanceArrayNoBox(coordsA, coordsB, ncoordsA, ncoordsB, results);
+        }
+        state.SetItemsProcessed(nresults * state.iterations());
+        state.counters["Per Result"] = benchmark::Counter(
+            nresults * state.iterations(),
+            benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+
+    void BM_distance_array_ortho_MDA(benchmark::State &state) {
+        using ctype = ScalarToCoordinateT<T>;
+
+        for (auto _ : state) {
+            _distance_array_ortho((ctype *)coordsA, ncoordsA,
+                                  (ctype *)coordsB, ncoordsB,
+                                  box, ref);
+        }
+        state.SetItemsProcessed(nresults * state.iterations());
+        state.counters["Per Result"] = benchmark::Counter(
+            nresults * state.iterations(),
+            benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+
+    void BM_distance_array_ortho(benchmark::State &state) {
+        for (auto _ : state) {
+            distopia::DistanceArrayOrtho(coordsA, coordsB, ncoordsA, ncoordsB, box, results);
+        }
+        state.SetItemsProcessed(nresults * state.iterations());
+        state.counters["Per Result"] = benchmark::Counter(
+            nresults * state.iterations(),
+            benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+
+    void BM_distance_array_triclinic_MDA(benchmark::State &state) {
+        using ctype = ScalarToCoordinateT<T>;
+
+        for (auto _ : state) {
+            _distance_array_triclinic((ctype*)coordsA, ncoordsA, (ctype*)coordsB, ncoordsB, triclinic_box, ref);
+        }
+        state.SetItemsProcessed(nresults * state.iterations());
+        state.counters["Per Result"] = benchmark::Counter(
+            nresults * state.iterations(),
+            benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+
+    void BM_distance_array_triclinic(benchmark::State &state) {
+        for (auto _ : state) {
+            distopia::DistanceArrayTriclinic(coordsA, coordsB, ncoordsA, ncoordsB, triclinic_box, results);
+        }
+        state.SetItemsProcessed(nresults * state.iterations());
+        state.counters["Per Result"] = benchmark::Counter(
+            nresults * state.iterations(),
+            benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+};
+
+BENCHMARK_TEMPLATE_DEFINE_F(DistanceArrayCoordinatesBench, DistanceArrayNoBoxMDAFloat, float)
+(benchmark::State &state) { BM_distance_array_MDA(state); }
+BENCHMARK_REGISTER_F(DistanceArrayCoordinatesBench, DistanceArrayNoBoxMDAFloat)->RangeMultiplier(100)->Ranges({{100, 10000}, {100, 10000}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(DistanceArrayCoordinatesBench, DistanceArrayNoBoxMDADouble, double)
+(benchmark::State &state) { BM_distance_array_MDA(state); }
+BENCHMARK_REGISTER_F(DistanceArrayCoordinatesBench, DistanceArrayNoBoxMDADouble)->RangeMultiplier(100)->Ranges({{100, 10000}, {100, 10000}, {0, 0}});
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(DistanceArrayCoordinatesBench, DistanceArrayNoBoxFloat, float)
+(benchmark::State &state) { BM_distance_array(state); }
+BENCHMARK_REGISTER_F(DistanceArrayCoordinatesBench, DistanceArrayNoBoxFloat)->RangeMultiplier(100)->Ranges({{100, 10000}, {100, 10000}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(DistanceArrayCoordinatesBench, DistanceArrayNoBoxDouble, double)
+(benchmark::State &state) { BM_distance_array(state); }
+BENCHMARK_REGISTER_F(DistanceArrayCoordinatesBench, DistanceArrayNoBoxDouble)->RangeMultiplier(100)->Ranges({{100, 10000}, {100, 10000}, {0, 0}});
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(DistanceArrayCoordinatesBench, DistanceArrayOrthoMDAFloat, float)
+(benchmark::State &state) { BM_distance_array_ortho_MDA(state); }
+BENCHMARK_REGISTER_F(DistanceArrayCoordinatesBench, DistanceArrayOrthoMDAFloat)->RangeMultiplier(100)->Ranges({{100, 10000}, {100, 10000}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(DistanceArrayCoordinatesBench, DistanceArrayOrthoMDADouble, double)
+(benchmark::State &state) { BM_distance_array_ortho_MDA(state); }
+BENCHMARK_REGISTER_F(DistanceArrayCoordinatesBench, DistanceArrayOrthoMDADouble)->RangeMultiplier(100)->Ranges({{100, 10000}, {100, 10000}, {0, 0}});
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(DistanceArrayCoordinatesBench, DistanceArrayOrthoFloat, float)
+(benchmark::State &state) { BM_distance_array_ortho(state); }
+BENCHMARK_REGISTER_F(DistanceArrayCoordinatesBench, DistanceArrayOrthoFloat)->RangeMultiplier(100)->Ranges({{100, 10000}, {100, 10000}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(DistanceArrayCoordinatesBench, DistanceArrayOrthoDouble, double)
+(benchmark::State &state) { BM_distance_array_ortho(state); }
+BENCHMARK_REGISTER_F(DistanceArrayCoordinatesBench, DistanceArrayOrthoDouble)->RangeMultiplier(100)->Ranges({{100, 10000}, {100, 10000}, {0, 0}});
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(DistanceArrayCoordinatesBench, DistanceArrayTriclinicMDAFloat, float)
+(benchmark::State &state) { BM_distance_array_triclinic_MDA(state); }
+BENCHMARK_REGISTER_F(DistanceArrayCoordinatesBench, DistanceArrayTriclinicMDAFloat)->RangeMultiplier(100)->Ranges({{100, 10000}, {100, 10000}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(DistanceArrayCoordinatesBench, DistanceArrayTriclinicMDADouble, double)
+(benchmark::State &state) { BM_distance_array_triclinic_MDA(state); }
+BENCHMARK_REGISTER_F(DistanceArrayCoordinatesBench, DistanceArrayTriclinicMDADouble)->RangeMultiplier(100)->Ranges({{100, 10000}, {100, 10000}, {0, 0}});
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(DistanceArrayCoordinatesBench, DistanceArrayTriclinicFloat, float)
+(benchmark::State &state) { BM_distance_array_triclinic(state); }
+BENCHMARK_REGISTER_F(DistanceArrayCoordinatesBench, DistanceArrayTriclinicFloat)->RangeMultiplier(100)->Ranges({{100, 10000}, {100, 10000}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(DistanceArrayCoordinatesBench, DistanceArrayTriclinicDouble, double)
+(benchmark::State &state) { BM_distance_array_triclinic(state); }
+BENCHMARK_REGISTER_F(DistanceArrayCoordinatesBench, DistanceArrayTriclinicDouble)->RangeMultiplier(100)->Ranges({{100, 10000}, {100, 10000}, {0, 0}});
+
+
+template <typename T>
+class SelfDistanceArrayCoordinatesBench : public benchmark::Fixture {
+public:
+    int ncoords;
+    int nresults;
+    T* coords = nullptr;
+    T* ref = nullptr;
+    T* results = nullptr;
+    T box[3];
+    T triclinic_box[9];
+
+    void SetUp(benchmark::State &state) override {
+        ncoords = static_cast<std::size_t>(state.range(0));
+
+        InitCoords(state.range(0), BOXSIZE, state.range(1));
+    }
+
+    void InitCoords(int n, const double boxsize, const double delta) {
+        ncoords = n;
+        nresults = n * n;
+
+        coords = new T[n * 3];
+        ref = new T[nresults];
+        results = new T[nresults];
+
+        RandomFloatingPoint<T>(coords, n * 3, 0 - delta, boxsize + delta);
+
+        box[0] = boxsize;
+        box[1] = boxsize;
+        box[2] = boxsize;
+
+        triclinic_box[0] = boxsize;  // lx
+        triclinic_box[1] = 0.0;  // must be 0
+        triclinic_box[2] = 0.0;  // "
+        triclinic_box[3] = 0.0;  // xy
+        triclinic_box[4] = boxsize;  // ly
+        triclinic_box[5] = 0.0;  // must be zero
+        triclinic_box[6] = 0.0;  // xz
+        triclinic_box[7] = 0.0;  // yz
+        triclinic_box[8] = boxsize;  // lz
+    }
+
+    void TearDown(const ::benchmark::State &state) override {
+        delete[] coords;
+        delete[] ref;
+        delete[] results;
+    }
+
+    void BM_self_distance_array_MDA(benchmark::State &state) {
+        using ctype = ScalarToCoordinateT<T>;
+
+        for (auto _ : state) {
+            _self_distance_array((ctype*)coords, ncoords, ref);
+        }
+        state.SetItemsProcessed(nresults * state.iterations());
+        state.counters["Per Result"] = benchmark::Counter(
+            nresults * state.iterations(),
+            benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+
+    void BM_self_distance_array(benchmark::State &state) {
+        for (auto _ : state) {
+            distopia::SelfDistanceArrayNoBox(coords, ncoords, results);
+        }
+        state.SetItemsProcessed(nresults * state.iterations());
+        state.counters["Per Result"] = benchmark::Counter(
+            nresults * state.iterations(),
+            benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+
+    void BM_self_distance_array_ortho_MDA(benchmark::State &state) {
+        using ctype = ScalarToCoordinateT<T>;
+
+        for (auto _ : state) {
+            _self_distance_array_ortho((ctype *)coords, ncoords,
+                                       box, ref);
+        }
+        state.SetItemsProcessed(nresults * state.iterations());
+        state.counters["Per Result"] = benchmark::Counter(
+            nresults * state.iterations(),
+            benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+
+    void BM_self_distance_array_ortho(benchmark::State &state) {
+        for (auto _ : state) {
+            distopia::SelfDistanceArrayOrtho(coords, ncoords, box, results);
+        }
+        state.SetItemsProcessed(nresults * state.iterations());
+        state.counters["Per Result"] = benchmark::Counter(
+            nresults * state.iterations(),
+            benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+
+    void BM_self_distance_array_triclinic_MDA(benchmark::State &state) {
+        using ctype = ScalarToCoordinateT<T>;
+
+        for (auto _ : state) {
+            _self_distance_array_triclinic((ctype*)coords, ncoords, triclinic_box, ref);
+        }
+        state.SetItemsProcessed(nresults * state.iterations());
+        state.counters["Per Result"] = benchmark::Counter(
+            nresults * state.iterations(),
+            benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+
+    void BM_self_distance_array_triclinic(benchmark::State &state) {
+        for (auto _ : state) {
+            distopia::SelfDistanceArrayTriclinic(coords, ncoords, triclinic_box, results);
+        }
+        state.SetItemsProcessed(nresults * state.iterations());
+        state.counters["Per Result"] = benchmark::Counter(
+            nresults * state.iterations(),
+            benchmark::Counter::kIsRate | benchmark::Counter::kInvert);
+    }
+};
+
+BENCHMARK_TEMPLATE_DEFINE_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayNoBoxMDAFloat, float)
+(benchmark::State &state) { BM_self_distance_array_MDA(state); }
+BENCHMARK_REGISTER_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayNoBoxMDAFloat)->RangeMultiplier(10)->Ranges({{10, 10000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayNoBoxMDADouble, double)
+(benchmark::State &state) { BM_self_distance_array_MDA(state); }
+BENCHMARK_REGISTER_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayNoBoxMDADouble)->RangeMultiplier(10)->Ranges({{10, 10000}, {0, 0}, {0, 0}});
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayNoBoxFloat, float)
+(benchmark::State &state) { BM_self_distance_array(state); }
+BENCHMARK_REGISTER_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayNoBoxFloat)->RangeMultiplier(10)->Ranges({{10, 10000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayNoBoxDouble, double)
+(benchmark::State &state) { BM_self_distance_array(state); }
+BENCHMARK_REGISTER_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayNoBoxDouble)->RangeMultiplier(10)->Ranges({{10, 10000}, {0, 0}, {0, 0}});
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayOrthoMDAFloat, float)
+(benchmark::State &state) { BM_self_distance_array_ortho_MDA(state); }
+BENCHMARK_REGISTER_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayOrthoMDAFloat)->RangeMultiplier(10)->Ranges({{10, 10000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayOrthoMDADouble, double)
+(benchmark::State &state) { BM_self_distance_array_ortho_MDA(state); }
+BENCHMARK_REGISTER_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayOrthoMDADouble)->RangeMultiplier(10)->Ranges({{10, 10000}, {0, 0}, {0, 0}});
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayOrthoFloat, float)
+(benchmark::State &state) { BM_self_distance_array_ortho(state); }
+BENCHMARK_REGISTER_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayOrthoFloat)->RangeMultiplier(10)->Ranges({{10, 10000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayOrthoDouble, double)
+(benchmark::State &state) { BM_self_distance_array_ortho(state); }
+BENCHMARK_REGISTER_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayOrthoDouble)->RangeMultiplier(10)->Ranges({{10, 10000}, {0, 0}, {0, 0}});
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayTriclinicMDAFloat, float)
+(benchmark::State &state) { BM_self_distance_array_triclinic_MDA(state); }
+BENCHMARK_REGISTER_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayTriclinicMDAFloat)->RangeMultiplier(10)->Ranges({{10, 10000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayTriclinicMDADouble, double)
+(benchmark::State &state) { BM_self_distance_array_triclinic_MDA(state); }
+BENCHMARK_REGISTER_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayTriclinicMDADouble)->RangeMultiplier(10)->Ranges({{10, 10000}, {0, 0}, {0, 0}});
+
+
+BENCHMARK_TEMPLATE_DEFINE_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayTriclinicFloat, float)
+(benchmark::State &state) { BM_self_distance_array_triclinic(state); }
+BENCHMARK_REGISTER_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayTriclinicFloat)->RangeMultiplier(10)->Ranges({{10, 10000}, {0, 0}, {0, 0}});
+
+BENCHMARK_TEMPLATE_DEFINE_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayTriclinicDouble, double)
+(benchmark::State &state) { BM_self_distance_array_triclinic(state); }
+BENCHMARK_REGISTER_F(SelfDistanceArrayCoordinatesBench, SelfDistanceArrayTriclinicDouble)->RangeMultiplier(10)->Ranges({{10, 10000}, {0, 0}, {0, 0}});
+
 
 BENCHMARK_MAIN();
