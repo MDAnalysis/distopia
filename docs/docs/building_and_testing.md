@@ -1,5 +1,19 @@
 # Building and testing
 
+You can build `distopia` from source.
+
+## Checking out the sources
+Get the latest sources from the repository https://github.com/MDAnalysis/distopia
+```bash
+git clone --recurse-submodules https://github.com/MDAnalysis/distopia.git
+cd distopia
+```
+
+Note that we are using git submodules for the vendored [highway](https://github.com/google/highway)
+library (in `libdistopia/highway`, release 1.3.0) and for Google tests and Google benchmarks (in 
+`libdistopia/googletest` and `libdistopia/googlebench`).
+
+
 ## Building 
 
 Distopia uses the scikit-build build system. You can build the library easily by first installing the prerequisites.
@@ -15,6 +29,14 @@ If you want greater control over build and install options you can do a more man
 ```bash
 python setup.py install -- -DCMAKE_BUILD_TYPE=Release <etc etc>
 ```
+
+Special CMake flags
+- `DISTOPIA_USE_EXTERNAL_HWY`:
+  - Off (default) — build with the vendored highway library
+  - On — link to an installed libhwy (install with `mamba install libhwy`)
+- `DISTOPIA_BUILD_TESTS`:
+  - On (default) — build the tests for libdistopia and the benchmarks
+  - Off — do not build tests and benchmarks
 
 ## Testing
 
