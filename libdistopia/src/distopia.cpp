@@ -30,13 +30,9 @@ namespace distopia {
         struct NoBox {
             explicit NoBox(D) {};
 
-            void MinimiseVectors(hn::VFromD<D> &vx,
-                                 hn::VFromD<D> &vy,
-                                 hn::VFromD<D> &vz) const {}
-
-            void MinimalVectors(const V &ix, const V &iy, const V &iz,
-                                const V &jx, const V &jy, const V &jz,
-                                V &ijx, V &ijy, V &ijz) const {
+            void MinimalVector(const V &ix, const V &iy, const V &iz,
+                               const V &jx, const V &jy, const V &jz,
+                               V &ijx, V &ijy, V &ijz) const {
                 ijx = ix - jx;
                 ijy = iy - jy;
                 ijz = iz - jz;
@@ -71,9 +67,9 @@ namespace distopia {
                 this->iz = hn::Set(d, 1 / sbox[2]);
             }
 
-            void MinimiseVectors(V &vx,
-                                 V &vy,
-                                 V &vz) const {
+            void MinimizeVector(V &vx,
+                                V &vy,
+                                V &vz) const {
                 auto sx = ix * vx;
                 auto dsx = sx - hn::Round(sx);
                 auto sy = iy * vy;
@@ -85,14 +81,20 @@ namespace distopia {
                 vz = lz * dsz;
             }
 
-            void MinimalVectors(const V &px, const V &py, const V &pz,
-                                const V &qx, const V &qy, const V &qz,
-                                V &ijx, V &ijy, V &ijz) const {
+            void MinimalVector(V &vx,
+                               V &vy,
+                               V &vz) const {
+                MinimizeVector(vx, vy, vz);
+            }
+
+            void MinimalVector(const V &px, const V &py, const V &pz,
+                               const V &qx, const V &qy, const V &qz,
+                               V &ijx, V &ijy, V &ijz) const {
                 ijx = px - qx;
                 ijy = py - qy;
                 ijz = pz - qz;
 
-                MinimiseVectors(ijx, ijy, ijz);
+                MinimizeVector(ijx, ijy, ijz);
             }
 
             HWY_INLINE V Distance(const V &ax, const V &ay, const V &az,
@@ -103,7 +105,7 @@ namespace distopia {
                 auto dy = ay - by;
                 auto dz = az - bz;
 
-                MinimiseVectors(dx, dy, dz);
+                MinimizeVector(dx, dy, dz);
 
                 auto acc = hn::Zero(d);
                 acc = hn::MulAdd(dx, dx, acc);
@@ -111,12 +113,6 @@ namespace distopia {
                 acc = hn::MulAdd(dz, dz, acc);
 
                 return hn::Sqrt(acc);
-            }
-
-            void MinimizeVectorsInPrimaryUnitCell(V &vx,
-                                                    V &vy,
-                                                    V &vz) const {
-                MinimiseVectors(vx, vy, vz);
             }
         };
 
@@ -147,9 +143,9 @@ namespace distopia {
                 vx -= sx * this->xx;
             }
 
-            void MinimiseVectors(V &vx,
-                                 V &vy,
-                                 V &vz) const {
+            void MinimizeVector(V &vx,
+                                V &vy,
+                                V &vz) const {
                 hn::ScalableTag<T> d;
                 // check all 27 (3x3x3) possibilities of adding/subtracting box vectors and choose minimum
                 V vmin[3];
@@ -214,9 +210,16 @@ namespace distopia {
                 vz = vmin[2];
             }
 
-            void MinimalVectors(const V &ix, const V &iy, const V &iz,
-                                const V &jx, const V &jy, const V &jz,
-                                V &ijx, V &ijy, V &ijz) const {
+            void MinimalVector(V &vx,
+                               V &vy,
+                               V &vz) const {
+                ShiftIntoPrimaryUnitCell(vx, vy, vz);
+                MinimizeVector(vx, vy, vz);
+            }
+
+            void MinimalVector(const V &ix, const V &iy, const V &iz,
+                               const V &jx, const V &jy, const V &jz,
+                               V &ijx, V &ijy, V &ijz) const {
                 V ix_copy = ix;
                 V iy_copy = iy;
                 V iz_copy = iz;
@@ -231,7 +234,7 @@ namespace distopia {
                 ijy = iy_copy - jy_copy;
                 ijz = iz_copy - jz_copy;
 
-                MinimiseVectors(ijx, ijy, ijz);
+                MinimizeVector(ijx, ijy, ijz);
             }
 
             HWY_INLINE V Distance(const V &ax, const V &ay, const V &az,
@@ -253,7 +256,7 @@ namespace distopia {
                 auto dy = ay_copy - by_copy;
                 auto dz = az_copy - bz_copy;
 
-                MinimiseVectors(dx, dy, dz);
+                MinimizeVector(dx, dy, dz);
 
                 auto acc = hn::Zero(d);
                 acc = hn::MulAdd(dx, dx, acc);
@@ -263,13 +266,6 @@ namespace distopia {
                 acc = hn::Sqrt(acc);
 
                 return acc;
-            }
-
-            void MinimizeVectorsInPrimaryUnitCell(V &vx,
-                                                    V &vy,
-                                                    V &vz) const {
-                ShiftIntoPrimaryUnitCell(vx, vy, vz);
-                MinimiseVectors(vx, vy, vz);
             }
         };
 
@@ -348,12 +344,12 @@ namespace distopia {
             auto rji_x = hn::Undefined(d);
             auto rji_y = hn::Undefined(d);
             auto rji_z = hn::Undefined(d);
-            box.MinimalVectors(ax, ay, az, bx, by, bz, rji_x, rji_y, rji_z);
+            box.MinimalVector(ax, ay, az, bx, by, bz, rji_x, rji_y, rji_z);
 
             auto rjk_x = hn::Undefined(d);
             auto rjk_y = hn::Undefined(d);
             auto rjk_z = hn::Undefined(d);
-            box.MinimalVectors(cx, cy, cz, bx, by, bz, rjk_x, rjk_y, rjk_z);
+            box.MinimalVector(cx, cy, cz, bx, by, bz, rjk_x, rjk_y, rjk_z);
 
             auto x = hn::Zero(d);
             x = hn::MulAdd(rji_x, rjk_x, x);
@@ -447,17 +443,17 @@ namespace distopia {
             auto rab_x = hn::Undefined(d);
             auto rab_y = hn::Undefined(d);
             auto rab_z = hn::Undefined(d);
-            box.MinimalVectors(ax, ay, az, bx, by, bz, rab_x, rab_y, rab_z);
+            box.MinimalVector(ax, ay, az, bx, by, bz, rab_x, rab_y, rab_z);
 
             auto rbc_x = hn::Undefined(d);
             auto rbc_y = hn::Undefined(d);
             auto rbc_z = hn::Undefined(d);
-            box.MinimalVectors(bx, by, bz, cx, cy, cz, rbc_x, rbc_y, rbc_z);
+            box.MinimalVector(bx, by, bz, cx, cy, cz, rbc_x, rbc_y, rbc_z);
 
             auto rcd_x = hn::Undefined(d);
             auto rcd_y = hn::Undefined(d);
             auto rcd_z = hn::Undefined(d);
-            box.MinimalVectors(cx, cy, cz, dx, dy, dz, rcd_x, rcd_y, rcd_z);
+            box.MinimalVector(cx, cy, cz, dx, dy, dz, rcd_x, rcd_y, rcd_z);
 
             auto n1x = hn::Undefined(d);
             auto n1y = hn::Undefined(d);
@@ -1070,7 +1066,7 @@ namespace distopia {
                 size_t p = HWY_MAX(HWY_MIN(i, n - nlanes), 0);
 
                 hn::LoadInterleaved3(d, a_src + 3 * p, a_x, a_y, a_z);
-                box.MinimizeVectorsInPrimaryUnitCell(a_x, a_y, a_z);
+                box.MinimalVector(a_x, a_y, a_z);
                 hn::StoreInterleaved3(a_x, a_y, a_z, d, dst + 3 * p);
             }
         }

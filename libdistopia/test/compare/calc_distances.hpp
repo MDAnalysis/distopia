@@ -25,7 +25,7 @@
 #include <limits>
 
 template <typename T>
-void _minimize_vectors_ortho(T* dx, T* box, T* inverse_box)
+void _minimize_vector_ortho(T* dx, T* box, T* inverse_box)
 {
   /*
     Minimise dx to be the shortest vector
@@ -61,7 +61,7 @@ static void _calc_minimize_vectors_ortho(T* vectors, uint64_t numvectors, T* box
     dx[0] = vectors[i * 3];
     dx[1] = vectors[i * 3 + 1];
     dx[2] = vectors[i * 3 + 2];
-    _minimize_vectors_ortho(dx, box, inverse_box);
+    _minimize_vector_ortho(dx, box, inverse_box);
     output[i * 3] = dx[0];
     output[i * 3 + 1] = dx[1];
     output[i * 3 + 2] = dx[2];
@@ -69,7 +69,7 @@ static void _calc_minimize_vectors_ortho(T* vectors, uint64_t numvectors, T* box
 }
 
 template <typename T>
-void _minimize_vectors_triclinic(T* dx, T* box, T* inverse_box)
+void _minimize_vector_triclinic(T* dx, T* box, T* inverse_box)
 {
   /*
     Minimise dx to be the shortest vector
@@ -139,7 +139,7 @@ static void _calc_minimize_vectors_triclinic(T* vectors, uint64_t numvectors, T*
     dx[0] = vectors[i * 3];
     dx[1] = vectors[i * 3 + 1];
     dx[2] = vectors[i * 3 + 2];
-    _minimize_vectors_triclinic(dx, box, inverse_box);
+    _minimize_vector_triclinic(dx, box, inverse_box);
     output[i * 3] = dx[0];
     output[i * 3 + 1] = dx[1];
     output[i * 3 + 2] = dx[2];
