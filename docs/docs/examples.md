@@ -144,6 +144,41 @@ for i in range(N):
 ```
 
 
+## Minimizing Vectors
+
+### Orthorhombic periodic boundary conditions
+
+For orthorhombic boxes you need to provide the three box vector lengths `[l, l, l]`
+
+```python
+import numpy as np
+import distopia
+
+# make N x 3 coordinate arrays
+N = 10000
+coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+coordinates1 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+box = np.asarray([10, 10, 10]).astype(np.float32)
+vectors = coordinates1 - coordinates0
+output = distopia.minimize_vectors_ortho(vectors, box)
+```
+
+### Triclinic periodic boundary conditions
+
+For triclinic boxes the box matrix must be provided in 3x3 matrix form.
+
+```python
+import numpy as np
+import distopia
+
+# make N x 3 coordinate arrays
+N = 10000
+coordinates0 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+coordinates1 = np.random.rand(3 * N).reshape(N, 3).astype(np.float32)
+box = np.asarray([[10, 0, 0], [0, 10, 0], [0, 0, 10]]).astype(np.float32)
+vectors = coordinates1 - coordinates0
+output = distopia.minimize_vectors_triclinic(vectors, box)
+```
 
 ## Questions
 

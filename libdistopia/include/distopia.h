@@ -48,6 +48,8 @@ namespace distopia {
     template <typename T> void SelfDistanceArrayNoBoxIdx(const T *coords, const int *idx, int n, T *out);
     template <typename T> void SelfDistanceArrayOrthoIdx(const T *coords, const int *idx, int n, const T *box, T *out);
     template <typename T> void SelfDistanceArrayTriclinicIdx(const T *coords, const int *idx, int n, const T *box, T *out);
+    template <typename T> void MinimizeVectorsOrtho(const T *vectors, int n, const T *box, T *output);
+    template <typename T> void MinimizeVectorsTriclinic(const T *vectors, int n, const T *box, T *output);
     int GetNFloatLanes();
     int GetNDoubleLanes();
     std::vector<std::string> DistopiaSupportedAndGeneratedTargets();
