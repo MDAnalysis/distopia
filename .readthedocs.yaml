@@ -13,6 +13,9 @@ build:
   os: ubuntu-22.04
   tools:
     python: "mambaforge-22.9"
+  jobs:
+    pre_install:
+      - pip install -r docs/requirements.txt
 
 conda:
   environment: devtools/conda_envs/distopia_ubuntu-latest.yaml
@@ -23,6 +26,5 @@ mkdocs:
 # Optionally declare the Python requirements required to build your docs
 python:
   install:
-  - requirements: docs/requirements.txt
   - method: pip
     path: .
