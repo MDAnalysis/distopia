@@ -10,7 +10,7 @@ cd distopia
 ```
 
 Note that we are using git submodules for the vendored [highway](https://github.com/google/highway)
-library (in `libdistopia/highway`, release 1.3.0) and for Google tests and Google benchmarks (in 
+library (in `libdistopia/highway`, release 1.4.0) and for Google tests and Google benchmarks (in 
 `libdistopia/googletest` and `libdistopia/googlebench`).
 
 
