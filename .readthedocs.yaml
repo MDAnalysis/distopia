@@ -23,3 +23,6 @@ build:
 
 conda:
   environment: devtools/conda_envs/distopia_ubuntu-latest.yaml
+
+mkdocs:
+  configuration: docs/mkdocs.yml
