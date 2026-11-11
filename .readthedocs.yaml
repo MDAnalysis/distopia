@@ -4,21 +4,25 @@
 # Required
 version: 2
 
+submodules:
+  include: all
+  recursive: true
+
 # Set the version of Python and other tools you might need
 build:
   os: ubuntu-22.04
   tools:
     python: "mambaforge-22.9"
+  jobs:
+    post_install:
+      - python -m pip install -r docs/requirements.txt
+      - python -m pip install --no-deps --no-build-isolation .
+    build:
+      html:
+        - cd docs && python -m mkdocs build --clean --site-dir $READTHEDOCS_OUTPUT/html --config-file mkdocs.yml
 
 conda:
   environment: devtools/conda_envs/distopia_ubuntu-latest.yaml
 
 mkdocs:
   configuration: docs/mkdocs.yml
-
-# Optionally declare the Python requirements required to build your docs
-python:
-  install:
-  - method: pip
-    path: .
-  - requirements: docs/requirements.txt
