@@ -5,7 +5,7 @@ dependencies:
 - cmake
 - make
 - pip
-- python >=3.11
+- python >=3.11,<3.15
 - cython
 - numpy
 - ninja
