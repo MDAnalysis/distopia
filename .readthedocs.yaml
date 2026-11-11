@@ -14,17 +14,12 @@ build:
   tools:
     python: "mambaforge-22.9"
   jobs:
-    pre_install:
-      - pip install -r docs/requirements.txt
+    post_install:
+      - python -m pip install -r docs/requirements.txt
+      - python -m pip install --no-deps --no-build-isolation .
+    build:
+      html:
+        - cd docs && python -m mkdocs build --clean --site-dir $READTHEDOCS_OUTPUT/html --config-file mkdocs.yml
 
 conda:
   environment: devtools/conda_envs/distopia_ubuntu-latest.yaml
-
-mkdocs:
-  configuration: docs/mkdocs.yml
-
-# Optionally declare the Python requirements required to build your docs
-python:
-  install:
-  - method: pip
-    path: .
