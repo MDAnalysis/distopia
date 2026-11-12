@@ -165,7 +165,7 @@ public:
 
         RandomFloatingPoint<T>(coords, ncoords * 3, 0 - delta, boxsize + delta);
 
-        RandomInt(big_idx, nidx, 0, ncoords);
+        RandomInt(big_idx, nidx, 0, ncoords - 1);
         // copy bigidx into smaller, and also make contig coords array
         for (size_t i=0; i<nidx; i++) {
             a_idx[i] = big_idx[i];
@@ -173,21 +173,21 @@ public:
             a_coords_contig[i*3 + 1] = coords[a_idx[i] * 3 + 1];
             a_coords_contig[i*3 + 2] = coords[a_idx[i] * 3 + 2];
         }
-        RandomInt(big_idx, nidx, 0, ncoords);
+        RandomInt(big_idx, nidx, 0, ncoords - 1);
         for (size_t i=0; i<nidx; i++) {
             b_idx[i] = big_idx[i];
             b_coords_contig[i*3 + 0] = coords[b_idx[i] * 3];
             b_coords_contig[i*3 + 1] = coords[b_idx[i] * 3 + 1];
             b_coords_contig[i*3 + 2] = coords[b_idx[i] * 3 + 2];
         }
-        RandomInt(big_idx, nidx, 0, ncoords);
+        RandomInt(big_idx, nidx, 0, ncoords - 1);
         for (size_t i=0; i<nidx; i++) {
             c_idx[i] = big_idx[i];
             c_coords_contig[i*3 + 0] = coords[c_idx[i] * 3];
             c_coords_contig[i*3 + 1] = coords[c_idx[i] * 3 + 1];
             c_coords_contig[i*3 + 2] = coords[c_idx[i] * 3 + 2];
         }
-        RandomInt(big_idx, nidx, 0, ncoords);
+        RandomInt(big_idx, nidx, 0, ncoords - 1);
         for (size_t i=0; i<nidx; i++) {
             d_idx[i] = big_idx[i];
             d_coords_contig[i*3 + 0] = coords[d_idx[i] * 3];
