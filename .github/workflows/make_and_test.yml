@@ -42,7 +42,7 @@ jobs:
       with:
         submodules: recursive
 
-    - uses: mamba-org/setup-micromamba@v1
+    - uses: mamba-org/setup-micromamba@v3
       with:
         environment-file: devtools/conda_envs/distopia_${{ matrix.os }}.yaml
         environment-name: distopia
@@ -113,7 +113,7 @@ jobs:
       with:
         submodules: recursive
 
-    - uses: mamba-org/setup-micromamba@v1
+    - uses: mamba-org/setup-micromamba@v3
       with:
         environment-file: devtools/conda_envs/distopia_${{ matrix.os }}.yaml
         environment-name: distopia
