@@ -75,5 +75,10 @@ void pretty_print_matrix(T *matrix, int rows, int cols)
 }
 
 
+inline bool IsNearOrNan(double val1, double val2, double abs_err) {
+    return (std::isnan(val1) && std::isnan(val2)) || (std::abs(val1 - val2) <= abs_err);
+}
+
+#define EXPECT_NEAR_OR_NAN(val1, val2, abs_err) EXPECT_PRED3(IsNearOrNan, val1, val2, abs_err)
 
 #endif // DISTOPIA_TEST_UTILS_H
