@@ -19,12 +19,6 @@ constexpr int NINDICIES = 5;
 constexpr double abs_err = 1.0e-4;
 
 
-inline bool IsNearOrNan(double val1, double val2, double abs_err) {
-    return (std::isnan(val1) && std::isnan(val2)) || (std::abs(val1 - val2) <= abs_err);
-}
-
-#define EXPECT_NEAR_OR_NAN(val1, val2, abs_err) \
-    EXPECT_PRED3(IsNearOrNan, val1, val2, abs_err)
 
 
 TYPED_TEST_SUITE(CoordinatesTest, ScalarTypes);
