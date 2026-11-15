@@ -129,6 +129,19 @@ cdef extern from "distopia.h" namespace "distopia" nogil:
         const T *box,
         T *out,
     )
+    void MinimizeVectorsOrtho[T](
+        const T *vectors,
+        size_t n,
+        const T *box,
+        T *output,
+    )
+    void MinimizeVectorsTriclinic[T](
+        const T *vectors,
+        size_t n,
+        const T *box,
+        T *output,
+    )
+
 
 def get_n_float_lanes():
     """The number of floats per register distopia will handle on this system"""
@@ -903,3 +916,117 @@ def self_distance_array_triclinic(
                                &results_view[0])
 
     return np.array(results)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def minimize_vectors_ortho(
+    floating[:, ::1] vectors,
+    floating[::1] box,
+    floating[:, ::1] output=None):
+    """Apply minimum image convention to an array of vectors under orthorhombic boundary conditions
+
+    Parameters
+    ----------
+    vectors : float32 or float64 array
+        Vector array of shape ``(n, 3)``, either float32 or float64.  These
+        represent many vectors (such as between two particles).
+    box : float32 or float64 array
+        periodic boundary dimensions, in 3x3 format
+    output: float32 or float64 array
+        Same shape and dtype as input.  The vectors from the input, but
+        minimized according to the size of the box.
+
+    Returns
+    -------
+    minimized_vectors : np.array
+        Same shape and dtype as input.  The vectors from the input, but
+        minimized according to the size of the box.
+    """
+    cdef floating[:, ::1] output_view
+    cdef size_t nvals0 = vectors.shape[0]
+
+    cdef cnp.npy_intp[1] dims
+
+    cdef ssize_t final_size = nvals0 * (nvals0 -1) // 2
+
+    dims[0] = <ssize_t > final_size
+
+    # return early, will seg
+    if nvals0 == 0:
+        return np.array([])
+
+    if output is None:
+        # cnp.PyArray_NewLikeArray is not directly accessible
+        output = np.empty_like(vectors)
+    else:
+        if output.ndim != vectors.ndim:
+            raise ValueError("output dimensions not same as vectors")
+        if output.shape[0] != nvals0:
+            raise ValueError(f"output must be the same length as vectors ({nvals0}), you provided {output.shape[0]}")
+
+    output_view = output
+
+    MinimizeVectorsOrtho(&vectors[0][0],
+                            nvals0,
+                            &box[0],
+                            &output_view[0][0])
+
+    return np.array(output)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def minimize_vectors_triclinic(
+    floating[:, ::1] vectors,
+    floating[:, ::1] box,
+    floating[:, ::1] output=None):
+    """Apply minimum image convention to an array of vectors under triclinic boundary conditions
+
+    Parameters
+    ----------
+    vectors : float32 or float64 array
+        Vector array of shape ``(n, 3)``, either float32 or float64.  These
+        represent many vectors (such as between two particles).
+    box : float32 or float64 array
+        periodic boundary dimensions, in 3x3 format
+    output: float32 or float64 array
+        Same shape and dtype as input.  The vectors from the input, but
+        minimized according to the size of the box.
+
+    Returns
+    -------
+    minimized_vectors : np.array
+        Same shape and dtype as input.  The vectors from the input, but
+        minimized according to the size of the box.
+    """
+    cdef floating[:, ::1] output_view
+    cdef size_t nvals0 = vectors.shape[0]
+
+    cdef cnp.npy_intp[1] dims
+
+    cdef ssize_t final_size = nvals0 * (nvals0 -1) // 2
+
+    dims[0] = <ssize_t > final_size
+
+    # return early, will seg
+    if nvals0 == 0:
+        return np.array([])
+
+    if output is None:
+        # cnp.PyArray_NewLikeArray is not directly accessible
+        output = np.empty_like(vectors)
+    else:
+        if output.ndim != vectors.ndim:
+            raise ValueError("output dimensions not same as vectors")
+        if output.shape[0] != nvals0:
+            raise ValueError(f"output must be the same length as vectors ({nvals0}), you provided {output.shape[0]}")
+
+    output_view = output
+
+    MinimizeVectorsTriclinic(&vectors[0][0],
+                                nvals0,
+                                &box[0][0],
+                                &output_view[0][0])
+
+    return np.array(output)

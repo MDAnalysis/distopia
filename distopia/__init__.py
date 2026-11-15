@@ -15,6 +15,8 @@ from .pydistopia import (
     self_distance_array_no_box,
     self_distance_array_ortho,
     self_distance_array_triclinic,
+    minimize_vectors_ortho,
+    minimize_vectors_triclinic,
 )
 
 __all__ = [
@@ -33,6 +35,8 @@ __all__ = [
     'self_distance_array_no_box',
     'self_distance_array_ortho',
     'self_distance_array_triclinic',
+    'minimize_vectors_ortho',
+    'minimize_vectors_triclinic',
 ]
 
 from importlib.metadata import version

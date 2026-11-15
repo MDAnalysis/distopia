@@ -47,3 +47,9 @@
 
 ::: distopia.self_distance_array_triclinic
     :docstring:
+
+::: distopia.minimize_vectors_ortho
+    :docstring:
+
+::: distopia.minimize_vectors_triclinic
+    :docstring:

@@ -1,3 +1,4 @@
+import itertools
 import pytest
 import numpy as np
 import distopia
@@ -479,3 +480,75 @@ class TestMDA:
 
         for val in [test1, test2, test3]:
             assert_almost_equal(ref, val, self.prec, err_msg="Min image in angle calculation failed")
+
+    # try shifts of -2 to +2 in each dimension, and all combinations of shifts
+    @pytest.mark.parametrize(
+        "shift", itertools.product(range(-2, 3), range(-2, 3), range(-2, 3))
+    )
+    @pytest.mark.parametrize("dtype", (np.float32, np.float64))
+    def test_minimize_vectors_ortho(self, shift, dtype):
+        # test vectors pointing in all directions
+        # these currently all obey minimum convention as they're much smaller than the box
+        vec = np.array(
+            list(itertools.product(range(-1, 2), range(-1, 2), range(-1, 2))),
+            dtype=dtype,
+        )
+        box = np.asarray([[10, 0, 0], [0, 10, 0], [0, 0, 10]], dtype=dtype)
+        # box is 3x3 representation
+        # multiply by shift, then sum xyz components then add these to the vector
+        # this technically doesn't alter the vector because of periodic boundaries
+        shifted_vec = (vec + (box.T * shift).sum(axis=1)).astype(dtype)
+        box2 = np.asarray([10, 10, 10], dtype=dtype)
+        # empty input
+        res = distopia.minimize_vectors_ortho(np.array([[]], dtype=dtype), box2)
+        assert res.size == 0
+        # pass invalid output buffer size
+        output = np.array([[]]).astype(dtype)
+        with pytest.raises(ValueError, match="must be the same length"):
+            res = distopia.minimize_vectors_ortho(shifted_vec, box2, output)
+        # pass output buffer
+        output = np.empty_like(shifted_vec)
+        res = distopia.minimize_vectors_ortho(shifted_vec, box2, output)
+        assert_equal(res, output)
+        assert_allclose(res, vec, atol=0.00001)
+        assert res.dtype == dtype
+        # don't pass output buffer
+        res = distopia.minimize_vectors_ortho(shifted_vec, box2)
+        assert_allclose(res, vec, atol=0.00001)
+        assert res.dtype == dtype
+
+    # try shifts of -2 to +2 in each dimension, and all combinations of shifts
+    @pytest.mark.parametrize(
+        "shift", itertools.product(range(-2, 3), range(-2, 3), range(-2, 3))
+    )
+    @pytest.mark.parametrize("dtype", (np.float32, np.float64))
+    def test_minimize_vectors_triclinic(self, shift, dtype):
+        # test vectors pointing in all directions
+        # these currently all obey minimum convention as they're much smaller than the box
+        vec = np.array(
+            list(itertools.product(range(-1, 2), range(-1, 2), range(-1, 2))),
+            dtype=dtype,
+        )
+        box = np.asarray([[10, 0, 0], [2, 10, 0], [2, 2, 10]], dtype=dtype)
+        # box is 3x3 representation
+        # multiply by shift, then sum xyz components then add these to the vector
+        # this technically doesn't alter the vector because of periodic boundaries
+        shifted_vec = (vec + (box.T * shift).sum(axis=1)).astype(dtype)
+        box2 = np.asarray([[10, 0, 0, 2, 10, 0, 2, 2, 10]], dtype=dtype)
+        # empty input
+        res = distopia.minimize_vectors_triclinic(np.array([[]], dtype=dtype), box2)
+        assert res.size == 0
+        # pass invalid output buffer size
+        output = np.array([[]]).astype(dtype)
+        with pytest.raises(ValueError, match="must be the same length"):
+            res = distopia.minimize_vectors_triclinic(shifted_vec, box2, output)
+        # pass output buffer
+        output = np.empty_like(shifted_vec)
+        res = distopia.minimize_vectors_triclinic(shifted_vec, box2, output)
+        assert_equal(res, output)
+        assert_allclose(res, vec, atol=0.00001)
+        assert res.dtype == dtype
+        # don't pass output buffer
+        res = distopia.minimize_vectors_triclinic(shifted_vec, box2)
+        assert_allclose(res, vec, atol=0.00001)
+        assert res.dtype == dtype

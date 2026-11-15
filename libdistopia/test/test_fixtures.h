@@ -222,4 +222,58 @@ public:
         delete[] results;
     }
 };
+
+
+template <typename T>
+class MinimizeVectorsTest : public ::testing::Test {
+public:
+    // members
+    size_t ncoords;
+    size_t nelements;
+    T* coords0 = nullptr;
+    T* coords1 = nullptr;
+    T* vectors = nullptr;
+    T* ref = nullptr;
+    T* output = nullptr;
+    T box[3];
+    T triclinic_box[9];
+
+    void SetUp(const size_t n_coords, const double boxsize, const double delta) {
+        ncoords = n_coords;
+        nelements = ncoords * 3;
+        coords0 = new T[nelements];
+        coords1 = new T[nelements];
+        vectors = new T[nelements];
+        ref = new T[nelements];
+        output = new T[nelements];
+
+        RandomFloatingPoint<T>(coords0, nelements, 0 - delta, boxsize + delta);
+        RandomFloatingPoint<T>(coords1, nelements, 0 - delta, boxsize + delta);
+
+        for (size_t i = 0; i < nelements; ++i) {
+           vectors[i] = coords1[i] - coords0[i];
+        }
+
+        box[0] = boxsize;
+        box[1] = boxsize;
+        box[2] = boxsize;
+
+        triclinic_box[0] = boxsize;
+        triclinic_box[1] = triclinic_box[2] = 0.0;
+        triclinic_box[3] = boxsize / 5.0;
+        triclinic_box[4] = boxsize;
+        triclinic_box[5] = 0.0;
+        triclinic_box[6] = triclinic_box[7] = boxsize / 5.0;
+        triclinic_box[8] = boxsize;
+    }
+
+    // Destructor with inlined cleanup
+    virtual void TearDown()  {
+        delete[] coords0;
+        delete[] coords1;
+        delete[] vectors;
+        delete[] ref;
+        delete[] output;
+    }
+};
 #endif // DISTOPIA_TEST_FIXTURES_H

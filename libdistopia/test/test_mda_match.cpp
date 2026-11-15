@@ -7,6 +7,7 @@
 #include "test_utils.h"
 #include "test_fixtures.h"
 #include "compare/calc_distances.h"
+#include "compare/calc_distances.hpp"
 
 using testing::Types;
 typedef Types<float, double> ScalarTypes;
@@ -15,6 +16,7 @@ typedef Types<float, double> ScalarTypes;
 // constants
 constexpr int BOXSIZE = 30;
 constexpr int NRESULTS = 1000;
+constexpr int NCOORDS = 1000;
 constexpr int NINDICIES = 5;
 constexpr double abs_err = 1.0e-4;
 
@@ -478,6 +480,38 @@ TYPED_TEST(DistanceArrayCoordinates, SelfDistanceArrayTriclinicScalar) {
 
     for (std::size_t i=0; i<nresults; ++i) {
         EXPECT_NEAR(this->ref[i], this->results[i], abs_err);
+    }
+}
+
+
+TYPED_TEST_SUITE(MinimizeVectorsTest, ScalarTypes);
+
+TYPED_TEST(MinimizeVectorsTest, MinimizeVectorsOrthoMatchesMDA)
+{
+    this->SetUp(NCOORDS, BOXSIZE, 3 * BOXSIZE);
+
+    _calc_minimize_vectors_ortho(this->vectors, this->ncoords, this->box, this->ref);
+
+    distopia::MinimizeVectorsOrtho(this->vectors, this->ncoords, this->box, this->output);
+
+    for (std::size_t i = 0; i < this->nelements; i++)
+    {
+        EXPECT_NEAR(this->ref[i], this->output[i], abs_err);
+    }
+}
+
+
+TYPED_TEST(MinimizeVectorsTest, MinimizeVectorsTriclinicMatchesMDA)
+{
+    this->SetUp(NCOORDS, BOXSIZE, 3 * BOXSIZE);
+
+    _calc_minimize_vectors_triclinic(this->vectors, this->ncoords, this->triclinic_box, this->ref);
+
+    distopia::MinimizeVectorsTriclinic(this->vectors, this->ncoords, this->triclinic_box, this->output);
+
+    for (std::size_t i = 0; i < this->nelements; i++)
+    {
+        EXPECT_NEAR(this->ref[i], this->output[i], abs_err);
     }
 }
 
